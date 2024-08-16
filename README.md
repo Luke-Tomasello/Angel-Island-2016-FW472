@@ -14,9 +14,10 @@ Unmodified, all original AI 3.0. Original Kin System, townships, Gypsy quests, S
 This distribution contains the fully spawned world as of 2017.
 Rebuild, launch, and play.
 
-# Video: Getting Started
+# Videos: 
 
-https://youtu.be/phI7P_xmD_8
+Getting Started: https://youtu.be/phI7P_xmD_8
+And Easter Egg: https://youtu.be/j-IV5Ct8VlU
 
 # .NET Framework 4.7.2
 
