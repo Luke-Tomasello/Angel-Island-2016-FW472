@@ -16,8 +16,8 @@ Rebuild, launch, and play.
 
 # Videos: 
 
-Getting Started: https://youtu.be/phI7P_xmD_8 </b>
-And Easter Egg: https://youtu.be/j-IV5Ct8VlU
+Getting Started: https://youtu.be/phI7P_xmD_8<br/>
+An Easter Egg: https://youtu.be/j-IV5Ct8VlU
 
 # .NET Framework 4.7.2
 
