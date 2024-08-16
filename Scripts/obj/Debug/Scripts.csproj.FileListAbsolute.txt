@@ -1,0 +1,24 @@
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\AI Extras\Angel Island Old Versions\Angel Island 3.0\Scripts\obj\Debug\Scripts.csproj.AssemblyReference.cache
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\AI Extras\Angel Island Old Versions\Angel Island 3.0\Scripts\obj\Debug\Scripts.csproj.CoreCompileInputs.cache
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\AI Extras\Angel Island Old Versions\Angel Island 3.0\Scripts\obj\Debug\Scripts.dll
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\AI Extras\Angel Island Old Versions\Angel Island 3.0\Scripts\obj\Debug\Scripts.pdb
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Hacks\Shard.AI.3.0.SVN\Scripts\bin\Debug\Scripts.dll
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Hacks\Shard.AI.3.0.SVN\Scripts\bin\Debug\Scripts.pdb
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Hacks\Shard.AI.3.0.SVN\Scripts\bin\Debug\Server.exe
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Hacks\Shard.AI.3.0.SVN\Scripts\bin\Debug\Server.pdb
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Hacks\Shard.AI.3.0.SVN\Scripts\bin\Debug\Server.exe.config
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Hacks\Shard.AI.3.0.SVN\Scripts\obj\Debug\Scripts.csproj.AssemblyReference.cache
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Hacks\Shard.AI.3.0.SVN\Scripts\obj\Debug\Scripts.csproj.CoreCompileInputs.cache
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Hacks\Shard.AI.3.0.SVN\Scripts\obj\Debug\Scripts.csproj.Up2Date
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Hacks\Shard.AI.3.0.SVN\Scripts\obj\Debug\Scripts.dll
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Hacks\Shard.AI.3.0.SVN\Scripts\obj\Debug\Scripts.pdb
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Shard.AI.3.0\Scripts\bin\Debug\Scripts.dll
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Shard.AI.3.0\Scripts\bin\Debug\Scripts.pdb
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Shard.AI.3.0\Scripts\bin\Debug\Server.exe
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Shard.AI.3.0\Scripts\bin\Debug\Server.pdb
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Shard.AI.3.0\Scripts\bin\Debug\Server.exe.config
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Shard.AI.3.0\Scripts\obj\Debug\Scripts.csproj.AssemblyReference.cache
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Shard.AI.3.0\Scripts\obj\Debug\Scripts.csproj.CoreCompileInputs.cache
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Shard.AI.3.0\Scripts\obj\Debug\Scripts.csproj.Up2Date
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Shard.AI.3.0\Scripts\obj\Debug\Scripts.dll
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Shard.AI.3.0\Scripts\obj\Debug\Scripts.pdb

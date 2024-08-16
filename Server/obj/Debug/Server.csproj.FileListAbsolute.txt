@@ -1,0 +1,20 @@
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\AI Extras\Angel Island Old Versions\Angel Island 3.0\Server\obj\Debug\Server.csproj.AssemblyReference.cache
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\AI Extras\Angel Island Old Versions\Angel Island 3.0\Server\obj\Debug\Server.csproj.CoreCompileInputs.cache
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\AI Extras\Angel Island Old Versions\Angel Island 3.0\Server\obj\Debug\Server.exe
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\AI Extras\Angel Island Old Versions\Angel Island 3.0\Server\obj\Debug\Server.pdb
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\AI Extras\Angel Island Old Versions\Angel Island 3.0\Server.exe
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\AI Extras\Angel Island Old Versions\Angel Island 3.0\Server.pdb
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Hacks\Shard.AI.3.0.SVN\Server\obj\Debug\Server.csproj.AssemblyReference.cache
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Hacks\Shard.AI.3.0.SVN\Server\obj\Debug\Server.csproj.CoreCompileInputs.cache
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Hacks\Shard.AI.3.0.SVN\Server.exe.config
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Hacks\Shard.AI.3.0.SVN\Server\obj\Debug\Server.exe
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Hacks\Shard.AI.3.0.SVN\Server\obj\Debug\Server.pdb
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Hacks\Shard.AI.3.0.SVN\Server.exe
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Hacks\Shard.AI.3.0.SVN\Server.pdb
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Shard.AI.3.0\Server\obj\Debug\Server.csproj.AssemblyReference.cache
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Shard.AI.3.0\Server\obj\Debug\Server.csproj.CoreCompileInputs.cache
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Shard.AI.3.0\Server.exe.config
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Shard.AI.3.0\Server\obj\Debug\Server.exe
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Shard.AI.3.0\Server\obj\Debug\Server.pdb
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Shard.AI.3.0\Server.exe
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\Shard.AI.3.0\Server.pdb

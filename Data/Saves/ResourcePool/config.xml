@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<ResourcePool version="1">
+  <PaymentFactor>0.9</PaymentFactor>
+  <FailsafePriceHike>2</FailsafePriceHike>
+  <ResourceData version="0">
+    <Name>Spined Leather</Name>
+    <Type>Server.Items.SpinedLeather</Type>
+    <BunchName>Roll of Spined leather</BunchName>
+    <ResalePrice>6</ResalePrice>
+    <WholesalePrice>6</WholesalePrice>
+    <ItemID>4225</ItemID>
+    <Hue>1030</Hue>
+    <SmallestFirstFactor>0.5</SmallestFirstFactor>
+    <ValidFailsafe>False</ValidFailsafe>
+  </ResourceData>
+  <ResourceData version="0">
+    <Name>Horned Leather</Name>
+    <Type>Server.Items.HornedLeather</Type>
+    <BunchName>Roll of Horned Leather</BunchName>
+    <ResalePrice>7</ResalePrice>
+    <WholesalePrice>7</WholesalePrice>
+    <ItemID>4225</ItemID>
+    <Hue>1821</Hue>
+    <SmallestFirstFactor>0.5</SmallestFirstFactor>
+    <ValidFailsafe>False</ValidFailsafe>
+  </ResourceData>
+  <ResourceData version="0">
+    <Name>Agapite Ingot</Name>
+    <Type>Server.Items.AgapiteIngot</Type>
+    <BunchName>Stack of Agapite Ingots</BunchName>
+    <ResalePrice>11</ResalePrice>
+    <WholesalePrice>11</WholesalePrice>
+    <ItemID>7154</ItemID>
+    <Hue>2425</Hue>
+    <SmallestFirstFactor>0.5</SmallestFirstFactor>
+    <ValidFailsafe>False</ValidFailsafe>
+  </ResourceData>
+  <ResourceData version="0">
+    <Name>Barbed Leather</Name>
+    <Type>Server.Items.BarbedLeather</Type>
+    <BunchName>Roll of Barbed Leather</BunchName>
+    <ResalePrice>8</ResalePrice>
+    <WholesalePrice>8</WholesalePrice>
+    <ItemID>4225</ItemID>
+    <Hue>1813</Hue>
+    <SmallestFirstFactor>0.5</SmallestFirstFactor>
+    <ValidFailsafe>False</ValidFailsafe>
+  </ResourceData>
+  <ResourceData version="0">
+    <Name>Bolt</Name>
+    <Type>Server.Items.Bolt</Type>
+    <BunchName>Quiver of Bolts</BunchName>
+    <ResalePrice>6</ResalePrice>
+    <WholesalePrice>6</WholesalePrice>
+    <ItemID>7163</ItemID>
+    <Hue>0</Hue>
+    <SmallestFirstFactor>0.5</SmallestFirstFactor>
+    <ValidFailsafe>True</ValidFailsafe>
+  </ResourceData>
+  <ResourceData version="0">
+    <Name>Iron Ingot</Name>
+    <Type>Server.Items.IronIngot</Type>
+    <BunchName>Stack of Iron Ingots</BunchName>
+    <ResalePrice>5</ResalePrice>
+    <WholesalePrice>5</WholesalePrice>
+    <ItemID>7154</ItemID>
+    <Hue>0</Hue>
+    <SmallestFirstFactor>0.5</SmallestFirstFactor>
+    <ValidFailsafe>True</ValidFailsafe>
+  </ResourceData>
+  <ResourceData version="0">
+    <Name>Shaft</Name>
+    <Type>Server.Items.Shaft</Type>
+    <BunchName>Bundle of Shafts</BunchName>
+    <ResalePrice>4</ResalePrice>
+    <WholesalePrice>4</WholesalePrice>
+    <ItemID>7124</ItemID>
+    <Hue>0</Hue>
+    <SmallestFirstFactor>0.5</SmallestFirstFactor>
+    <ValidFailsafe>True</ValidFailsafe>
+  </ResourceData>
+  <ResourceData version="0">
+    <Name>Verite Ingot</Name>
+    <Type>Server.Items.VeriteIngot</Type>
+    <BunchName>Stack of Verite Ingots</BunchName>
+    <ResalePrice>13</ResalePrice>
+    <WholesalePrice>13</WholesalePrice>
+    <ItemID>7154</ItemID>
+    <Hue>2207</Hue>
+    <SmallestFirstFactor>0.5</SmallestFirstFactor>
+    <ValidFailsafe>False</ValidFailsafe>
+  </ResourceData>
+  <ResourceData version="0">
+    <Name>Dull Copper Ingot</Name>
+    <Type>Server.Items.DullCopperIngot</Type>
+    <BunchName>Stack of Dull Copper Ingots</BunchName>
+    <ResalePrice>6</ResalePrice>
+    <WholesalePrice>6</WholesalePrice>
+    <ItemID>7154</ItemID>
+    <Hue>2419</Hue>
+    <SmallestFirstFactor>0.5</SmallestFirstFactor>
+    <ValidFailsafe>False</ValidFailsafe>
+  </ResourceData>
+  <ResourceData version="0">
+    <Name>Cloth</Name>
+    <Type>Server.Items.Cloth</Type>
+    <BunchName>Stack of Cloths</BunchName>
+    <ResalePrice>3</ResalePrice>
+    <WholesalePrice>3</WholesalePrice>
+    <ItemID>5990</ItemID>
+    <Hue>0</Hue>
+    <SmallestFirstFactor>0.5</SmallestFirstFactor>
+    <ValidFailsafe>True</ValidFailsafe>
+  </ResourceData>
+  <ResourceData version="0">
+    <Name>Valorite Ingot</Name>
+    <Type>Server.Items.ValoriteIngot</Type>
+    <BunchName>Stack of Valorite Ingots</BunchName>
+    <ResalePrice>15</ResalePrice>
+    <WholesalePrice>15</WholesalePrice>
+    <ItemID>7154</ItemID>
+    <Hue>2219</Hue>
+    <SmallestFirstFactor>0.5</SmallestFirstFactor>
+    <ValidFailsafe>False</ValidFailsafe>
+  </ResourceData>
+  <ResourceData version="0">
+    <Name>Shadow Iron Ingot</Name>
+    <Type>Server.Items.ShadowIronIngot</Type>
+    <BunchName>Stack of Shadow Iron Ingots</BunchName>
+    <ResalePrice>7</ResalePrice>
+    <WholesalePrice>7</WholesalePrice>
+    <ItemID>7154</ItemID>
+    <Hue>2406</Hue>
+    <SmallestFirstFactor>0.5</SmallestFirstFactor>
+    <ValidFailsafe>False</ValidFailsafe>
+  </ResourceData>
+  <ResourceData version="0">
+    <Name>Feather</Name>
+    <Type>Server.Items.Feather</Type>
+    <BunchName>Bundle of Feathers</BunchName>
+    <ResalePrice>2</ResalePrice>
+    <WholesalePrice>2</WholesalePrice>
+    <ItemID>7121</ItemID>
+    <Hue>0</Hue>
+    <SmallestFirstFactor>0.5</SmallestFirstFactor>
+    <ValidFailsafe>True</ValidFailsafe>
+  </ResourceData>
+  <ResourceData version="0">
+    <Name>Board</Name>
+    <Type>Server.Items.Board</Type>
+    <BunchName>Stack of Boards</BunchName>
+    <ResalePrice>4</ResalePrice>
+    <WholesalePrice>4</WholesalePrice>
+    <ItemID>7127</ItemID>
+    <Hue>0</Hue>
+    <SmallestFirstFactor>0.5</SmallestFirstFactor>
+    <ValidFailsafe>True</ValidFailsafe>
+  </ResourceData>
+  <ResourceData version="0">
+    <Name>Copper Ingot</Name>
+    <Type>Server.Items.CopperIngot</Type>
+    <BunchName>Stack of Copper Ingots</BunchName>
+    <ResalePrice>8</ResalePrice>
+    <WholesalePrice>8</WholesalePrice>
+    <ItemID>7154</ItemID>
+    <Hue>2413</Hue>
+    <SmallestFirstFactor>0.5</SmallestFirstFactor>
+    <ValidFailsafe>False</ValidFailsafe>
+  </ResourceData>
+  <ResourceData version="0">
+    <Name>Arrow</Name>
+    <Type>Server.Items.Arrow</Type>
+    <BunchName>Quiver of Arrows</BunchName>
+    <ResalePrice>6</ResalePrice>
+    <WholesalePrice>6</WholesalePrice>
+    <ItemID>3903</ItemID>
+    <Hue>0</Hue>
+    <SmallestFirstFactor>0.5</SmallestFirstFactor>
+    <ValidFailsafe>True</ValidFailsafe>
+  </ResourceData>
+  <ResourceData version="0">
+    <Name>Bronze Ingot</Name>
+    <Type>Server.Items.BronzeIngot</Type>
+    <BunchName>Stack of Bronze Ingots</BunchName>
+    <ResalePrice>9</ResalePrice>
+    <WholesalePrice>9</WholesalePrice>
+    <ItemID>7154</ItemID>
+    <Hue>2418</Hue>
+    <SmallestFirstFactor>0.5</SmallestFirstFactor>
+    <ValidFailsafe>False</ValidFailsafe>
+  </ResourceData>
+  <ResourceData version="0">
+    <Name>Gold Ingot</Name>
+    <Type>Server.Items.GoldIngot</Type>
+    <BunchName>Stack of Gold Ingots</BunchName>
+    <ResalePrice>10</ResalePrice>
+    <WholesalePrice>10</WholesalePrice>
+    <ItemID>7154</ItemID>
+    <Hue>2213</Hue>
+    <SmallestFirstFactor>0.5</SmallestFirstFactor>
+    <ValidFailsafe>False</ValidFailsafe>
+  </ResourceData>
+  <ResourceData version="0">
+    <Name>Leather</Name>
+    <Type>Server.Items.Leather</Type>
+    <BunchName>Roll of Leathers</BunchName>
+    <ResalePrice>4</ResalePrice>
+    <WholesalePrice>4</WholesalePrice>
+    <ItemID>4225</ItemID>
+    <Hue>0</Hue>
+    <SmallestFirstFactor>0.5</SmallestFirstFactor>
+    <ValidFailsafe>True</ValidFailsafe>
+  </ResourceData>
+  <RDRedirect version="0">
+    <AmountFactor>1</AmountFactor>
+    <PriceFactor>0.5</PriceFactor>
+    <Redirect>Server.Items.HornedLeather</Redirect>
+    <Message>NPCs pay less for hides than leather, because they have to cut them.</Message>
+    <Type>Server.Items.HornedHides</Type>
+  </RDRedirect>
+  <RDRedirect version="0">
+    <AmountFactor>60</AmountFactor>
+    <PriceFactor>0.75</PriceFactor>
+    <Redirect>Server.Items.Cloth</Redirect>
+    <Message>One bale of cotton will convert to 60 yards of cloth. NPCs pay less for cotton than cloth, because they have to weave it.</Message>
+    <Type>Server.Items.Cotton</Type>
+  </RDRedirect>
+  <RDRedirect version="0">
+    <AmountFactor>1</AmountFactor>
+    <PriceFactor>0.5</PriceFactor>
+    <Redirect>Server.Items.AgapiteIngot</Redirect>
+    <Message>NPCs pay less for ore than ingots, because they have to smelt them.</Message>
+    <Type>Server.Items.AgapiteOre</Type>
+  </RDRedirect>
+  <RDRedirect version="0">
+    <AmountFactor>1</AmountFactor>
+    <PriceFactor>0.5</PriceFactor>
+    <Redirect>Server.Items.ShadowIronIngot</Redirect>
+    <Message>NPCs pay less for ore than ingots, because they have to smelt them.</Message>
+    <Type>Server.Items.ShadowIronOre</Type>
+  </RDRedirect>
+  <RDRedirect version="0">
+    <AmountFactor>1</AmountFactor>
+    <PriceFactor>0.5</PriceFactor>
+    <Redirect>Server.Items.Board</Redirect>
+    <Message>NPCs pay less for logs than boards, because they have to cut them.</Message>
+    <Type>Server.Items.Log</Type>
+  </RDRedirect>
+  <RDRedirect version="0">
+    <AmountFactor>1</AmountFactor>
+    <PriceFactor>0.5</PriceFactor>
+    <Redirect>Server.Items.BarbedLeather</Redirect>
+    <Message>NPCs pay less for hides than leather, because they have to cut them.</Message>
+    <Type>Server.Items.BarbedHides</Type>
+  </RDRedirect>
+  <RDRedirect version="0">
+    <AmountFactor>30</AmountFactor>
+    <PriceFactor>0.75</PriceFactor>
+    <Redirect>Server.Items.Cloth</Redirect>
+    <Message>One pile of wool will convert to 30 yards of cloth. NPCs pay less for wool than cloth, because they have to weave it.</Message>
+    <Type>Server.Items.Wool</Type>
+  </RDRedirect>
+  <RDRedirect version="0">
+    <AmountFactor>10</AmountFactor>
+    <PriceFactor>0.5</PriceFactor>
+    <Redirect>Server.Items.Cloth</Redirect>
+    <Message>One ball of yarn will convert to 10 yards of cloth. NPCs pay less for yarn than cloth, because they have to weave it.</Message>
+    <Type>Server.Items.DarkYarn</Type>
+  </RDRedirect>
+  <RDRedirect version="0">
+    <AmountFactor>1</AmountFactor>
+    <PriceFactor>0.5</PriceFactor>
+    <Redirect>Server.Items.DullCopperIngot</Redirect>
+    <Message>NPCs pay less for ore than ingots, because they have to smelt them.</Message>
+    <Type>Server.Items.DullCopperOre</Type>
+  </RDRedirect>
+  <RDRedirect version="0">
+    <AmountFactor>10</AmountFactor>
+    <PriceFactor>0.5</PriceFactor>
+    <Redirect>Server.Items.Cloth</Redirect>
+    <Message>One ball of yarn will convert to 10 yards of cloth. NPCs pay less for yarn than cloth, because they have to weave it.</Message>
+    <Type>Server.Items.LightYarn</Type>
+  </RDRedirect>
+  <RDRedirect version="0">
+    <AmountFactor>1</AmountFactor>
+    <PriceFactor>1</PriceFactor>
+    <Redirect>Server.Items.Cloth</Redirect>
+    <Message>This will be sold as standard cloth for no extra fee.</Message>
+    <Type>Server.Items.UncutCloth</Type>
+  </RDRedirect>
+  <RDRedirect version="0">
+    <AmountFactor>10</AmountFactor>
+    <PriceFactor>0.5</PriceFactor>
+    <Redirect>Server.Items.Cloth</Redirect>
+    <Message>One ball of yarn will convert to 10 yards of cloth. NPCs pay less for yarn than cloth, because they have to weave it.</Message>
+    <Type>Server.Items.LightYarnUnraveled</Type>
+  </RDRedirect>
+  <RDRedirect version="0">
+    <AmountFactor>1</AmountFactor>
+    <PriceFactor>0.5</PriceFactor>
+    <Redirect>Server.Items.ValoriteIngot</Redirect>
+    <Message>NPCs pay less for ore than ingots, because they have to smelt them.</Message>
+    <Type>Server.Items.ValoriteOre</Type>
+  </RDRedirect>
+  <RDRedirect version="0">
+    <AmountFactor>1</AmountFactor>
+    <PriceFactor>0.5</PriceFactor>
+    <Redirect>Server.Items.BronzeIngot</Redirect>
+    <Message>NPCs pay less for ore than ingots, because they have to smelt them.</Message>
+    <Type>Server.Items.BronzeOre</Type>
+  </RDRedirect>
+  <RDRedirect version="0">
+    <AmountFactor>1</AmountFactor>
+    <PriceFactor>0.5</PriceFactor>
+    <Redirect>Server.Items.IronIngot</Redirect>
+    <Message>NPCs pay less for ore than ingots, because they have to smelt them.</Message>
+    <Type>Server.Items.IronOre</Type>
+  </RDRedirect>
+  <RDRedirect version="0">
+    <AmountFactor>10</AmountFactor>
+    <PriceFactor>0.5</PriceFactor>
+    <Redirect>Server.Items.Cloth</Redirect>
+    <Message>One spool of thread will convert to 10 yards of cloth. NPCs pay less for thread than cloth, because they have to weave it.</Message>
+    <Type>Server.Items.SpoolOfThread</Type>
+  </RDRedirect>
+  <RDRedirect version="0">
+    <AmountFactor>50</AmountFactor>
+    <PriceFactor>1</PriceFactor>
+    <Redirect>Server.Items.Cloth</Redirect>
+    <Message>One bolt will convert to 50 yards of cloth.</Message>
+    <Type>Server.Items.BoltOfCloth</Type>
+  </RDRedirect>
+  <RDRedirect version="0">
+    <AmountFactor>1</AmountFactor>
+    <PriceFactor>0.5</PriceFactor>
+    <Redirect>Server.Items.GoldIngot</Redirect>
+    <Message>NPCs pay less for ore than ingots, because they have to smelt them.</Message>
+    <Type>Server.Items.GoldOre</Type>
+  </RDRedirect>
+  <RDRedirect version="0">
+    <AmountFactor>1</AmountFactor>
+    <PriceFactor>0.5</PriceFactor>
+    <Redirect>Server.Items.SpinedLeather</Redirect>
+    <Message>NPCs pay less for hides than leather, because they have to cut them.</Message>
+    <Type>Server.Items.SpinedHides</Type>
+  </RDRedirect>
+  <RDRedirect version="0">
+    <AmountFactor>1</AmountFactor>
+    <PriceFactor>0.5</PriceFactor>
+    <Redirect>Server.Items.VeriteIngot</Redirect>
+    <Message>NPCs pay less for ore than ingots, because they have to smelt them.</Message>
+    <Type>Server.Items.VeriteOre</Type>
+  </RDRedirect>
+  <RDRedirect version="0">
+    <AmountFactor>1</AmountFactor>
+    <PriceFactor>0.5</PriceFactor>
+    <Redirect>Server.Items.CopperIngot</Redirect>
+    <Message>NPCs pay less for ore than ingots, because they have to smelt them.</Message>
+    <Type>Server.Items.CopperOre</Type>
+  </RDRedirect>
+  <RDRedirect version="0">
+    <AmountFactor>1</AmountFactor>
+    <PriceFactor>0.5</PriceFactor>
+    <Redirect>Server.Items.Leather</Redirect>
+    <Message>NPCs pay less for hides than cut leather, because they have to cut them.</Message>
+    <Type>Server.Items.Hides</Type>
+  </RDRedirect>
+</ResourcePool>

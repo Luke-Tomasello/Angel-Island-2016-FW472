@@ -1,0 +1,3 @@
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\test\Scripts\obj\Debug\net8.0\Scripts.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\test\Scripts\obj\Debug\net8.0\Scripts.csproj.CoreCompileInputs.cache
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\test\Scripts\obj\Debug\net8.0\Scripts.csproj.AssemblyReference.cache

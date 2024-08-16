@@ -1,0 +1,12 @@
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\test\Server\obj\Debug\net8.0\Server.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\test\Server\obj\Debug\net8.0\Server.csproj.CoreCompileInputs.cache
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\test\net8.0\Server.exe
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\test\net8.0\Server.deps.json
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\test\net8.0\Server.runtimeconfig.json
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\test\net8.0\Server.dll
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\test\net8.0\Server.pdb
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\test\Server\obj\Debug\net8.0\Server.dll
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\test\Server\obj\Debug\net8.0\refint\Server.dll
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\test\Server\obj\Debug\net8.0\Server.pdb
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\test\Server\obj\Debug\net8.0\Server.genruntimeconfig.cache
+C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island\test\Server\obj\Debug\net8.0\ref\Server.dll

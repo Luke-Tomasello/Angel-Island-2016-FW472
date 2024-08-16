@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<CoreChamp>
+	<Level1SpawnAmount>200</Level1SpawnAmount>
+	<Level2SpawnAmount>100</Level2SpawnAmount>
+	<Level3SpawnAmount>75</Level3SpawnAmount>
+	<Level4SpawnAmount>40</Level4SpawnAmount>
+	<MinMagicDropLevel>4</MinMagicDropLevel>
+	<MaxMagicDropLevel>5</MaxMagicDropLevel>
+	<AmountOfMagicLoot>8</AmountOfMagicLoot>
+</CoreChamp>

@@ -1,0 +1,11 @@
+C:\Users\luket\OneDrive\Documents\Software\Development\Product\Src\Angel Island.live\Server.exe
+C:\Users\luket\OneDrive\Documents\Software\Development\Product\Src\Angel Island.live\Server\obj\Release\ResolveAssemblyReference.cache
+C:\Users\luket\OneDrive\Documents\Software\Development\Product\Src\Angel Island.live\Server\obj\Release\Server.exe
+C:\Users\luket\Documents\Visual Studio 2005\Projects\Angel Island.live\Server.exe
+C:\Users\luket\Documents\Visual Studio 2005\Projects\Angel Island.live\Server\obj\Release\ResolveAssemblyReference.cache
+C:\Users\luket\Documents\Visual Studio 2005\Projects\Angel Island.live\Server\obj\Release\Server.exe
+C:\Users\luket\Documents\Visual Studio 2005\Projects\Angel Island\Shard\Server\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\luket\Documents\Visual Studio 2005\Projects\Angel Island\Shard\Server\obj\Debug\Server.exe
+C:\Users\luket\Documents\Visual Studio 2005\Projects\Angel Island\Shard\Server\obj\Debug\Server.pdb
+C:\Users\luket\Documents\Visual Studio 2005\Projects\Angel Island\Shard\Server.exe
+C:\Users\luket\Documents\Visual Studio 2005\Projects\Angel Island\Shard\Server.pdb
