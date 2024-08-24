@@ -26,7 +26,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>.\</OutputPath>
@@ -36,6 +36,17 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <OutputPath>.\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="ZLR.VM\**" />
+    <EmbeddedResource Remove="ZLR.VM\**" />
+    <None Remove="ZLR.VM\**" />
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -685,21 +696,6 @@
     <Compile Include="Scripts\Engines\VeteranRewards\RewardNoticeGump.cs" />
     <Compile Include="Scripts\Engines\VeteranRewards\RewardSystem.cs" />
     <Compile Include="Scripts\Engines\WealthTracker\WealthTracker.cs" />
-    <Compile Include="Scripts\Engines\Zlr\ZLR\DebugInfo.cs" />
-    <Compile Include="Scripts\Engines\Zlr\ZLR\IFF.cs" />
-    <Compile Include="Scripts\Engines\Zlr\ZLR\Input.cs" />
-    <Compile Include="Scripts\Engines\Zlr\ZLR\LruCache.cs" />
-    <Compile Include="Scripts\Engines\Zlr\ZLR\Objects.cs" />
-    <Compile Include="Scripts\Engines\Zlr\ZLR\Opcodes.cs" />
-    <Compile Include="Scripts\Engines\Zlr\ZLR\Opcodes_0OP.cs" />
-    <Compile Include="Scripts\Engines\Zlr\ZLR\Opcodes_1OP.cs" />
-    <Compile Include="Scripts\Engines\Zlr\ZLR\Opcodes_2OP.cs" />
-    <Compile Include="Scripts\Engines\Zlr\ZLR\Opcodes_EXT.cs" />
-    <Compile Include="Scripts\Engines\Zlr\ZLR\Opcodes_Impl.cs" />
-    <Compile Include="Scripts\Engines\Zlr\ZLR\Opcodes_VAR.cs" />
-    <Compile Include="Scripts\Engines\Zlr\ZLR\Output.cs" />
-    <Compile Include="Scripts\Engines\Zlr\ZLR\Quetzal.cs" />
-    <Compile Include="Scripts\Engines\Zlr\ZLR\ZMachine.cs" />
     <Compile Include="Scripts\Gumps\AddDoorGump.cs" />
     <Compile Include="Scripts\Gumps\AddGump.cs" />
     <Compile Include="Scripts\Gumps\AdminGump.cs" />
@@ -2539,7 +2535,6 @@
     <Content Include="Scripts\bin\Debug\Server.pdb" />
     <Content Include="Scripts\bin\Release\Scripts.dll" />
     <Content Include="Scripts\bin\Release\Server.exe" />
-    <Content Include="Scripts\Engines\Zlr\readme.txt" />
     <Content Include="Scripts\obj\Debug\net8.0\Scripts.csproj.FileListAbsolute.txt" />
     <Content Include="Scripts\obj\Debug\Scripts.csproj.FileListAbsolute.txt" />
     <Content Include="Scripts\obj\Debug\Scripts.dll" />
@@ -2570,6 +2565,19 @@
     <Folder Include="Scripts\obj\Debug\net8.0\ref\" />
     <Folder Include="Scripts\obj\Debug\TempPE\" />
     <Folder Include="Server\obj\Debug\TempPE\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472">
+      <Version>1.0.3</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="ZLR.VM\ZLR.VM.csproj">
+      <Project>{74bba5af-0c7c-48e1-a608-70545247c4ff}</Project>
+      <Name>ZLR.VM</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -5,6 +5,8 @@ VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GMN Core 3.0", "GMN Core 3.0.csproj", "{0F8C999A-E345-4853-99CF-49AE9EBADCF2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZLR.VM", "ZLR.VM\ZLR.VM.csproj", "{74BBA5AF-0C7C-48E1-A608-70545247C4FF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{0F8C999A-E345-4853-99CF-49AE9EBADCF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F8C999A-E345-4853-99CF-49AE9EBADCF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F8C999A-E345-4853-99CF-49AE9EBADCF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74BBA5AF-0C7C-48E1-A608-70545247C4FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74BBA5AF-0C7C-48E1-A608-70545247C4FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74BBA5AF-0C7C-48E1-A608-70545247C4FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74BBA5AF-0C7C-48E1-A608-70545247C4FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
