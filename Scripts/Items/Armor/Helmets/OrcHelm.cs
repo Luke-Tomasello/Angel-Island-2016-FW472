@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -31,7 +32,6 @@
  * 		Add OrcishKinHelm variant of this helm.
  */
 
-using System;
 namespace Server.Items
 {
     public class OrcHelm : BaseArmor

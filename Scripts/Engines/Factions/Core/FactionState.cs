@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -19,8 +21,6 @@
  *
  ***************************************************************************/
 
-using System;
-using System.Collections.Generic;
 namespace Server.Factions
 {
     public class FactionState

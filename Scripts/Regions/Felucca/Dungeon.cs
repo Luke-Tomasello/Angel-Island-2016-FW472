@@ -36,18 +36,12 @@
 
 using System;
 using Server;
-using System;
-using Server;
-using System;
-using Server;
 using Server.SMTP;
-using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Mail;
 using System.Threading;
 using System.Net.Mime;
-using Server;
 using Server.Items;
 using Server.Mobiles;
 using Server.Misc;
@@ -144,13 +138,6 @@ using Server.Spells.Ninjitsu;
 using Server.Text;
 using Server.Ethics;
 using Server.Factions.AI;
-using System;
-using Server;
-using Server.Mobiles;
-using Server.Spells;
-using Server.Spells.Seventh;
-using Server.Spells.Fourth;
-using Server.Spells.Sixth;
 
 namespace Server.Regions
 {

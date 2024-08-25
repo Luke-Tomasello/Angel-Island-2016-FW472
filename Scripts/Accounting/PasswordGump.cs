@@ -131,7 +131,7 @@ namespace Server.Gumps
                                                 regBody += "Email: " + a.EmailAddress + "\n";
                                                 regBody += "Reset password: " + newResetPassword + "\n";
                                                 regBody += "\n";
-                                                mail.SendEmail("aiaccounting@game-master.net", regSubject, regBody, false);
+                                                mail.SendEmail(Environment.GetEnvironmentVariable("AI.EMAIL.ACCOUNTING"), regSubject, regBody, false);
 
                                                 a.ResetPassword = newResetPassword;
                                                 m_From.SendMessage("Password reset request generated.");

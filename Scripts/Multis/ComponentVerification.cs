@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.IO;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -19,8 +21,6 @@
  *
  ***************************************************************************/
 
-using System.Collections.Generic;
-using System.IO;
 namespace Server.Multis
 {
     public class ComponentVerification

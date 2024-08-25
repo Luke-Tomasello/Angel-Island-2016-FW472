@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -25,7 +26,6 @@
  *		Initial creation
  * 
  **/
-using System;
 namespace Server.Engines.ChampionSpawn
 {
     public class ChampSpecific : ChampEngine

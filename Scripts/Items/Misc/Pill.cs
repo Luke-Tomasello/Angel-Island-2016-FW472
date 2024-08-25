@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -25,7 +26,6 @@
  *		- first time checkin
  */
 
-using System;
 namespace Server.Items
 {
     public class Pill : Item

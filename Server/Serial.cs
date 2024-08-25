@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -26,7 +27,6 @@
  *		Added code to make sure NewItem and NewMobile play nice with reserved serials
  */
 
-using System;
 namespace Server
 {
     public struct Serial : IComparable

@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -28,7 +29,6 @@
  *		hue values < 0 crash the UO client when trying to display the "GM Robe" text-graphic
  */
 
-using System;
 namespace Server.Items
 {
     public abstract class BaseSuit : Item

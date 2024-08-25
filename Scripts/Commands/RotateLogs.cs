@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -27,8 +29,6 @@
  *		Initial Version
  */
 
-using System;
-using System.IO;
 namespace Server.Commands
 {
     public class RotateLogs

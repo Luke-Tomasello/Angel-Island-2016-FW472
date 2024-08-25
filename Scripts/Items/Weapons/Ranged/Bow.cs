@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -31,7 +32,6 @@
  *		Added SealedBow.
  */
 
-using System;
 namespace Server.Items
 {
     public class SealedBow : Bow

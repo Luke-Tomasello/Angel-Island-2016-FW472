@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -19,7 +20,6 @@
  *
  ***************************************************************************/
 
-using System;
 namespace Server.Gumps
 {
     public abstract class BaseGridGump : Gump

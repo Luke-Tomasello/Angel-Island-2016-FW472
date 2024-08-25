@@ -1,3 +1,5 @@
+using System;
+using Server;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -20,8 +22,6 @@
  ***************************************************************************/
 
 #if notyet
-using System;
-using Server;
 namespace Server.Mobiles
 {
 	public class GrimmochDrummel : BaseCreature

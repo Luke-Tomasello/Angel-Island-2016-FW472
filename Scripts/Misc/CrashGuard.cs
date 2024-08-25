@@ -43,7 +43,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Mail;
-//using System.Web.Mail;
 
 namespace Server.Misc
 {
@@ -57,7 +56,7 @@ namespace Server.Misc
         // To add reporting emailing, fill in EmailServer and Emails:
         // Example:
         //  private const string Emails = "first@email.here;second@email.here;third@email.here";
-        private static string Emails = "devnotify@game-master.net";
+        private static string Emails = Environment.GetEnvironmentVariable("AI.EMAIL.DEVNOTIFY");
 
         public static void Initialize()
         {

@@ -1,3 +1,5 @@
+using System;
+using Server;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -51,8 +53,6 @@
  */
 
 #if THIS_IS_NOT_USED
-using System;
-using Server;
 namespace Server.Engines.AngelIsland.WebAccount
 {
 	/// <summary>
@@ -70,7 +70,7 @@ namespace Server.Engines.AngelIsland.WebAccount
 		// private static string EmailServer = "mail.tamke.net";
 		// private static string EmailServer = "192.168.0.99";
 		private static string EmailServer = "66.235.184.96";
-		private static string FromEmailAddress = "noreply@game-master.net";
+		private static string FromEmailAddress = Environment.GetEnvironmentVariable("AI.NOREPLY.ADDRESS");
 
 
         private static int iMaxAccountsPerIP = 2;
@@ -281,7 +281,7 @@ namespace Server.Engines.AngelIsland.WebAccount
 						regBody += "\n";
 
 						Emailer mail = new Emailer();
-						mail.SendEmail( "aiaccounting@game-master.net", regSubject, regBody, false );
+						mail.SendEmail( Environment.GetEnvironmentVariable("AI.EMAIL.ACCOUNTING"), regSubject, regBody, false );
 
 					}
 					else

@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -25,7 +26,6 @@
  *		Changed inheritance from Container to BaseContainer to fix ownership bugs in 1.0.0
  */
 
-using System;
 namespace Server.Items
 {
     public class DecayedCorpse : BaseContainer

@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -28,7 +29,6 @@
  *		They now use the Heartbeat system.
  */
 
-using System;
 namespace Server.Engines.Plants
 {
     public enum PlantHealth

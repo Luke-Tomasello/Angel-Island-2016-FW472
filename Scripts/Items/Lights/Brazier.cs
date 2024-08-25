@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -24,7 +25,6 @@
  *	04/07/05, Kitaras	
  *		Added moveable flag to new constructor for treasure loot braizers
  */
-using System;
 namespace Server.Items
 {
     public class Brazier : BaseLight

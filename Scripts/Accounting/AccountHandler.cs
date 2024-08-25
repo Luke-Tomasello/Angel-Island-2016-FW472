@@ -364,7 +364,7 @@ namespace Server.Misc
                 regBody += "Password: " + pw + "\n";
                 regBody += "\n";
                 Emailer mail = new Emailer();
-                mail.SendEmail("aiaccounting@game-master.net", regSubject, regBody, false);
+                mail.SendEmail(Environment.GetEnvironmentVariable("AI.EMAIL.ACCOUNTING"), regSubject, regBody, false);
             }
             catch (Exception ex) { EventSink.InvokeLogException(new LogExceptionEventArgs(ex)); }
 

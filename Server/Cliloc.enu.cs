@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -27,7 +28,6 @@
  *		As you move through the project, please replace all constant strings with Lookup[meg_num]
  */
 
-using System.Collections.Generic;
 namespace Server.Text
 {
     public static class Cliloc

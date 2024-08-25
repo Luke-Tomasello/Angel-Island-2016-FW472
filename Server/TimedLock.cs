@@ -1,3 +1,5 @@
+using System;
+using System.Threading;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -35,8 +37,6 @@
 // me invent a way of using a struct in both release and debug builds
 // without losing the debug leak tracking.
 
-using System;
-using System.Threading;
 namespace Server
 {
     public struct TimedLock : IDisposable

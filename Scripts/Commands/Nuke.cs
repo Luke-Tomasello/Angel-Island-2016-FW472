@@ -446,9 +446,7 @@ namespace Server.Commands
             }
             catch
             {
-                Utility.PushColor(ConsoleColor.Red);
-                Console.WriteLine("Error reading {0}", shard);
-                Utility.PopColor();
+                Utility.Monitor.WriteLine("Error reading {0}", ConsoleColor.Red, shard);
             }
 
             return PlayerDescriptions;

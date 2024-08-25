@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -24,7 +25,6 @@
  * ChangeLog
  */
 
-using System;
 namespace Server.Engines.RewardSystem
 {
     public class RewardEntry

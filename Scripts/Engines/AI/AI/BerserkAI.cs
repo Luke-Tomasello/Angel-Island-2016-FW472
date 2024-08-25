@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -28,8 +29,6 @@
  *  6/5/04, Pix
  *		Merged in 1.0RC0 code.
  */
-
-using System;
 
 namespace Server.Mobiles
 {

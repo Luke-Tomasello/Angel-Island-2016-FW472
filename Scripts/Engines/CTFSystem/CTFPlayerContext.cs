@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -25,7 +26,6 @@
  *		initial framework.
  */
 
-using System;
 namespace Server.Engines
 {
     public partial class CTFControl : Server.Items.RegionControl

@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -27,7 +28,6 @@
  *		Merged in 1.0RC0 code.
  */
 
-using System;
 namespace Server.Spells
 {
     public class Initializer

@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -35,7 +36,6 @@
  *		normalize all spirit spawn dynamic threat code into this common base class
  */
 
-using System;
 namespace Server.Mobiles
 {
     public class BaseDynamicThreat : BaseCreature

@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -37,7 +38,6 @@
 //
 //
 
-using System;
 namespace Server.Mobiles
 {
     public class ThiefAI : BaseAI

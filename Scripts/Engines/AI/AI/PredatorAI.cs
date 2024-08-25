@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -36,8 +37,6 @@
  *	Dont flee but dont attack if not hurt or attacked
  * 
  */
-
-using System;
 
 namespace Server.Mobiles
 {

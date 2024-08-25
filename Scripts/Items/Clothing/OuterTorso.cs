@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -36,7 +37,6 @@
  *		Made HoodedShrouds undyeable.
  */
 
-using System;
 namespace Server.Items
 {
     public abstract class BaseOuterTorso : BaseClothing

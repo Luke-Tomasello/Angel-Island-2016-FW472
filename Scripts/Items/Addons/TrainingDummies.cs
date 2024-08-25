@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -25,7 +26,6 @@
  *		Merged in 1.0RC0 code.
  */
 
-using System;
 namespace Server.Items
 {
     [Flipable(0x1070, 0x1074)]

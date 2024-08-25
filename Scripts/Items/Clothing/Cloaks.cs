@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -32,7 +33,6 @@
  *		Merged in 1.0RC0 code.
  */
 
-using System;
 namespace Server.Items
 {
     public abstract class BaseCloak : BaseClothing

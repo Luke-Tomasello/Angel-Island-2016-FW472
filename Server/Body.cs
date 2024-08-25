@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -102,8 +104,6 @@
  * 321 and on are broken or invisible.
  * 400 normal
  */
-using System;
-using System.IO;
 namespace Server
 {
     public enum BodyType : byte

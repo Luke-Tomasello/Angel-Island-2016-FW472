@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -24,7 +25,6 @@
  *		Added new constructor to specify the lifespan of the blood object.
  */
 
-using System;
 namespace Server.Items
 {
     public class Blood : Item

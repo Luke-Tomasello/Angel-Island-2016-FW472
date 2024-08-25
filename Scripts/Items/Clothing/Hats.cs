@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -38,7 +39,6 @@
  *		Modified hue of blood drenched bandana to be darker.
  */
 
-using System;
 namespace Server.Items
 {
     public abstract class BaseHat : BaseClothing

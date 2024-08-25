@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -29,7 +30,6 @@
  *
  */
 
-using System;
 namespace Server.Gumps
 {
     public delegate void SurveyToolGumpCallback(Mobile from, bool okay, object state);

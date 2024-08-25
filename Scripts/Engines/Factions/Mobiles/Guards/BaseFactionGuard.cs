@@ -26,7 +26,6 @@ using Server.Network;
 using System;
 using System.Collections.Generic;
 
-
 namespace Server.Factions
 {
     public abstract class BaseFactionGuard : BaseCreature

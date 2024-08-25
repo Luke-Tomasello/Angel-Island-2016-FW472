@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -25,7 +26,6 @@
  *		Automated removal of AoS resistance related function calls. 6 lines removed.
 */
 
-using System;
 namespace Server.Mobiles
 {
     [CorpseName("a dark wolf corpse")]

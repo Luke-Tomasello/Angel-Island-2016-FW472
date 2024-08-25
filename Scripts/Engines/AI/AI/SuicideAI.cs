@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -31,7 +32,6 @@
  *		Initial version.
  */
 
-using System;
 namespace Server.Mobiles
 {
     public class SuicideAI : BaseAI

@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -29,8 +31,6 @@
  *    Added sets to MultiData properties for static houses
  */
 
-using System;
-using System.IO;
 namespace Server
 {
     public class MultiData

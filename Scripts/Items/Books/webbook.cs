@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -23,7 +24,6 @@
    Created 12/14/04, Pigpen 
  */
 
-using System;
 namespace Server.Gumps
 {
     public class WebBook : Item

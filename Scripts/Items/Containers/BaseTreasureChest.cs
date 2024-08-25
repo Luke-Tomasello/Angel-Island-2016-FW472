@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -25,7 +26,6 @@
  *     Changed so telekinesis doesn't trip the trap
  */
 
-using System;
 namespace Server.Items
 {
     public abstract class BaseTreasureChest : LockableContainer

@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -25,7 +26,6 @@
  *		Automated IPooledEnumerable optimizations. 1 loops updated.
  */
 
-using System;
 namespace Server.Items
 {
     public enum StoneFaceTrapType

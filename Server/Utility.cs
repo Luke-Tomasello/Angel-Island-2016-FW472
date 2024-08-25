@@ -76,6 +76,34 @@ namespace Server
 {
     public class Utility
     {
+        public static class Monitor
+        {
+            public static void Write(string text, ConsoleColor color)
+            {
+                System.Console.Out.Flush();
+                PushColor(color);
+                System.Console.Write(text);
+                PopColor();
+                System.Console.Out.Flush();
+            }
+            public static void WriteLine(string format, ConsoleColor color, params object[] args)
+            {
+                Monitor.WriteLine(string.Format(format, args), color);
+            }
+            public static void WriteLine(string text, ConsoleColor color)
+            {
+                System.Console.Out.Flush();
+                PushColor(color);
+                System.Console.WriteLine(text);
+                //if (m_ConsoleOutEcho != null)
+                //{
+                //    EnsurePath(m_ConsoleOutEcho);
+                //    File.AppendAllLines(m_ConsoleOutEcho, new string[] { text }, Encoding.UTF8);
+                //}
+                PopColor();
+                System.Console.Out.Flush();
+            }
+        }
         public static class World
         {
             private static Rectangle2D[] m_BritWrap = new Rectangle2D[] { new Rectangle2D(16, 16, 5120 - 32, 4096 - 32), new Rectangle2D(5136, 2320, 992, 1760) };
@@ -736,8 +764,8 @@ namespace Server
         {
             try
             {
-                m_ConsoleColors.Push(Console.ForegroundColor);
-                Console.ForegroundColor = color;
+                m_ConsoleColors.Push(System.Console.ForegroundColor);
+                System.Console.ForegroundColor = color;
             }
             catch (Exception ex) { EventSink.InvokeLogException(new LogExceptionEventArgs(ex)); }
         }
@@ -746,7 +774,7 @@ namespace Server
         {
             try
             {
-                Console.ForegroundColor = m_ConsoleColors.Pop();
+                System.Console.ForegroundColor = m_ConsoleColors.Pop();
             }
             catch (Exception ex) { EventSink.InvokeLogException(new LogExceptionEventArgs(ex)); }
         }
@@ -1738,7 +1766,7 @@ namespace Server
             catch (Exception e)
             {
                 //LogHelper.LogException(e); (not in server)
-                Console.WriteLine("EXCEPTION IN AdjustedDateTime: " + e.Message);
+                System.Console.WriteLine("EXCEPTION IN AdjustedDateTime: " + e.Message);
             }
 
             return returnTime;

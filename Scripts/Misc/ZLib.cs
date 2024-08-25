@@ -19,9 +19,9 @@
  *
  ***************************************************************************/
 
-#if false
 using System;
 using Server;
+#if false
 namespace Server
 {
     public enum ZLibError : int

@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -33,7 +34,6 @@
  *		Added header and copyright
  */
 
-using System;
 namespace Server.Commands
 {
 

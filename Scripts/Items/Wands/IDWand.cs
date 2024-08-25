@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -36,7 +37,6 @@
  *		implement identifying of magic jewelry and clothing
  */
 
-using System;
 namespace Server.Items
 {
     public class IDWand : BaseWand

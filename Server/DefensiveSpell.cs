@@ -1,3 +1,4 @@
+using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -26,7 +27,6 @@
  *		we can reference the lock object for defensive spells in the core.
  */
 
-using System;
 namespace Server
 {
     public class DefensiveSpell
