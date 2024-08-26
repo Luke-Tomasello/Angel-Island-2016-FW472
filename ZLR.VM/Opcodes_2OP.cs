@@ -1,8 +1,8 @@
 /***************************************************************************
  *
- *   RunUO                   : May 1, 2002
- *   portions copyright      : (C) The RunUO Software Team
- *   email                   : info@runuo.com
+ *   ZLR                     : May 1, 2007
+ *   implementation          : (C) 2007-2023 Tara McGrew
+ *   repository url          : https://foss.heptapod.net/zilf/zlr
  *   
  *   Angel Island UO Shard   : March 25, 2004
  *   portions copyright      : (C) 2004-2024 Tomasello Software LLC.
