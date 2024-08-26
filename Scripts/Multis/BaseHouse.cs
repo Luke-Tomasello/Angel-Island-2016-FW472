@@ -21,6 +21,8 @@
 
 /* Scripts/Multis/BaseHouse.cs
  * ChangeLog
+ *  8/26/2024, Adam (TentBackpack)
+ *      Disallow players from "I wish to release this" on tent backpacks.
  *	3/17/16, Adam
  *		Add the special tent logic to IsInside() - (see those comments 3/16/16, 2/27/10.)
  *		This is called directly from placing a vendorTrntalContract in a tent.
@@ -2343,7 +2345,11 @@ namespace Server.Multis
             if (!IsFriend(m))
                 return;
 
-            if (IsLockedDown(item))
+            if (item is TentBackpack)
+            {
+                m.SendLocalizedMessage(501722);//That isn't locked down...
+            }
+            else if (IsLockedDown(item))
             {
                 item.PublicOverheadMessage(Server.Network.MessageType.Label, 0x3B2, 501657);//[no longer locked down]
                 SetLockdown(item, false);
