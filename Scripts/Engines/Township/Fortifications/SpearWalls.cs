@@ -19,6 +19,14 @@
  *
  ***************************************************************************/
 
+/* Scripts\Engines\Township\Fortifications\SpearWalls.cs
+ * CHANGELOG:
+ *  8/26/2024, Adam
+ *      Construction now passes the TownshipStone to the wall constructed.
+ *      We use this to cleanup all ITownshipItems when the stone is deleted.
+ */
+
+
 namespace Server.Township
 {
     public class SpearFortificationWall : BaseFortificationWall
@@ -38,8 +46,8 @@ namespace Server.Township
 				0x425 //spear half-wall corner
 			};
 
-        public SpearFortificationWall()
-            : base(0x221)
+        public SpearFortificationWall(TownshipStone stone)
+            : base(stone, 0x221)
         {
             this.RepairSkill = SkillName.Carpentry;
             this.Weight = 150;

@@ -19,6 +19,13 @@
  *
  ***************************************************************************/
 
+/* Scripts\Engines\Township\Fortifications\StoneWalls.cs
+ * CHANGELOG:
+ *  8/26/2024, Adam
+ *      Construction now passes the TownshipStone to the wall constructed.
+ *      We use this to cleanup all ITownshipItems when the stone is deleted.
+ */
+
 using Server.Items;
 using System;
 
@@ -38,8 +45,8 @@ namespace Server.Township
 				0x0024 //stone half-wall corner
 			};
 
-        public StoneFortificationWall()
-            : base(0x001B)
+        public StoneFortificationWall(TownshipStone stone)
+            : base(stone, 0x001B)
         {
             this.RepairSkill = SkillName.Tinkering;
             this.Weight = 200;

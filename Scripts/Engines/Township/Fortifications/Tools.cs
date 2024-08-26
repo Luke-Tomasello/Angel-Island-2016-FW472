@@ -19,8 +19,11 @@
  *
  ***************************************************************************/
 
-/* Engines/Township/Fortifications/Tools.cs
+/* Scripts\Engines/Township/Fortifications/Tools.cs
  * CHANGELOG:
+ *  8/26/2024, Adam
+ *      Have construction pass the TownshipStone to the item constructed.
+ *      We use this to cleanup all ITownshipItems when the stone is deleted.
  * 5/11/10, Pix
  *      Changed the check for wall placement only to count houses that are actually in the township.  Now
  *      if there's a house right up to the township border, you can place the wall.  Note that the 1-tile
@@ -388,7 +391,7 @@ namespace Server.Township
         {
             if (TownshipWallPlacer.TryPlace(from, BOARDSREQUIRED, INGOTSREQUIRED, this))
             {
-                BaseFortificationWall wall = new StoneFortificationWall();
+                BaseFortificationWall wall = new StoneFortificationWall(TownshipStone.TownshipMember(from));
                 wall.Place(from, from.Location);
                 m_UsesRemaining -= 1;
 
@@ -457,7 +460,7 @@ namespace Server.Township
         {
             if (TownshipWallPlacer.TryPlace(from, BOARDSREQUIRED, INGOTSREQUIRED, this))
             {
-                BaseFortificationWall wall = new SpearFortificationWall();
+                BaseFortificationWall wall = new SpearFortificationWall(TownshipStone.TownshipMember(from));
                 wall.Place(from, from.Location);
                 m_UsesRemaining -= 1;
 

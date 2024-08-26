@@ -21,6 +21,10 @@
 
 /* Scripts/Engines/Township/TownshipStone.cs
  * CHANGELOG:
+ *  8/26/2024, Adam (Delete())
+ *      1. BaseFortificationWall now saves a reference to the TownshipStone to which it belongs.
+ *      2. BaseFortificationWall is now ITownshipItem
+ *      We use this to cleanup all ITownshipItems when the stone is Deleted().
  * 7/13/10, Pix
  *      Change so all allies can access stone - instead of allies who are friends of the house that the stone is in.
  * 5/8/10, adam
@@ -455,6 +459,11 @@ namespace Server.Items
 
             //delete me from the global list of township stones
             AllTownshipStones.Remove(this);
+
+            // remove all ITownshipItems
+            foreach (Item item in World.Items.Values)
+                if (item is ITownshipItem ts && ts.Stone == this)
+                    item.Delete();
 
             base.Delete();
         }

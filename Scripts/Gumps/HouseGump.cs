@@ -21,8 +21,10 @@
 
 /* Scripts/Gumps/HouseGump.cs
  * ChangeLog
+ *  8/26/2024, Adam (HouseGump)
+ *      Check for m_House.Owner == null when constructing the house gump
  *	2/28/10, Adam
- *		Prevent the owner from Demolishing or Transfering a house of the ManagedDemolishion flag is set on the house.
+ *		Prevent the owner from Demolishing or Transferring a house of the ManagedDemolishion flag is set on the house.
  *		The ManagedDemolishion flag is set on the house when this house annexed one of more tents.
  *	5/3/08, Adam
  *		- reformat to look nice
@@ -360,7 +362,7 @@ namespace Server.Gumps
             AddHtml(fieldStartN, 135, 100, 20, GetOwnerName(), false, false);
 
             // Angel Island House decay display - owner only.
-            if (from.Account == m_House.Owner.Account || from.AccessLevel >= AccessLevel.GameMaster)
+            if ((m_House.Owner != null && from.Account == m_House.Owner.Account) || from.AccessLevel >= AccessLevel.GameMaster)
             {
                 if (m_House.TownshipRestrictedRefresh)
                 {   // replace the entire "Decay Time" line
