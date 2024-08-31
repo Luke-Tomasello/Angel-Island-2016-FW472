@@ -141,7 +141,7 @@ namespace Server.Mobiles
                         PackReg(3, 0.3);
                         // http://www.uoguide.com/Savage_Empire
                         // http://uo.stratics.com/secrets/archive/orcsavage.shtml
-                        if (Core.PublishDate >= Core.EraSAVE)
+                        if (PublishInfo.PublishDate >= Core.EraSAVE)
                             if (0.05 > Utility.RandomDouble())
                                 PackItem(new OrcishKinMask());
                     }
@@ -154,7 +154,7 @@ namespace Server.Mobiles
 
                         // http://www.uoguide.com/Savage_Empire
                         // http://uo.stratics.com/secrets/archive/orcsavage.shtml
-                        if (Core.PublishDate >= Core.EraSAVE)
+                        if (PublishInfo.PublishDate >= Core.EraSAVE)
                             if (0.05 > Utility.RandomDouble())
                                 PackItem(new OrcishKinMask());
                     }

@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -25,6 +24,8 @@ using System;
  *   4/27/2004, pixie
  *     Changed so telekinesis doesn't trip the trap
  */
+
+using System;
 
 namespace Server.Items
 {

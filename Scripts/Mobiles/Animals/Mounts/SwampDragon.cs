@@ -170,11 +170,11 @@ namespace Server.Mobiles
         }
 
         // Auto-dispel is UOR - http://forums.uosecondage.com/viewtopic.php?f=8&t=6901
-        public override bool AutoDispel { get { return Core.UOAI || Core.UOAR ? false : Core.PublishDate >= Core.EraREN ? true : false; } }
+        public override bool AutoDispel { get { return Core.UOAI || Core.UOAR ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
         public override FoodType FavoriteFood { get { return FoodType.Meat; } }
         public override int Meat { get { return 19; } }
         public override int Hides { get { return 20; } }
-        public override int Scales { get { return (Core.UOAI || Core.UOAR || Core.PublishDate < Core.PlagueOfDespair) ? 0 : 5; } }
+        public override int Scales { get { return (Core.UOAI || Core.UOAR || PublishInfo.PublishDate < Core.PlagueOfDespair) ? 0 : 5; } }
         public override ScaleType ScaleType { get { return ScaleType.Green; } }
 
         public SwampDragon(Serial serial)

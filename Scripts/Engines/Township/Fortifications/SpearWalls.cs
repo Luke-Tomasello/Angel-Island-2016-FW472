@@ -26,6 +26,7 @@
  *      We use this to cleanup all ITownshipItems when the stone is deleted.
  */
 
+using Server.Items;
 
 namespace Server.Township
 {

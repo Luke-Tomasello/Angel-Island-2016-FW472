@@ -58,8 +58,8 @@ namespace Server.Misc
 
         public static void Configure()
         {
-            string pathReg = GetExePath("Ultima Online");
-            string pathTD = GetExePath("Ultima Online Third Dawn");
+            string pathReg = GetUOPath("Ultima Online");
+            string pathTD = GetUOPath("Ultima Online Third Dawn");
 
             if (CustomPath != null)
                 Core.DataDirectories.Add(CustomPath);
@@ -79,7 +79,7 @@ namespace Server.Misc
             }
         }
 
-        private static string GetExePath(string subName)
+        public static string GetUOPath(string subName)
         {
             try
             {

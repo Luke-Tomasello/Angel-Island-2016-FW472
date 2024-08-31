@@ -19,6 +19,12 @@
  *
  ***************************************************************************/
 
+/* Scripts\Misc\ProtocolExtensions.cs
+ *	ChangeLog:
+ *  8/26/2024, Adam
+ *      Console color Yellow for all client login/out etc. actions.
+ */
+
 using Server.Engines.PartySystem;
 using Server.Network;
 using System;
@@ -73,7 +79,7 @@ namespace Server.Misc
             {
                 if (ph.Ingame && state.Mobile == null)
                 {
-                    Console.WriteLine("Client: {0}: Sent ingame packet (0xF0x{1:X2}) before having been attached to a mobile", state, packetID);
+                    Utility.Monitor.WriteLine(string.Format("Client: {0}: Sent ingame packet (0xF0x{1:X2}) before having been attached to a mobile", state, packetID), ConsoleColor.Yellow);
                     state.Dispose();
                 }
                 else if (ph.Ingame && state.Mobile.Deleted)

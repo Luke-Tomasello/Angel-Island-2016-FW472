@@ -128,7 +128,7 @@ namespace Server.Mobiles
 
         public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOAR ? true : true; } }
         // Auto-dispel is UOR - http://forums.uosecondage.com/viewtopic.php?f=8&t=6901
-        public override bool AutoDispel { get { return Core.UOAI || Core.UOAR ? false : Core.PublishDate >= Core.EraREN ? true : false; } }
+        public override bool AutoDispel { get { return Core.UOAI || Core.UOAR ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
 
         public override void OnDamagedBySpell(Mobile caster)
         {
@@ -246,7 +246,7 @@ namespace Server.Mobiles
                         // 3. Bola balls have appeared as loot on Orc Bombers. Balls on Bombers are rather common, around a 50/50% chance of getting a ball or not. They are only appearing as loot on bombers.
                         // 4. http://web.archive.org/web/20020221205654/uo.stratics.com/hunters/orcbrute.shtml
                         // 5. 50 -120 Gold, 25 shadow ore, 10 ingots, a war mace, orc helm, orc mask, bola ball
-                        if (Core.PublishDate >= Core.EraSAVE)   // enable due to above #4&5 above
+                        if (PublishInfo.PublishDate >= Core.EraSAVE)   // enable due to above #4&5 above
                             if (0.2 > Utility.RandomDouble())
                                 PackItem(new BolaBall());
                     }
@@ -261,7 +261,7 @@ namespace Server.Mobiles
 
                         // http://www.uoguide.com/Savage_Empire
                         // http://uo.stratics.com/secrets/archive/orcsavage.shtml
-                        if (Core.PublishDate >= Core.EraSAVE)
+                        if (PublishInfo.PublishDate >= Core.EraSAVE)
                             if (0.05 > Utility.RandomDouble())
                                 PackItem(new OrcishKinMask());
 
@@ -270,7 +270,7 @@ namespace Server.Mobiles
                         // 3. Bola balls have appeared as loot on Orc Bombers. Balls on Bombers are rather common, around a 50/50% chance of getting a ball or not. They are only appearing as loot on bombers.
                         // 4. http://web.archive.org/web/20020221205654/uo.stratics.com/hunters/orcbrute.shtml
                         // 5. 50 -120 Gold, 25 shadow ore, 10 ingots, a war mace, orc helm, orc mask, bola ball
-                        if (Core.PublishDate >= Core.EraSAVE)   // enable due to above #4&5 above
+                        if (PublishInfo.PublishDate >= Core.EraSAVE)   // enable due to above #4&5 above
                             if (0.2 > Utility.RandomDouble())
                                 PackItem(new BolaBall());
                     }

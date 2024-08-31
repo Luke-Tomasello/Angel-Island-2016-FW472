@@ -8197,7 +8197,7 @@ namespace Server
         {
             get
             {
-                if (Core.UOAI || Core.UOAR || Core.UOMO || Core.Publish >= 13)
+                if (Core.UOAI || Core.UOAR || Core.UOMO || PublishInfo.Publish >= 13)
                 {
                     // Hit Point Calculation
                     //	The following change will be made to the manner in which hit points are calculated for players.
@@ -11350,7 +11350,7 @@ namespace Server
 
         // I don't know when shopkeepers got their title
         // Question(12) on the boards
-        public virtual bool ClickTitle { get { return (Core.UOAI || Core.UOAR || Core.UOMO || Core.Publish > 8) ? true : false; } }
+        public virtual bool ClickTitle { get { return (Core.UOAI || Core.UOAR || Core.UOMO || PublishInfo.Publish > 8) ? true : false; } }
 
         private static bool m_DisableHiddenSelfClick = true;
 
@@ -11446,7 +11446,7 @@ namespace Server
             // http://martin.brenner.de/ultima/uo/news1.html
             // the (invulnerable) tag has been removed; invulnerable NPCs and players can now be identified by the yellow hue of their name
             // Adam: June 2, 2001 probably means Publish 12 which was July 24, 2001
-            if (IsInvulnerable && !Core.UOAI && !Core.UOAR && !Core.UOMO && Core.Publish < 12)
+            if (IsInvulnerable && !Core.UOAI && !Core.UOAR && !Core.UOMO && PublishInfo.Publish < 12)
                 suffix = String.Concat(suffix, " ", "(invulnerable)");
 
             string val;
@@ -11473,7 +11473,7 @@ namespace Server
         // Adam: to allow us to restart the same world under a different rule set, we need to reset the name hue here
         public int CalcInvulNameHue()
         {
-            if (IsInvulnerable && !Core.AOS && (Core.UOAI || Core.UOAR || Core.UOMO || Core.Publish >= 12))
+            if (IsInvulnerable && !Core.AOS && (Core.UOAI || Core.UOAR || Core.UOMO || PublishInfo.Publish >= 12))
                 return 0x35;
             else
                 return -1;

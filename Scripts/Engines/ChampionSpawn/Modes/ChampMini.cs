@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -32,6 +31,8 @@ using System;
  *		Initial creation
  * 
  **/
+using System;
+
 namespace Server.Engines.ChampionSpawn
 {
     // Mini champ spawns.  These are represented by a lever which is thrown to activate the spawn

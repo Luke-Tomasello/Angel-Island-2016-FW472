@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -27,6 +26,8 @@ using System;
  *	01/26/09 - Plasma,
  *		Initial creation
  */
+using System;
+
 namespace Server.Engines.CommitGump
 {
 

@@ -342,7 +342,7 @@ namespace Server.SkillHandlers
 			else if (TransformationSpellHelper.UnderTransformation(m, typeof(WraithFormSpell)) && divisor <= 2000)
 				divisor += 200;*/
 
-            bool bug = !Core.UOMO && !Core.UOAI && !Core.UOAR && Core.Publish < 16.0 && from.Skills[SkillName.Tracking].Value >= 20.1;
+            bool bug = !Core.UOMO && !Core.UOAI && !Core.UOAR && PublishInfo.Publish < 16.0 && from.Skills[SkillName.Tracking].Value >= 20.1;
             int chance;
             if (bug)
             {
@@ -382,7 +382,7 @@ namespace Server.SkillHandlers
 
         private static bool IsPlayer(Mobile m)
         {
-            if (Core.UOAI || Core.UOAR || Core.UOMO || Core.Publish >= 13)
+            if (Core.UOAI || Core.UOAR || Core.UOMO || PublishInfo.Publish >= 13)
                 return m.Player;
             else
             {   // publish 13 bug

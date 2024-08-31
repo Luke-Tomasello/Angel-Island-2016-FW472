@@ -98,7 +98,7 @@ namespace Server.Mobiles
         public override int Meat { get { return 20; } }
         public override Poison PoisonImmune { get { return Poison.Lethal; } }
         // Auto-dispel is UOR - http://forums.uosecondage.com/viewtopic.php?f=8&t=6901
-        public override bool AutoDispel { get { return Core.UOAI || Core.UOAR ? false : Core.PublishDate >= Core.EraREN ? true : false; } }
+        public override bool AutoDispel { get { return Core.UOAI || Core.UOAR ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
         public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 5 : 0; } }
 
         public FleshRenderer(Serial serial)

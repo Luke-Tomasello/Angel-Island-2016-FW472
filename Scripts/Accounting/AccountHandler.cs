@@ -21,6 +21,8 @@
 
 /* Scripts/Accounting/AccountHandler.cs
  * ChangeLog:
+ *  8/26/2024, Adam
+ *      Console color Yellow for all client login/out etc. actions.
  * 8/10/2024, Adam: 
  *  Disable developer mode when releasing source to general public
  * 3/15/16, Adam
@@ -290,7 +292,7 @@ namespace Server.Misc
 
                     if (bDelete)
                     {
-                        Console.WriteLine("Client: {0}: Deleting character {1} (name:{3}) (0x{2:X})", state, index, m.Serial.Value, m.Name);
+                        Utility.Monitor.WriteLine(string.Format("Client: {0}: Deleting character {1} (name:{3}) (0x{2:X})", state, index, m.Serial.Value, m.Name), ConsoleColor.Yellow);
                         m.Delete();
                     }
 
@@ -348,7 +350,7 @@ namespace Server.Misc
             if (count >= MaxAccountsPerIP && count >= ipexception_numberallowed)
             {
                 //Console.WriteLine("Login: {0}: Account '{1}' not created, ip already has {2} account{3}.", state, un, MaxAccountsPerIP, MaxAccountsPerIP == 1 ? "" : "s");
-                Console.WriteLine("Login: {0}: Account '{1}' not created, ip already has {2} account{3}.", state, un, count, count == 1 ? "" : "s");
+                Utility.Monitor.WriteLine(string.Format("Login: {0}: Account '{1}' not created, ip already has {2} account{3}.", state, un, count, count == 1 ? "" : "s"), ConsoleColor.Yellow);
                 return null;
             }
 
@@ -368,7 +370,7 @@ namespace Server.Misc
             }
             catch (Exception ex) { EventSink.InvokeLogException(new LogExceptionEventArgs(ex)); }
 
-            Console.WriteLine("Login: {0}: Creating new account '{1}'", state, un);
+            Utility.Monitor.WriteLine(string.Format("Login: {0}: Creating new account '{1}'", state, un), ConsoleColor.Yellow);
             return Accounts.AddAccount(un, pw);
         }
 
@@ -422,48 +424,48 @@ namespace Server.Misc
                 {
                     if (Account.CheckAllStaff(null, un, false))
                     {
-                        Console.WriteLine("Login: {0}: Invalid password for staff account '{1}'", e.State, un);
+                        Utility.Monitor.WriteLine(string.Format("Login: {0}: Invalid password for staff account '{1}'", e.State, un), ConsoleColor.Yellow);
                         e.RejectReason = ALRReason.BadPass;
                     }
                     else if (Account.CheckAllAccounts(un))
                     {
-                        Console.WriteLine("Login: {0}: Invalid password for '{1}'", e.State, un);
+                        Utility.Monitor.WriteLine(string.Format("Login: {0}: Invalid password for '{1}'", e.State, un), ConsoleColor.Yellow);
                         e.RejectReason = ALRReason.BadPass;
                     }
                     else
                     {
-                        Console.WriteLine("Login: {0}: Invalid username '{1}'", e.State, un);
+                        Utility.Monitor.WriteLine(string.Format("Login: {0}: Invalid username '{1}'", e.State, un), ConsoleColor.Yellow);
                         e.RejectReason = ALRReason.Invalid;
                     }
                 }
             }
             else if (IPLimiter.IPStillHot(acct, e.State.Address))
             {
-                Console.WriteLine("Login: {0}: Access denied for '{1}'. IP too hot", e.State, un);
+                Utility.Monitor.WriteLine(string.Format("Login: {0}: Access denied for '{1}'. IP too hot", e.State, un), ConsoleColor.Yellow);
                 e.RejectReason = ALRReason.InUse;
             }
             else if (!acct.HasAccess(e.State))
             {
-                Console.WriteLine("Login: {0}: Access denied for '{1}'", e.State, un);
+                Utility.Monitor.WriteLine(string.Format("Login: {0}: Access denied for '{1}'", e.State, un), ConsoleColor.Yellow);
                 e.RejectReason = (m_LockdownLevel > AccessLevel.Player ? ALRReason.BadComm : ALRReason.BadPass);
             }
             // You succeed login when your password matches some shard and no shards have a user with the same name with greater access 
             else if (!(Account.CheckAllPasswords(un, pw) && !Account.CheckAllStaff(acct, un, true)))
             {
                 if (Account.CheckAllStaff(acct, un, true))
-                    Console.WriteLine("Login: {0}: Invalid password or access level for staff account '{1}'", e.State, un);
+                    Utility.Monitor.WriteLine(string.Format("Login: {0}: Invalid password or access level for staff account '{1}'", e.State, un), ConsoleColor.Yellow);
                 else
-                    Console.WriteLine("Login: {0}: Invalid password for '{1}'", e.State, un);
+                    Utility.Monitor.WriteLine(string.Format("Login: {0}: Invalid password for '{1}'", e.State, un), ConsoleColor.Yellow);
                 e.RejectReason = ALRReason.BadPass;
             }
             else if (acct.CheckBanned())
             {
-                Console.WriteLine("Login: {0}: Banned account '{1}'", e.State, un);
+                Utility.Monitor.WriteLine(string.Format("Login: {0}: Banned account '{1}'", e.State, un), ConsoleColor.Yellow);
                 e.RejectReason = ALRReason.Blocked;
             }
             else
             {
-                Console.WriteLine("Login: {0}: Valid credentials for '{1}'", e.State, un);
+                Utility.Monitor.WriteLine(string.Format("Login: {0}: Valid credentials for '{1}'", e.State, un), ConsoleColor.Yellow);
                 e.State.Account = acct;
                 e.Accepted = true;
 
@@ -612,11 +614,11 @@ namespace Server.Misc
                 else
                 {
                     if (Account.CheckAllStaff(null, un, false))
-                        Console.WriteLine("Login: {0}: Invalid password for staff account '{1}'", e.State, un);
+                        Utility.Monitor.WriteLine(string.Format("Login: {0}: Invalid password for staff account '{1}'", e.State, un), ConsoleColor.Yellow);
                     else if (Account.CheckAllAccounts(un))
-                        Console.WriteLine("Login: {0}: Invalid password for '{1}'", e.State, un);
+                        Utility.Monitor.WriteLine(string.Format("Login: {0}: Invalid password for '{1}'", e.State, un), ConsoleColor.Yellow);
                     else
-                        Console.WriteLine("Login: {0}: Invalid username '{1}'", e.State, un);
+                        Utility.Monitor.WriteLine(string.Format("Login: {0}: Invalid username '{1}'", e.State, un), ConsoleColor.Yellow);
                 }
             }
 
@@ -626,34 +628,33 @@ namespace Server.Misc
             }
             else if (IPLimiter.IPStillHot(acct, e.State.Address))
             {
-                Console.WriteLine("Login: {0}: Access denied for '{1}'. IP too hot", e.State, un);
+                Utility.Monitor.WriteLine(string.Format("Login: {0}: Access denied for '{1}'. IP too hot", e.State, un), ConsoleColor.Yellow);
                 e.Accepted = false;
             }
             else if (!acct.HasAccess(e.State))
             {
-                Console.WriteLine("Login: {0}: Access denied for '{1}'", e.State, un);
+                Utility.Monitor.WriteLine(string.Format("Login: {0}: Access denied for '{1}'", e.State, un), ConsoleColor.Yellow);
                 e.Accepted = false;
             }
             // You succeed login when your password matches some shard and no shards have a user with the same name with greater access 
             else if (!(Account.CheckAllPasswords(un, pw) && !Account.CheckAllStaff(acct, un, true)))
             {
                 if (Account.CheckAllStaff(acct, un, true))
-                    Console.WriteLine("Login: {0}: Invalid password or access level for staff account '{1}'", e.State, un);
+                    Utility.Monitor.WriteLine(string.Format("Login: {0}: Invalid password or access level for staff account '{1}'", e.State, un), ConsoleColor.Yellow);
                 else
-                    Console.WriteLine("Login: {0}: Invalid password for '{1}'", e.State, un);
+                    Utility.Monitor.WriteLine(string.Format("Login: {0}: Invalid password for '{1}'", e.State, un), ConsoleColor.Yellow);
                 e.Accepted = false;
             }
             else if (acct.Banned)
             {
-                Console.WriteLine("Login: {0}: Banned account '{1}'", e.State, un);
+                Utility.Monitor.WriteLine(string.Format("Login: {0}: Banned account '{1}'", e.State, un), ConsoleColor.Yellow);
                 e.Accepted = false;
             }
             else
             {
                 acct.LogAccess(e.State);
                 acct.LogGAMELogin(e.State);
-
-                Console.WriteLine("Login: {0}: Account '{1}' at character list", e.State, un);
+                Utility.Monitor.WriteLine(string.Format("Login: {0}: Account '{1}' at character list", e.State, un), ConsoleColor.Yellow);
                 e.State.Account = acct;
                 e.Accepted = true;
                 e.CityInfo = StartingCities;

@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -24,6 +23,8 @@ using System;
  * Created 5/23/04 by mith
  * ChangeLog
  */
+
+using System;
 
 namespace Server.Engines.RewardSystem
 {

@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -25,6 +24,8 @@ using System;
  *	12/11/05, Adam
  *		Changed LootType.Blessed to LootType.Regular
  */
+
+using System;
 
 namespace Server.Items
 {

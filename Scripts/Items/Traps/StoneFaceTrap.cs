@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -25,6 +24,8 @@ using System;
  *	07/23/08, weaver
  *		Automated IPooledEnumerable optimizations. 1 loops updated.
  */
+
+using System;
 
 namespace Server.Items
 {

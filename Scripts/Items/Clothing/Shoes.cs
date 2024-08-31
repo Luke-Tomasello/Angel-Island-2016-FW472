@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -32,6 +31,8 @@ using System;
  *  9/16/04. Pigpen
  * 		Added BrigandKinBoots
  */
+
+using System;
 
 namespace Server.Items
 {

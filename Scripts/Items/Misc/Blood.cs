@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -24,6 +23,8 @@ using System;
  * 08/27/05, Taran Kain
  *		Added new constructor to specify the lifespan of the blood object.
  */
+
+using System;
 
 namespace Server.Items
 {

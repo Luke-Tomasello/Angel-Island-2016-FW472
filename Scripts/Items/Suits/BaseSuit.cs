@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -28,6 +27,8 @@ using System;
  *		Override Item.Hue to prevent the setting of a hue value < 0
  *		hue values < 0 crash the UO client when trying to display the "GM Robe" text-graphic
  */
+
+using System;
 
 namespace Server.Items
 {

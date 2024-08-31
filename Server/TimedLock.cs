@@ -1,5 +1,3 @@
-using System;
-using System.Threading;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -36,6 +34,9 @@ using System.Threading;
 // Thanks to John Sands for providing the necessary incentive to make
 // me invent a way of using a struct in both release and debug builds
 // without losing the debug leak tracking.
+
+using System;
+using System.Threading;
 
 namespace Server
 {

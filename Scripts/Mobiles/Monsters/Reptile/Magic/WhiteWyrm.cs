@@ -130,7 +130,7 @@ namespace Server.Mobiles
         public override int Meat { get { return Core.UOAI || Core.UOAR ? 20 : 19; } }
         public override int Hides { get { return Core.UOAI || Core.UOAR ? 40 : 20; } }
         public override HideType HideType { get { return HideType.Barbed; } }
-        public override int Scales { get { return (Core.UOAI || Core.UOAR || Core.PublishDate < Core.PlagueOfDespair) ? 0 : Utility.RandomBool() ? 7 : 10; } }
+        public override int Scales { get { return (Core.UOAI || Core.UOAR || PublishInfo.PublishDate < Core.PlagueOfDespair) ? 0 : Utility.RandomBool() ? 7 : 10; } }
         public override ScaleType ScaleType { get { return ScaleType.White; } }
         public override FoodType FavoriteFood { get { return FoodType.Meat | FoodType.Gold; } }
 

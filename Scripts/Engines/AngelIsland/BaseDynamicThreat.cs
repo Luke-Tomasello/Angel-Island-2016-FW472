@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -35,6 +34,8 @@ using System;
  *	6/15/06, Adam
  *		normalize all spirit spawn dynamic threat code into this common base class
  */
+
+using System;
 
 namespace Server.Mobiles
 {

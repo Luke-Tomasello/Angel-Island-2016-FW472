@@ -60,7 +60,7 @@ namespace Server.Mobiles
         {
             public InternalBuyInfo()
             {
-                if ((Core.UOAI || Core.UOAR || Core.UOMO) || (Core.UOSP && Core.Publish >= 11))
+                if ((Core.UOAI || Core.UOAR || Core.UOMO) || (Core.UOSP && PublishInfo.Publish >= 11))
                     Add(new GenericBuyInfo("1041280", typeof(InteriorDecorator), 10000, 20, 0xFC1, 0));
 
                 // I'm guessing this was in all publishes of Siege?

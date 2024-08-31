@@ -1,5 +1,3 @@
-using System;
-using System.IO;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -30,6 +28,9 @@ using System.IO;
  *  06/08/07, plasma
  *    Added sets to MultiData properties for static houses
  */
+
+using System;
+using System.IO;
 
 namespace Server
 {

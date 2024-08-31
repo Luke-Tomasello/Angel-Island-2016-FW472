@@ -137,7 +137,7 @@ namespace Server.Engines.Craft
             // http://www.uoguide.com/Publish_15
             // BUG No:	"Players will no longer lose mana when attempting to inscribe a scroll they don�t have the proper materials for."
             // BUG Yes:	"Characters will no longer lose mana when they fail to make a scroll."
-            if ((!Core.UOMO && !Core.UOAI && !Core.UOAR) && Core.Publish < 15)
+            if ((!Core.UOMO && !Core.UOAI && !Core.UOAR) && PublishInfo.Publish < 15)
                 return true;
             else
                 return false;
@@ -346,7 +346,7 @@ namespace Server.Engines.Craft
             // Runebook
             // Publish 15
             // Runebooks now only require 8 blank scrolls to make instead of the previous 10.
-            int scrolls = (Core.UOAI || Core.UOAR || Core.UOMO || Core.Publish >= 15) ? 8 : 10;
+            int scrolls = (Core.UOAI || Core.UOAR || Core.UOMO || PublishInfo.Publish >= 15) ? 8 : 10;
             int index = AddCraft(typeof(Runebook), 1044294, 1041267, 45.0, 95.0, typeof(BlankScroll), 1044377, scrolls, 1044378);
             AddRes(index, typeof(RecallScroll), 1044445, 1, 1044253);
             AddRes(index, typeof(GateTravelScroll), 1044446, 1, 1044253);

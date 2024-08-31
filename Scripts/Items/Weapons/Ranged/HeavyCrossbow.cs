@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -31,6 +30,8 @@ using System;
  *	01/02/07, Pix
  *		Added SealedHeavyCrossbow.
  */
+
+using System;
 
 namespace Server.Items
 {

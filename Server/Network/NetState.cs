@@ -19,6 +19,12 @@
  *
  ***************************************************************************/
 
+/* Server\Network\NetState.cs
+ *	ChangeLog:
+ *  8/26/2024, Adam
+ *      Console color Yellow for all client login/out etc. actions.
+ */
+
 using Server.Accounting;
 using Server.Diagnostics;
 using Server.Gumps;
@@ -443,7 +449,7 @@ namespace Server.Network
 
         public void WriteConsole(string text)
         {
-            Console.WriteLine("Client: {0}: {1}", this, text);
+            Utility.Monitor.WriteLine(string.Format("Client: {0}: {1}", this, text), ConsoleColor.Yellow);
         }
 
         public void WriteConsole(string format, params object[] args)
@@ -744,7 +750,7 @@ namespace Server.Network
                 }
                 catch (CapacityExceededException)
                 {
-                    Console.WriteLine("Client: {0}: Too much data pending, disconnecting...", this);
+                    Utility.Monitor.WriteLine(string.Format("Client: {0}: Too much data pending, disconnecting...", this), ConsoleColor.Yellow);
                     Dispose(false);
                 }
 
@@ -757,7 +763,7 @@ namespace Server.Network
             }
             else
             {
-                Console.WriteLine("Client: {0}: null buffer send, disconnecting...", this);
+                Utility.Monitor.WriteLine(string.Format("Client: {0}: null buffer send, disconnecting...", this), ConsoleColor.Yellow);
                 using (StreamWriter op = new StreamWriter("null_send.log", true))
                 {
                     op.WriteLine("{0} Client: {1}: null buffer send, disconnecting...", DateTime.Now, this);
@@ -916,7 +922,7 @@ namespace Server.Network
                 return true;
             }
 
-            Console.WriteLine("Client: {0}: Disconnecting due to inactivity...", this);
+            Utility.Monitor.WriteLine(string.Format("Client: {0}: Disconnecting due to inactivity...", this), ConsoleColor.Yellow);
 
             Dispose();
             return false;

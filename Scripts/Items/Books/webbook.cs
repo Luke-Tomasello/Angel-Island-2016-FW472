@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -23,6 +22,8 @@ using System;
 /* Scripts/Items/Books/webbook.cs
    Created 12/14/04, Pigpen 
  */
+
+using System;
 
 namespace Server.Gumps
 {

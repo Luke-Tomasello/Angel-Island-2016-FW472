@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -26,6 +25,8 @@ using System;
  *		Moved DefensiveSpell class from Scripts/Spells/Base/SpellHelper.cs so 
  *		we can reference the lock object for defensive spells in the core.
  */
+
+using System;
 
 namespace Server
 {

@@ -51,8 +51,9 @@ namespace Server.Commands
             {
                 //m.SendMessage("Server time is: {0} PST.", DateTime.Now);
 
-                AdjustedDateTime ddt = new AdjustedDateTime(DateTime.Now);
-                m.SendMessage("Server time is: {0} {1}.", ddt.Value.ToShortTimeString(), ddt.TZName);
+                //AdjustedDateTime ddt = new AdjustedDateTime(DateTime.Now);
+                DateTime ddt = AdjustedDateTime.ServerTime;
+                m.SendMessage("Server time is: {0} {1}.", ddt.ToShortTimeString(), AdjustedDateTime.ServerTimezone);
             }
         }
 

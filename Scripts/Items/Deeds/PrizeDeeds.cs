@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -28,6 +27,8 @@ using System;
  *		- add HomeDecoPrize
  *		- Add Date stamp to all items to preserve 'rareness' of previous gifts
  */
+
+using System;
 
 namespace Server.Items
 {

@@ -1,5 +1,3 @@
-using System;
-using Server;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -76,6 +74,9 @@ using Server;
  */
 
 #if JobManager
+using System;
+using Server;
+
 namespace Server
 {
 	/// <summary>

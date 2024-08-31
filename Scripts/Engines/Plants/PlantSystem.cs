@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -28,6 +27,8 @@ using System;
  *		Changed so plants are checked for growth on server up.
  *		They now use the Heartbeat system.
  */
+
+using System;
 
 namespace Server.Engines.Plants
 {

@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -27,6 +26,8 @@ using System;
  *	9/01/06 Taran Kain
  *		Added + and - operators to Point3D
  */
+
+using System;
 
 namespace Server
 {

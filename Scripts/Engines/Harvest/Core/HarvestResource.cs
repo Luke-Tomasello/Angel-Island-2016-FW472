@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -19,6 +18,8 @@ using System;
  *   (at your option) any later version.
  *
  ***************************************************************************/
+
+using System;
 
 namespace Server.Engines.Harvest
 {

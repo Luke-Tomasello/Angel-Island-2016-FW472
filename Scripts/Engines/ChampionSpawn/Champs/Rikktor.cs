@@ -85,7 +85,7 @@ namespace Server.Mobiles
 
         public override Poison PoisonImmune { get { return Poison.Lethal; } }
         public override ScaleType ScaleType { get { return ScaleType.All; } }
-        public override int Scales { get { return (Core.UOAI || Core.UOAR || Core.PublishDate < Core.PlagueOfDespair) ? 0 : 20; } }
+        public override int Scales { get { return (Core.UOAI || Core.UOAR || PublishInfo.PublishDate < Core.PlagueOfDespair) ? 0 : 20; } }
 
         public override void Damage(int amount, Mobile from)
         {

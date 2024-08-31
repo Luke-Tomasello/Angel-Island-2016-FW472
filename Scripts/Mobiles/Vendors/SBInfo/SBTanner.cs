@@ -75,7 +75,7 @@ namespace Server.Mobiles
 
                 if (Core.UOAI || Core.UOAR || Core.UOMO)
                     Add(new GenericBuyInfo("1041279", typeof(TaxidermyKit), 30000, 20, 0x1EBA, 0));//changed price of taxidermykit from 100k to 30k Lego eater.
-                else if (Core.UOSP && Core.Publish >= 11)
+                else if (Core.UOSP && PublishInfo.Publish >= 11)
                     Add(new GenericBuyInfo("1041279", typeof(TaxidermyKit), 90000, 20, 0x1EBA, 0));
 
                 Add(new GenericBuyInfo(typeof(SkinningKnife), 26, 20, 0xEC4, 0));

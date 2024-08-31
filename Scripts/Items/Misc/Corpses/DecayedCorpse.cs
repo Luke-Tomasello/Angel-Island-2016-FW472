@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -25,6 +24,8 @@ using System;
  *	2/17/05, mith
  *		Changed inheritance from Container to BaseContainer to fix ownership bugs in 1.0.0
  */
+
+using System;
 
 namespace Server.Items
 {

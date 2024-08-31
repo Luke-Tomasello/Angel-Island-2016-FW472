@@ -22,7 +22,7 @@
 /* Scripts/Items/Weapons/BaseWeapon.cs
  * ChangeLog:
  *	3/2/11, Adam
- *		packInstinctBonus is now based upon the following calculation: if (Core.Publish >= 16 || Core.UOAI || Core.UOAR || Core.UOMO)
+ *		packInstinctBonus is now based upon the following calculation: if (PublishInfo.Publish >= 16 || Core.UOAI || Core.UOAR || Core.UOMO)
  *		Since Siege is Publish 15, Siege on't have a packInstinctBonus
  *	11/15/10, Adam
  *		Add comment explaining that there is no need to condition the SlayerBonus for SP shards since it will
@@ -1372,7 +1372,7 @@ namespace Server.Items
             #endregion
 
             int packInstinctBonus = 0;
-            if (Core.Publish >= 16 || Core.UOAI || Core.UOAR || Core.UOMO)
+            if (PublishInfo.Publish >= 16 || Core.UOAI || Core.UOAR || Core.UOMO)
                 packInstinctBonus = GetPackInstinctBonus(attacker, defender);
 
             // adam: limit to PvM only (for now)
@@ -2064,7 +2064,7 @@ namespace Server.Items
 
                     lumberBonus = (lumberValue / 5.0) / 100.0;
                 }
-                else if (Core.Publish >= 13)
+                else if (PublishInfo.Publish >= 13)
                 {   // publish 13
                     // Lumberjack Damage Bonus
                     // The lumberjack skill will now add a damage bonus to axe weapons using the same formula as described for the anatomy damage bonus.
@@ -2080,7 +2080,7 @@ namespace Server.Items
                     if (lumberValue >= 100.0)
                         lumberBonus += 0.1;
                 }
-                else if (Core.Publish >= 5 && Core.Publish < 13)
+                else if (PublishInfo.Publish >= 5 && PublishInfo.Publish < 13)
                 {   // publish 5
                     // Lumberjacking and Axes
                     // The lumberjacking skill will provide a bonus to damage when the player is using one of the following axes. 

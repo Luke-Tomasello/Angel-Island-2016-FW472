@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -25,6 +24,8 @@ using System;
  * 4/10/10, adam
  *		initial framework.
  */
+
+using System;
 
 namespace Server.Engines
 {

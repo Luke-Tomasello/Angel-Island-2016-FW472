@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -27,6 +26,8 @@ using System.Collections.Generic;
  *	11/28/06 - Pix
  *		Initial Version.
  */
+
+using System.Collections.Generic;
 
 namespace Server.Items
 {

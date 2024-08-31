@@ -25,7 +25,7 @@
  *		Add leather as a FoodPreference (lol, no kidding, goats eat leather.)
  *	2/3/11, Adam
  *		Bonding is now based upon publish.
- *			I.e., IsBondable { get { return (BondingEnabled && (Core.Publish >= 16.0 || Core.UOAI || Core.UOAR) &&...
+ *			I.e., IsBondable { get { return (BondingEnabled && (PublishInfo.Publish >= 16.0 || Core.UOAI || Core.UOAR) &&...
  *		Since our Siege is publish 15, there will be no bonding
  *	2/14/11, Adam
  *		Add Mortalis to the servers where reds receive 1/3 loot off creatures
@@ -980,7 +980,7 @@ namespace Server.Mobiles
         #region Bonding
         public const bool BondingEnabled = true;
 
-        public virtual bool IsBondable { get { return (BondingEnabled && (Core.Publish >= 16.0 || Core.UOAI || Core.UOAR) && !Summoned); } }
+        public virtual bool IsBondable { get { return (BondingEnabled && (PublishInfo.Publish >= 16.0 || Core.UOAI || Core.UOAR) && !Summoned); } }
         public virtual TimeSpan BondingDelay { get { return TimeSpan.FromDays(7.0); } }
         public virtual TimeSpan BondingAbandonDelay { get { return TimeSpan.FromDays(1.0); } }
 
@@ -5943,7 +5943,7 @@ namespace Server.Mobiles
                 //	which they have killed will be one-third. For example, if a player would normally receive 600 gold off a monster, 
                 //	if that player is instead red, he will receive 200 gold.
                 // http://www.uoguide.com/Publish_13.6_(Siege_Perilous_Shards_Only)
-                if ((Core.UOSP && Core.Publish >= 13.6) || Core.UOMO)
+                if ((Core.UOSP && PublishInfo.Publish >= 13.6) || Core.UOMO)
                 {   // calc new award amount if the damager is red
 
                     //creature must not be controlled 

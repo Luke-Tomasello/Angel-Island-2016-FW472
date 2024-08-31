@@ -403,7 +403,7 @@ namespace Server.Mobiles
 
                         // http://www.uoguide.com/Savage_Empire
                         // http://uo.stratics.com/secrets/archive/orcsavage.shtml
-                        if (Core.PublishDate >= Core.EraSAVE)
+                        if (PublishInfo.PublishDate >= Core.EraSAVE)
                             if (0.1 > Utility.RandomDouble())
                                 PackItem(new TribalBerry());
                     }

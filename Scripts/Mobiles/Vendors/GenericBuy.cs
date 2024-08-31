@@ -259,7 +259,7 @@ namespace Server.Mobiles
 
                 // adjust for inflation (siege)
                 // Question(11) on the boards .. what's the formula?
-                if (!Core.UOAI && !Core.UOAR && !Core.UOMO && Core.Publish < 11)
+                if (!Core.UOAI && !Core.UOAR && !Core.UOMO && PublishInfo.Publish < 11)
                 {
                     double delta = (double)(m_RestockAmount - m_Amount);
                     double percent = ((delta / m_RestockAmount) * 100.00) / 100;
@@ -535,7 +535,7 @@ namespace Server.Mobiles
                 // houses are 10x the price for siege from 13.6 on, just * 3 before that
                 // http://www.uoguide.com/Publish_13.6_(Siege_Perilous_Shards_Only)
                 // See also Real estate Broker buy back
-                if (Core.Publish >= 13.6)
+                if (PublishInfo.Publish >= 13.6)
                     total = price * 10;
                 else
                     total = price * 3;

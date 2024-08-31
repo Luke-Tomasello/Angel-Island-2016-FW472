@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -37,6 +36,8 @@ using System;
 // This is a first simple AI
 //
 //
+
+using System;
 
 namespace Server.Mobiles
 {

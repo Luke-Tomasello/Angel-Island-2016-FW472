@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -39,6 +38,8 @@ using System;
  * AnimalHunterAI, AnimalHidingAI, AnimalDomesticAI...
  * 
  */
+
+using System;
 
 namespace Server.Mobiles
 {

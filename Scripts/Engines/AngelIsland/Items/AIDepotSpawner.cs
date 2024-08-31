@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -22,6 +21,8 @@ using System;
 
 // Engines/AngelIsland/AIDepotSpawner.cs
 // 4/30/04 Created by Pixie;
+
+using System;
 
 namespace Server.Items
 {

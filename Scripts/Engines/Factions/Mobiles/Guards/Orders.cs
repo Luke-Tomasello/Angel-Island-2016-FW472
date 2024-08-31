@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -19,6 +18,8 @@ using System.Collections.Generic;
  *   (at your option) any later version.
  *
  ***************************************************************************/
+
+using System.Collections.Generic;
 
 namespace Server.Factions.AI
 {

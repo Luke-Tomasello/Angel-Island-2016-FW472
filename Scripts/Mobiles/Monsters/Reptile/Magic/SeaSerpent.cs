@@ -76,7 +76,7 @@ namespace Server.Mobiles
 
         public override int Hides { get { return 10; } }
         public override HideType HideType { get { return HideType.Horned; } }
-        public override int Scales { get { return (Core.UOAI || Core.UOAR || Core.PublishDate < Core.PlagueOfDespair) ? 0 : 8; } }
+        public override int Scales { get { return (Core.UOAI || Core.UOAR || PublishInfo.PublishDate < Core.PlagueOfDespair) ? 0 : 8; } }
         public override ScaleType ScaleType { get { return ScaleType.Blue; } }
         public override int FishSteaks { get { return 1; } }
 

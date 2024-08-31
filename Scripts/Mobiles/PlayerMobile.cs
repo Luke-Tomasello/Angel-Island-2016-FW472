@@ -2585,7 +2585,7 @@ namespace Server.Mobiles
                     strBase = this.RawStr;
                 }
 
-                if (Core.UOAI || Core.UOAR || Core.UOMO || Core.Publish >= 13)
+                if (Core.UOAI || Core.UOAR || Core.UOMO || PublishInfo.Publish >= 13)
                 {
                     // Hit Point Calculation
                     //	The following change will be made to the manner in which hit points are calculated for players.

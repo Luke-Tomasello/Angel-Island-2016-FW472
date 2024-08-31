@@ -19,6 +19,15 @@
  *
  ***************************************************************************/
 
+/* Server\Main.cs
+ * ChangeLog:
+ *	8/30/2024, Adam
+ *	    1. Add colorization to startup text
+ *	    2. Check for bad or missing Ports.json
+ */
+
+using Server.Commands;
+using Server.Misc;
 using Server.Network;
 using System;
 using System.Collections;
@@ -30,13 +39,21 @@ using System.Threading;
 namespace Server
 {
     public delegate void Slice();
-
+    [CustomEnum(new string[] { "Pre-Alpha", "Alpha", "Pre-Beta", "Beta", "Production" })]
+    public enum ReleasePhase
+    {
+        Pre_Alpha,
+        Alpha,
+        Pre_Beta,
+        Beta,
+        Production
+    }
     public class Core
     {
-        public static int ListeningPort = -1;   // default port override
         private static bool m_Crashed;
         private static Thread timerThread;
         private static string m_BaseDirectory;
+        private static string m_DataDirectory;
         private static string m_ExePath;
         private static ArrayList m_DataDirectories = new ArrayList();
         private static Assembly m_Assembly;
@@ -50,6 +67,20 @@ namespace Server
         private static MultiTextWriter m_MultiConOut;
         private static bool m_Quiet;
 
+        #region Error Log Shortcuts
+        public static class LoggerShortcuts
+        {
+            public static string Boot = "ShardBoot.log";
+            public static void BootError(string text)
+            {
+                LogHelper logger = new LogHelper(Boot, false, true);
+                logger.Log(text);
+                logger.Finish();
+                Utility.Monitor.WriteLine(text, ConsoleColor.Red);
+            }
+        }
+        #endregion Error Log Shortcuts
+
         private static bool m_AOS;
         private static bool m_SE;
         private static bool m_ML;
@@ -60,8 +91,7 @@ namespace Server
         private static bool m_UOMO;                     // Mortalis
         private static bool m_UOEV;                     // Event Shard
         private static bool m_Building;                 // gives GMs access to certain world building commands during world construction
-        private static double m_Publish = 5;            // publish
-        private static bool m_Developer;                // developers machine, allows derect login to any server
+        private static bool m_Developer;                // developers machine, allows direct login to any server
 
         private static bool m_Profiling;
         private static DateTime m_ProfileStart;
@@ -274,7 +304,7 @@ namespace Server
         {
             get
             {
-                return PublishDate >= LocalizationUO;
+                return PublishInfo.PublishDate >= LocalizationUO;
             }
         }
 
@@ -289,255 +319,6 @@ namespace Server
             }
         }
 
-        /*	http://www.uoguide.com/Publishes
-		 * Publishes are changes to a Shard's programming to fix bugs or add content. 
-		 * Publishes may or may not be announced by the development team, depending on the type. 
-		 * A major game update will always be announced (i.e. Publish 25), however, publishes may also occur invisibly during a 
-		 * shard's maintenance to fix exploits and bugs.
-		 * Originally, major publishes were known simply by the date on which they were released, 
-		 * but in the time leading up to the announcement of UO:R, The Six Month Plan was announced. This laid out the future goal 
-		 * of releasing large, regularly scheduled publishes. Publishes began being numbered internally, and the practice caught 
-		 * on until publishes began being publically known by their number. The first publish to be mentioned by its number 
-		 * publically was Publish 10, and the first publish to be officially titled by its number was the massive Publish 15.
-		 * 
-		 * Implementation note:
-		 * note on version dates.
-		 * a publish number if 64.0.2 is folded to 64.02
-		 */
-
-        public static DateTime PublishDate
-        {
-            get
-            {
-                // 2010
-                if (Core.Publish == 68.3) return new DateTime(2010, 10, 28);
-                // Halloween 2010, 13th Anniversary, Message in a Bottle changes, bug fixes
-                if (Core.Publish == 68.2) return new DateTime(2010, 10, 15);
-                // Fishing quest and ship fixes
-                if (Core.Publish == 68.1) return new DateTime(2010, 10, 14);
-                // Bug fixes
-                if (Core.Publish == 68) return new DateTime(2010, 10, 12);
-                // High Seas booster release, level 7 treasure maps and smooth sailing animation introduction
-                if (Core.Publish == 67) return new DateTime(2010, 8, 4);
-                // Treasure Map location randomization and new loot, Lockpicking and Bard Masteries changes.
-                if (Core.Publish == 66.2) return new DateTime(2010, 6, 22);
-                // In the Shadow of Virtue live event begun, addition of Endless Decanter of Water
-                if (Core.Publish == 66) return new DateTime(2010, 5, 19);
-                // More Human-to-Gargoyle weapon conversions, Bard Mastery System introduced, Player Memorials introduced, additional Advanced Character Templates, Throwing skill changes, bug fixes
-                if (Core.Publish == 65) return new DateTime(2010, 4, 5);
-                // Mysticism revamp, Gargoyle Racial Abilities update, Titles customization, additional Artifacts
-                if (Core.Publish == 64.02) return new DateTime(2010, 3, 4);
-                // Server crash and Faction fixes.
-                if (Core.Publish == 64.01) return new DateTime(2010, 2, 12);
-                // Valentines 2010, Seed Trading Box and Sarah the Exotic Goods Trader removed.
-                if (Core.Publish == 64) return new DateTime(2010, 2, 10);
-                // Substantial Item Insurance changes, new Gardening resources, Stygian Abyss encounter buffs, Seed Trading Box introduced, Mysticism changes.
-                if (Core.Publish == 63.00) return new DateTime(2010, 1, 12); // mysteriously out of order Publish number
-                                                                             // Introduced skin-rehue NPC vendor, fixed vendor skill/stat exploit.
-                                                                             // 2009
-                if (Core.Publish == 63.2) return new DateTime(2009, 12, 18);
-                // Bug fixes for Paroxymus Swamp Dragons, auto-rezzing at login, various character appearance issues
-                if (Core.Publish == 63.1) return new DateTime(2009, 12, 18);
-                // Bug fixes for chicken coops and body-changing forms being stuck.
-                if (Core.Publish == 63) return new DateTime(2009, 12, 17);
-                // Imbuing changes, Holiday 2009, rennovated global Chat system
-                if (Core.Publish == 62.37) return new DateTime(2009, 12, 7);
-                // Several significant changes to the Imbuing skill.
-                if (Core.Publish == 62.3) return new DateTime(2009, 11, 18);
-                // Thanksgiving 2009 mini-event, general bug fixes
-                if (Core.Publish == 62.2) return new DateTime(2009, 10, 29);
-                // Halloween 2009 bug fixes
-                if (Core.Publish == 62) return new DateTime(2009, 10, 22);
-                // Halloween 2009 content, general bug fixes
-                if (Core.Publish == 61.1) return new DateTime(2009, 10, 15);
-                // Bug fixes for Stygian Abyss
-                if (Core.Publish == 61) return new DateTime(2009, 10, 7);
-                // Several bug fixes for Stygian Abyss, new Veteran Rewards, 12th Anniversary Gifts
-                if (Core.Publish == 60.1) return new DateTime(2009, 9, 18);
-                // Several bug fixes for Stygian Abyss
-                if (Core.Publish == 60) return new DateTime(2009, 9, 8);
-                // Stygian Abyss expansion launch
-                if (Core.Publish == 59) return new DateTime(2009, 7, 14);
-                // Ghost cam fixes, Shadowlord events, bug fixes.
-                if (Core.Publish == 58.8) return new DateTime(2009, 6, 19);
-                // Treasures of Tokuno re-activated, Quiver of Rage to be fixed.
-                if (Core.Publish == 58) return new DateTime(2009, 3, 19);
-                // Trial account limitations, various Champion Spawn bug fixes, reverted the Bag of Sending nerf from Publish 48, reduced weight of gold and silver.
-                // 2008
-                if (Core.Publish == 57) return new DateTime(2008, 12, 18);
-                // New stealables for thieves, Scroll of Transcendence drops at Champion Spawns, Holiday 2008 gifts, Lumber skill requirement changes for Carpentry and several bug fixes.
-                if (Core.Publish == 56) return new DateTime(2008, 10, 29);
-                // War of Shadows and Halloween 2008 event content, new Magincia quests, new stackables, Factions updates, miscellaneous fixes
-                if (Core.Publish == 55) return new DateTime(2008, 9, 10);
-                // Spellweaving changes, new Veteran Rewards, additional Seed types, end of Spring Cleaning 2008
-                if (Core.Publish == 54) return new DateTime(2008, 7, 11);
-                // Faction bug fixes, Spring Cleaning 2008: Phase III, miscellaneous bug fixes
-                if (Core.Publish == 53) return new DateTime(2008, 6, 10);
-                // House resizing, various item and creature bug fixes, Spring Cleaning 2008: Phase II, ramping up of current events, misc. bug fixes
-                if (Core.Publish == 52) return new DateTime(2008, 5, 6);
-                // Faction fixes/changes, house placement and IDoC changes, Spring Cleaning 2008: Phase I, commas in checks, misc. bug fixes
-                if (Core.Publish == 51) return new DateTime(2008, 3, 27);
-                // Pet ball changes, pet AI improvements, various bug fixes
-                if (Core.Publish == 50) return new DateTime(2008, 2, 14);
-                // Improved runic intensities and BoD chances, greater dragons, BoS and Salvage Bag fixes, disabled Halloween 2007, activated Valentine's Day 2008 activities
-                if (Core.Publish == 49) return new DateTime(2008, 1, 23);
-                // Changes to the character database
-                // 2007
-                if (Core.Publish == 48) return new DateTime(2007, 11, 27);
-                // Salvage Bag, Doom Gauntlet changes, Faction changes, Blood Oath fixes, Bag of Sending nerf, various monster strength/loot buffs
-                if (Core.Publish == 47) return new DateTime(2007, 9, 25);
-                // 10th Anniversary legacy dungeon drop system, 10th Anniversary gifts
-                if (Core.Publish == 46) return new DateTime(2007, 8, 10);
-                // PvP balances/changes, KR crafting menu functionality revamps, new KR macro functionality, resource randomization, various bug fixes
-                if (Core.Publish == 45) return new DateTime(2007, 5, 25);
-                // Stat gain changes and other miscellaneous changes
-                if (Core.Publish == 44) return new DateTime(2007, 4, 30);
-                // Discontinuation of the 3d client, New Player Experience, destruction of Old Haven, emergence of New Haven, Arms Lore changes
-                // 2006
-                if (Core.Publish == 43) return new DateTime(2006, 10, 26);
-                // Contained 9th Anniversary additions, Evasion balancing, and Stealth/Detect Hidden changes
-                if (Core.Publish == 42) return new DateTime(2006, 9, 1);
-                // Added new Veteran Rewards, capped regeneration properties, and nerfed hit leech properties
-                if (Core.Publish == 41) return new DateTime(2006, 6, 30);
-                // Added the 4 Personal Attendants
-                if (Core.Publish == 40) return new DateTime(2006, 5, 18);
-                // Added Buff Bar, Targeting System, and various PvP related changes
-                if (Core.Publish == 39) return new DateTime(2006, 2, 16);
-                // New player improvements, 8x8 removal, and Spring D�cor Collection items added
-                // 2005
-                if (Core.Publish == 38) return new DateTime(2005, 12, 16);
-                // Name/Gender Change Tokens, Holiday 2005 gifts, stats capped individually at 150
-                if (Core.Publish == 37) return new DateTime(2005, 11, 3);
-                // Many, many, many bug fixes for Mondain's Legacy and other long standing bugs
-                if (Core.Publish == 36) return new DateTime(2005, 9, 22);
-                // 8th Age anniversary items added and various Mondain's Legacy bug fixes
-                if (Core.Publish == 35) return new DateTime(2005, 8, 10);
-                // Mondain's Legacy support and Gamemaster support tool updates
-                if (Core.Publish == 34) return new DateTime(2005, 7, 28);
-                // Mondain's Legacy support
-                if (Core.Publish == 33) return new DateTime(2005, 6, 21);
-                // Change to buying Advanced Character Tokens, Evil Home Decor support, and shuts off Treasures of Tokuno
-                if (Core.Publish == 32) return new DateTime(2005, 5, 2);
-                // Necromancy potions and Exorcism, Alliance/Guild chat, end of The Britain Invasion, Special Moves fixes
-                if (Core.Publish == 31) return new DateTime(2005, 3, 17);
-                // Treasures of Tokuno I turn in begins, promo tokens, soulstone fragments, magery summons fixes, craftable spellbook properties, various bug fixes
-                if (Core.Publish == 30) return new DateTime(2005, 2, 9);
-                // Treasures of Tokuno I begins, item fixes, craftable Necromancy Scrolls and magic spellbooks, Yamandon gas attack, bug fixes
-                if (Core.Publish == 29) return new DateTime(2005, 1, 20);
-                // Damage numbers, pet fixes, archery/bola/lightning strike fixes, slayer changes
-                // 2004
-                if (Core.Publish == 28) return new DateTime(2004, 11, 23);
-                // SE fixes, instanced corpses, 160.0 bard difficulty cap, fishing fixes, fame changes, new marties
-                if (Core.Publish == 27) return new DateTime(2004, 9, 14);
-                // Paragon and Minor Artifact systems
-                if (Core.Publish == 26) return new DateTime(2004, 8, 17);
-                // Loot changes, bardable creature changes, necromancer form fixes
-                if (Core.Publish == 25) return new DateTime(2004, 7, 13);
-                // Bug fixes, PvP balance changes, Archery fixes
-                if (Core.Publish == 24) return new DateTime(2004, 5, 13);
-                // Housefighting balances, reds in Fel guard zones, Valor spam fix, overloading fixes
-                if (Core.Publish == 23) return new DateTime(2004, 3, 25);
-                // The Character Transfer system
-                // 2003
-                if (Core.Publish == 22) return new DateTime(2003, 12, 17);
-                // Holiday 2003 gifts, Sacred Journey fixes, bonded pet fixes, assorted other bug fixes
-                if (Core.Publish == 21) return new DateTime(2003, 11, 25);
-                // Housing/Vendor fixes, NPC economics, Factions fixes, Bulk Order Deed lockdown fix, various other fixes
-                if (Core.Publish == 20) return new DateTime(2003, 10, 6);
-                // New Vendor system, Bulletin Boards, Housing Runestones, the death of in-game HTML and UBWS bows
-                if (Core.Publish == 19) return new DateTime(2003, 7, 30);
-                // Quick Self-looting, BoD books, special move fixes/changes, housing lockdown fixes, pet and faction tweaks
-                if (Core.Publish == 18) return new DateTime(2003, 5, 28);
-                // AoS launch gifts, new wearables, customized housing fixes, Paladin/Necromancer balances
-                if (Core.Publish == 17) return new DateTime(2003, 2, 11);
-                // AoS launch publish and miscellaneous related changes
-                // 2002
-                if (Core.Publish == 16) return new DateTime(2002, 7, 12);
-                // Resource/Crafting changes, Felucca Champion Spawns and Powerscrolls, Barding/Taming changes, Felucca enhancements/changes, House Ownership changes, the GGS system, the Justice Virtue, Siege Perilous ruleset changes
-                if (Core.Publish == 15) return new DateTime(2002, 1, 9);
-                /* http://www.uoguide.com/List_of_BNN_Articles_(2002)#Scenario_4:_Plague_of_Despair
-				 * Scenario 5: When Ants Attack
-				 *	Workers - October 3
-				 *	Scientific Discussion - September 26
-				 *	Orcs and Bombs - September 19
-				 *	Crazy Miggie - September 12
-				 *	I Think, Therefore I Dig - September 5
-				 * Scenario 4: Plague of Despair
-				 *	Epilogue - May 30
-				 *	Plague of Despair - May 16
-				 *	Preparations - May 9
-				 *	Symptoms - May 2
-				 *	Seeds - April 25
-				 *	The Casting - April 18
-				 *		(Dragon Scale Armor was introduced into the game during the first week of Scenerio Four.)
-				 *		(http://noctalis.com/dis/uo/n-smit3.shtml)
-				 *	Enemies and Allies - April 11 
-				 * Scenario 3: Blackthorn's Damnation
-				 *	The Watcher - January 25
-				 *	Downfall to Power - January 17
-				 *	Change - January 10
-				 *	Inferno - January 2
-				 */
-                // Housing/Lockdown fixes, NPC and hireling fixes, various skill gump fixes, Faction updates, miscellaneous localizations
-                // 2001
-                if (Core.Publish == 14) return new DateTime(2001, 11, 30);
-                // New Player Experience, context sensitive menus, Blacksmithing BoD system, Animal Lore changes, Crafting overhaul, Factions updates
-                if (Core.Publish == 13.6) return new DateTime(2001, 10, 25);
-                // Publish 13.6 (Siege Perilous Shards Only) - October 25, 2001
-                if (Core.Publish == 13.5) return new DateTime(2001, 10, 11);
-                // Commodity Deeds, Repair Contracts, Secure House Trades
-                if (Core.Publish == 13) return new DateTime(2001, 8, 19);
-                // Treasure map changes, tutorial/Haven changes, combat changes, with power hour changes and player owned barkeeps as later additions
-                if (Core.Publish == 12) return new DateTime(2001, 7, 24);
-                // Veteran Rewards, vendor changes, skill modification changes, GM rating tool, miscellaneous bug fixes and changes
-                if (Core.Publish == 11) return new DateTime(2001, 3, 14);
-                // The Ilshenar landmass, taxidermy kits, hair stylist NPCs, Item Identification changes, creatures vs. negative karma, vendor changes, various fixes and preparations for UO:TD
-                if (Core.Publish == 10) return new DateTime(2001, 2, 1);
-                // Henchman for Noble NPCs, disabling Hero/Evil, magic in towns, facet menus for public moongates, karma locking, faction fixes, spawn changes
-                // 2000
-                if (Core.Publish == 9) return new DateTime(2000, 12, 15);
-                // T2A transport, Holiday gifts/tree activation, lockdown changes, default desktops, house add-on changes
-                if (Core.Publish == 8) return new DateTime(2000, 12, 6);
-                // The Factions System, stablemaster changes, monster movement changes
-                if (Core.Publish == 7) return new DateTime(2000, 9, 3);
-                // New Player Experience changes, lockdown/secure changes, comm. crystal changes, dungeon Khaldun, vendor customization
-                if (Core.Publish == 6) return new DateTime(2000, 8, 1);
-                // Looting rights changes, lockdown changes, stuck player options
-                if (Core.Publish == 5) return new DateTime(2000, 4, 27);
-                // Ultima Online: Renaissance, various updates and fixes for UO:R
-                if (Core.Publish == 4) return new DateTime(2000, 3, 8);
-                // Skill gain changes, Power Hour, sea serpents in fishing, bank checks, tinker traps, shopkeeper changes
-                if (Core.Publish == 3) return new DateTime(2000, 2, 23);
-                // Trade window changes, monsters trapped in houses, guild stone revamp, moonstones, secure pet/house trading, dex and healing
-                if (Core.Publish == 2) return new DateTime(2000, 1, 24);
-                // Escort and Taming changes, invalid house placement, land surveying tool, the death of precasting, Clean Up Britannia Phase III, item decay on boats
-                // 1999
-                if (Core.Publish == 1) return new DateTime(1999, 11, 23);
-                // Co-owners, Maker's Mark, Perma-reds, Skill management, Clean Up Britannia Phase II, Bank box weight limit removal, Runebooks, Potion Kegs, other changes
-
-                // Publish - September 22, 1999
-                // Smelting, Unraveling, pet changes, Chaos/Order changes, armoire fix
-                // UO Live Access Patch - August 25, 1999
-                // Companion program, "Young" status, arm/disarm, last target, next target, TargetSelf macros, Ultima Messenger, various bug fixes
-                // Publish - May 25, 1999
-                // Difficulty-based Tinkering, "all follow me" etc., cut-up leather, boards from logs, other skill changes, dry-docking boats, various fixes
-                // Publish - April 14, 1999
-                // Targetting distance changes, trade window scam prevention, "I must consider my sins"
-                // Publish - March 28, 1999
-                // Long-term murder counts, Fishing resources, sunken treasure, craftable musical instruments, jewelcrafting, no more casting while hidden, new Stealth rules, ability to sell house deeds, house and boat optimizations
-                // Publish - February 24, 1999
-                // The Stealth and Remove Trap skills, changes to Detect Hidden and Forensic Evaluation, the Thieves Guild, new skill titles, tying Evaluating Intelligence to spell damage, dungeon treasure chests and dungeon traps, trash barrels, pet "orneriness," miscellaneous fixes and changes
-                // Publish - February 2, 1999
-                // Colored ore, granting karma, macing weapons destroying armor, Anatomy damage bonus, the Meditation skill, lockdown commands, blacksmith NPC guild, miscellaneous fixes
-                // Publish - January 19, 1999
-                // New Carpentry items, Fire Field banned from towns, Treasure Maps, Tailoring becomes difficulty-based, no more "a scroll," miscellaneous fixes
-                // 1997 - 1998
-
-                // not sure what the default should be, but assum it's 'new' therefore likely excluding stuff we are un sure about.
-                return DateTime.Now;
-            }
-        }
-
         /// <summary>
         /// Inclusive
         /// </summary>
@@ -548,7 +329,7 @@ namespace Server
         {   // Note: this test is inclusive. The 'to' date needs be the last valid publish for this test.
             // For example. If purple wisps were only valid from publish 5 - 7, then the CheckPublish(5,7) would return true
             //	The 'to' date should NOT be the publish in which something became invalid.
-            return Publish >= from && Publish <= to;
+            return PublishInfo.Publish >= from && PublishInfo.Publish <= to;
         }
 
         /// <summary>
@@ -561,19 +342,11 @@ namespace Server
             return CheckPublish(pub, pub);
         }
 
-        public static double Publish
-        {
-            get
-            {
-                return m_Publish;
-            }
-        }
-
         public static bool OldEthics
         {
             get
             {
-                return Core.UOSP && Core.Publish < 13.6;
+                return Core.UOSP && PublishInfo.Publish < 13.6;
             }
         }
 
@@ -584,14 +357,23 @@ namespace Server
                 return !OldEthics;
             }
         }
-
+        private static ReleasePhase m_releasePhase;
+        public static ReleasePhase ReleasePhase
+        {
+            get { return m_releasePhase; }
+            set { m_releasePhase = value; }
+        }
         public static bool LoginServer
         {
             get
             {   // not really right. In the AI 7, we have an explicit login server.
                 //  Here, AI doubles as a shard and a login server.
-                //  So if the ListeningPort has been reassigned, we can assume this is not a login server
-                return Core.UOAI && !Core.UOTC && ListeningPort == -1;
+#if GMN 
+                // never a login server on game-master.met
+                return false;
+#else
+                return Core.UOAI && !Core.UOTC; 
+#endif
             }
         }
 
@@ -607,7 +389,7 @@ namespace Server
         {
             get
             {
-                return Core.Publish < 4 || Core.UOAI || Core.UOAR;
+                return PublishInfo.Publish < 4 || Core.UOAI || Core.UOAR;
             }
         }
 
@@ -623,7 +405,7 @@ namespace Server
         {
             get
             {   // add your factions enabled servers here
-                return Core.UOSP && Publish >= 8.0;
+                return Core.UOSP && PublishInfo.Publish >= 8.0;
             }
         }
 
@@ -632,7 +414,7 @@ namespace Server
             get
             {
                 // Siege Perilous is a special ruleset shard that launched on July 15, 1999. 
-                return Core.UOSP && Core.PublishDate >= new DateTime(1999, 7, 15);
+                return Core.UOSP && PublishInfo.PublishDate >= new DateTime(1999, 7, 15);
             }
         }
 
@@ -765,7 +547,32 @@ namespace Server
                 return m_BaseDirectory;
             }
         }
+        public static string DataDirectory
+        {
+            get
+            {
+                if (m_DataDirectory == null)
+                {
+                    try
+                    {
+                        bool isDevelopmerMachine = false;
+                        if (m_BaseDirectory.ToLower().Contains(@"\debug\") || m_BaseDirectory.ToLower().Contains(@"\release\"))
+                            isDevelopmerMachine = true;
 
+                        if (isDevelopmerMachine)
+                            m_DataDirectory = Path.GetFullPath(Path.Combine(m_BaseDirectory, "../../../", "Data"));
+                        else
+                            m_DataDirectory = Path.GetFullPath(Path.Combine(m_BaseDirectory, "Data"));
+                    }
+                    catch
+                    {
+                        // don't default this. we want the system to blow up if either the developer's or production machine is not setup correctly
+                    }
+                }
+
+                return m_DataDirectory;
+            }
+        }
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Console.WriteLine(e.IsTerminating ? "Error:" : "Warning:");
@@ -918,14 +725,12 @@ namespace Server
             #endregion HIDE_CLOSEBOX
 
             #region ARG PARSING
+            m_releasePhase = ReleasePhase.Production;
             Arguments = "";
             for (int i = 0; i < args.Length; ++i)
             {
                 if (Insensitive.Equals(args[i], "-debug"))
                     m_Debug = true;
-                else if (Insensitive.Equals(args[i], "-port"))
-                    ListeningPort = int.Parse(args[i + 1]);
-                //Server.SocketOptions.AngelIslandPort = int.Parse(args[i + 1]);
                 else if (Insensitive.Equals(args[i], "-service"))
                     m_Service = true;
                 else if (Insensitive.Equals(args[i], "-profile"))
@@ -956,7 +761,9 @@ namespace Server
                     m_Building = true;
                 else if (Insensitive.Equals(args[i], "-developer"))
                     m_Developer = true;
-
+                else if (Insensitive.Equals(args[i], "-beta"))
+                    m_releasePhase = ReleasePhase.Beta;
+                
                 Arguments += args[i] + " ";
             }
             #endregion
@@ -1007,52 +814,190 @@ namespace Server
             if (BaseDirectory.Length > 0)
                 Directory.SetCurrentDirectory(BaseDirectory);
 
-            Timer.TimerThread ttObj = new Timer.TimerThread();
-            timerThread = new Thread(new ThreadStart(ttObj.TimerMain));
-            timerThread.Name = "Timer Thread";
-
-            Version ver = m_Assembly.GetName().Version;
-
-            // Added to help future code support on forums, as a 'check' people can ask for to it see if they recompiled core or not
+            bool state = false;
+            
+            #region Server Name
             if (Core.UOSP)
+            {
                 m_Server = "Siege Perilous";
+            }
             else if (Core.UOMO)
+            {
                 m_Server = "Mortalis";
+            }
+            else if (LoginServer)
+            {
+                m_Server = "Login Server";
+            }
             else if (Core.UOAR)
-                m_Server = "AI Resurrection";
-            else
+            {
+                m_Server = "Renaissance";
+            }
+            else if (Core.UOAI)
+            {
                 m_Server = "Angel Island";
+            }
+            else
+                m_Server = "Unknown Configuration";
+            #endregion Server Name
 
-            Console.WriteLine("{4} - [www.game-master.net] Version {0}.{1}.{3}, Build {2}", ver.Major, ver.Minor, ver.Revision, ver.Build, m_Server);
-#if DEBUG
-            Console.WriteLine("[Debug Build Enabled]");
-#endif
+            Utility.Monitor.WriteLine("{0}{5} - [www.game-master.net] Version {1}.{2}.{3}, Build {4}",
+                Utility.BuildColor(Utility.BuildRevision()), m_Server, Utility.BuildMajor(), Utility.BuildMinor(),
+                Utility.BuildRevision(), Utility.BuildBuild(),
+                Core.ReleasePhase < ReleasePhase.Production ? string.Format(" ({0})",
+                Utility.GetCustomEnumNames(typeof(ReleasePhase))[(int)m_releasePhase]) : "");
+
+            //if (RuleSets.UOSP_SVR)
+            //    Utility.Monitor.WriteLine("[Siege II is {0}.]", ConsoleColorEnabled(Core.SiegeII_CFG), TextEnabled(Core.SiegeII_CFG));
+            Utility.Monitor.WriteLine("[UO Directory: {0}]", ConsoleColorInformational(), Utility.GetShortPath(DataPath.GetUOPath("Ultima Online")));
+            Utility.Monitor.WriteLine("[Current Directory: {0}]", ConsoleColorInformational(), Utility.GetShortPath(Directory.GetCurrentDirectory()));
+            Utility.Monitor.WriteLine("[Base Directory: {0}]", ConsoleColorInformational(), Utility.GetShortPath(BaseDirectory));
+            Utility.Monitor.WriteLine("[Data Directory: {0}]", ConsoleColorInformational(), Utility.GetShortPath(DataDirectory));
+            //Utility.Monitor.WriteLine("[Shared Directory: {0}]", ConsoleColorInformational(), Utility.GetShortPath(SharedDirectory));
+            Utility.Monitor.WriteLine("[Game Time Zone: {0}]", ConsoleColorInformational(), AdjustedDateTime.GameTimezone);
+            Utility.Monitor.WriteLine("[Server Time Zone: {0}]", ConsoleColorInformational(), AdjustedDateTime.ServerTimezone);
+            
+            #region ZLib
+            bool zlib_loaded = false;
+            try
+            {
+                zlib_loaded = (Compression.Compressor.Version != null);
+            }
+            catch (Exception ex)
+            {
+                Core.LoggerShortcuts.BootError(string.Format("Configuration error \"{0}\" is missing or cannot be loaded.", "zlib"));
+            }
+
+            state = zlib_loaded;
+            Utility.Monitor.WriteLine("[ZLib version {0} ({1}) loaded.]", ConsoleColorInformational(), Compression.Compressor.Version, Compression.Compressor.GetType().Name);
+            #endregion ZLib
+
             #region Email
             if (EmailCheck() == true)
-                Utility.Monitor.WriteLine("[All of the required Email environment variables are set.]", ConsoleColor.White);
+                Utility.Monitor.WriteLine("[All of the required Email environment variables are set.]", ConsoleColorInformational());
             else
-                Utility.Monitor.WriteLine("[Some or all of the required Email environment variables are not set.]", ConsoleColor.Red);
+                Utility.Monitor.WriteLine("[Some or all of the required Email environment variables are not set.]", ConsoleColorWarning());
             #endregion Email
 
-            if (Core.BoatHoldUpgrade == true)
-                Console.WriteLine("[Boat holds will be upgraded on this world load.]");
+            #region Ports
+            if (PortsCheck() == false)
+            {
+                Utility.Monitor.WriteLine("[Ports not configured. Using defaults.]", ConsoleColorWarning());
+                if (DefaultPorts() == false)
+                {
+                    Utility.Monitor.WriteLine("Unable to find Ports.json. Press return to exit.", ConsoleColorWarning());
+                    Console.ReadKey();
+                    return;
+                }
+            }
+            #endregion Ports
 
-            Console.WriteLine("[Test Center functionality is turned {0}.]", Core.UOTC ? "on" : "off");
+            #region BuildInfo 
+            if (BuildInfoCheck() == true)
+                Utility.Monitor.WriteLine($"[Reading build.info from {Utility.GetShortPath(BuildInfoDir, raw: true)}.]", ConsoleColorInformational());
+            else
+                Utility.Monitor.WriteLine($"[Reading build.info from default location {BuildInfoDir}.]", ConsoleColorWarning());
+            #endregion BuildInfo
 
-            Console.WriteLine("[Event Shard functionality is turned {0}.]", Core.UOEV ? "on" : "off");
+            #region GeoIP
+            //if (GeoIPCheck() == true)
+            //    Utility.Monitor.WriteLine("[Geo IP Configured.]", ConsoleColorInformational());
+            //else
+            //    Utility.Monitor.WriteLine("[Geo IP is not configured. See AccountHandler.cs for setup instructions.]", ConsoleColorWarning());
+            #endregion GeoIP
 
-            Console.WriteLine("[Publish {0} enabled.]", Publish);
+            #region Boot Errors
+            if (Directory.Exists(Path.Combine(Core.DataDirectory)) == false)
+                Core.LoggerShortcuts.BootError(string.Format("Configuration error \"{0}\" is missing.", Core.DataDirectory));
 
-            Console.WriteLine("[World building is turned {0}.]", Core.Building ? "on" : "off");
+            if (File.Exists(Path.Combine(Core.BuildInfoDir, "Core 3.info")) == false)
+                Core.LoggerShortcuts.BootError(string.Format("Configuration error \"{0}\" is missing.", Path.Combine(Core.BuildInfoDir, "Core 6.info")));
 
-            Console.WriteLine("[Developer mode is turned {0}.]", Core.Developer ? "on" : "off");
+            #region Check Login DB
+#if false
+            if (m_useLoginDB)
+            {
+                bool adError = false;
+                bool ipeError = false;
+                bool fwError = false;
+                string adPath = AccountsDatabase.GetDatabasePath(ref adError);
+                string ipePath = IPExceptionDatabase.GetDatabasePath(ref ipeError);
+                string fwPath = FirewallDatabase.GetDatabasePath(ref fwError);
+                if (adError || ipeError || fwError)
+                {
+                    if (adError)
+                        Console.WriteLine($"Unable to create {adPath}");
 
-            Console.WriteLine("[Factions are {0}.]", Core.Factions ? "enabled" : "disabled");
+                    if (ipeError)
+                        Console.WriteLine($"Unable to create {ipePath}");
 
-            Console.WriteLine("[T2A is {0}.]", Core.T2A ? "available" : "unavailable");
+                    if (fwError)
+                        Utility.Monitor.WriteLine($"Unable to create {fwPath}", ConsoleColor.Red);
 
-            if (Core.Import)
-                Console.WriteLine("[Importing unencrypted database.]");
+                    Utility.Monitor.WriteLine($"Use the following environment variables to relocate the database(s)", ConsoleColor.Yellow);
+                    Utility.Monitor.WriteLine("AI.IPEXCEPTIONDB, AI.FIREWALLDB, AI.LOGINDB", ConsoleColor.Yellow);
+
+                    while (true)
+                    {
+                        Utility.Monitor.WriteLine("Insufficient privileges to create one or more databases.", ConsoleColor.Yellow);
+                        Utility.Monitor.WriteLine("Press 'c' to continue without axillary database support, or 'q' to quit.", ConsoleColor.Yellow);
+
+                        string input = Console.ReadLine().ToLower();
+                        if (input.StartsWith("c"))
+                        {
+                            m_useLoginDB = false;
+                            break;
+                        }
+                        else if (input.StartsWith("q"))
+                        {
+                            return;
+                        }
+                    }
+                }
+            }
+#endif
+            #endregion Check Login DB
+
+            #endregion Boot Errors
+#if DEBUG
+            Utility.Monitor.WriteLine("[Debug Build Enabled]", ConsoleColorInformational());
+#else
+            Utility.Monitor.WriteLine("[Release Build Enabled]", ConsoleColorInformational());
+#endif
+
+#if DEBUG
+            //  Turn off saves for DEBUG builds
+            AutoSave.SavesEnabled = false;
+#endif
+            state = AutoSave.SavesEnabled;
+            Utility.Monitor.WriteLine("[Saves are {0}.]", ConsoleColorEnabled(state), TextEnabled(state));
+            //state = m_useLoginDB;
+            //Utility.Monitor.WriteLine("[Using login database {0}.]", ConsoleColorEnabled(state), TextEnabled(state));
+            Utility.Monitor.WriteLine("[Shard configuration is {0}.]", ConsoleColorInformational(), m_Server);
+            state = true;//RuleSets.ResourcePoolRules();
+            Utility.Monitor.WriteLine("[Resource Pool is {0}.]", ConsoleColorEnabled(state), TextEnabled(state));
+            state = Core.m_UOTC;
+            Utility.Monitor.WriteLine("[Test Center functionality is {0}.]", ConsoleColorEnabled(state), TextEnabled(state));
+            state = Core.LoginServer;
+            Utility.Monitor.WriteLine("[Login Server functionality is {0}.]", ConsoleColorEnabled(state), TextEnabled(state));
+            state = m_releasePhase == ReleasePhase.Beta;
+            Utility.Monitor.WriteLine("[Beta functionality is {0}.]", ConsoleColorEnabled(state), TextEnabled(state));
+            state = World.FreezeDryEnabled;
+            Utility.Monitor.WriteLine("[Freeze dry system is {0}.]", ConsoleColorEnabled(state), TextEnabled(state));
+            state = Core.m_UOEV;
+            Utility.Monitor.WriteLine("[Event Shard functionality is {0}.]", ConsoleColorEnabled(state), TextEnabled(state));
+            Utility.Monitor.WriteLine("[Publish {0} enabled ({1}).]", ConsoleColorInformational(), PublishInfo.Publish, PublishInfo.PublishDate);
+            state = Core.Building;
+            Utility.Monitor.WriteLine("[World building is {0}.]", ConsoleColorEnabled(state), TextEnabled(state));
+
+            // Disabling developer mode for now (for custom house building)
+            // state = Core.Developer;
+            //Utility.ConsoleOut("[Developer mode is {0}.]", ConsoleColorEnabled(state), TextEnabled(state));
+            
+            state = Core.Factions;
+            Utility.Monitor.WriteLine("[Factions are {0}.]", ConsoleColorEnabled(state), TextEnabled(state));
+            state = Core.T2A;
+            Utility.Monitor.WriteLine("[T2A is {0}.]", ConsoleColorEnabled(state), TextEnabled(state));
 
             if (Arguments.Length > 0)
                 Console.WriteLine("Core: Running with arguments: {0}", Arguments);
@@ -1076,21 +1021,21 @@ namespace Server
                 m_ConsoleEventHandler = new ConsoleEventHandler(OnConsoleEvent);
                 SetConsoleCtrlHandler(m_ConsoleEventHandler, true);
             }
-
+#if false
             // we don't use the RunUO system for debugging scripts
-            //while (!ScriptCompiler.Compile(m_Debug))
-            //{
-            //    if (m_Quiet) //abort and exit if compile scripts failed
-            //        return;
+            while (!ScriptCompiler.Compile(m_Debug))
+            {
+                if (m_Quiet) //abort and exit if compile scripts failed
+                    return;
 
-            //    Console.WriteLine("Scripts: One or more scripts failed to compile or no script files were found.");
-            //    Console.WriteLine(" - Press return to exit, or R to try again.");
+                Console.WriteLine("Scripts: One or more scripts failed to compile or no script files were found.");
+                Console.WriteLine(" - Press return to exit, or R to try again.");
 
-            //    string line = Console.ReadLine();
-            //    if (line == null || line.ToLower() != "r")
-            //        return;
-            //}
-
+                string line = Console.ReadLine();
+                if (line == null || line.ToLower() != "r")
+                    return;
+            }
+#endif
             // adam: I believe the new startup logic is more robust as it attempts to prevents timers from firing 
             //  before the shard is fully up and alive.
             AIWorldBoot aiWorldBoot = new AIWorldBoot();
@@ -1106,6 +1051,10 @@ namespace Server
             Region.Load();
 
             SocketPool.Create();
+
+            Timer.TimerThread ttObj = new Timer.TimerThread();
+            timerThread = new Thread(new ThreadStart(ttObj.TimerMain));
+            timerThread.Name = "Timer Thread";
 
             MessagePump ms = m_MessagePump = new MessagePump();
 
@@ -1145,11 +1094,80 @@ namespace Server
 #endif
 
         }
-
+        public static ConsoleColor ConsoleColorEnabled(bool enabled)
+        {
+            if (enabled)
+                return ConsoleColor.Green;
+            else
+                return ConsoleColor.Yellow;
+        }
+        public static ConsoleColor ConsoleColorInformational()
+        {
+            return ConsoleColor.Green;
+        }
+        public static ConsoleColor ConsoleColorWarning()
+        {
+            return ConsoleColor.Red;
+        }
+        public static string TextEnabled(bool enabled)
+        {
+            if (enabled)
+                return "Enabled";
+            else
+                return "Disabled";
+        }
         private static void Tick(object state)
         {
             object[] aState = (object[])state;
             Utility.Monitor.WriteLine("Timers initialized", ConsoleColor.Green);
+        }
+        public static string BuildInfoDir
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AI.BuildInfoDir")))
+                    return Environment.GetEnvironmentVariable("AI.BuildInfoDir");
+                return "./";
+            }
+        }
+        public static bool BuildInfoCheck()
+        {
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AI.BuildInfoDir")))
+                return true;
+            else
+                return false;
+        }
+        public static bool DefaultPorts()
+        {
+            if (!File.Exists("Data/Ports.json"))
+                return false;
+            try
+            {
+                File.Copy("Data/Ports.json", "./Ports.json");
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
+        }
+        public static bool PortsCheck()
+        {
+            try
+            {
+                int port;
+                port = SocketOptions.AngelIslandPort;
+                port = SocketOptions.TestCenterPort;
+                port = SocketOptions.SiegePerilousPort;
+                port = SocketOptions.MortalisPort;
+                port = SocketOptions.RenaissancePort;
+                port = SocketOptions.EventShardPort;
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
         }
         public static bool EmailCheck()
         {

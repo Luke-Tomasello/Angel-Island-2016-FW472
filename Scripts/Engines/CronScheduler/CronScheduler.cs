@@ -196,7 +196,8 @@ namespace Server.Engines.CronScheduler
         #region UTILS
         public static DateTime GameTimeNow
         {   // time that is adjusted for daylight savings time
-            get { return new AdjustedDateTime(DateTime.Now).Value; }
+            //get { return new AdjustedDateTime(DateTime.Now).Value; }
+            get { return AdjustedDateTime.GameTime; }
         }
         #endregion
 

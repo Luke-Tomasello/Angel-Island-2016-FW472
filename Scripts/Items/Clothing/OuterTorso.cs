@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -36,6 +35,8 @@ using System;
  *	5/24/04, mith
  *		Made HoodedShrouds undyeable.
  */
+
+using System;
 
 namespace Server.Items
 {

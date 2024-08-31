@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -31,6 +30,8 @@ using System;
  *  1/3/05, Pix
  *		Initial version.
  */
+
+using System;
 
 namespace Server.Mobiles
 {

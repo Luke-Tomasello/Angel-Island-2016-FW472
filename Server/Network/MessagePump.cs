@@ -21,6 +21,8 @@
 
 /* Server\Network\MessagePump.cs
  * CHANGELOG:
+ *  8/26/2024, Adam
+ *      Console color Yellow for all client login/out etc. actions.
  *	12/23/08, Adam
  *		Add missing network and timer synchronization from RunUO 2.0
  */
@@ -62,7 +64,7 @@ namespace Server.Network
 
                 if (!success)
                 {
-                    Console.WriteLine("Retrying...");
+                    Utility.Monitor.WriteLine(string.Format("Retrying..."), ConsoleColor.Yellow);
                     Thread.Sleep(10000);
                 }
             } while (!success);
@@ -103,7 +105,7 @@ namespace Server.Network
                     ns.Start();
 
                     if (ns.Running)
-                        Console.WriteLine("Client: {0}: Connected. [{1} Online]", ns, NetState.Instances.Count);
+                        Utility.Monitor.WriteLine(string.Format("Client: {0}: Connected. [{1} Online]", ns, NetState.Instances.Count), ConsoleColor.Yellow);
                 }
             }
         }
@@ -172,7 +174,7 @@ namespace Server.Network
 
                         if (seed == 0)
                         {
-                            Console.WriteLine("Login: {0}: Invalid client detected, disconnecting", ns);
+                            Utility.Monitor.WriteLine(string.Format("Login: {0}: Invalid client detected, disconnecting", ns), ConsoleColor.Yellow);
                             ns.Dispose();
                             return false;
                         }
@@ -194,7 +196,7 @@ namespace Server.Network
 
                     if (!ns.SentFirstPacket && packetID != 0xF0 && packetID != 0xF1 && packetID != 0xCF && packetID != 0x80 && packetID != 0x91 && packetID != 0xA4 && packetID != 0xEF)
                     {
-                        Console.WriteLine("Client: {0}: Encrypted client detected, disconnecting", ns);
+                        Utility.Monitor.WriteLine(string.Format("Client: {0}: Encrypted client detected, disconnecting", ns), ConsoleColor.Yellow);
                         ns.Dispose();
                         break;
                     }
@@ -235,7 +237,7 @@ namespace Server.Network
                     {
                         if (handler.Ingame && ns.Mobile == null)
                         {
-                            Console.WriteLine("Client: {0}: Sent ingame packet (0x{1:X2}) before having been attached to a mobile", ns, packetID);
+                            Utility.Monitor.WriteLine(string.Format("Client: {0}: Sent ingame packet (0x{1:X2}) before having been attached to a mobile", ns, packetID), ConsoleColor.Yellow);
                             ns.Dispose();
                             break;
                         }

@@ -69,7 +69,7 @@ namespace Server.Mobiles
         // Blackthorn's Revenge is when we got the Todd McFarlane (crap) bodies
         //	Blackthorn's Revenge was release 2/12/2002 according to UOGuide.
         // Since Publish 15 was 1/9/2002, we can safely exclude Todd McFarlane bodies pre Publish 15
-        private bool Blackthorns_Revenge = (Core.Publish > 15 && (Core.UOAI || Core.UOAR || Core.UOMO) == false);
+        private bool Blackthorns_Revenge = (PublishInfo.Publish > 15 && (Core.UOAI || Core.UOAR || Core.UOMO) == false);
 
         [Constructable]
         public EvilMage()
@@ -184,7 +184,7 @@ namespace Server.Mobiles
 					 * Shopkeeper Changes
 					 * NPC shopkeepers will no longer have colored sandals. Evil NPC Mages will carry these items.
 					 */
-                    if (Core.Publish >= 4)
+                    if (PublishInfo.Publish >= 4)
                     {
                         // http://forums.uosecondage.com/viewtopic.php?f=8&t=22266
                         // runuo.com/community/threads/evil-mage-hues.91540/

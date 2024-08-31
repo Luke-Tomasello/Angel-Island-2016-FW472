@@ -76,7 +76,7 @@ namespace Server.Mobiles
 
                 // Publish 13 - August 19, 2001
                 // Treasure map changes, tutorial/Haven changes, combat changes, with power hour changes and player owned barkeeps as later additions
-                if (Core.UOAI || Core.UOAR || Core.UOMO || (Core.UOSP && Core.Publish >= 13))
+                if (Core.UOAI || Core.UOAR || Core.UOMO || (Core.UOSP && PublishInfo.Publish >= 13))
                     Add(new GenericBuyInfo("a barkeep contract", typeof(BarkeepContract), 6250, 20, 0x14F0, 0));
 
                 if (Core.UOAI || Core.UOAR || Core.UOMO)

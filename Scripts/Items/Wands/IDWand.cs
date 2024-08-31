@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -36,6 +35,8 @@ using System;
  *		Added "is BaseJewel" and "is BaseClothing" conditions to the OnWandTarget method to
  *		implement identifying of magic jewelry and clothing
  */
+
+using System;
 
 namespace Server.Items
 {

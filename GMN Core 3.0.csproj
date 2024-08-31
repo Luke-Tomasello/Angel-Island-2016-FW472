@@ -2468,6 +2468,7 @@
     <Compile Include="Server\Party.cs" />
     <Compile Include="Server\Point3DList.cs" />
     <Compile Include="Server\Poison.cs" />
+    <Compile Include="Server\PublishInfo.cs" />
     <Compile Include="Server\Prompts\Prompt.cs" />
     <Compile Include="Server\QuestArrow.cs" />
     <Compile Include="Server\Race.cs" />
@@ -2572,6 +2573,9 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>13.0.3</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="ZLR.VM\ZLR.VM.csproj">
@@ -2580,4 +2584,7 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>BuildInfo.exe</PostBuildEvent>
+  </PropertyGroup>
 </Project>

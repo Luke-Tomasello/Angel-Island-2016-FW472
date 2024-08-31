@@ -366,7 +366,7 @@ namespace Server.Items
                             {
                                 LockableContainer cont = (LockableContainer)o;
 
-                                if (Core.Publish < 4 || Core.UOAI || Core.UOAR)
+                                if (PublishInfo.Publish < 4 || Core.UOAI || Core.UOAR)
                                 {   // old-school traps (< publish 4)
                                     if (cont.TrapEnabled)
                                     {

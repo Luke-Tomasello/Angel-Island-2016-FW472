@@ -69,6 +69,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 
@@ -76,6 +77,209 @@ namespace Server
 {
     public class Utility
     {
+        public static string GetShortPath(string path, bool raw = false)
+        {
+            if (raw == false)
+            {
+                string short_path = "";
+                try
+                {
+                    if (string.IsNullOrEmpty(path))
+                        return short_path;
+
+                    string root = Path.Combine(Core.DataDirectory, "..");   // directory above Data is the root
+                    string temp = Path.GetFullPath(root);                   // this gives us an absolute path without all the '..\..\' stuff
+                    string[] split = temp.Split(new char[] { '\\', '/' });  // split the path into components
+                    root = split[split.Length - 1];                         // here is our true root folder
+
+                    split = path.Split(new char[] { '\\', '/' });           // now split up what was passed in
+                    Stack<string> stack = new Stack<string>(split);         // store these components in a stack (reverse order)
+                    Stack<string> out_stack = new Stack<string>();          // correctly ordered output stack
+                    while (stack.Count > 0)                                 // collect the components for our short path
+                    {
+                        out_stack.Push(stack.Pop());
+                        if (out_stack.Peek() == root)
+                            break;
+                    }
+
+                    // now reassemble the short path
+                    while (out_stack.Count > 0)
+                        short_path = Path.Combine(short_path, out_stack.Pop());
+                }
+                catch (Exception ex)
+                {
+                    Commands.LogHelper.LogException(ex);
+                }
+
+                return "...\\" + short_path;
+            }
+            else
+            {   // example: C:\Users\luket\Documents\Software\Development\Product\Src\Angel Island.
+                // to: C:\Users\luket\...\Src\Angel Island.
+                // reduce >= 9 components to 6.
+                List<string> components = new List<string>(path.Split(new char[] { '\\', '/' }, StringSplitOptions.RemoveEmptyEntries));
+
+                #region Framework 4.7.2 workaround
+                // No StringSplitOptions.TrimEntries in Framework 4.7.2 :/
+                List<string> temp = new List<string>();
+                foreach (string component in components) 
+                    temp.Add(component.Trim());
+                
+                components = temp;
+                #endregion Framework 4.7.2 workaround
+
+                if (components.Count < 9)
+                    return path;
+
+                List<string> left = components.Take<string>(components.Count / 2).ToList();
+                List<string> right = components.Skip(components.Count / 2).Take<string>(components.Count).ToList();
+                for (int ix = 0; ix < 100; ix++)
+                {
+                    if (left.Count + right.Count >= 6)
+                        left.RemoveAt(left.Count - 1);
+                    else break;
+
+                    if (left.Count + right.Count >= 6)
+                        right.RemoveAt(0);
+                    else break;
+                }
+
+                left.Add("...");
+
+                // rebuild new shortened path
+                string new_path = string.Join("/", left);
+                new_path += '/' + string.Join("/", right);
+
+                return new_path;
+            }
+        }
+        #region AI Version Info
+        public static int BuildBuild()
+        {
+            try
+            {
+                // open our version info file
+                string buildInfoFile = Path.Combine(Core.BuildInfoDir, "Core 3.info");
+                StreamReader sr = new StreamReader(buildInfoFile);
+                //the first line of text will be the version
+                string line = sr.ReadLine();
+                sr.Close();
+                int result = 0;
+                int.TryParse(line, out result);
+                return result;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception: " + e.Message);
+            }
+            return 0;
+        }
+
+        public static int BuildRevision()
+        {
+            try
+            {
+                string buildInfoFile = Path.Combine(Core.BuildInfoDir, "Core 3.info");
+                // open our version info file
+                StreamReader sr = new StreamReader(buildInfoFile);
+                //the first line of text will be the build
+                sr.ReadLine();
+                //the next line of text will be the revision
+                string line = sr.ReadLine();
+                sr.Close();
+                int result = 0;
+                int.TryParse(line, out result);
+                return result;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception: " + e.Message);
+            }
+            return 0;
+        }
+
+        public static int BuildMajor()
+        {
+            try
+            {
+                string buildInfoFile = Path.Combine(Core.BuildInfoDir, "Core 3.info");
+                // open our version info file
+                StreamReader sr = new StreamReader(buildInfoFile);
+                //the first line of text will be the build
+                sr.ReadLine();
+                //the next line of text will be the revision
+                sr.ReadLine();
+                //the next line of text will be the major version
+                string line = sr.ReadLine();
+                sr.Close();
+                int result = 0;
+                int.TryParse(line, out result);
+                return result;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception: " + e.Message);
+            }
+            return 0;
+        }
+
+        public static int BuildMinor()
+        {
+            try
+            {
+                string buildInfoFile = Path.Combine(Core.BuildInfoDir, "Core 3.info");
+                // open our version info file
+                StreamReader sr = new StreamReader(buildInfoFile);
+                //the first line of text will be the build
+                sr.ReadLine();
+                //the next line of text will be the revision
+                sr.ReadLine();
+                //the next line of text will be the major version
+                sr.ReadLine();
+                //the next line of text will be the minor version
+                string line = sr.ReadLine();
+                sr.Close();
+                int result = 0;
+                int.TryParse(line, out result);
+                return result;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception: " + e.Message);
+            }
+            return 0;
+        }
+        public static ConsoleColor BuildColor(int bulidNumber)
+        {   // gives us a random color for *this* build.
+            //  Allows a quick visual to ensure all servers are running the same build
+            return RandomConsoleColor(bulidNumber);
+        }
+        public static ConsoleColor RandomConsoleColor(int seed)
+        {
+            var v = Enum.GetValues(typeof(ConsoleColor));
+            ConsoleColor selected = (ConsoleColor)v.GetValue(seed % (v.Length - 1));
+            if (selected == ConsoleColor.Black) selected = ConsoleColor.White;
+            return selected;
+        }
+        #endregion AI Version Info
+        public static string[] GetCustomEnumNames(Type type)
+        {
+            object[] attrs = type.GetCustomAttributes(typeof(CustomEnumAttribute), false);
+
+            if (attrs.Length == 0)
+                return new string[0];
+
+            CustomEnumAttribute ce = attrs[0] as CustomEnumAttribute;
+
+            if (ce == null)
+                return new string[0];
+
+            return ce.Names;
+        }
         public static class Monitor
         {
             public static void Write(string text, ConsoleColor color)
@@ -1646,130 +1850,81 @@ namespace Server
 
     public class AdjustedDateTime
     {
-        private DateTime m_DateTime = DateTime.MinValue;
-        private bool m_IsDuringDST = false;
+        private const int GameTimeOffset = -8;  // UTC -8 == pacific time
 
-        public AdjustedDateTime(DateTime datetime)
-        {
-            if (datetime == DateTime.MinValue ||
-                datetime == DateTime.MaxValue)
-            {
-                m_DateTime = datetime;
-            }
-            else
-            {
-                m_DateTime = ConvertDateTimeToAdjustedTime(datetime, ref m_IsDuringDST);
-            }
-        }
-
-        public bool IsDuringDST
-        {
-            get { return m_IsDuringDST; }
-        }
-
-        public DateTime Value
-        {
-            get { return m_DateTime; }
-        }
-
-        public string TZName
+        public static string GameTimezone
         {
             get
             {
-                if (m_IsDuringDST)
-                {
-                    return TimeZone.CurrentTimeZone.DaylightName;
-                }
-                else
-                {
-                    return TimeZone.CurrentTimeZone.StandardName;
-                }
+                var allTimeZones = TimeZoneInfo.GetSystemTimeZones();
+                var newTimeZone = allTimeZones.FirstOrDefault(x => x.BaseUtcOffset == new TimeSpan(GameTimeOffset, 0, 0));
+                var actual = newTimeZone.StandardName;
+                return actual;
+            }
+        }
+        public static string ServerTimezone
+        {
+            get
+            {
+                var allTimeZones = TimeZoneInfo.GetSystemTimeZones();
+                var newTimeZone = allTimeZones.FirstOrDefault(x => x.BaseUtcOffset == new TimeSpan(0, 0, 0));
+                var actual = newTimeZone.StandardName;
+                return actual;
             }
         }
 
-        private static DateTime ConvertDateTimeToAdjustedTime(DateTime dt, ref bool isDuringDST)
+        public static DateTime LocalToUtc(string s)
         {
-            DateTime returnTime = dt;
-
             try
             {
-                bool bError = false;
-
-                if (dt.IsDaylightSavingTime())
-                {
-                    isDuringDST = true;
-                }
-                else
-                {
-                    DateTime beginDST = new DateTime(dt.Year, 3, 1, 2, 0, 0);
-                    bool foundfirstsunday = false;
-                    bool foundsecondsunday = false;
-                    while (!foundsecondsunday && !bError)
-                    {
-                        if (beginDST.Month != 3)
-                        {
-                            bError = true;
-                        }
-                        else
-                        {
-                            if (beginDST.DayOfWeek == 0)
-                            {
-                                if (!foundfirstsunday)
-                                {
-                                    foundfirstsunday = true;
-                                    beginDST = beginDST.AddDays(1.0);
-                                }
-                                else
-                                {
-                                    foundsecondsunday = true;
-                                }
-                            }
-                            else
-                            {
-                                beginDST = beginDST.AddDays(1.0);
-                            }
-                        }
-                    }
-                    DateTime endDST = new DateTime(dt.Year, 11, 1, 2, 0, 0);
-                    foundfirstsunday = false;
-                    while (!foundfirstsunday && !bError)
-                    {
-                        if (endDST.Month != 11)
-                        {
-                            bError = true;
-                        }
-                        else
-                        {
-                            if (endDST.DayOfWeek == 0)
-                            {
-                                foundfirstsunday = true;
-                            }
-                            else
-                            {
-                                endDST = endDST.AddDays(1.0);
-                            }
-                        }
-                    }
-
-                    if (!bError && beginDST <= dt && endDST > DateTime.Now)
-                    {
-                        returnTime = dt.AddHours(1.0);
-                        isDuringDST = true;
-                        //MessageBox.Show("yes: " + now.AddHours(1.0).ToLongTimeString());
-                    }
-                    else
-                    {
-                        //MessageBox.Show("no: " + now.ToLongTimeString());
-                    }
-                }
+                DateTime temp = DateTime.Parse(s);
+                return TimeZoneInfo.ConvertTimeToUtc(temp, TimeZoneInfo.Local);
             }
-            catch (Exception e)
+            catch
+            { return DateTime.MinValue; }
+        }
+
+        // GameTimeSansDst is centered around a flattened Pacific Time.
+        //  Flattening removes the effects of daylight savings time. 
+        //  This flattening keeps game time linear which is important for Cron Jobs. E.g.,
+        //  If you want something to fire every hour, a change in DST will mess that up.
+        //  a side-effect of this is that part of the year,
+        //  during DST, GameTimeSansDst and Pacific time will diverge by one hour.
+        //  GameTimeSansDst should not be used for any display purposes, it's purely a timing function
+        //  See: GameTime below
+        public static DateTime GameTimeSansDst
+        {   // Flatten time: time that is not adjusted for daylight savings time
+            //  by adding 1 hour to the time when we enter DST
+            get { return GetTime(GameTimeOffset, sansDST: true); }
+        }
+        // GameTime is the time we use for things like scheduled events and it's the time we display
+        //  to the user ([time command,) and how the AES displays an events progression
+        //  Note: the edge case here is where DST changes in the middle of an AES event. In this case
+        //  we should continue to display GameTime, but maintain timers on GameTimeSansDst.
+        // See: GameTimeSansDst above
+        public static DateTime GameTime { get { return GetTime(GameTimeOffset, sansDST: false); } }
+        // ServerTime is the time in whatever timezone the server is running in
+        public static DateTime ServerTime { get { return DateTime.UtcNow; } }
+        // CronTick is guaranteed to only tick once per minute
+        static int lastCronMinute = DateTime.UtcNow.Minute;
+        public static bool CronTick
+        {
+            get
             {
-                //LogHelper.LogException(e); (not in server)
-                System.Console.WriteLine("EXCEPTION IN AdjustedDateTime: " + e.Message);
+                int minute = DateTime.UtcNow.Minute;
+                bool change = minute != lastCronMinute;
+                lastCronMinute = minute;
+                return change;
             }
+        }
+        public static DateTime GetTime(int offset, bool sansDST = false)
+        {
+            DateTime localTime = DateTime.UtcNow.AddHours(offset);
+            if (!sansDST && TimeZoneInfo.Local.IsDaylightSavingTime(localTime))
+                localTime = localTime.AddHours(1);
 
-            return returnTime;
+            // we need to switch the 'Kind' away from Utc
+            return new DateTime(localTime.Ticks);
         }
     }
 }

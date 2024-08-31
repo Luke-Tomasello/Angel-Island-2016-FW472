@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -38,6 +37,8 @@ using System;
  *	5/4/04, mith
  *		Modified hue of blood drenched bandana to be darker.
  */
+
+using System;
 
 namespace Server.Items
 {

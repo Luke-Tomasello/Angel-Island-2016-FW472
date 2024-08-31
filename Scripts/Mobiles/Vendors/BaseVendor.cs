@@ -156,7 +156,7 @@ namespace Server.Mobiles
                 // the (invulnerable) tag has been removed; invulnerable NPCs and players can now be identified by the yellow hue of their name
                 // Adam: June 2, 2001 probably means Publish 12 which was July 24, 2001
                 m_Invulnerable = value;
-                if (m_Invulnerable && !Core.AOS && (Core.UOAI || Core.UOAR || Core.UOMO || Core.Publish >= 12))
+                if (m_Invulnerable && !Core.AOS && (Core.UOAI || Core.UOAR || Core.UOMO || PublishInfo.Publish >= 12))
                     NameHue = 0x35;
             }
         }
@@ -269,7 +269,7 @@ namespace Server.Mobiles
             /* Publish 4
 			 * Any shopkeeper that is currently [invulnerable] will lose that status except for stablemasters.
 			 */
-            IsInvulnerable = (!Core.UOAI && !Core.UOAR && !Core.UOMO && Core.Publish < 8) ? false : true;
+            IsInvulnerable = (!Core.UOAI && !Core.UOAR && !Core.UOMO && PublishInfo.Publish < 8) ? false : true;
 
             this.Title = title;
 
@@ -597,7 +597,7 @@ namespace Server.Mobiles
 			 * http://forums.uosecondage.com/viewtopic.php?f=8&t=22266
 			 * runuo.com/community/threads/evil-mage-hues.91540/
 			 */
-            int sandal_hue = (Core.UOAI || Core.UOAR || Core.UOMO || Core.Publish >= 4) ? GetShoeHue() : Utility.RandomBool() ? Utility.RandomRedHue() : Utility.RandomBlueHue();
+            int sandal_hue = (Core.UOAI || Core.UOAR || Core.UOMO || PublishInfo.Publish >= 4) ? GetShoeHue() : Utility.RandomBool() ? Utility.RandomRedHue() : Utility.RandomBlueHue();
 
             switch (ShoeType)
             {
@@ -673,7 +673,7 @@ namespace Server.Mobiles
             // Publish 5
             // Shopkeepers may no longer be poisoned
             // http://www.uoguide.com/Publish_5
-            if (!Core.UOAI && !Core.UOAR && !Core.UOMO && Core.Publish >= 5)
+            if (!Core.UOAI && !Core.UOAR && !Core.UOMO && PublishInfo.Publish >= 5)
                 return true;
             else
                 return false;
@@ -1914,7 +1914,7 @@ namespace Server.Mobiles
 			 * If a shopkeeper is killed, a new shopkeeper will appear as soon as another player (other than the one that killed it) approaches.
 			 * http://www.uoguide.com/Publish_4
 			 */
-            if (!Core.UOAI && !Core.UOAR && !Core.UOMO && Core.Publish >= 4)
+            if (!Core.UOAI && !Core.UOAR && !Core.UOMO && PublishInfo.Publish >= 4)
             {
                 if (Spawner != null && !Spawner.Deleted && Spawner.Running)
                 {
@@ -1934,7 +1934,7 @@ namespace Server.Mobiles
 			 * NPC shopkeepers will give a murder count when they die unless they are criminal or evil. The issue with murder counts from NPCs not decaying (as reported on Siege Perilous) will also be addressed.
 			 * http://www.uoguide.com/Publish_4
 			 */
-            if (!Core.UOAI && !Core.UOAR && !Core.UOMO && Core.Publish >= 4)
+            if (!Core.UOAI && !Core.UOAR && !Core.UOMO && PublishInfo.Publish >= 4)
             {
                 foreach (AggressorInfo ai in this.Aggressors)
                 {

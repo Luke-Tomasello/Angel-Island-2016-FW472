@@ -1,5 +1,3 @@
-using System;
-using System.IO;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -28,6 +26,9 @@ using System.IO;
  * 	11/3/06, Adam
  *		Initial Version
  */
+
+using System;
+using System.IO;
 
 namespace Server.Commands
 {

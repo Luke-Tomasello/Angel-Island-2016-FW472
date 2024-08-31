@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -27,6 +26,8 @@ using System.Collections.Generic;
  *		See C:\Users\luket\Documents\Visual Studio 2005\Projects\Angel Island\Scripts\Misc\Cliloc.enu.cs
  *		As you move through the project, please replace all constant strings with Lookup[meg_num]
  */
+
+using System.Collections.Generic;
 
 namespace Server.Text
 {

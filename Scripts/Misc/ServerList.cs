@@ -129,7 +129,7 @@ namespace Server.Misc
                 e.AddServer("Angel Island", new IPEndPoint(localAddress, SocketOptions.AngelIslandPort));
                 //e.AddServer("Siege Perilous", new IPEndPoint(localAddress, SocketOptions.SiegePort));
                 //e.AddServer("Mortalis", new IPEndPoint(localAddress, SocketOptions.MortalisPort));				// RIP - For now!
-                //e.AddServer("AI Resurrection", new IPEndPoint(localAddress, SocketOptions.AIResurrectionPort));
+                //e.AddServer("AI Resurrection", new IPEndPoint(localAddress, SocketOptions.RenaissancePort));
                 //e.AddServer("AI Test Center", new IPEndPoint(localAddress, SocketOptions.TestCenterPort));
                 //e.AddServer("SP Test Center", new IPEndPoint(localAddress, SocketOptions.EventShardPort));
             }

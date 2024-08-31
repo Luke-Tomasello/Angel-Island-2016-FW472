@@ -1,5 +1,3 @@
-using System;
-using Server;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -22,6 +20,9 @@ using Server;
  ***************************************************************************/
 
 #if notyet
+using System;
+using Server;
+
 namespace Server.Mobiles
 {
 	public class TavaraSewel : BaseCreature

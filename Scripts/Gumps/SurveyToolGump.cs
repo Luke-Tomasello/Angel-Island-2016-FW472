@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -29,6 +28,8 @@ using System;
  *
  *
  */
+
+using System;
 
 namespace Server.Gumps
 {

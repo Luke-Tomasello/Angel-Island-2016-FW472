@@ -1,5 +1,3 @@
-using System;
-using System.IO;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -20,6 +18,9 @@ using System.IO;
  *   (at your option) any later version.
  *
  ***************************************************************************/
+
+using System;
+using System.IO;
 
 namespace Server
 {

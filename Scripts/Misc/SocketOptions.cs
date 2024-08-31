@@ -36,8 +36,11 @@
 
 
 using Server.Network;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Server
 {
@@ -46,14 +49,60 @@ namespace Server
         private const bool NagleEnabled = false; // Should the Nagle algorithm be enabled? This may reduce performance
         private const int CoalesceBufferSize = 512; // MSS that the core will use when buffering packets
         private const int PooledSockets = 32; // The number of sockets to initially pool. Ideal value is expected client count. 
-
-        public static int AngelIslandPort = 2593;
-        public const int SiegePort = 2594;
-        public const int TestCenterPort = 2595;
-        public const int MortalisPort = 2596;
-        public const int AIResurrectionPort = 2597;
-        public const int EventShardPort = 2598;
-        //public const int AIResurrectionPort = 2599;
+        public static int AngelIslandPort
+        {
+            get
+            {
+                string json = File.ReadAllText("Ports.json");
+                Dictionary<string, int> portsTable = JsonConvert.DeserializeObject<Dictionary<string, int>>(json);
+                return portsTable["AngelIslandPort"];
+            }
+        }
+        public static int TestCenterPort
+        {
+            get
+            {
+                string json = File.ReadAllText("Ports.json");
+                Dictionary<string, int> portsTable = JsonConvert.DeserializeObject<Dictionary<string, int>>(json);
+                return portsTable["TestCenterPort"];
+            }
+        }
+        public static int SiegePerilousPort
+        {
+            get
+            {
+                string json = File.ReadAllText("Ports.json");
+                Dictionary<string, int> portsTable = JsonConvert.DeserializeObject<Dictionary<string, int>>(json);
+                return portsTable["SiegePerilousPort"];
+            }
+        }
+        public static int MortalisPort
+        {
+            get
+            {
+                string json = File.ReadAllText("Ports.json");
+                Dictionary<string, int> portsTable = JsonConvert.DeserializeObject<Dictionary<string, int>>(json);
+                return portsTable["MortalisPort"];
+            }
+        }
+        public static int RenaissancePort
+        {
+            get
+            {
+                string json = File.ReadAllText("Ports.json");
+                Dictionary<string, int> portsTable = JsonConvert.DeserializeObject<Dictionary<string, int>>(json);
+                return portsTable["RenaissancePort"];
+            }
+        }
+        public static int EventShardPort
+        {
+            get
+            {
+                string json = File.ReadAllText("Ports.json");
+                Dictionary<string, int> portsTable = JsonConvert.DeserializeObject<Dictionary<string, int>>(json);
+                return portsTable["EventShardPort"];
+            }
+        }
 
         private static IPEndPoint[] m_ListenerEndPoints;
         //        = new IPEndPoint[] {
@@ -67,14 +116,7 @@ namespace Server
         public static void Initialize()
         {
             m_ListenerEndPoints = new IPEndPoint[1];
-            //if (Core.ListeningPort != -1) 
-            //{   // override the default listening port
-            //    m_ListenerEndPoints[0] = new IPEndPoint(IPAddress.Any, Core.ListeningPort);
-            //}
-            if (Core.ListeningPort != -1)
-                AngelIslandPort = Core.ListeningPort;
-
-            /*else*/
+            
             if (Core.UOEV)
             {
                 // Core EventShard can be turned on with all other server configurations and overrides the default port for that shard.
@@ -95,11 +137,13 @@ namespace Server
                 else
                 {
                     if (Core.UOSP)
-                        m_ListenerEndPoints[0] = new IPEndPoint(IPAddress.Any, SiegePort);
+                        m_ListenerEndPoints[0] = new IPEndPoint(IPAddress.Any, SiegePerilousPort);
                     else if (Core.UOMO)
                         m_ListenerEndPoints[0] = new IPEndPoint(IPAddress.Any, MortalisPort);
+//#if !GMN
                     else if (Core.UOAR)
-                        m_ListenerEndPoints[0] = new IPEndPoint(IPAddress.Any, AIResurrectionPort);
+                        m_ListenerEndPoints[0] = new IPEndPoint(IPAddress.Any, RenaissancePort);
+//#endif
                     else
                         m_ListenerEndPoints[0] = new IPEndPoint(IPAddress.Any, AngelIslandPort);
                 }

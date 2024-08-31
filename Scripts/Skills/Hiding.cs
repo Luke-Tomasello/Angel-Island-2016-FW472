@@ -121,7 +121,7 @@ namespace Server.SkillHandlers
 
                     // Publish 15
                     // Players who successfully use their hiding skill while under the effects of an invisibility spell will no longer be revealed when the invisibility timer expires.
-                    if (Core.Publish >= 15 || Core.UOAI || Core.UOAR || Core.UOMO)
+                    if (PublishInfo.Publish >= 15 || Core.UOAI || Core.UOAR || Core.UOMO)
                         Spells.Sixth.InvisibilitySpell.RemoveTimer(m);
 
                     m.LocalOverheadMessage(MessageType.Regular, 0x1F4, 501240); // You have hidden yourself well.

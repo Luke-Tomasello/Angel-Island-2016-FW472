@@ -65,7 +65,7 @@ namespace Server.Township
 {
     public interface ITownshipItem
     {
-        public TownshipStone Stone
+        TownshipStone Stone
         {
             get;
             set;

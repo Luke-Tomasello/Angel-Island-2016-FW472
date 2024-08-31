@@ -652,9 +652,9 @@ namespace Server.Mobiles
 
         public override bool HasBreath { get { return true; } } // fire breath enabled
                                                                 // Auto-dispel is UOR - http://forums.uosecondage.com/viewtopic.php?f=8&t=6901
-        public override bool AutoDispel { get { return Core.UOAI || Core.UOAR ? false : Core.PublishDate >= Core.EraREN ? true : false; } }
+        public override bool AutoDispel { get { return Core.UOAI || Core.UOAR ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
         public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 4 : 0; } }
-        public override int Scales { get { return (Core.UOAI || Core.UOAR || Core.PublishDate < Core.PlagueOfDespair) ? 0 : 7; } }
+        public override int Scales { get { return (Core.UOAI || Core.UOAR || PublishInfo.PublishDate < Core.PlagueOfDespair) ? 0 : 7; } }
         public override ScaleType ScaleType { get { return (Body == 12 ? ScaleType.Yellow : ScaleType.Red); } }
         public override FoodType FavoriteFood { get { return FoodType.Meat; } }
 

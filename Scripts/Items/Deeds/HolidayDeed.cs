@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -52,6 +51,8 @@ using System;
  * 12/11/05, Kit
  *		Initial Creation for use with ChristmasElf Christmas Holiday 2005	
  */
+
+using System;
 
 namespace Server.Items
 {

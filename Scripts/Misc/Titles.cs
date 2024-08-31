@@ -164,7 +164,7 @@ namespace Server.Misc
                     m.SendLocalizedMessage(1019063); // You have lost a little karma.
             }
 
-            if (Core.Publish >= 10)
+            if (PublishInfo.Publish >= 10)
                 if (wasPositiveKarma && m.Karma < 0 && m is PlayerMobile && !((PlayerMobile)m).KarmaLocked)
                 {
                     ((PlayerMobile)m).KarmaLocked = true;

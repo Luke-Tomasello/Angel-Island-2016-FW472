@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -50,6 +49,8 @@ using System;
  *		HumanMageAI always uses combos, traps pouchs and drinks pots when available,
  *		Casts magic reflect or reactive armor, takes down reflect on enemys before dumping.
  */
+using System;
+
 namespace Server.Mobiles
 {
     public class HumanMeleeAI : MeleeAI

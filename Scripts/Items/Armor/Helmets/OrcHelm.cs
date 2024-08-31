@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -31,6 +30,8 @@ using System;
  *	9/16/04, Pigpen
  * 		Add OrcishKinHelm variant of this helm.
  */
+
+using System;
 
 namespace Server.Items
 {

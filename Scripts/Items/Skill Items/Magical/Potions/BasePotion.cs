@@ -197,7 +197,7 @@ namespace Server.Items
 
                 // Publish 15
                 // You will now be able to make potions directly into a potion keg.
-                if (pack != null && (Core.UOAI || Core.UOAR || Core.UOMO || Core.Publish >= 15))
+                if (pack != null && (Core.UOAI || Core.UOAR || Core.UOMO || PublishInfo.Publish >= 15))
                 {
                     List<PotionKeg> kegs = pack.FindItemsByType<PotionKeg>();
 

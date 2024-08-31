@@ -1,5 +1,3 @@
-using System;
-using Server;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -53,6 +51,9 @@ using Server;
  */
 
 #if THIS_IS_NOT_USED
+using System;
+using Server;
+
 namespace Server.Engines.AngelIsland.WebAccount
 {
 	/// <summary>

@@ -1,4 +1,3 @@
-using System;
 /***************************************************************************
  *
  *   RunUO                   : May 1, 2002
@@ -29,6 +28,8 @@ using System;
  *	5/10/05, Kit
  *		Initial creation
  */
+
+using System;
 
 namespace Server.Spells.Fourth
 {
