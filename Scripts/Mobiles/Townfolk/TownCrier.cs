@@ -275,7 +275,7 @@ namespace Server.Mobiles
 
         public string[] Lines { get { return m_Lines; } }
         public DateTime ExpireTime { get { return m_ExpireTime; } }
-        public bool Expired { get { return (DateTime.Now >= m_ExpireTime); } }
+        public bool Expired { get { return (DateTime.UtcNow >= m_ExpireTime); } }
         public Serial Poster { get { return m_Poster; } }
 
         public TownCrierEntry(string[] lines, TimeSpan duration, Serial poster)
@@ -287,7 +287,7 @@ namespace Server.Mobiles
             else if (duration > TimeSpan.FromDays(365.0))
                 duration = TimeSpan.FromDays(365.0);
 
-            m_ExpireTime = DateTime.Now + duration;
+            m_ExpireTime = DateTime.UtcNow + duration;
 
             m_Poster = poster;
         }
@@ -298,7 +298,7 @@ namespace Server.Mobiles
             foreach (string s in m_Lines)
                 wordcount += s.Split(' ').Length;
 
-            return wordcount * (int)Math.Ceiling(((TimeSpan)(m_ExpireTime - DateTime.Now)).TotalMinutes + .5) * CoreAI.TownCrierWordMinuteCost;
+            return wordcount * (int)Math.Ceiling(((TimeSpan)(m_ExpireTime - DateTime.UtcNow)).TotalMinutes + .5) * CoreAI.TownCrierWordMinuteCost;
         }
 
         // plasma:  writes entry into a xml stream
@@ -320,7 +320,7 @@ namespace Server.Mobiles
                 }
                 // expire datetime
                 xml.WriteStartElement("ExpireTime");
-                xml.WriteString(XmlConvert.ToString(m_ExpireTime, XmlDateTimeSerializationMode.Unspecified));
+                xml.WriteString(XmlConvert.ToString(m_ExpireTime, XmlDateTimeSerializationMode.Utc));
                 xml.WriteEndElement();
                 // poster's serial
                 xml.WriteStartElement("PosterSerial");
@@ -346,7 +346,7 @@ namespace Server.Mobiles
                 for (int i = 0; i < lines; i++)
                     m_Lines[i] = XmlUtility.GetText(xml["Line" + i], "?");
 
-                m_ExpireTime = XmlUtility.GetDateTime(XmlUtility.GetText(xml["ExpireTime"], null), DateTime.Now);
+                m_ExpireTime = XmlUtility.GetDateTime(XmlUtility.GetText(xml["ExpireTime"], null), DateTime.UtcNow);
 
                 m_Poster = (Serial)Int32.Parse(XmlUtility.GetText(xml["PosterSerial"], "0").Substring(2), System.Globalization.NumberStyles.AllowHexSpecifier);
 
@@ -498,7 +498,7 @@ namespace Server.Mobiles
                 if (entries != null && index < entries.Count)
                 {
                     TownCrierEntry tce = (TownCrierEntry)entries[index];
-                    TimeSpan ts = tce.ExpireTime - DateTime.Now;
+                    TimeSpan ts = tce.ExpireTime - DateTime.UtcNow;
 
                     if (ts < TimeSpan.Zero)
                         ts = TimeSpan.Zero;
@@ -555,7 +555,7 @@ namespace Server.Mobiles
                 {
                     TownCrierEntry tce = (TownCrierEntry)entries[i];
 
-                    TimeSpan toExpire = tce.ExpireTime - DateTime.Now;
+                    TimeSpan toExpire = tce.ExpireTime - DateTime.UtcNow;
 
                     if (toExpire < TimeSpan.Zero)
                         toExpire = TimeSpan.Zero;
@@ -670,7 +670,7 @@ namespace Server.Mobiles
                             m.SendMessage("{0}, {1} has posted the following message to the Town Criers:", from.Name, from.Serial);
                             foreach (string s in tce.Lines)
                                 m.SendMessage(s);
-                            m.SendMessage("This message will run for {0}.", ((TimeSpan)(tce.ExpireTime - DateTime.Now)).ToString());
+                            m.SendMessage("This message will run for {0}.", ((TimeSpan)(tce.ExpireTime - DateTime.UtcNow)).ToString());
                         }
                     }
 
@@ -1006,7 +1006,7 @@ namespace Server.ContextMenus
 
         public override void OnClick()
         {
-            if (this.Owner.From.CreationTime + HireAge > DateTime.Now && this.Owner.From.AccessLevel == AccessLevel.Player)
+            if (this.Owner.From.CreationTime + HireAge > DateTime.UtcNow && this.Owner.From.AccessLevel == AccessLevel.Player)
                 this.Owner.From.SendMessage("I'm sorry, do I know you?");
             else
                 this.Owner.From.SendGump(new Mobiles.TownCrierGump(this.Owner.From, Mobiles.GlobalTownCrierEntryList.Instance));

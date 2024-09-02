@@ -87,7 +87,7 @@ namespace Server.Items
 
             m_Entries = new ArrayList();
 
-            m_Created = DateTime.Now;
+            m_Created = DateTime.UtcNow;
             m_Timer = Timer.DelayCall(TimeSpan.FromSeconds(1.0), TimeSpan.FromSeconds(1.0), new TimerCallback(OnTick));
         }
 
@@ -147,7 +147,7 @@ namespace Server.Items
 
         private void OnTick()
         {
-            DateTime now = DateTime.Now;
+            DateTime now = DateTime.UtcNow;
             TimeSpan age = now - this.Created;
 
             if (age >= TimeSpan.FromSeconds(100.0))
@@ -255,7 +255,7 @@ namespace Server.Items
         {
             m_Player = player;
             m_Fire = fire;
-            m_Start = DateTime.Now;
+            m_Start = DateTime.UtcNow;
             m_Safe = false;
         }
     }

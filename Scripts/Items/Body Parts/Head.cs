@@ -57,7 +57,7 @@ namespace Server.Items
             : this(null)
         {
             m_Player = null;
-            m_Created = DateTime.Now;
+            m_Created = DateTime.UtcNow;
         }
 
         [Constructable]
@@ -67,7 +67,7 @@ namespace Server.Items
             Name = name;
             Weight = 1.0;
             m_Player = null;
-            m_Created = DateTime.Now;
+            m_Created = DateTime.UtcNow;
         }
 
         public Head(string name, PlayerMobile m)
@@ -77,7 +77,7 @@ namespace Server.Items
             Weight = 2.0;
             m_Player = m;
             m_FriendlyFire = (m != null && m.Corpse != null) ? (m.Corpse as Corpse).FriendlyFire : false;   // were we killed by a shared account?
-            m_Created = DateTime.Now;
+            m_Created = DateTime.UtcNow;
         }
 
         public Head(Serial serial)

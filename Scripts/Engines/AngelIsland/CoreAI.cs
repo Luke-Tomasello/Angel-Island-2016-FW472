@@ -238,6 +238,10 @@ namespace Server
         public static double TempDouble = 0.0;
         public static int TempInt = 0;
 
+        // System accounts. Used for automated tasks that require a mobile
+        public static int SystemAccount = -1;           // Persistent System Account
+        public static int AdminAccount = -1;            // Persistent Admin Account
+
         // purple potion explosion factors
         public static int ExplosionPotionSensitivityLevel = 100; //minimum damage before potion check happens
         public static double ExplosionPotionChance = 0.0; //percentage chance that potion will go off
@@ -604,6 +608,14 @@ namespace Server
                 xml.WriteString(TempInt.ToString());
                 xml.WriteEndElement();
 
+                // System accounts. Used for automated tasks that require a mobile
+                xml.WriteStartElement("SystemAccount");
+                xml.WriteString(SystemAccount.ToString());
+                xml.WriteEndElement();
+                xml.WriteStartElement("AdminAccount");
+                xml.WriteString(AdminAccount.ToString());
+                xml.WriteEndElement();
+
                 // purple potion explosion factors
                 xml.WriteStartElement("ExplPotSensitivity");
                 xml.WriteString(ExplosionPotionSensitivityLevel.ToString());
@@ -813,6 +825,10 @@ namespace Server
             // temp vars used for system tuning
             TempDouble = GetDouble(GetText(root["TempDouble"], ""), TempDouble);
             TempInt = GetValue(root["TempInt"], TempInt);
+
+            // System accounts. Used for automated tasks that require a mobile
+            SystemAccount = GetValue(root["SystemAccount"], SystemAccount);
+            AdminAccount = GetValue(root["AdminAccount"], SystemAccount);
 
             // purple potion explosion factors
             ExplosionPotionSensitivityLevel = GetValue(root["ExplPotSensitivity"], ExplosionPotionSensitivityLevel);

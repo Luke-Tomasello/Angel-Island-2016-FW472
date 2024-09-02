@@ -52,7 +52,7 @@ namespace Server.Mobiles
         {
             bool dac = base.DoActionCombat();
 
-            if (m_Mobile.Spell == null && DateTime.Now >= m_Mobile.NextSpellTime)
+            if (m_Mobile.Spell == null && DateTime.UtcNow >= m_Mobile.NextSpellTime)
             {
                 if (m_Mobile.Spell == null || !(m_Mobile.Spell as Spell).Cast())
                     EquipWeapon();
@@ -67,7 +67,7 @@ namespace Server.Mobiles
         {
             bool daw = base.DoActionWander();
 
-            if (m_Mobile.Spell == null && DateTime.Now >= m_Mobile.NextSpellTime)
+            if (m_Mobile.Spell == null && DateTime.UtcNow >= m_Mobile.NextSpellTime)
             {
                 if (m_Mobile.Spell == null || !(m_Mobile.Spell as Spell).Cast())
                     EquipWeapon();
@@ -80,7 +80,7 @@ namespace Server.Mobiles
 
         public override bool PreferMagic()
         {
-            DateTime m_FightMode = DateTime.Now;
+            DateTime m_FightMode = DateTime.UtcNow;
 
             if (IsAllowed(FightStyle.Melee) && (double)m_Mobile.Mana < m_Mobile.ManaMax * .30)
                 return false;   // low on mana use melee

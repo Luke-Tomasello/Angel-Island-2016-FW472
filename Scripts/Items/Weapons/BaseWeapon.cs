@@ -697,7 +697,7 @@ namespace Server.Items
 				}
 				*/
 
-                from.NextCombatTime = DateTime.Now + GetDelay(from);
+                from.NextCombatTime = DateTime.UtcNow + GetDelay(from);
 
                 if (UseSkillMod && m_AccuracyLevel != WeaponAccuracyLevel.Regular)
                 {
@@ -759,7 +759,7 @@ namespace Server.Items
                 m.RemoveStatMod(modName + "Int");
 
                 if (weapon != null)
-                    m.NextCombatTime = DateTime.Now + weapon.GetDelay(m);
+                    m.NextCombatTime = DateTime.UtcNow + weapon.GetDelay(m);
 
                 if (UseSkillMod && m_SkillMod != null)
                 {
@@ -1462,7 +1462,7 @@ namespace Server.Items
 
                 Mobile atkr = attacker;
 
-                if (atkr.HasAbilityReady && atkr.Mana >= 15 && atkr.NextAbilityTime <= DateTime.Now)
+                if (atkr.HasAbilityReady && atkr.Mana >= 15 && atkr.NextAbilityTime <= DateTime.UtcNow)
                 {
                     atkr.HasAbilityReady = false;
                     Item weapon = atkr.FindItemOnLayer(Layer.TwoHanded);
@@ -1482,7 +1482,7 @@ namespace Server.Items
 
                             atkr.Mana -= 15;
                             atkr.HasAbilityReady = false;
-                            atkr.NextAbilityTime = DateTime.Now + AbilityDelay;
+                            atkr.NextAbilityTime = DateTime.UtcNow + AbilityDelay;
                             atkr.SendLocalizedMessage(1060090); // You have delivered a crushing blow!
 
                             defender.SendLocalizedMessage(1060091); // You take extra damage from the crushing attack!
@@ -1507,7 +1507,7 @@ namespace Server.Items
                             atkr.Mana -= 15;
                             atkr.SendLocalizedMessage(1060165); // You have delivered a concussion!
                             atkr.HasAbilityReady = false;
-                            atkr.NextAbilityTime = DateTime.Now + AbilityDelay;
+                            atkr.NextAbilityTime = DateTime.UtcNow + AbilityDelay;
 
                             defender.SendLocalizedMessage(1060166); // You feel disoriented!
                             int mana_test = Math.Max(defender.Mana / 2, defender.ManaMax / 2);
@@ -1534,7 +1534,7 @@ namespace Server.Items
                             defender.PlaySound(0x204);
 
                             atkr.HasAbilityReady = false;
-                            atkr.NextAbilityTime = DateTime.Now + AbilityDelay;
+                            atkr.NextAbilityTime = DateTime.UtcNow + AbilityDelay;
                             atkr.SendMessage("You deliver a paralyzing blow!");
                             atkr.Mana -= 15;
                             atkr.HasAbilityReady = false;

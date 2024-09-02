@@ -212,7 +212,7 @@ namespace Server.Items
             return bResult;
         }
 
-        private DateTime lastLift = DateTime.Now;
+        private DateTime lastLift = DateTime.UtcNow;
         public override bool CheckLift(Mobile from, Item item, ref LRReason reject)
         {   // Thwart lift macros
             if (LiftMemory.Recall(from))

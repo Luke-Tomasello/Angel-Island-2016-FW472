@@ -550,7 +550,7 @@ namespace Server.Commands
             {
                 using (StreamWriter sw = new StreamWriter("packetprofiles.log", true))
                 {
-                    sw.WriteLine("# Dump on {0:f}", DateTime.Now);
+                    sw.WriteLine("# Dump on {0:f}", DateTime.UtcNow);
                     sw.WriteLine("# Core profiling for " + Core.ProfileTime);
 
                     PacketProfile[] profiles = PacketProfile.OutgoingProfiles;
@@ -605,7 +605,7 @@ namespace Server.Commands
                 {
                     Hashtable profiles = Timer.Profiles;
 
-                    sw.WriteLine("# Dump on {0:f}", DateTime.Now);
+                    sw.WriteLine("# Dump on {0:f}", DateTime.UtcNow);
                     sw.WriteLine("# Core profiling for " + Core.ProfileTime);
                     sw.WriteLine();
 
@@ -713,7 +713,7 @@ namespace Server.Commands
                 items.Sort(new CountSorter());
                 mobiles.Sort(new CountSorter());
 
-                op.WriteLine("# Object count table generated on {0}", DateTime.Now);
+                op.WriteLine("# Object count table generated on {0}", DateTime.UtcNow);
                 op.WriteLine();
                 op.WriteLine();
 
@@ -836,7 +836,7 @@ namespace Server.Commands
                 using (StreamWriter op = new StreamWriter(opFile))
                 {
                     op.WriteLine("# Profile of world {0}", type);
-                    op.WriteLine("# Generated on {0}", DateTime.Now);
+                    op.WriteLine("# Generated on {0}", DateTime.UtcNow);
                     op.WriteLine();
                     op.WriteLine();
 

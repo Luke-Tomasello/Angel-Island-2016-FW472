@@ -107,7 +107,7 @@ namespace Server.Misc
         {
 
             Server.World.Broadcast(0x35, true, "Performing routine maintenance, please wait.");
-            DateTime startTime = DateTime.Now;
+            DateTime startTime = DateTime.UtcNow;
 
             if (e.Arguments.Length == 0)
             {
@@ -166,7 +166,7 @@ namespace Server.Misc
                 OnCalculateAndWrite(e.Mobile, number, bSupressNames, bSupressStaff, bIndicateBanned);
             }
 
-            DateTime endTime = DateTime.Now;
+            DateTime endTime = DateTime.UtcNow;
             Server.World.Broadcast(0x35, true, "Routine maintenance complete. The entire process took {0:F1} seconds.", (endTime - startTime).TotalSeconds);
         }
 
@@ -198,7 +198,7 @@ namespace Server.Misc
 
             bInProcess = true;
 
-            DateTime startDateTime = DateTime.Now;
+            DateTime startDateTime = DateTime.UtcNow;
 
             if (!Directory.Exists(OUTPUT_DIRECTORY))
                 Directory.CreateDirectory(OUTPUT_DIRECTORY);
@@ -469,7 +469,7 @@ namespace Server.Misc
             }
             finally
             {
-                DateTime endDateTime = DateTime.Now;
+                DateTime endDateTime = DateTime.UtcNow;
                 TimeSpan time = endDateTime - startDateTime;
                 string endmsg = "finished in " + ((double)time.TotalMilliseconds / (double)1000) + " seconds.";
                 System.Console.WriteLine(endmsg);

@@ -60,7 +60,7 @@ namespace Server.Regions
             public SpamEntry(string text)
             {
                 m_text = text;
-                m_when = DateTime.Now + TimeSpan.FromMinutes(10.0);
+                m_when = DateTime.UtcNow + TimeSpan.FromMinutes(10.0);
             }
         }
         private Dictionary<Mobile, SpamEntry> m_SpamQueue = new Dictionary<Mobile, SpamEntry>();
@@ -69,7 +69,7 @@ namespace Server.Regions
             List<Mobile> delete_list = new List<Mobile>();
             foreach (KeyValuePair<Mobile, SpamEntry> kvp in m_SpamQueue)
             {
-                if (DateTime.Now > kvp.Value.When)
+                if (DateTime.UtcNow > kvp.Value.When)
                     delete_list.Add(kvp.Key);
             }
             foreach (Mobile m in delete_list)

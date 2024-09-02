@@ -396,7 +396,7 @@ namespace Server.Mobiles
                 }
             }
 
-            if (m_Mobile.Spell == null && DateTime.Now > m_NextCastTime && m_Mobile.InRange(c, 12))
+            if (m_Mobile.Spell == null && DateTime.UtcNow > m_NextCastTime && m_Mobile.InRange(c, 12))
             {
                 // We are ready to cast a spell
                 Spell spell = null;
@@ -481,7 +481,7 @@ namespace Server.Mobiles
                     //spell cast time is equal to the delay for the spells.
                     delay = spell.GetCastDelay() + spell.GetCastRecovery();
 
-                    m_NextCastTime = DateTime.Now + delay;
+                    m_NextCastTime = DateTime.UtcNow + delay;
                 }
             }
             else if ((m_Mobile.Spell == null || !m_Mobile.Spell.IsCasting) && RegainingMana == false)

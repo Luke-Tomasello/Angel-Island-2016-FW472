@@ -131,7 +131,7 @@ namespace Server.Items
                     {
 
                         StreamWriter LogFile = new StreamWriter("logs/namechange.log", true);
-                        LogFile.WriteLine("{0}: {1},{2},{3}", DateTime.Now, from.Account, from.Name, text);
+                        LogFile.WriteLine("{0}: {1},{2},{3}", DateTime.UtcNow, from.Account, from.Name, text);
                         LogFile.Close();
 
                     }

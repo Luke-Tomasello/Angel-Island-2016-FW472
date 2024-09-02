@@ -89,7 +89,7 @@ namespace Server.Engines.ChampionSpawn
         {
             // just switch on gfx
             Graphics = true;
-            m_LastSpeech = DateTime.Now;
+            m_LastSpeech = DateTime.UtcNow;
         }
 
         public ChampSummon(Serial serial)
@@ -116,7 +116,7 @@ namespace Server.Engines.ChampionSpawn
             {
                 case 0:
                     {
-                        m_LastSpeech = DateTime.Now;
+                        m_LastSpeech = DateTime.UtcNow;
                         // as this champ is always "active" even with no spawn, 
                         // we need to check if there is a spawn on and if not stop the slice
                         if (Level == 0 && Kills == 0 && m_Monsters.Count == 0)
@@ -173,13 +173,13 @@ namespace Server.Engines.ChampionSpawn
             {
                 //Check speech delay so altar doesn't go crazy! 
                 //pla: 08/26 changed delay to 12
-                if ((m_LastSpeech + TimeSpan.FromSeconds(12)) < DateTime.Now)
+                if ((m_LastSpeech + TimeSpan.FromSeconds(12)) < DateTime.UtcNow)
                 {
                     //make sure champ hasn't already been started					
                     if (m_bActive && Kills <= Lvl_MaxKills / 4 && Level == 0 && m.InRange(Location, 8))
                     {
                         // reset delay
-                        m_LastSpeech = DateTime.Now;
+                        m_LastSpeech = DateTime.UtcNow;
                         switch (Utility.Random(5))
                         {
                             case 1: m_Speaker.PublicOverheadMessage(0, 0x3B2, false, "You dare disturb the Champion's slumber?"); break;

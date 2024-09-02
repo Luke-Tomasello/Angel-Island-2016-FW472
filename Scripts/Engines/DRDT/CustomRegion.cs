@@ -638,7 +638,7 @@ namespace Server.Regions
             //if is a iob zone/region and a iob aligned mobile with a differnt alignment then the zone enters
             //find all players of the zones alignment and send them a message
             //plasma: refactored the send message code into its own method within KinSystem
-            if (DateTime.Now >= m_Controller.m_Msg && m_Controller.IOBZone && m_Controller.ShowIOBMsg && IOBenemy != null && IOBenemy.IOBAlignment != IOBAlignment.None && IOBenemy.IOBAlignment != m_Controller.IOBAlign && m.AccessLevel == AccessLevel.Player)  //we dont want it announceing staff with iob kinship
+            if (DateTime.UtcNow >= m_Controller.m_Msg && m_Controller.IOBZone && m_Controller.ShowIOBMsg && IOBenemy != null && IOBenemy.IOBAlignment != IOBAlignment.None && IOBenemy.IOBAlignment != m_Controller.IOBAlign && m.AccessLevel == AccessLevel.Player)  //we dont want it announceing staff with iob kinship
             {
                 if (m_Controller.RegionName != null && m_Controller.RegionName.Length > 0)
                 {
@@ -651,9 +651,9 @@ namespace Server.Regions
                     IOBSystem.SendKinMessage(m_Controller.IOBAlign, string.Format("Come quickly, the {0} are attacking your stronghold!",
                         IOBSystem.GetIOBName(IOBenemy.IOBRealAlignment)));
                 }
-                m_Controller.m_Msg = DateTime.Now + m_Controller.m_Delay;
+                m_Controller.m_Msg = DateTime.UtcNow + m_Controller.m_Delay;
             }
-            /*else if (DateTime.Now >= m_Controller.m_Msg && this is Engines.IOBSystem.KinCityRegion && IOBenemy != null && IOBenemy.IOBAlignment != IOBAlignment.None && IOBenemy.IOBAlignment != m_Controller.IOBAlign && m.AccessLevel == AccessLevel.Player)  //we dont want it announceing staff with iob kinship
+            /*else if (DateTime.UtcNow >= m_Controller.m_Msg && this is Engines.IOBSystem.KinCityRegion && IOBenemy != null && IOBenemy.IOBAlignment != IOBAlignment.None && IOBenemy.IOBAlignment != m_Controller.IOBAlign && m.AccessLevel == AccessLevel.Player)  //we dont want it announceing staff with iob kinship
 			{
 				KinCityRegion r = KinCityRegion.GetKinCityAt(this.m_Controller);
 				if (r != null)
@@ -663,7 +663,7 @@ namespace Server.Regions
 					{
 						Engines.IOBSystem.KinSystem.SendKinMessage(cd.ControlingKin, string.Format("Come quickly, the {0} are attacking the City of {1}!",
 							IOBSystem.GetIOBName(IOBenemy.IOBRealAlignment), cd.City.ToString()));
-						m_Controller.m_Msg = DateTime.Now + m_Controller.m_Delay;
+						m_Controller.m_Msg = DateTime.UtcNow + m_Controller.m_Delay;
 					}
 				}
 			}*/
@@ -846,7 +846,7 @@ namespace Server.Regions
                         {
                             AggressorInfo info = (AggressorInfo)m.Aggressed[i];
 
-                            if (info.Defender.Player && (DateTime.Now - info.LastCombatTime) < CombatHeatDelay)
+                            if (info.Defender.Player && (DateTime.UtcNow - info.LastCombatTime) < CombatHeatDelay)
                                 return base.GetLogoutDelay(m);
                         }
 
@@ -870,7 +870,7 @@ namespace Server.Regions
                                             {
                                                 AggressorInfo info = (AggressorInfo)m.Aggressed[i];
 
-                                                if (info.Defender.Player && (DateTime.Now - info.LastCombatTime) < CombatHeatDelay)
+                                                if (info.Defender.Player && (DateTime.UtcNow - info.LastCombatTime) < CombatHeatDelay)
                                                     return base.GetLogoutDelay(m);
                                             }
 

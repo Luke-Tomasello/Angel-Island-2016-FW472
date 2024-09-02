@@ -371,7 +371,7 @@ namespace Server.Gumps
                 else
                 {
                     AddHtml(20, 155, 100, 20, "Decay Time:", false, false); //time until decay
-                    TimeSpan decay = m_House.StructureDecayTime - DateTime.Now;
+                    TimeSpan decay = m_House.StructureDecayTime - DateTime.UtcNow;
                     int days = decay.Days;
                     double hours = decay.Hours;
                     hours += ((double)decay.Minutes) / 60;

@@ -25,7 +25,7 @@
  *      changed UpdateLocations() to UpdateAnnouncements() - now changes the message after the bounty has been collected
  *  5/17/10, Adam
  *		eliminate the old PJUM.MakeAllEntriesCriminal() feature and replace it with the new mobile function
- * 			m.MakeCriminal(dt - DateTime.Now);
+ * 			m.MakeCriminal(dt - DateTime.UtcNow);
  *	02/11/06, Adam
  *		Make common the formatting of sextant coords.
  *	01/13/06, Pix
@@ -79,7 +79,7 @@ namespace Server.PJUM
         {
             ListEntry le = new ListEntry(lines, m, dt, ListEntryType.PJUM);
             TCCS.AddEntry(le);
-            m.MakeCriminal(dt - DateTime.Now);
+            m.MakeCriminal(dt - DateTime.UtcNow);
             return le;
         }
 

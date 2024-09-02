@@ -132,7 +132,7 @@ namespace Server.Spells.Fourth
                 Caster.SendLocalizedMessage(502359, "", 0x22); // Thou art too encumbered to move.
                 return false;
             }
-            else if (Caster is PlayerMobile && (DateTime.Now - ((PlayerMobile)Caster).LastStoleAt < TimeSpan.FromMinutes(2)))
+            else if (Caster is PlayerMobile && (DateTime.UtcNow - ((PlayerMobile)Caster).LastStoleAt < TimeSpan.FromMinutes(2)))
             {
                 Caster.SendLocalizedMessage(1005561, "", 0x22); // Thou'rt a criminal and cannot escape so easily.
                 return false;

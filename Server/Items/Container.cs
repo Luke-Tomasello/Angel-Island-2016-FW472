@@ -98,7 +98,7 @@ namespace Server.Items
             {
                 if (m_Owner != null && !m_Owner.Deleted && !m_Owner.IsFreezeDried && m_Owner.CanFreezeDry)
                 {   // after the container has been opened, we will wait this.Delay before re freeze drying
-                    if (m_Owner.LastAccessed + this.Delay < DateTime.Now && m_Owner.CheckFreezeDry())
+                    if (m_Owner.LastAccessed + this.Delay < DateTime.UtcNow && m_Owner.CheckFreezeDry())
                     {
                         if (World.FreezeDryEnabled)
                         {

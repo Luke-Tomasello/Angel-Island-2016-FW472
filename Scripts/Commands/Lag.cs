@@ -55,17 +55,17 @@ namespace Server.Commands
                 PlayerMobile pm = (PlayerMobile)from;
 
                 // Limit to 5 minutes between lag reports
-                if ((pm.LastLagTime + TimeSpan.FromMinutes(5.0)) < DateTime.Now)
+                if ((pm.LastLagTime + TimeSpan.FromMinutes(5.0)) < DateTime.UtcNow)
                 {
                     // Let them log again
                     LogHelper lh = new LogHelper("lagreports.log", false, true);
                     lh.Log(LogType.Mobile, from, Server.Engines.CronScheduler.Cron.GetRecentTasks()); //adam: added schduled tasks!
 
                     //Requested by Adam:
-                    Console.WriteLine("Lag at: {0}", DateTime.Now.ToShortTimeString());
+                    Console.WriteLine("Lag at: {0}", DateTime.UtcNow.ToShortTimeString());
 
                     // Update LastLagTime on PlayerMobile
-                    pm.LastLagTime = DateTime.Now;
+                    pm.LastLagTime = DateTime.UtcNow;
 
                     lh.Finish();
 

@@ -59,7 +59,7 @@ namespace Server.Misc
                 {
                     Account acct = from.Account as Account;
 
-                    if (acct.m_STIntervalStart + TimeSpan.FromMinutes(20.0) > DateTime.Now)
+                    if (acct.m_STIntervalStart + TimeSpan.FromMinutes(20.0) > DateTime.UtcNow)
                     {//within 20 minutes from last step - count step
                         acct.m_STSteps++;
                     }
@@ -90,7 +90,7 @@ namespace Server.Misc
                                 house.RefreshHouseOneDay();
                             }
                         }
-                        acct.m_STIntervalStart = DateTime.Now;
+                        acct.m_STIntervalStart = DateTime.UtcNow;
                         acct.m_STSteps = 1;
                     }
                 }

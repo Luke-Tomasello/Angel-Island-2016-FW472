@@ -262,7 +262,7 @@ namespace Server.Mobiles
                 Karma = Utility.RandomMinMax(5000, 9999);
             }
 
-            this.NextCombatTime = DateTime.Now + TimeSpan.FromSeconds(0.5);
+            this.NextCombatTime = DateTime.UtcNow + TimeSpan.FromSeconds(0.5);
             this.Focus = target;
         }
 
@@ -384,11 +384,11 @@ namespace Server.Mobiles
         {
 
 
-            if (m.Player && m.AccessLevel == AccessLevel.Player && ((PlayerMobile)m).NpcGuild == NpcGuild.ThievesGuild && ((Mobile)m).Hidden == false && m.InRange(this, 3) && DateTime.Now >= m_NextSpeechTime)
+            if (m.Player && m.AccessLevel == AccessLevel.Player && ((PlayerMobile)m).NpcGuild == NpcGuild.ThievesGuild && ((Mobile)m).Hidden == false && m.InRange(this, 3) && DateTime.UtcNow >= m_NextSpeechTime)
             {
                 if (Utility.RandomDouble() < 0.03)
                 {
-                    m_NextSpeechTime = DateTime.Now + m_SpeechDelay;
+                    m_NextSpeechTime = DateTime.UtcNow + m_SpeechDelay;
 
                     switch (Utility.Random(5))
                     {

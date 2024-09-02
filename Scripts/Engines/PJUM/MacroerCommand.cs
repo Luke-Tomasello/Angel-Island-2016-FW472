@@ -158,7 +158,7 @@ namespace Server.PJUM
                 lns[1] = String.Format("{0} was last seen at {1}.", pm.Name, location);
 
                 // Adam: changed to 4 hours from 8
-                ListEntry TCTextHandle = PJUM.AddMacroer(lns, pm, DateTime.Now + TimeSpan.FromHours(4));
+                ListEntry TCTextHandle = PJUM.AddMacroer(lns, pm, DateTime.UtcNow + TimeSpan.FromHours(4));
 
                 //Add bounty to player
                 string name = String.Format("Officer {0}", Utility.RandomBool() ? NameList.RandomName("male") : NameList.RandomName("female"));
@@ -195,7 +195,7 @@ namespace Server.PJUM
                 //Add comment to account
                 Account acc = pm.Account as Account;
                 string comment = String.Format("On {0}, {1} caught {2} unattended macroing at {3} : reported using the [macroer command",
-                    DateTime.Now,
+                    DateTime.UtcNow,
                     from != null ? from.Name : "auto-RTT",
                     pm.Name,
                     location);

@@ -48,12 +48,12 @@ namespace Server.Commands
 
             if (m is PlayerMobile)
             {
-                if (((PlayerMobile)m).m_LastResynchTime < (DateTime.Now - TimeSpan.FromMinutes(2.0))
+                if (((PlayerMobile)m).m_LastResynchTime < (DateTime.UtcNow - TimeSpan.FromMinutes(2.0))
                     || (m.AccessLevel > AccessLevel.Player))
                 {
                     m.SendMessage("Resynchronizing server and client.");
                     m.Send(new MobileUpdate(m));
-                    ((PlayerMobile)m).m_LastResynchTime = DateTime.Now;
+                    ((PlayerMobile)m).m_LastResynchTime = DateTime.UtcNow;
                 }
                 else
                 {

@@ -53,7 +53,7 @@ namespace Server.Mobiles
             }
         }
 
-        private DateTime m_NextCouncilSpell = DateTime.Now;
+        private DateTime m_NextCouncilSpell = DateTime.UtcNow;
 
         public CouncilMemberAI(BaseCreature m)
             : base(m)
@@ -113,19 +113,19 @@ namespace Server.Mobiles
             Mobile com = m_Mobile.Combatant;
             Spell spell = null;
 
-            if (com != null && com is BaseCreature && DateTime.Now >= m_NextCouncilSpell)
+            if (com != null && com is BaseCreature && DateTime.UtcNow >= m_NextCouncilSpell)
             {
                 if (CastRevelationWave())
                 {
                     m_Mobile.DebugSay("I'm gunna cast Revelation Wave!");
-                    m_NextCouncilSpell = DateTime.Now + TimeBetweenCouncilSpell;
+                    m_NextCouncilSpell = DateTime.UtcNow + TimeBetweenCouncilSpell;
                     return new RevelationWaveSpell(m_Mobile, null);
                 }
 
                 if (CastPoisonWave())
                 {
                     m_Mobile.DebugSay("I'm gunna cast Poison Wave!");
-                    m_NextCouncilSpell = DateTime.Now + TimeBetweenCouncilSpell;
+                    m_NextCouncilSpell = DateTime.UtcNow + TimeBetweenCouncilSpell;
                     return new PoisonWaveSpell(m_Mobile, null);
                 }
             }

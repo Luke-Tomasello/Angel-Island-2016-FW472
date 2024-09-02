@@ -292,7 +292,7 @@ namespace Server.Items
             }
             else
             {
-                m_Guesses[m] = new PuzzleChestSolutionAndTime(DateTime.Now, solution);
+                m_Guesses[m] = new PuzzleChestSolutionAndTime(DateTime.UtcNow, solution);
 
                 m.SendGump(new StatusGump(correctCylinders, correctColors));
 
@@ -698,7 +698,7 @@ namespace Server.Items
 
             foreach (KeyValuePair<Mobile, PuzzleChestSolutionAndTime> kvp in m_Guesses)
             {
-                if (DateTime.Now - kvp.Value.When > CleanupTime)
+                if (DateTime.UtcNow - kvp.Value.When > CleanupTime)
                     toDelete.Add(kvp.Key);
             }
 

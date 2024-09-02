@@ -118,7 +118,7 @@ namespace Server.Commands
             if (from != null)
             {
                 from.SendMessage("Usage: [AddressDump <PlayersDaysActive|Activations since 'date'>");
-                from.SendMessage("Example: [AddressDump {0}", DateTime.Now.ToShortDateString());
+                from.SendMessage("Example: [AddressDump {0}", DateTime.UtcNow.ToShortDateString());
             }
         }
 

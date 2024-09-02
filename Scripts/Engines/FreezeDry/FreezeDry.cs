@@ -49,7 +49,7 @@ namespace Server.Commands
         {
             e.Mobile.SendMessage("Display FreezeDry status for all eligible containers...");
 
-            DateTime start = DateTime.Now;
+            DateTime start = DateTime.UtcNow;
             int containers = 0;
             int eligible = 0;
             int freezeDried = 0;
@@ -77,7 +77,7 @@ namespace Server.Commands
             }
 
             e.Mobile.SendMessage("Out of {0} eligible containers, {1} are freeze dried, {2} scheduled, and {3} orphans.", eligible, freezeDried, scheduled, orphans);
-            DateTime end = DateTime.Now;
+            DateTime end = DateTime.UtcNow;
             e.Mobile.SendMessage("Finished in {0}ms.", (end - start).TotalMilliseconds);
         }
 
@@ -85,11 +85,11 @@ namespace Server.Commands
         {
             e.Mobile.SendMessage("Starting FreezeTimers for all eligible containers...");
 
-            DateTime start = DateTime.Now;
+            DateTime start = DateTime.UtcNow;
             foreach (Item i in World.Items.Values)
                 i.OnRehydrate();
 
-            DateTime end = DateTime.Now;
+            DateTime end = DateTime.UtcNow;
             e.Mobile.SendMessage("Finished in {0}ms.", (end - start).TotalMilliseconds);
         }
 
@@ -99,7 +99,7 @@ namespace Server.Commands
 
             int count = 0;
 
-            DateTime start = DateTime.Now;
+            DateTime start = DateTime.UtcNow;
             ArrayList al = new ArrayList(World.Items.Values);
             foreach (Item i in al)
             {
@@ -110,7 +110,7 @@ namespace Server.Commands
                 }
             }
 
-            DateTime end = DateTime.Now;
+            DateTime end = DateTime.UtcNow;
             e.Mobile.SendMessage("{0} containers rehydrated in {1} seconds.", count, (end - start).TotalSeconds);
             e.Mobile.SendMessage("Rehydrate() averaged {0}ms per call.", (end - start).TotalMilliseconds / count);
         }

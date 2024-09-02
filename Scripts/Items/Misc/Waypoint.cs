@@ -179,7 +179,7 @@ namespace Server.Items
             private AutoWayPoint m_waypoint;
 
             public DeleteTimer(AutoWayPoint waypoint, DateTime time)
-                : base(time - DateTime.Now)
+                : base(time - DateTime.UtcNow)
             {
                 m_waypoint = waypoint;
                 Priority = TimerPriority.OneMinute;
@@ -200,7 +200,7 @@ namespace Server.Items
                 m_Timer = null;
             }
             // auto delete after 10 minutes?
-            m_Timer = new DeleteTimer(this, DateTime.Now + TimeSpan.FromMinutes(10));
+            m_Timer = new DeleteTimer(this, DateTime.UtcNow + TimeSpan.FromMinutes(10));
             m_Timer.Start();
         }
     }

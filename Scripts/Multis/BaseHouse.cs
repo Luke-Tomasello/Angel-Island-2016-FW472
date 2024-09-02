@@ -431,7 +431,7 @@ namespace Server.Multis
         {
             get
             {
-                return DateTime.Now + TimeSpan.FromMinutes(m_DecayMinutesStored);
+                return DateTime.UtcNow + TimeSpan.FromMinutes(m_DecayMinutesStored);
             }
         }
 
@@ -461,7 +461,7 @@ namespace Server.Multis
 
         public void RefreshNonDecayingHouse()
         {
-            if (StructureDecayTime < DateTime.Now)
+            if (StructureDecayTime < DateTime.UtcNow)
             {
                 Refresh();
             }
@@ -589,7 +589,7 @@ namespace Server.Multis
             {
                 if (m_RestartDecayDelta != DateTime.MinValue)
                 {
-                    TimeSpan temp = DateTime.Now - m_RestartDecayDelta;
+                    TimeSpan temp = DateTime.UtcNow - m_RestartDecayDelta;
                     if (temp >= m_RestartDecay)
                     {
                         m_RestartDecay = TimeSpan.Zero;     // disable system
@@ -598,7 +598,7 @@ namespace Server.Multis
                     else
                         m_RestartDecay -= temp;             // we're this much closer
                 }
-                m_RestartDecayDelta = DateTime.Now;
+                m_RestartDecayDelta = DateTime.UtcNow;
             }
         }
 
@@ -624,7 +624,7 @@ namespace Server.Multis
             if (GetFlag(BaseHouse.ImplFlags.ManagedDemolishion) == true)
             {
                 DateTime ok_demo = BuiltOn + TimeSpan.FromDays(7.0);
-                if (DateTime.Now > ok_demo)
+                if (DateTime.UtcNow > ok_demo)
                     SetFlag(BaseHouse.ImplFlags.ManagedDemolishion, false);
             }
 
@@ -663,7 +663,7 @@ namespace Server.Multis
                         if (a.EmailAddress != null && a.EmailAddress.Length > 0 && SmtpDirect.CheckEmailAddy(a.EmailAddress, false) == true)
                         {
                             string subject = "Angel Island: Your house is in danger of collapsing";
-                            string body = String.Format("\nThis message is to inform you that your house at {2} on the '{0}' account is in danger of collapsing (IDOC). If you do not return to refresh your house, it will fall on {1}.\n\nBest Regards,\n  The Angel Island Team\n\n", a.ToString(), DateTime.Now + TimeSpan.FromMinutes(m_DecayMinutesStored), BanLocation);
+                            string body = String.Format("\nThis message is to inform you that your house at {2} on the '{0}' account is in danger of collapsing (IDOC). If you do not return to refresh your house, it will fall on {1}.\n\nBest Regards,\n  The Angel Island Team\n\n", a.ToString(), DateTime.UtcNow + TimeSpan.FromMinutes(m_DecayMinutesStored), BanLocation);
                             Emailer mail = new Emailer();
                             mail.SendEmail(a.EmailAddress, subject, body, false);
                         }
@@ -935,7 +935,7 @@ namespace Server.Multis
                     return 0;
 
                 // return the delta in minutes since last check
-                TimeSpan sx = DateTime.Now - m_HouseDecayLast;
+                TimeSpan sx = DateTime.UtcNow - m_HouseDecayLast;
                 return (int)sx.TotalMinutes;
             }
         }
@@ -983,7 +983,7 @@ namespace Server.Multis
             }
 
             // Adam: record the 'last' check.
-            m_HouseDecayLast = DateTime.Now;
+            m_HouseDecayLast = DateTime.UtcNow;
 
             return numberchecked;
         }
@@ -1587,7 +1587,7 @@ namespace Server.Multis
             //initialize decay
             m_DecayMinutesStored = HouseDecayDelay.TotalMinutes;
 
-            m_BuiltOn = DateTime.Now;
+            m_BuiltOn = DateTime.UtcNow;
             m_LastTraded = DateTime.MinValue;
 
             m_Doors = new ArrayList();
@@ -3065,7 +3065,7 @@ namespace Server.Multis
 						{
 							Item child = (Item)children[j];
 
-							if ( child.Decays && !child.IsLockedDown && !child.IsSecure && (child.LastMoved + child.DecayTime) <= DateTime.Now )
+							if ( child.Decays && !child.IsLockedDown && !child.IsSecure && (child.LastMoved + child.DecayTime) <= DateTime.UtcNow )
 								Timer.DelayCall( TimeSpan.Zero, new TimerCallback( child.Delete ) );
 						}
 					}
@@ -3136,7 +3136,7 @@ namespace Server.Multis
                     {
                         DateTime tempDT = reader.ReadDeltaTime();
                         //StructureDecayTime = reader.ReadDeltaTime();
-                        m_DecayMinutesStored = (tempDT - DateTime.Now).TotalMinutes;
+                        m_DecayMinutesStored = (tempDT - DateTime.UtcNow).TotalMinutes;
 
                         m_NeverDecay = reader.ReadBool();
                         goto case 11;

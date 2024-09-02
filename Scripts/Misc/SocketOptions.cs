@@ -209,7 +209,7 @@ namespace Server
 //                Console.WriteLine( "Login: {0}: Past IP limit threshold", ns );
 
 //                using ( StreamWriter op = new StreamWriter( "ipLimits.log", true ) )
-//                    op.WriteLine( "{0}\tPast IP limit threshold\t{1}", ns, DateTime.Now );
+//                    op.WriteLine( "{0}\tPast IP limit threshold\t{1}", ns, DateTime.UtcNow );
 
 //                ns.Dispose();
 //                return;

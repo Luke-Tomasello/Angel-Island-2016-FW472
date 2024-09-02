@@ -288,7 +288,7 @@ namespace Server.BountySystem
             {
                 //Rewards stay viable for 4 weeks + 1 hour per 100 gold above 500
                 //rewarddate + 4 weeks + (amount-500)/100 hours
-                if ((b.RewardDate + TimeSpan.FromDays(28) + TimeSpan.FromHours((b.Reward - 500) / 100)) < DateTime.Now)
+                if ((b.RewardDate + TimeSpan.FromDays(28) + TimeSpan.FromHours((b.Reward - 500) / 100)) < DateTime.UtcNow)
                 {
                     toRemove.Add(b);
                 }
@@ -558,7 +558,7 @@ namespace Server.BountySystem
 
                         if (b.WantedPlayer != null &&
                             b.Reward > 0 &&
-                            b.RewardDate <= DateTime.Now)
+                            b.RewardDate <= DateTime.UtcNow)
                         {
                             m_bounties.Add(b);
                         }

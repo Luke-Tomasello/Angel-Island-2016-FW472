@@ -221,60 +221,15 @@ namespace Server.Gumps
             e.Mobile.SendGump(new AdminGump(e.Mobile, AdminGumpPage.Clients, 0, null, null, null));
         }
 
-        //		public static int GetHueFor( Mobile m )
-        //		{
-        //			if ( m == null )
-        //				return LabelHue;
-        //
-        //			switch ( m.AccessLevel )
-        //			{
-        //				case AccessLevel.Owner: return 0x35;
-        //				case AccessLevel.Administrator: return 0x516;
-        //				case AccessLevel.Seer: return 0x144;
-        //				case AccessLevel.GameMaster: return 0x21;
-        //				case AccessLevel.Counselor: return 0x2;
-        //				case AccessLevel.FightBroker: return 0x8AB;
-        //				case AccessLevel.Reporter: return 0x979;
-        //				case AccessLevel.Player: default:
-        //				{
-        //					if ( m.Murderer )
-        //						return 0x21;
-        //					else if ( m.Criminal )
-        //						return 0x3B1;
-        //
-        //					return 0x58;
-        //				}
-        //			}
-        //		}
-
-        //		private static string[] m_AccessLevelStrings = new string[]
-        //			{
-        //				"Player",
-        //				"Reporter",
-        //				"Fight Broker",
-        //				"Counselor",
-        //				"Game Master",
-        //				"Seer",
-        //				"Administrator",
-        //				"Owner",
-        //				"ReadOnly"
-        //			};
-
         public static string FormatAccessLevel(AccessLevel level)
         {
-            switch (level)
-            {
-                case AccessLevel.Ignore: return "Player";
-                case AccessLevel.Player: return "Player";
-                case AccessLevel.Reporter: return "Reporter";
-                case AccessLevel.FightBroker: return "Fight Broker";
-                case AccessLevel.Counselor: return "Counselor";
-                case AccessLevel.GameMaster: return "Game Master";
-                case AccessLevel.Seer: return "Seer";
-                case AccessLevel.Administrator: return "Administrator";
-                case AccessLevel.Owner: return "Owner";
-                default: return "Unknown";
+            string name = Enum.GetName(typeof(AccessLevel), level);
+            if (name != null)
+            { 
+                return Utility.SplitCamelCase(name);
             }
+
+            return "Unknown";
         }
 
         public AdminGump(Mobile from, AdminGumpPage pageType, int listPage, ArrayList list, string notice, object state)
@@ -351,7 +306,7 @@ namespace Server.Gumps
                             AddLabel(150, 270, LabelHue, Core.ScriptItems.ToString());
 
                             AddLabel(20, 290, LabelHue, "Uptime:");
-                            AddLabel(150, 290, LabelHue, FormatTimeSpan(DateTime.Now - Clock.ServerStart));
+                            AddLabel(150, 290, LabelHue, FormatTimeSpan(DateTime.UtcNow - Clock.ServerStart));
 
                             AddLabel(20, 310, LabelHue, "Memory:");
                             AddLabel(150, 310, LabelHue, FormatByteAmount(GC.GetTotalMemory(false)));
@@ -567,9 +522,6 @@ namespace Server.Gumps
                                     continue;
 
                                 Mobile m = ns.Mobile;
-
-                                if (m != null && m.Hidden && m.AccessLevel == AccessLevel.Ignore)
-                                    continue;
 
                                 Account a = ns.Account as Account;
                                 int offset = 140 + (i * 20);
@@ -1005,7 +957,7 @@ namespace Server.Gumps
                                 }
                                 else
                                 {
-                                    TimeSpan remaining = (DateTime.Now - banTime);
+                                    TimeSpan remaining = (DateTime.UtcNow - banTime);
 
                                     if (remaining < TimeSpan.Zero)
                                         remaining = TimeSpan.Zero;
@@ -2675,7 +2627,7 @@ namespace Server.Gumps
                                 {
                                     ArrayList results = new ArrayList();
 
-                                    DateTime minTime = DateTime.Now - TimeSpan.FromDays(30.0);
+                                    DateTime minTime = DateTime.UtcNow - TimeSpan.FromDays(30.0);
 
                                     foreach (Account acct in Accounts.Table.Values)
                                     {

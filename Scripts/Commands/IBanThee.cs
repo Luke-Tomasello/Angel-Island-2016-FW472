@@ -122,7 +122,7 @@ namespace Server.PJUM
                             //move player to outside arena
                             pm.MoveToWorld(new Point3D(353, 905, 0), Map.Felucca);
 
-                            PJUM.AddMacroer(lns, pm, DateTime.Now + TimeSpan.FromHours(2));
+                            PJUM.AddMacroer(lns, pm, DateTime.UtcNow + TimeSpan.FromHours(2));
 
                             //Add bounty to player
                             string name = String.Format("Officer {0}", Utility.RandomBool() ? NameList.RandomName("male") : NameList.RandomName("female"));
@@ -161,7 +161,7 @@ namespace Server.PJUM
                             //Add comment to account
                             Account acc = pm.Account as Account;
                             string comment = String.Format("On {0}, {1} caught {2} disturbing event at {3} : removed using the [ibanthee command",
-                                DateTime.Now,
+                                DateTime.UtcNow,
                                 from.Name,
                                 pm.Name,
                                 location);

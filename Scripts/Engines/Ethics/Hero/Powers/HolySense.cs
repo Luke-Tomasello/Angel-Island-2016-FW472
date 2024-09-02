@@ -49,10 +49,10 @@ namespace Server.Ethics.Hero
         public override void BeginInvoke(Player from)
         {
             // spam trap
-            if (DateTime.Now - lastUsed < TimeSpan.FromSeconds(.7))
+            if (DateTime.UtcNow - lastUsed < TimeSpan.FromSeconds(.7))
                 return;
 
-            lastUsed = DateTime.Now;
+            lastUsed = DateTime.UtcNow;
 
             Ethic opposition = Ethic.Evil;
 

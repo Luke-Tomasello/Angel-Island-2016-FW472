@@ -151,7 +151,7 @@ namespace Server.Engines
             foreach (IPDomain node in WealthTracker.m_IPList.Values)
             {   // filter out old farming activity
                 if (node == null) continue;
-                if (((TimeSpan)(DateTime.Now - node.lastTick)).Minutes <= timeout)
+                if (((TimeSpan)(DateTime.UtcNow - node.lastTick)).Minutes <= timeout)
                     list[jx++] = node;
             }
 
@@ -261,7 +261,7 @@ namespace Server.Engines
             protected Hashtable childList { get { return m_childList; } }
             private int m_gold;
             public int gold { get { return m_gold; } set { m_gold = value; } }
-            DateTime m_lastTick = DateTime.Now;
+            DateTime m_lastTick = DateTime.UtcNow;
             public DateTime lastTick { get { return m_lastTick; } set { m_lastTick = value; } }
             private Point3D m_location;
             public Point3D location { get { return m_location; } set { m_location = value; } }
@@ -337,10 +337,10 @@ namespace Server.Engines
             {
                 ad.mobileList[e.from.Serial] = e.from;              // record mobile (not sure what the key should be)
                 ad.gold += e.item.Amount;                           // update gold for this IPDomain
-                ad.lastTick = DateTime.Now;                         // last gold pickup
+                ad.lastTick = DateTime.UtcNow;                         // last gold pickup
                 ad.location = e.from.Location;                      // last gold pickup location
                 ipd.gold += e.item.Amount;                          // update gold for this IPDomain
-                ipd.lastTick = DateTime.Now;                        // last gold pickup
+                ipd.lastTick = DateTime.UtcNow;                        // last gold pickup
                 ipd.location = e.from.Location;                     // last gold pickup location
             }
         }

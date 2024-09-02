@@ -153,7 +153,7 @@ namespace Server.Gumps
             }
 
             if ((m_Guild.Type != newType || m_Guild.IOBAlignment != newIOBType)
-                && m_Guild.TypeLastChange.AddDays(7) > DateTime.Now)
+                && m_Guild.TypeLastChange.AddDays(7) > DateTime.UtcNow)
             {
                 m_Mobile.SendMessage("You can only change your alignment once every 7 days.");
             }

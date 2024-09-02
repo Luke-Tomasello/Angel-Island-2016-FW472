@@ -283,7 +283,7 @@ namespace Server.Mobiles
         private class AttackTimer : Timer
         {
             private WarriorGuard m_Owner;
-            private DateTime m_NextRevealChatter = DateTime.Now - TimeSpan.FromMilliseconds(850);
+            private DateTime m_NextRevealChatter = DateTime.UtcNow - TimeSpan.FromMilliseconds(850);
             private bool bWasHidden = false;
 
             public AttackTimer(WarriorGuard owner)
@@ -361,10 +361,10 @@ namespace Server.Mobiles
                     if (!m_Owner.Move(m_Owner.GetDirectionTo(target) | Direction.Running))
                         TeleportTo(target);
                 }
-                else if (!m_Owner.CanSee(target) && DateTime.Now > m_NextRevealChatter)
+                else if (!m_Owner.CanSee(target) && DateTime.UtcNow > m_NextRevealChatter)
                 {
                     bWasHidden = true;
-                    m_NextRevealChatter = DateTime.Now + TimeSpan.FromMilliseconds(850);
+                    m_NextRevealChatter = DateTime.UtcNow + TimeSpan.FromMilliseconds(850);
                     switch (Utility.Random(4))
                     {
                         case 0: m_Owner.Say("Reveal yourself!"); break;

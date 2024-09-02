@@ -351,10 +351,10 @@ namespace Server.Mobiles
             base.OnThink();
 
             // look around every 2 seconds
-            if (DateTime.Now > m_lastLook && AIObject != null)
+            if (DateTime.UtcNow > m_lastLook && AIObject != null)
             {   // remember players in the area
                 AIObject.LookAround(RangePerception);
-                m_lastLook = DateTime.Now + TimeSpan.FromSeconds(2.0);
+                m_lastLook = DateTime.UtcNow + TimeSpan.FromSeconds(2.0);
             }
         }
 

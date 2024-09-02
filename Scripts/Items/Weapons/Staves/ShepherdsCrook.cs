@@ -97,7 +97,7 @@ namespace Server.Items
         public ShepherdsCrook(Serial serial)
             : base(serial)
         {
-            LastUsed = DateTime.Now;
+            LastUsed = DateTime.UtcNow;
         }
 
 
@@ -119,13 +119,13 @@ namespace Server.Items
             if (Weight == 2.0)
                 Weight = 4.0;
 
-            LastUsed = DateTime.Now;
+            LastUsed = DateTime.UtcNow;
         }
 
 
         public override void OnDoubleClick(Mobile from)
         {
-            DateTime now = DateTime.Now;
+            DateTime now = DateTime.UtcNow;
 
             if (now > LastUsed + TimeSpan.FromSeconds(2.0))
             {

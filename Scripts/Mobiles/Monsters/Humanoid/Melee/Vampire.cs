@@ -95,7 +95,7 @@ namespace Server.Mobiles
         public HumanToBat toBatForm = new HumanToBat();
         public bool BatForm { get { return this.Body == 317; } }
         public int[] FlyTiles { get { return new int[] { 18507, 18506, 18505, 18504 }; } }
-        //private DateTime m_LastTransform = DateTime.Now;
+        //private DateTime m_LastTransform = DateTime.UtcNow;
 
         /* for runtime tuning only
 		 * we can delete/hard-code this at some future date
@@ -313,7 +313,7 @@ namespace Server.Mobiles
                 m.Combatant = null;
 
                 if (m is BaseCreature && !((BaseCreature)m).BardPacified && !((BaseCreature)m).Uncalmable)
-                    ((BaseCreature)m).Pacify(this, DateTime.Now + TimeSpan.FromSeconds(30.0));
+                    ((BaseCreature)m).Pacify(this, DateTime.UtcNow + TimeSpan.FromSeconds(30.0));
 
                 m.SendMessage("You feel a calming peace wash over you.");
                 return true;
@@ -360,12 +360,12 @@ namespace Server.Mobiles
 
         /*public override bool CanTransform() 
 		{	// can't change more often that once every 30 seconds
-			if (DateTime.Now - m_LastTransform > TimeSpan.FromSeconds(30))
+			if (DateTime.UtcNow - m_LastTransform > TimeSpan.FromSeconds(30))
 				return true;
 			else
 				return false;
 		}
-		public override void LastTransform() { m_LastTransform = DateTime.Now; }*/
+		public override void LastTransform() { m_LastTransform = DateTime.UtcNow; }*/
 
         private class DeathTimer : Timer
         {

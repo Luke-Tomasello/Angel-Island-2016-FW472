@@ -49,13 +49,13 @@ namespace Server.Items
         [CommandProperty(AccessLevel.GameMaster)]
         public TimeSpan Expires
         {
-            get { return m_expires - DateTime.Now; }
+            get { return m_expires - DateTime.UtcNow; }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public bool Expired
         {
-            get { return DateTime.Now > m_expires; }
+            get { return DateTime.UtcNow > m_expires; }
         }
 
         public PlayerQuestDeed(BaseContainer c)
@@ -64,7 +64,7 @@ namespace Server.Items
             base.Weight = 1.0;
             base.Name = "a quest ticket";
             m_container = c;                                        // the prize
-            m_expires = DateTime.Now + TimeSpan.FromHours(24.0);    // Heartbeat has it's own hadrcoded notion of 24 hours not tied to this value
+            m_expires = DateTime.UtcNow + TimeSpan.FromHours(24.0);    // Heartbeat has it's own hadrcoded notion of 24 hours not tied to this value
             m_PrizeID = (int)m_container.Serial;                    // identifies the prize
             PlayerQuestManager.Deeds.Add(this);                     // add to our managers list
             PlayerQuestManager.Announce();                          // force an announcement now

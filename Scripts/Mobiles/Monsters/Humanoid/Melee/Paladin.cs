@@ -83,7 +83,7 @@ namespace Server.Mobiles
 
             VirtualArmor = 40;
 
-            m_NextSpeechTime = DateTime.Now;
+            m_NextSpeechTime = DateTime.UtcNow;
 
             PackItem(new Bandage(Utility.RandomMinMax(1, 15)));
 
@@ -142,7 +142,7 @@ namespace Server.Mobiles
         {
             get
             {
-                if (Hits > 1 && DateTime.Now >= m_NextSpeechTime)
+                if (Hits > 1 && DateTime.UtcNow >= m_NextSpeechTime)
                 {
                     int phrase = Utility.Random(4);
 
@@ -154,7 +154,7 @@ namespace Server.Mobiles
                         case 3: this.Say(true, "Your music is wasted on me friend."); break;
                     }
 
-                    m_NextSpeechTime = DateTime.Now + m_SpeechDelay;
+                    m_NextSpeechTime = DateTime.UtcNow + m_SpeechDelay;
                 }
 
                 return BardImmune;
@@ -172,7 +172,7 @@ namespace Server.Mobiles
 							if ( Utility.RandomBool() )
 							{
 								this.Say( true, "Wretched Dog!" );
-								m_NextSpeechTime = DateTime.Now + m_SpeechDelay;				
+								m_NextSpeechTime = DateTime.UtcNow + m_SpeechDelay;				
 							}
 						}
 						else if ( this.Hits <= 100 )
@@ -180,7 +180,7 @@ namespace Server.Mobiles
 							if ( Utility.RandomBool() )
 							{
 								this.Say( true, "Vile Heathen!" );
-								m_NextSpeechTime = DateTime.Now + m_SpeechDelay;				
+								m_NextSpeechTime = DateTime.UtcNow + m_SpeechDelay;				
 							}					
 						}
 					}
@@ -191,7 +191,7 @@ namespace Server.Mobiles
 				public override void OnMovement( Mobile m, Point3D oldLocation )
 				{
 
-					if ( m.Player && m.Alive && m.InRange( this, 10 ) && m.AccessLevel == AccessLevel.Player && DateTime.Now >= m_NextSpeechTime && Combatant == null)
+					if ( m.Player && m.Alive && m.InRange( this, 10 ) && m.AccessLevel == AccessLevel.Player && DateTime.UtcNow >= m_NextSpeechTime && Combatant == null)
 					{
 						Item item = m.FindItemOnLayer( Layer.Helm );
 
@@ -200,12 +200,12 @@ namespace Server.Mobiles
 							if ( item is BloodDrenchedBandana )
 							{
 								this.Say ( "Leave these halls before it is too late!" );
-								m_NextSpeechTime = DateTime.Now + m_SpeechDelay;
+								m_NextSpeechTime = DateTime.UtcNow + m_SpeechDelay;
 							} 
 							else
 							{
 								this.Say ( "Where is your bandana, friend?" );
-								m_NextSpeechTime = DateTime.Now + m_SpeechDelay;
+								m_NextSpeechTime = DateTime.UtcNow + m_SpeechDelay;
 							}
 						}
 			
@@ -216,7 +216,7 @@ namespace Server.Mobiles
 
 				public override void OnThink()
 				{
-					if ( DateTime.Now >= m_NextSpeechTime )
+					if ( DateTime.UtcNow >= m_NextSpeechTime )
 					{
 						Mobile combatant = this.Combatant;
 
@@ -232,7 +232,7 @@ namespace Server.Mobiles
 								case 3: this.Say( true, "Ah! You do bleed badly!" ); break;
 							}
 					
-							m_NextSpeechTime = DateTime.Now + m_SpeechDelay;				
+							m_NextSpeechTime = DateTime.UtcNow + m_SpeechDelay;				
 						}
 
 						base.OnThink();

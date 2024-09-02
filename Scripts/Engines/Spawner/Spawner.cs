@@ -538,7 +538,7 @@ namespace Server.Mobiles
             get
             {
                 if (m_Running)
-                    return m_End - DateTime.Now;
+                    return m_End - DateTime.UtcNow;
                 else
                     return TimeSpan.FromSeconds(0);
             }
@@ -1360,7 +1360,7 @@ namespace Server.Mobiles
             if (!m_Running)
                 return;
 
-            m_End = DateTime.Now + delay;
+            m_End = DateTime.UtcNow + delay;
 
             if (m_Timer != null)
             {
@@ -1507,7 +1507,7 @@ namespace Server.Mobiles
             else
                 strAcc = "SYSTEM";
 
-            LogFile.WriteLine("{0}, {1}, {2}, {3}, {4}, {5} {6}", DateTime.Now, strAcc, this.Location.X, this.Location.Y, this.Location.Z,
+            LogFile.WriteLine("{0}, {1}, {2}, {3}, {4}, {5} {6}", DateTime.UtcNow, strAcc, this.Location.X, this.Location.Y, this.Location.Z,
                 (this.ObjectNames != null && this.ObjectNames.Count > 0) ? this.ObjectNames[0] : "-null-", changemade);
 
             LogFile.Close();
@@ -1705,7 +1705,7 @@ namespace Server.Mobiles
                         TimeSpan ts = TimeSpan.Zero;
 
                         if (m_Running)
-                            ts = reader.ReadDeltaTime() - DateTime.Now;
+                            ts = reader.ReadDeltaTime() - DateTime.UtcNow;
 
                         int size = reader.ReadInt();
 
@@ -1784,7 +1784,7 @@ namespace Server.Mobiles
 
                     using (StreamWriter op = new StreamWriter("badspawn.log", true))
                     {
-                        op.WriteLine("# Bad spawns : {0}", DateTime.Now);
+                        op.WriteLine("# Bad spawns : {0}", DateTime.UtcNow);
                         op.WriteLine("# Format: X Y Z F Name");
                         op.WriteLine();
 
@@ -1802,15 +1802,15 @@ namespace Server.Mobiles
 
     class EventSpawner : Spawner
     {
-        private DateTime m_EventEnd = DateTime.Now + TimeSpan.FromHours(24.0);
-        private DateTime m_EventStart = DateTime.Now;
+        private DateTime m_EventEnd = DateTime.UtcNow + TimeSpan.FromHours(24.0);
+        private DateTime m_EventStart = DateTime.UtcNow;
         private InternalTimer m_Timer;
 
         // you can specify either an expiration date or countdown timer.
         [CommandProperty(AccessLevel.Seer)]
         public TimeSpan CountDown
         {
-            get { return m_EventEnd - DateTime.Now; }
+            get { return m_EventEnd - DateTime.UtcNow; }
             set
             {
                 if (m_Timer != null)
@@ -1818,7 +1818,7 @@ namespace Server.Mobiles
                     m_Timer.Stop();
                     m_Timer.Flush();        // remove any queued ticks
                 }
-                m_EventEnd = DateTime.Now + value;
+                m_EventEnd = DateTime.UtcNow + value;
                 m_Timer = new InternalTimer(this, CountDown);
                 m_Timer.Start();
             }
@@ -1885,7 +1885,7 @@ namespace Server.Mobiles
         public override void OnTick()
         {
             // spawn stuffs during event only
-            if (DateTime.Now >= EventStart && DateTime.Now < EventEnd)
+            if (DateTime.UtcNow >= EventStart && DateTime.UtcNow < EventEnd)
                 base.OnTick();      // spawn and reset timer
             else
                 base.DoTimer();     // reset timer only

@@ -70,7 +70,7 @@ namespace Server.Engines
         public bool AllowStealth { get { return !this.RestrictedSkills[(int)SkillName.Stealth]; } set { this.RestrictedSkills[(int)SkillName.Stealth] = !value; } }
         [CommandProperty(AccessLevel.Player, AccessLevel.Administrator)]
         public bool AllowHiding { get { return !this.RestrictedSkills[(int)SkillName.Hiding]; } set { this.RestrictedSkills[(int)SkillName.Hiding] = !value; } }
-        [CommandProperty(AccessLevel.Player, AccessLevel.ReadOnly)]
+        [CommandProperty(AccessLevel.Player, AccessLevel.System)]
         public bool AllowMagery { get { return GetFlag(BoolData.AllowMagery); } set { SetFlag(BoolData.AllowMagery, value); } }
         [CommandProperty(AccessLevel.Player, AccessLevel.Administrator)]
         public bool AllowTeleport { get { return !this.RestrictedSpells[21]; } set { this.RestrictedSpells[21] = !value; } }
@@ -834,7 +834,7 @@ namespace Server.Engines
         private void NewRound()
         {
             // new round timer
-            m_StateTimer[States.PlayRound] = DateTime.Now + TimeSpan.FromMinutes(RoundMinutes);
+            m_StateTimer[States.PlayRound] = DateTime.UtcNow + TimeSpan.FromMinutes(RoundMinutes);
 
             // swap sides
             Defense = Defense == Team.Red ? Team.Blue : Team.Red;
@@ -963,7 +963,7 @@ namespace Server.Engines
         // someone is trying to register a CTF game.
         private States Registration()
         {   // 30 seconds to target captain 2 until registration timeout
-            m_StateTimer[States.Registration_wait] = DateTime.Now + TimeSpan.FromSeconds(30);
+            m_StateTimer[States.Registration_wait] = DateTime.UtcNow + TimeSpan.FromSeconds(30);
 
             SessionId++;            // a new session has begun. - used to detect stale target cursors
             Captain2 = null;
@@ -993,7 +993,7 @@ namespace Server.Engines
                 return States.Cancel;
             }
 
-            if (DateTime.Now > m_StateTimer[States.Registration_wait])
+            if (DateTime.UtcNow > m_StateTimer[States.Registration_wait])
             {
                 Broker.SayTo(Captain1, "You have taken too long, your CTF match has been canceled.");
                 return States.Cancel;
@@ -1010,7 +1010,7 @@ namespace Server.Engines
             Broker.SayTo(Captain1, "But I think you can take him.");
 
             // 30 seconds to target captain 2 until registration timeout
-            m_StateTimer[States.WaitAcceptChallenge] = DateTime.Now + TimeSpan.FromSeconds(30);
+            m_StateTimer[States.WaitAcceptChallenge] = DateTime.UtcNow + TimeSpan.FromSeconds(30);
 
             return States.WaitAcceptChallenge;
         }
@@ -1025,7 +1025,7 @@ namespace Server.Engines
             if (!MobileOk(Captain1) || !MobileOk(Captain2) || !MobileOk(Broker))
                 return States.Cancel;
 
-            if (DateTime.Now > m_StateTimer[States.WaitAcceptChallenge])
+            if (DateTime.UtcNow > m_StateTimer[States.WaitAcceptChallenge])
             {
                 Broker.SayTo(Captain1, "{0} did not agree to the challenge so the match has been called off.", Captain2.Name);
                 Broker.SayTo(Captain2, "You did not agree to the challenge so the match has been called off.");
@@ -1059,7 +1059,7 @@ namespace Server.Engines
             }
 
             // 2 minutes to return the rule book
-            m_StateTimer[States.WaitBookReturn] = DateTime.Now + TimeSpan.FromSeconds(120);
+            m_StateTimer[States.WaitBookReturn] = DateTime.UtcNow + TimeSpan.FromSeconds(120);
 
             return States.WaitBookReturn;
         }
@@ -1078,7 +1078,7 @@ namespace Server.Engines
                 return States.DoTeleport;
             }
 
-            if (DateTime.Now > m_StateTimer[States.WaitBookReturn])
+            if (DateTime.UtcNow > m_StateTimer[States.WaitBookReturn])
             {
                 Broker.SayTo(Captain2, "{0} did not provide me with the rules so the match has been called off.", Captain2.Name);
                 Broker.SayTo(Captain1, "You did not provide me with the rules so the match has been called off.");
@@ -1128,7 +1128,7 @@ namespace Server.Engines
             }
 
             // 5 seconds until we teleport
-            m_StateTimer[States.WaitTeleport] = DateTime.Now + TimeSpan.FromSeconds(5);
+            m_StateTimer[States.WaitTeleport] = DateTime.UtcNow + TimeSpan.FromSeconds(5);
 
             // countdown timer to teleport
             WaitTeleportCount = 0;
@@ -1171,7 +1171,7 @@ namespace Server.Engines
         private States GameStart()
         {
             // N minutes for this round
-            m_StateTimer[States.PlayRound] = DateTime.Now + TimeSpan.FromMinutes(RoundMinutes);
+            m_StateTimer[States.PlayRound] = DateTime.UtcNow + TimeSpan.FromMinutes(RoundMinutes);
 
             // see if the player quit, or disconnected, etc
             if (!MobileOk(Captain1) || !MobileOk(Captain2))
@@ -1260,7 +1260,7 @@ namespace Server.Engines
             if (m_RedTeam.Count == 0 || m_BlueTeam.Count == 0)
                 return States.Cancel;
 
-            if (DateTime.Now > m_StateTimer[States.PlayRound])
+            if (DateTime.UtcNow > m_StateTimer[States.PlayRound])
             {
                 if (Round >= Rounds)
                     return States.GameEnd;
@@ -1316,15 +1316,15 @@ namespace Server.Engines
                 // the winning team moves on to the After Party
 
                 // the After Party total time
-                m_StateTimer[States.AfterParty] = DateTime.Now + TimeSpan.FromMinutes(AfterPartyMinutes);
+                m_StateTimer[States.AfterParty] = DateTime.UtcNow + TimeSpan.FromMinutes(AfterPartyMinutes);
 
                 // the after party Victory music
-                m_StateTimer[States.AfterPartyVictory] = DateTime.Now + TimeSpan.FromSeconds(16);
+                m_StateTimer[States.AfterPartyVictory] = DateTime.UtcNow + TimeSpan.FromSeconds(16);
 
                 // play stones baby!
                 m_StateTimer[States.AfterPartyStones] = DateTime.MaxValue;
 
-                m_StateTimer[States.AfterPartyMessage] = DateTime.Now + TimeSpan.FromSeconds(6);
+                m_StateTimer[States.AfterPartyMessage] = DateTime.UtcNow + TimeSpan.FromSeconds(6);
 
                 // set the mood music (15 seconds)
                 this.MusicTrack = MusicName.Victory;
@@ -1347,7 +1347,7 @@ namespace Server.Engines
                 return States.Cancel;
 
             // see if it's time to send the winners their message
-            if (DateTime.Now > m_StateTimer[States.AfterPartyMessage])
+            if (DateTime.UtcNow > m_StateTimer[States.AfterPartyMessage])
             {
                 if (GetLosingTeamChest() != null && GetLosingTeamChest().Items.Count > 0)
                 {
@@ -1357,22 +1357,22 @@ namespace Server.Engines
             }
 
             // see if it's time to put on the good old UO Stones tune
-            if (DateTime.Now > m_StateTimer[States.AfterPartyVictory])
+            if (DateTime.UtcNow > m_StateTimer[States.AfterPartyVictory])
             {   // yeah baby
                 this.MusicTrack = MusicName.Stones2;                                            // play this 
                 m_StateTimer[States.AfterPartyVictory] = DateTime.MaxValue;                     // turn this one off
-                m_StateTimer[States.AfterPartyStones] = DateTime.Now + new TimeSpan(0, 2, 15);  // length of stones
+                m_StateTimer[States.AfterPartyStones] = DateTime.UtcNow + new TimeSpan(0, 2, 15);  // length of stones
             }
 
             // see if it's time to put on the good old UO Stones tune
-            if (DateTime.Now > m_StateTimer[States.AfterPartyStones])
+            if (DateTime.UtcNow > m_StateTimer[States.AfterPartyStones])
             {   // okay, wind up with this lovely classic UO tune
                 this.MusicTrack = MusicName.Magincia;                                           // play this 
                 m_StateTimer[States.AfterPartyStones] = DateTime.MaxValue;                      // turn this one off
             }
 
             // see if the after party is over
-            if (DateTime.Now > m_StateTimer[States.AfterParty])
+            if (DateTime.UtcNow > m_StateTimer[States.AfterParty])
             {
                 // now kick the winning team
                 Dictionary<PlayerMobile, PlayerContextData>[] teams = new Dictionary<PlayerMobile, PlayerContextData>[1] { GetWinningTeam() };

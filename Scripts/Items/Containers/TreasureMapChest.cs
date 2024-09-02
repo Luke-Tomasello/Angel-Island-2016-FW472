@@ -167,7 +167,7 @@ namespace Server.Items
             m_Level = level;
             IsThemed = themed;
             m_type = type;
-            m_DeleteTime = DateTime.Now + TimeSpan.FromHours(3.0);
+            m_DeleteTime = DateTime.UtcNow + TimeSpan.FromHours(3.0);
 
             m_Timer = new DeleteTimer(this, m_DeleteTime);
             m_Timer.Start();
@@ -846,7 +846,7 @@ namespace Server.Items
             return CheckLoot(from, item != this) && base.CheckItemUse(from, item);
         }
 
-        private DateTime lastLift = DateTime.Now;
+        private DateTime lastLift = DateTime.UtcNow;
         public override bool CheckLift(Mobile from, Item item, ref LRReason reject)
         {   // Thwart lift macros
             if (LiftMemory.Recall(from))
@@ -1230,7 +1230,7 @@ namespace Server.Items
             private Item m_Item;
 
             public DeleteTimer(Item item, DateTime time)
-                : base(time - DateTime.Now)
+                : base(time - DateTime.UtcNow)
             {
                 m_Item = item;
                 Priority = TimerPriority.OneMinute;

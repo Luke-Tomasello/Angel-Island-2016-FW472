@@ -120,7 +120,7 @@ namespace Server.Spells.Fifth
             {
                 m_From = from;
                 m_Target = target;
-                m_EndTime = DateTime.Now + duration;
+                m_EndTime = DateTime.UtcNow + duration;
             }
         }
 
@@ -130,7 +130,7 @@ namespace Server.Spells.Fifth
             Mobile from = info.m_From;
             Mobile targ = info.m_Target;
 
-            if (DateTime.Now >= info.m_EndTime || targ.Deleted || from.Map != targ.Map ||
+            if (DateTime.UtcNow >= info.m_EndTime || targ.Deleted || from.Map != targ.Map ||
                 targ.GetDistanceToSqrt(from) > 16 || targ.InvisibleShield == false)
             {
                 if (info.m_Timer != null)

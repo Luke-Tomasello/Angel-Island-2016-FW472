@@ -192,7 +192,7 @@ namespace Server.Commands
 
                     Commands.CommandLogging.WriteLine(m_Staff, "{0} imprisoned {1}(Username: {2}) for {4} hours with reason: {3}.",
                         m_Staff.Name, m_Player.Name, acct.Username, m_Comment, sentence);
-                    acct.Comments.Add(new AccountComment(m_Staff.Name, DateTime.Now + "\nTag count: " + (acct.Comments.Count + 1) + "\nImprisoned for " + sentence + " hours. Reason: " + m_Comment));
+                    acct.Comments.Add(new AccountComment(m_Staff.Name, DateTime.UtcNow + "\nTag count: " + (acct.Comments.Count + 1) + "\nImprisoned for " + sentence + " hours. Reason: " + m_Comment));
                 }
                 catch (Exception ex)
                 {

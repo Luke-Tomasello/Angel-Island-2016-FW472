@@ -307,7 +307,7 @@ namespace Server.Gumps
                     {
                         case 0: // track (from index view)
                             {
-                                if ((DateTime.Now - m_Book.m_LastUse) < UseDelay)
+                                if ((DateTime.UtcNow - m_Book.m_LastUse) < UseDelay)
                                 {
                                     from.SendMessage("You must wait before using this again");
                                 }
@@ -316,7 +316,7 @@ namespace Server.Gumps
                                     if (m_Book.Movable)
                                     {
                                         //set the last time the book was used!
-                                        m_Book.m_LastUse = DateTime.Now;
+                                        m_Book.m_LastUse = DateTime.UtcNow;
 
                                         from.CloseGump(typeof(BountyLedgerGump));
                                         //from.SendGump( new BountyLedgerGump( from, m_Book ) );

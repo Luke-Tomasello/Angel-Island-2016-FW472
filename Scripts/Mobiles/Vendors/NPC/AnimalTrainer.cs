@@ -427,7 +427,7 @@ namespace Server.Mobiles
                 pet.IsStabled = true;
                 from.Stabled.Add(pet);
 
-                pet.LastStableChargeTime = DateTime.Now;
+                pet.LastStableChargeTime = DateTime.UtcNow;
 
                 // they are probably being jailed, let them slide for this FIRST payment only
                 if (bHasGold == false && bForceStable == true)

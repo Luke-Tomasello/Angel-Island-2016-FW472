@@ -19,17 +19,27 @@
  *
  ***************************************************************************/
 
-/* ***********************************
- * ** CAUTIONARY NOTE ON TIME USAGE **
- * This module uses Cron.GameTimeNow which returns a DST adjusted version of time independent
- * of the underlying system. For instance our production server DOES NOT change time for DST, but this module
- * along with a select few others surfaces functionality to the players which require a standard (DST adjusted) notion of time.
- * The DST adjusted modules include: AutomatedEventSystem.cs, AutoRestart.cs, CronScheduler.cs.
- * ***********************************
- */
-
 /* Scripts\Engines\CronScheduler\CronScheduler.cs
  * CHANGELOG:
+ *  6/21/2024, Adam (CronProcess())
+ *      CronProcess was getting called once per minute to process one job from one of the queues.
+ *      Change: Now CronProcess will loop over the queues, processing jobs, until the clock runs out (currently set to 0.08 seconds.)
+ *      This change should keep queue depth to a minimum while tightening the bond between requested job time, and actual time executed.
+ *      (less jobs waiting in the queue for the next one-minute time tick.)
+ *  6/19/2024, Adam (Time)
+ *      Remove all notions of locale specific time. Everything is now UTC based.
+ *  3/29/22, Adam ("plantgrowth")
+ *      running certain commands can do damage on the production server.
+ *      check to make sure we are on TC, or that the user is sure they want to run this command.
+ *      We use a confirmation prompt
+ *  2/28/22, Adam
+ *      add new Cron command to pause/resume cron tasks
+ *  7/27/2021, adam
+ *      Add the Cron.PostMessage() function.
+ *      This function allows server entities like mobiles, engines like the harvest system, etc to post a message for cron priority processing.
+ *      This is different from standard cron processing where a time specification dictates when a job is run.
+ *      When a message is posted via PostMessage, a special one-time sub second timer is kicked off to process the PriorityQueue which holds
+ *      this type of message.
  *	3/20/10, adam
  *		Add compiler so we can use the '?' specification.
  *		Remember we need to precompile any specification that uses the '?' since the specification is reinterpreted each pass
@@ -44,8 +54,8 @@
  *	11/24/07, Adam
  *		Fix loop error (should have been < X, not <= X)
  *	4/14/08, Adam
- *		Replace all explicit use of AdjustedDateTime(DateTime.Now).Value with the new:
- *			public static DateTime Cron.GameTimeNow
+ *		Replace all explicit use of AdjustedDateTime(DateTime.UtcNow).Value with the new:
+ *			public static DateTime AdjustedDateTime.GameTimeSansDst
  *		We do this so that it is clear what files need to opperate in this special time mode:
  *			CronScheduler.cs, AutoRestart.cs, AutomatedEventSystem.cs
  *	4/7/08, Adam
@@ -67,8 +77,10 @@
  */
 
 using Server.Commands;
+using Server.Prompts;
 using System;
 using System.Collections;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Server.Engines.CronScheduler
@@ -82,44 +94,205 @@ namespace Server.Engines.CronScheduler
         public static void Initialize()
         {   //run a specific task 
             CommandSystem.Register("Run", AccessLevel.Administrator, new CommandEventHandler(Run_OnCommand));
+            CommandSystem.Register("Cron", AccessLevel.Administrator, new CommandEventHandler(Cron_OnCommand));
         }
 
         private static ArrayList m_Handlers = ArrayList.Synchronized(new ArrayList());
         #endregion INITIALIZATION
 
-        #region Run_OnCommand
+        #region Cron Commands
+        // pause/resume Cron scheduler
+        private static void PauseUsage(Mobile m)
+        {
+            m.SendMessage("Usage: cron pause <hh:mm:ss>");
+            m.SendMessage("Usage: cron resume");
+        }
+        public static void Cron_OnCommand(CommandEventArgs e)
+        {
+            Mobile from = e.Mobile;
+            if (from.AccessLevel >= AccessLevel.Administrator)
+            {
+                string arg = e.ArgString;
+                if (arg == null || e.Arguments.Length < 2)
+                {
+                    PauseUsage(e.Mobile);
+                    return;
+                }
+                string command = arg.ToLower();
+                string[] toks = command.Split(' ');
+                string span = toks.Last();
+                TimeSpan ts;
+                if (TimeSpan.TryParse(span, out ts) == false)
+                {
+                    PauseUsage(e.Mobile);
+                    return;
+                }
+
+                if (toks[0] == "pause")
+                {
+                    if (CronPaused == true)
+                        e.Mobile.SendMessage("Cron already paused.");
+                    else
+                    {
+                        CronPauseTimer.Start((long)ts.TotalMilliseconds);
+                        CronPaused = true;
+                        e.Mobile.SendMessage("Paused.");
+                    }
+                }
+                else if (toks[0] == "resume")
+                {
+                    if (CronPaused == false)
+                        e.Mobile.SendMessage("Cron already running.");
+                    else
+                    {
+                        CronPaused = false;
+                        e.Mobile.SendMessage("Resumed.");
+                    }
+                }
+                else
+                    PauseUsage(e.Mobile);
+            }
+        }
         // enqueue a task normally scheduled on the heartbeat
         public static void Run_OnCommand(CommandEventArgs e)
         {
             Mobile from = e.Mobile;
             if (from.AccessLevel >= AccessLevel.Administrator)
             {
-                string cmd = e.GetString(0);
-                if (cmd.Length > 0)
+                string arg = e.GetString(0);
+                if (arg == null || arg.Length == 0)
+                {
+                    e.Mobile.SendMessage("Usage: run <TaskID>");
+                    return;
+                }
+                // allow ';' demilited command lists
+                string commandLine = e.ArgString;
+                string temp = commandLine.Replace(';', ' ');
+                string[] commands = temp.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (string cmd in commands)
                 {
                     CronEventEntry cee = Cron.Find(cmd);
                     if (cee == null)
                         e.Mobile.SendMessage("No task named \"{0}\".", cmd);
                     else
-                    {   // queue it!
-                        lock (m_TaskQueue.SyncRoot)
-                        {
-                            m_TaskQueue.Enqueue(cee);
+                    {   // running certain commands can do damage on the production server.
+                        //  check to make sure we are on TC, or that the user is sure they want to run this command.
+                        if (cee.Name.ToLower() == "plantgrowth" && Core.UOTC == false)
+                        {   // confirmation prompt for dangerous tasks.
+                            e.Mobile.Prompt = new ConfirmTaskPrompt(cee);
+                            e.Mobile.SendMessage("You are about to run a dangerous task on the production server.");
+                            e.Mobile.SendMessage("Type 'yes' to confirm.");
                         }
-                        e.Mobile.SendMessage("Task \"{0}\" enqueued.", cee.Name);
+                        else
+                        {
+                            // queue it!
+                            lock (m_PriorityQueue.SyncRoot)
+                                m_PriorityQueue.Enqueue(cee);
+
+                            e.Mobile.SendMessage("Task \"{0}\" enqueued.", cee.Name);
+
+                            // launch the Priority timer
+                            Timer.DelayCall(TimeSpan.FromSeconds(.75), new TimerStateCallback(PriorityTick), new object[] { null });
+                        }
                     }
-                }
-                else
-                {
-                    e.Mobile.SendMessage("Usage: run <TaskID>");
                 }
             }
         }
-        #endregion Run_OnCommand
+        private class ConfirmTaskPrompt : Prompt
+        {
+            private CronEventEntry m_command;
+
+            public ConfirmTaskPrompt(CronEventEntry cmd)
+            {
+                m_command = cmd;
+            }
+
+            public override void OnResponse(Mobile from, string text)
+            {
+                if (text.Length > 40)
+                    text = text.Substring(0, 40).ToLower();
+
+                if (text == "y" || text == "yes")
+                {
+                    lock (m_PriorityQueue.SyncRoot)
+                        m_PriorityQueue.Enqueue(m_command);
+
+                    from.SendMessage("Task \"{0}\" enqueued.", m_command.Name);
+
+                    // launch the Priority timer
+                    Timer.DelayCall(TimeSpan.FromSeconds(.75), new TimerStateCallback(PriorityTick), new object[] { null });
+                }
+            }
+
+            public override void OnCancel(Mobile from)
+            {
+                from.SendMessage("You decide not to run \"{0}\".", m_command.Name);
+            }
+        }
+        #endregion Cron Commands
+
+        #region PostMessage
+        public enum MessageType
+        {
+            MSG_DUMMY,          // do nothing. Good for testing
+
+            /*put mobile/item messages here*/
+
+            /*put global system messages here*/
+            GBL_MSG_START = 100,
+            GBL_ORE_SPAWN,      // notification of an ore spawn
+
+            /* other messages go here*/
+        }
+        public class ServerMessage
+        {
+            private MessageType m_message;
+            public MessageType Message { get { return m_message; } }
+            private object[] m_args;
+            public object[] Args { get { return m_args; } }
+            public ServerMessage(MessageType message, object[] args)
+            {
+                m_message = message;
+                m_args = args;
+            }
+        }
+        // enqueue a task normally scheduled on the heartbeat
+        public static void PostMessage(MessageType message, object[] args)
+        {
+            CronEventEntry cee = Cron.Find("ReceiveMessage");
+            if (cee == null)
+                return; // No so named task named task
+            else
+            {   // queue it!
+                lock (m_PriorityQueue.SyncRoot)
+                    m_PriorityQueue.Enqueue(cee);
+
+                lock (m_MessageQueue.SyncRoot)
+                    m_MessageQueue.Enqueue(new ServerMessage(message, args));
+
+                // launch the Priority timer
+                Timer.DelayCall(TimeSpan.FromSeconds(.75), new TimerStateCallback(PriorityTick), new object[] { null });
+            }
+        }
+        private static void PriorityTick(object state)
+        {   // nudge our cron to process this priority message
+            try { Cron.CronProcess(); }
+            catch (Exception e)
+            {
+                LogHelper.LogException(e);
+                System.Console.WriteLine("Exception Caught in CronScheduler.CronProcess: " + e.Message);
+                System.Console.WriteLine(e.StackTrace);
+            }
+        }
+        #endregion
 
         #region QUEUE MANAGEMENT
         private static Queue m_TaskQueue = Queue.Synchronized(new Queue());
         private static Queue m_IdleQueue = Queue.Synchronized(new Queue());
+        private static Queue m_PriorityQueue = Queue.Synchronized(new Queue());
+        private static Queue m_MessageQueue = Queue.Synchronized(new Queue());
+        public static Queue MessageQueue { get { return m_MessageQueue; } }
 
         private static int GetTaskQueueDepth()
         {
@@ -137,6 +310,43 @@ namespace Server.Engines.CronScheduler
             }
         }
 
+        private static int GetPriorityQueueDepth()
+        {
+            lock (m_IdleQueue.SyncRoot)
+            {
+                return m_PriorityQueue.Count;
+            }
+        }
+
+        public static void QueuePriorityTask(CronEventHandler handler)
+        {
+            QueuePriorityTask(null, handler, null, true);
+        }
+
+        public static void QueuePriorityTask(string Name, CronEventHandler handler)
+        {
+            QueuePriorityTask(Name, handler, null, true);
+        }
+
+        public static void QueuePriorityTask(string Name, CronEventHandler handler, string CronSpec)
+        {
+            QueuePriorityTask(Name, handler, CronSpec, true);
+        }
+
+        public static void QueuePriorityTask(string Name, CronEventHandler handler, string CronSpec, bool Unique)
+        {
+            lock (m_PriorityQueue.SyncRoot)
+            {
+                CronEventEntry task = new CronEventEntry(Name, handler, new CronJob(CronSpec), Unique, null);
+                if (Unique == true)
+                {   // only one
+                    if (m_PriorityQueue.Contains(task) == false)
+                        m_PriorityQueue.Enqueue(task);
+                }
+                else
+                    m_PriorityQueue.Enqueue(task);
+            }
+        }
         public static void QueueIdleTask(CronEventHandler handler)
         {
             QueueIdleTask(null, handler, null, true);
@@ -193,34 +403,21 @@ namespace Server.Engines.CronScheduler
         }
         #endregion QUEUE MANAGEMENT
 
-        #region UTILS
-        public static DateTime GameTimeNow
-        {   // time that is adjusted for daylight savings time
-            //get { return new AdjustedDateTime(DateTime.Now).Value; }
-            get { return AdjustedDateTime.GameTime; }
-        }
-        #endregion
-
-
         #region JOB REGISTRATION
         // register a new job
         public static void Register(CronEventHandler handler, string CronSpec)
         {
-            Register(null, handler, CronSpec, true);
+            Register(handler, CronSpec, true);
         }
-        public static void Register(string Name, CronEventHandler handler, string CronSpec)
+        public static void Register(CronEventHandler handler, string CronSpec, bool Unique)
         {
-            Register(Name, handler, CronSpec, true);
+            Register(handler, CronSpec, Unique, null);
         }
-        public static void Register(string Name, CronEventHandler handler, string CronSpec, bool Unique)
-        {
-            Register(Name, handler, CronSpec, Unique, null);
-        }
-        public static void Register(string Name, CronEventHandler handler, string CronSpec, bool Unique, CronLimit limit)
+        public static void Register(CronEventHandler handler, string CronSpec, bool Unique, CronLimit limit)
         {
             lock (m_Handlers.SyncRoot)
             {
-                m_Handlers.Add(new CronEventEntry(Name, handler, new CronJob(CronSpec), Unique, limit));
+                m_Handlers.Add(new CronEventEntry(null, handler, new CronJob(CronSpec), Unique, limit));
             }
         }
         #endregion JOB REGISTRATION
@@ -246,7 +443,7 @@ namespace Server.Engines.CronScheduler
 
                     if (Pattern.IsMatch(cee.Name))
                     {
-                        list.Add(String.Format("Deleted: '{0}', Cron: '{1}', Task: {2}\r\n",
+                        list.Add(string.Format("Deleted: '{0}', Cron: '{1}', Task: {2}\r\n",
                             cee.Name,
                             cee.Cronjob.Specification,
                             cee.Handler.Target == null ? cee.Name : cee.Handler.Target.ToString()));
@@ -287,7 +484,7 @@ namespace Server.Engines.CronScheduler
 
                     if (Pattern.IsMatch(cee.Name))
                     {
-                        list.Add(String.Format("Job: '{0}', Cron: '{1}', Task: {2}\r\n",
+                        list.Add(string.Format("Job: '{0}', Cron: '{1}', Task: {2}\r\n",
                             cee.Name,
                             cee.Cronjob.Specification,
                             cee.Handler.Target == null ? cee.Name : cee.Handler.Target.ToString()));
@@ -348,29 +545,80 @@ namespace Server.Engines.CronScheduler
         #endregion JOB MANAGEMENT
 
         #region CronProcess
+        private static bool CronPaused = false;
+        private static Utility.LocalTimer CronPauseTimer = new Utility.LocalTimer();    // how long we are to pause
+        private static Utility.LocalTimer CronTaskTimer = new Utility.LocalTimer();     // how long our execution slice runs
         public static void CronProcess()
         {
             try
             {
                 // tell the world we're looking for work
-                string serverTime = DateTime.Now.ToShortTimeString();
-                string gameTime = Cron.GameTimeNow.ToShortTimeString();
-                Console.WriteLine("Scheduler: ({0} Server)/({1} Game), Task Queue: {2}, Idle Queue: {3}", serverTime, gameTime, GetTaskQueueDepth(), GetIdleQueueDepth());
+                string serverTime = DateTime.UtcNow.ToString();
+                int timerQueueDepth = 0;
+                lock (Timer.Queue) { timerQueueDepth = Timer.Queue.Count; }
+                Console.WriteLine("Scheduler: ({0} Server Time): ", serverTime);
+                Console.WriteLine("Scheduler: Timer Queue: {0}, Priority Queue: {1}, Task Queue: {2}, Idle Queue: {3}", timerQueueDepth, GetPriorityQueueDepth(), GetTaskQueueDepth(), GetIdleQueueDepth());
 
-                // is there anything to do in the main queue?
-                if (m_TaskQueue.Count != 0)
-                {   // process the next scheduled job
-                    object o = m_TaskQueue.Dequeue();
-                    CronProcess(o as CronEventEntry);
-                }
-                // if nothing in the main queue, check the idle queue
-                else if (m_IdleQueue.Count != 0)
-                {   // process the next scheduled job
-                    object o = m_IdleQueue.Dequeue();
-                    CronProcess(o as CronEventEntry);
-                }
-                else
-                    Console.WriteLine("No scheduled work.");
+                // now, run as many tasks as we can in this slice
+                CronTaskTimer.Stop();
+                CronTaskTimer.Start(millisecond_timeout: TimeSpan.FromSeconds(0.08).TotalMilliseconds);
+                bool anyWork = false;
+                do
+                {
+                    if (CronPauseTimer.Triggered == true)
+                    {
+                        CronPaused = false;
+                        CronPauseTimer.Stop();
+                    }
+
+                    if (CronPaused == false)
+                    {   // is there anything to do in the Priority queue?
+                        if (m_PriorityQueue.Count != 0)
+                        {   // process the next scheduled job
+                            object o;
+                            lock (m_PriorityQueue.SyncRoot)
+                                o = m_PriorityQueue.Dequeue();
+                            CronProcess(o as CronEventEntry);
+                        }
+                        // is there anything to do in the main 'Task' queue?
+                        else if (m_TaskQueue.Count != 0)
+                        {   // process the next scheduled job
+                            object o;
+                            lock (m_TaskQueue.SyncRoot)
+                                o = m_TaskQueue.Dequeue();
+                            CronProcess(o as CronEventEntry);
+                        }
+                        // if nothing in the main queue, check the idle queue
+                        else if (m_IdleQueue.Count != 0)
+                        {   // process the next scheduled job
+                            object o;
+                            lock (m_IdleQueue.SyncRoot)
+                                o = m_IdleQueue.Dequeue();
+                            CronProcess(o as CronEventEntry);
+                        }
+                        else
+                        {
+                            Console.WriteLine("No scheduled work.");
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Scheduler: Paused.");
+                        break;
+                    }
+
+                    anyWork = m_PriorityQueue.Count + m_TaskQueue.Count + m_IdleQueue.Count > 0;
+
+                    if (CronTaskTimer.Triggered == true)
+                        Utility.Monitor.WriteLine("Cron Slice: WorkTimer Timed out", ConsoleColor.Red);
+                    else if (anyWork)
+                        Utility.Monitor.WriteLine("Cron Slice: More Work to do", ConsoleColor.DarkCyan);
+                    else
+                        Utility.Monitor.WriteLine("Cron Slice: No more Work to do", ConsoleColor.Yellow);
+
+                } while (anyWork && CronTaskTimer.Triggered == false);
+                CronTaskTimer.Stop();
             }
             catch (Exception ex)
             {
@@ -394,8 +642,9 @@ namespace Server.Engines.CronScheduler
                 {
                     // okay, run the scheduled task.
                     Utility.TimeCheck tc = new Utility.TimeCheck();
-                    Console.Write("{0}: ", cee.Name);
-                    tc.Start();                 // track the toal time for [lag forensics
+                    //Console.Write("{0}: ", cee.Name);
+                    Utility.Monitor.Write(string.Format($"{cee.Name}: "), ConsoleColor.Green/*Utility.RandomConsoleColor(Utility.GetStableHashCode(cee.Name))*/);
+                    tc.Start();                 // track the total time for [lag forensics
                     cee.Handler();              // execute the next task in the queue
                     tc.End();
                     AuditTask(cee, tc);         // maintain our list of 5 most recent tasks
@@ -500,26 +749,35 @@ namespace Server.Engines.CronScheduler
         #endregion TASK AUDIT
 
         #region CronSlice
-        static DateTime lastTime = DateTime.MinValue;
+        /*  CronSlice simply loads the task queue with jobs that match the current time
+         */
+
+        // Cron is guaranteed to only tick once per minute
+        private static int LastCronMinute = DateTime.UtcNow.Minute;
+        private static bool HasMinuteRolledOver
+        {
+            get
+            {
+                int minute = DateTime.UtcNow.Minute;
+                bool change = minute != LastCronMinute;
+                LastCronMinute = minute;
+                return change;
+            }
+        }
         public static void CronSlice()
-        {   // get datetime adjusted for DST
-            //	please find the full explanation of how we manage time in the developers library
-            DateTime Now = Cron.GameTimeNow;
+        {
             try
-            {   // initialize for first run
-                if (lastTime == DateTime.MinValue) lastTime = Now;
+            {
                 bool quit = false;
+                DateTime thisTime = DateTime.UtcNow;
                 while (quit == false)
                 {
-                    // get the time
-                    DateTime thisTime = Now;
-
-                    // wait for the minute to roll over
-                    if (lastTime.Minute == thisTime.Minute)
+                    // Cron is guaranteed to only tick once per minute
+                    // HasMinuteRolledOver returns true if this minute is != last minute
+                    // Note: We never want to execute the cron jobs twice in the same minute (since Cron is by nature, one-minute granularity.)
+                    //  This test simply ensures the minute has rolled over (changed) since the last time we ran.
+                    if (!HasMinuteRolledOver)
                         break;
-
-                    // remember this time
-                    lastTime = thisTime;
 
                     lock (m_Handlers.SyncRoot)
                     {
@@ -528,9 +786,10 @@ namespace Server.Engines.CronScheduler
                             CronEventEntry cee = o as CronEventEntry;
                             if (cee == null) continue;
 
-                            // match times based on DST adjusted server time
+                            // match the time if the job with the current time
                             if (cee.Cronjob.Match(thisTime))
-                            {
+                            {   // we have a match
+
                                 // process special CronLimit specifications, like 3rd Sunday
                                 if (cee.Limit != null && cee.Limit.Execute() == false)
                                 {
@@ -538,7 +797,7 @@ namespace Server.Engines.CronScheduler
                                     continue;
                                 }
 
-                                // we have a match, queue it!
+                                // Queue it!
                                 lock (m_TaskQueue.SyncRoot)
                                 {
                                     bool Add = true;
@@ -547,7 +806,8 @@ namespace Server.Engines.CronScheduler
                                     if (m_TaskQueue.Count > 0 && cee.Unique && m_TaskQueue.Contains(cee))
                                     {
                                         Add = false;
-                                        Console.WriteLine("Note: Duplicate Job '{0}' ignored.", cee.Name);
+                                        int index = m_TaskQueue.ToArray().ToList().IndexOf(cee);
+                                        Console.WriteLine($"Note: Duplicate Job '{cee.Name}' ignored. {index} tasks ahead of me.");
                                     }
 
                                     // max job queue size = 128
@@ -671,12 +931,14 @@ namespace Server.Engines.CronScheduler
         #region TIMERS
         private static ProcessTimer m_ProcessTimer = new ProcessTimer();    // processes queued tasks
         private static CronTimer m_CronTimer = new CronTimer();             // schedules tasks
+        private static bool m_Running = false;
         private class ProcessTimer : Timer
         {
             public ProcessTimer()
-                : base(TimeSpan.FromMinutes(0.5), TimeSpan.FromMinutes(1.0))
-            {
-                Priority = TimerPriority.OneMinute;
+                : base(TimeSpan.FromMinutes(0.5), TimeSpan.FromMinutes(0.9))
+            {   // we want to come in just under 1 minute since that's the granularity of Cron
+                // a TimerPriority.OneMinute does not guarantee that
+                Priority = TimerPriority.FiveSeconds;
                 System.Console.WriteLine("Starting Cron Process Timer.");
                 Start();
             }
@@ -724,8 +986,9 @@ namespace Server.Engines.CronScheduler
         {
             string m_specification;
             public CronJob(string specification)
-            {
-                Specification = specification;
+            {   // compile will normalize the specification, including locking '?' to a random value
+                m_specification = specification;
+                m_specification = Compile();
             }
 
             public string Specification
@@ -737,7 +1000,7 @@ namespace Server.Engines.CronScheduler
             //	are today and tomorrow in the same month?
             public static bool IsTomorrowThisMonth()
             {
-                DateTime now = Cron.GameTimeNow;
+                DateTime now = DateTime.UtcNow;
                 DateTime tomorrow = now + TimeSpan.FromDays(1);
                 if (tomorrow.Month == now.Month)
                     return true;
@@ -750,7 +1013,7 @@ namespace Server.Engines.CronScheduler
             {
                 int day = (int)dayName;
 
-                DateTime now = Cron.GameTimeNow;
+                DateTime now = DateTime.UtcNow;
                 if ((int)now.DayOfWeek != day)
                     return false;
 
@@ -774,23 +1037,22 @@ namespace Server.Engines.CronScheduler
                 return (Nth == count);
             }
 
-            public static string Compile(string specification)
+            public string Compile()
             {
-                CronJob cj = new CronJob(specification);
-                if (cj == null)
+                if (m_specification == null)
                     return null;
 
                 string delimStr = " ";
                 char[] delimiter = delimStr.ToCharArray();
-                string[] split = specification.Split(delimiter, 5);
+                string[] split = m_specification.Split(delimiter, 5);
                 if (split.Length != 5) return null; // format error
 
                 return
-                    cj.Normalize(split[0], 60, 0, 59) + " " +   // minute
-                    cj.Normalize(split[1], 24, 0, 23) + " " +   // hour
-                    cj.Normalize(split[2], 31, 1, 31) + " " +   // day of the month
-                    cj.Normalize(split[3], 12, 1, 12) + " " +   // month
-                    cj.Normalize(split[4], 7, 0, 6);            // day of the week
+                    this.Normalize(split[0], 60, 0, 59) + " " +   // minute
+                    this.Normalize(split[1], 24, 0, 23) + " " +   // hour
+                    this.Normalize(split[2], 31, 1, 31) + " " +   // day of the month
+                    this.Normalize(split[3], 12, 1, 12) + " " +   // month
+                    this.Normalize(split[4], 7, 0, 6);            // day of the week
             }
 
             public bool Match(DateTime time)

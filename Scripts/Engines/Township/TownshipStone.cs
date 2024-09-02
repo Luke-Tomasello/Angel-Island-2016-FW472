@@ -162,7 +162,7 @@ namespace Server.Items
             this.NoGateInto = false;
             this.NoRecallInto = false;
 
-            m_BuiltOn = DateTime.Now;
+            m_BuiltOn = DateTime.UtcNow;
             AllTownshipStones.Add(this);
         }
 
@@ -180,7 +180,7 @@ namespace Server.Items
             this.NoGateInto = false;
             this.NoRecallInto = false;
 
-            m_BuiltOn = DateTime.Now;
+            m_BuiltOn = DateTime.UtcNow;
             //note: AllTownshipStones.Add(this) is handled by above constructor
 
             SetGuildedHousesNotGrandfathered();
@@ -238,7 +238,7 @@ namespace Server.Items
                 if (house.Owner != null && house.Owner.Guild != null
                     && house.Owner.Guild == this.Guild)
                 {
-                    house.LastTraded = DateTime.Now.AddSeconds(10.0);
+                    house.LastTraded = DateTime.UtcNow.AddSeconds(10.0);
                 }
             }
         }
@@ -828,11 +828,11 @@ namespace Server.Items
 
             //Pix: because heartbeat jobs aren't exact, we want to add a little 'flex room' for them,
             // change from 7.0 days (10080 minutes) to 10070 minutes, giving a 10-minute time buffer
-            bReturn = (m_ALLastCalculated + TimeSpan.FromMinutes(10070) < DateTime.Now);
+            bReturn = (m_ALLastCalculated + TimeSpan.FromMinutes(10070) < DateTime.UtcNow);
 
             if (Server.Misc.TestCenter.Enabled)
             {
-                bReturn = (m_ALLastCalculated + TimeSpan.FromDays(0.5) < DateTime.Now);
+                bReturn = (m_ALLastCalculated + TimeSpan.FromDays(0.5) < DateTime.UtcNow);
             }
 
             return bReturn;
@@ -924,7 +924,7 @@ namespace Server.Items
                 m_LastActualActivityLevel = Server.Township.ActivityLevel.LOW;
 
             m_LastActualActivityWeekTotal = pastSevenDaysVisitors;
-            m_ALLastCalculated = DateTime.Now;
+            m_ALLastCalculated = DateTime.UtcNow;
         }
 
         [CommandProperty(AccessLevel.Counselor, AccessLevel.Administrator)]
@@ -1481,7 +1481,7 @@ namespace Server.Items
 
             if (m is PlayerMobile && m.AccessLevel == AccessLevel.Player) //only count players, not mobs or staff
             {
-                if (m_lastEnter != DateTime.MinValue && m_lastEnter.Day < DateTime.Now.Day)
+                if (m_lastEnter != DateTime.MinValue && m_lastEnter.Day < DateTime.UtcNow.Day)
                 {
                     //enter next day
                     m_visitorsIndex++;
@@ -1491,7 +1491,7 @@ namespace Server.Items
                     m_uniqueVisitors[m_visitorsIndex] = 0;
                 }
 
-                m_lastEnter = DateTime.Now;
+                m_lastEnter = DateTime.UtcNow;
 
                 if (!m_todaysVisitors.Contains(m))
                 {

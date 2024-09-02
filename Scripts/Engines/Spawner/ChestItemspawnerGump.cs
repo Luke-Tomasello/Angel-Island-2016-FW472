@@ -388,7 +388,7 @@ namespace Server.Items
                     foreach (string difference in DiffList)
                     {
                         // Log entries here
-                        LogFile.WriteLine("{0}, {1}, {2}, {3}, {4}, {5}", DateTime.Now, LinkedPerson.Account, m_Spawner.Location.X, m_Spawner.Location.Y, m_Spawner.Location.Z, difference);
+                        LogFile.WriteLine("{0}, {1}, {2}, {3}, {4}, {5}", DateTime.UtcNow, LinkedPerson.Account, m_Spawner.Location.X, m_Spawner.Location.Y, m_Spawner.Location.Z, difference);
                     }
 
                     LogFile.Close();

@@ -931,7 +931,7 @@ namespace Server.Items
             m_RestrictedSpells = new BitArray(SpellRegistry.Types.Length);
             m_RestrictedSkills = new BitArray(SkillInfo.Table.Length);
 
-            m_Msg = DateTime.Now + m_Delay;
+            m_Msg = DateTime.UtcNow + m_Delay;
 
             Coords = new ArrayList();
             InnBounds = new ArrayList();

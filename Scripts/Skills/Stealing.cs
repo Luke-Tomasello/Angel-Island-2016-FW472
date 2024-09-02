@@ -263,7 +263,7 @@ namespace Server.SkillHandlers
                             m_Thief.SendLocalizedMessage(502724); // You succesfully steal the item.
                         if (m_Thief.Player == true)
                         {
-                            ((PlayerMobile)m_Thief).LastStoleAt = DateTime.Now;
+                            ((PlayerMobile)m_Thief).LastStoleAt = DateTime.UtcNow;
                         }
                         if (stolen == null) //change from else to if - Pigpen						
                             m_Thief.SendLocalizedMessage(502723); // You fail to steal the item.
@@ -279,7 +279,7 @@ namespace Server.SkillHandlers
                 }
 
                 // wea: reset next skill time
-                m_Thief.NextSkillTime = DateTime.Now + TimeSpan.FromSeconds(10.0);
+                m_Thief.NextSkillTime = DateTime.UtcNow + TimeSpan.FromSeconds(10.0);
 
                 // adam: reset the LootType.Special to LootType.Regular 
                 if (stolen != null && stolen.LootType == LootType.Special)

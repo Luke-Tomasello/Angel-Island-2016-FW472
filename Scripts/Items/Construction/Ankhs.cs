@@ -98,7 +98,7 @@ namespace Server.Items
 
             if (pm.Location.X >= 3352 && pm.Location.Y >= 285 && pm.Location.X <= 3357 && pm.Location.Y <= 292) //Added in a check to make sure issuer of Mortality command is next to the Sacrafice Shrine.
             {
-                TimeSpan age = DateTime.Now - pm.CreationTime;
+                TimeSpan age = DateTime.UtcNow - pm.CreationTime;
                 if (age < TimeSpan.FromDays(7.0))
                 {
                     pm.SendMessage("Thou'rt too young to swear thy beliefs on thy soul.");

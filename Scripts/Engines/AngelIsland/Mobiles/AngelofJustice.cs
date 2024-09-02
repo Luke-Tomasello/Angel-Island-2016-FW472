@@ -71,7 +71,7 @@ namespace Server.Mobiles
             Fame = 0;
             Karma = 0;
 
-            m_NextAbilityTime = DateTime.Now + TimeSpan.FromSeconds(Utility.RandomMinMax(2, 5));
+            m_NextAbilityTime = DateTime.UtcNow + TimeSpan.FromSeconds(Utility.RandomMinMax(2, 5));
 
             InitStats(BaseHits, BaseVirtualArmor);
         }
@@ -215,13 +215,13 @@ namespace Server.Mobiles
 
         public override void OnThink()
         {
-            if (DateTime.Now >= m_NextAbilityTime)
+            if (DateTime.UtcNow >= m_NextAbilityTime)
             {
                 Mobile combatant = this.Combatant;
 
                 if (combatant != null && combatant.Map == this.Map && combatant.InRange(this, 12))
                 {
-                    m_NextAbilityTime = DateTime.Now + TimeSpan.FromSeconds(Utility.RandomMinMax(10, 15));
+                    m_NextAbilityTime = DateTime.UtcNow + TimeSpan.FromSeconds(Utility.RandomMinMax(10, 15));
 
                     int ability = Utility.Random(4);
 

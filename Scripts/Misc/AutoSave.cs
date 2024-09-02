@@ -203,13 +203,13 @@ namespace Server.Misc
 
             // either nuke or archive the 3rd Backup			
             dir = Match(existing, m_Backups[(int)BakNames.THIRD]);
-            if (dir != null && DateTime.Now.Day != LastDailyArchive.Day)
+            if (dir != null && DateTime.UtcNow.Day != LastDailyArchive.Day)
             {   // last archive
-                LastDailyArchive = DateTime.Now;
+                LastDailyArchive = DateTime.UtcNow;
 
                 // Archive-Thu Aug 17 00
                 // Archive-17Aug00
-                string name = string.Format("Archive-{0}", DateTime.Now.ToString("dMMMyy"));
+                string name = string.Format("Archive-{0}", DateTime.UtcNow.ToString("dMMMyy"));
 
                 // rename 3rd to archive
                 if (Directory.Exists(FormatDirectory(root, name, "")) == false)
@@ -295,7 +295,7 @@ namespace Server.Misc
 
         private static string GetTimeStamp()
         {
-            DateTime now = DateTime.Now;
+            DateTime now = DateTime.UtcNow;
 
             return String.Format("{0}-{1}-{2} {3}-{4:D2}-{5:D2}",
                     now.Day,

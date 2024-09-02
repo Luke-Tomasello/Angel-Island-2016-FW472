@@ -200,7 +200,7 @@ namespace Server.Items
 
             from.RevealingAction();
 
-            if (!from.CheckTargetSkill(SkillName.Tactics, to, diff - 25.0, diff + 25.0) || DateTime.Now < (from.LastMoveTime + TimeSpan.FromSeconds(StandingDelay)))
+            if (!from.CheckTargetSkill(SkillName.Tactics, to, diff - 25.0, diff + 25.0) || DateTime.UtcNow < (from.LastMoveTime + TimeSpan.FromSeconds(StandingDelay)))
             {
                 from.SendMessage("You throw the bola but miss!");
 

@@ -62,7 +62,7 @@ namespace Server.Items
         public HolidayDeed()
             : base(0x14F0)
         {
-            string year = DateTime.Now.Year.ToString();
+            string year = DateTime.UtcNow.Year.ToString();
             Name = "Christmas " + year;
             Weight = 1.0;
             Hue = 0x47;
@@ -125,13 +125,13 @@ namespace Server.Items
 
             if (place >= 1 && place <= 3)
             {
-                m_Signature = String.Format("{2} Halloween Prize: {0}/{1}", DateTime.Now.Month, DateTime.Now.Year, PlaceText);
-                Name = String.Format("a {2} Halloween Prize Ticket: {0}/{1}", DateTime.Now.Month, DateTime.Now.Year, PlaceText);
+                m_Signature = String.Format("{2} Halloween Prize: {0}/{1}", DateTime.UtcNow.Month, DateTime.UtcNow.Year, PlaceText);
+                Name = String.Format("a {2} Halloween Prize Ticket: {0}/{1}", DateTime.UtcNow.Month, DateTime.UtcNow.Year, PlaceText);
             }
             else
             {
-                m_Signature = String.Format("Halloween Prize: {0}/{1}", DateTime.Now.Month, DateTime.Now.Year);
-                Name = String.Format("Halloween Prize Ticket: {0}/{1}", DateTime.Now.Month, DateTime.Now.Year);
+                m_Signature = String.Format("Halloween Prize: {0}/{1}", DateTime.UtcNow.Month, DateTime.UtcNow.Year);
+                Name = String.Format("Halloween Prize Ticket: {0}/{1}", DateTime.UtcNow.Month, DateTime.UtcNow.Year);
             }
         }
 
@@ -248,7 +248,7 @@ namespace Server.Items
                         {
                             m_Place = 1;
                             string PlaceText = "1st place";
-                            m_Signature = String.Format("{2} Halloween Prize: {0}/{1}", DateTime.Now.Month, DateTime.Now.Year, PlaceText);
+                            m_Signature = String.Format("{2} Halloween Prize: {0}/{1}", DateTime.UtcNow.Month, DateTime.UtcNow.Year, PlaceText);
                         }
                         goto default;
                     }

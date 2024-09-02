@@ -136,7 +136,7 @@ namespace Server.Commands
 
                         // Check time & skill, display if match
 
-                        if (LastSkill == skill && DateTime.Now <= (LastTime + TimeSpan.FromSeconds(elapsed * 60)))
+                        if (LastSkill == skill && DateTime.UtcNow <= (LastTime + TimeSpan.FromSeconds(elapsed * 60)))
                             MobMatches.Add(pm);
                     }
 

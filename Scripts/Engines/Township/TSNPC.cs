@@ -1560,10 +1560,10 @@ namespace Server.Mobiles
             {
                 if (m_LatestReported.Contains(m))
                 {
-                    if (DateTime.Now > ((DateTime)m_LatestReported[m]).AddSeconds(SecondsBetweenReports))
+                    if (DateTime.UtcNow > ((DateTime)m_LatestReported[m]).AddSeconds(SecondsBetweenReports))
                     {
                         bCanReport = true;
-                        m_LatestReported[m] = DateTime.Now;
+                        m_LatestReported[m] = DateTime.UtcNow;
                     }
                     else
                     {
@@ -1584,13 +1584,13 @@ namespace Server.Mobiles
         }
         private void AddToReported(Mobile m)
         {
-            m_LatestReported.Add(m, DateTime.Now);
+            m_LatestReported.Add(m, DateTime.UtcNow);
             try
             {
                 ArrayList toRemove = new ArrayList();
                 foreach (object key in m_LatestReported.Keys)
                 {
-                    if (DateTime.Now > ((DateTime)m_LatestReported[key]).AddSeconds(SecondsBetweenReports))
+                    if (DateTime.UtcNow > ((DateTime)m_LatestReported[key]).AddSeconds(SecondsBetweenReports))
                     {
                         toRemove.Add(key);
                     }

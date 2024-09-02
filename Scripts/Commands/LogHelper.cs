@@ -300,7 +300,7 @@ namespace Server.Commands
         // Record start time and init counter + list
         private void Start()
         {
-            m_StartTime = DateTime.Now;
+            m_StartTime = DateTime.UtcNow;
             m_Count = 0;
             m_Finished = false;
             m_LogFile = new ArrayList();
@@ -317,7 +317,7 @@ namespace Server.Commands
             if (!m_Finished)
             {
                 m_Finished = true;
-                TimeSpan ts = DateTime.Now - m_StartTime;
+                TimeSpan ts = DateTime.UtcNow - m_StartTime;
 
                 if (!m_SingleLine)
                     m_LogFile.Add(string.Format("Completed in {0} seconds, {1} entr{2} logged", ts.TotalSeconds, m_Count, m_Count == 1 ? "y" : "ies"));

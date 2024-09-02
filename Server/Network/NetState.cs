@@ -89,7 +89,7 @@ namespace Server.Network
         {
             get
             {
-                return (DateTime.Now - m_ConnectedOn);
+                return (DateTime.UtcNow - m_ConnectedOn);
             }
         }
 
@@ -663,7 +663,7 @@ namespace Server.Network
 
             m_SendQueue = new SendQueue();
 
-            m_NextCheckActivity = DateTime.Now + TimeSpan.FromMinutes(0.5);
+            m_NextCheckActivity = DateTime.UtcNow + TimeSpan.FromMinutes(0.5);
 
             m_Instances.Add(this);
 
@@ -679,7 +679,7 @@ namespace Server.Network
                 m_ToString = "(error)";
             }
 
-            m_ConnectedOn = DateTime.Now;
+            m_ConnectedOn = DateTime.UtcNow;
 
             if (m_CreatedCallback != null)
             {
@@ -766,7 +766,7 @@ namespace Server.Network
                 Utility.Monitor.WriteLine(string.Format("Client: {0}: null buffer send, disconnecting...", this), ConsoleColor.Yellow);
                 using (StreamWriter op = new StreamWriter("null_send.log", true))
                 {
-                    op.WriteLine("{0} Client: {1}: null buffer send, disconnecting...", DateTime.Now, this);
+                    op.WriteLine("{0} Client: {1}: null buffer send, disconnecting...", DateTime.UtcNow, this);
                     op.WriteLine(new System.Diagnostics.StackTrace());
                 }
                 Dispose();
@@ -842,7 +842,7 @@ namespace Server.Network
                     return;
                 }
 
-                m_NextCheckActivity = DateTime.Now + TimeSpan.FromMinutes(1.2);
+                m_NextCheckActivity = DateTime.UtcNow + TimeSpan.FromMinutes(1.2);
 
                 if (m_CoalesceSleep >= 0)
                 {
@@ -917,7 +917,7 @@ namespace Server.Network
             if (m_Socket == null)
                 return false;
 
-            if (DateTime.Now < m_NextCheckActivity)
+            if (DateTime.UtcNow < m_NextCheckActivity)
             {
                 return true;
             }
@@ -938,7 +938,7 @@ namespace Server.Network
 
                 if (byteCount > 0)
                 {
-                    m_NextCheckActivity = DateTime.Now + TimeSpan.FromMinutes(1.2);
+                    m_NextCheckActivity = DateTime.UtcNow + TimeSpan.FromMinutes(1.2);
 
                     byte[] buffer = m_RecvBuffer;
 
@@ -990,7 +990,7 @@ namespace Server.Network
             {
                 using (StreamWriter op = new StreamWriter("network-errors.log", true))
                 {
-                    op.WriteLine("# {0}", DateTime.Now);
+                    op.WriteLine("# {0}", DateTime.UtcNow);
 
                     op.WriteLine(ex);
 

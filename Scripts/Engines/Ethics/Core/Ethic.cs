@@ -301,7 +301,7 @@ namespace Server.Ethics
                     if (!ethic.IsEligible(e.Mobile))
                     {
                         if (Core.OldEthics)
-                            if ((e.Mobile.CreationTime + TimeSpan.FromHours(24)) > DateTime.Now)
+                            if ((e.Mobile.CreationTime + TimeSpan.FromHours(24)) > DateTime.UtcNow)
                                 e.Mobile.SendLocalizedMessage(502593); // Thou art too young to choose this fate.
                         break;
                     }
@@ -551,7 +551,7 @@ namespace Server.Ethics
                             }
                             if (goodKill)
                             {
-                                pm.EthicKillsLogList.Add(new PlayerMobile.EthicKillsLog(victim.Serial, DateTime.Now));
+                                pm.EthicKillsLogList.Add(new PlayerMobile.EthicKillsLog(victim.Serial, DateTime.UtcNow));
                                 if (pm.EthicPoints >= 5)
                                 {   // Add to Good alignment (EthicPoints log will be wipped on next serialization)
                                     if (Ethic.Hero.IsEligible(killer))  // make sure they are old enough

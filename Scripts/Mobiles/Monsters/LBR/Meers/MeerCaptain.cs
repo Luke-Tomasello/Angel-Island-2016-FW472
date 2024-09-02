@@ -72,7 +72,7 @@ namespace Server.Mobiles
 
             AddItem(new Crossbow());
 
-            m_NextAbilityTime = DateTime.Now + TimeSpan.FromSeconds(Utility.RandomMinMax(2, 5));
+            m_NextAbilityTime = DateTime.UtcNow + TimeSpan.FromSeconds(Utility.RandomMinMax(2, 5));
         }
 
         public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOAR ? true : true; } }
@@ -104,9 +104,9 @@ namespace Server.Mobiles
                 this.PlaySound(0x1E9);
             }
 
-            if (DateTime.Now >= m_NextAbilityTime)
+            if (DateTime.UtcNow >= m_NextAbilityTime)
             {
-                m_NextAbilityTime = DateTime.Now + TimeSpan.FromSeconds(Utility.RandomMinMax(10, 15));
+                m_NextAbilityTime = DateTime.UtcNow + TimeSpan.FromSeconds(Utility.RandomMinMax(10, 15));
 
                 ArrayList list = new ArrayList();
 

@@ -178,7 +178,7 @@ namespace Server.Multis
             {
 
                 if (!value)
-                    m_DecayTime = DateTime.Now;
+                    m_DecayTime = DateTime.UtcNow;
 
                 m_StaffBoat = value;
             }
@@ -245,7 +245,7 @@ namespace Server.Multis
         public BaseBoat()
             : base(0x4000)
         {
-            m_DecayTime = DateTime.Now + BoatDecayDelay;
+            m_DecayTime = DateTime.UtcNow + BoatDecayDelay;
 
             m_TillerMan = new TillerMan(this);
             m_Hold = new Hold(this);
@@ -974,12 +974,12 @@ namespace Server.Multis
         public void Refresh()
         {
             if (!StaffBoat)
-                m_DecayTime = DateTime.Now + BoatDecayDelay;
+                m_DecayTime = DateTime.UtcNow + BoatDecayDelay;
         }
 
         public string DecayState()
         {
-            TimeSpan decay = m_DecayTime - DateTime.Now;
+            TimeSpan decay = m_DecayTime - DateTime.UtcNow;
 
             if (decay <= TimeSpan.FromHours(24.0))
                 return "This structure is in danger of collapsing.";
@@ -1035,7 +1035,7 @@ namespace Server.Multis
             if (m_Decaying)
                 return true;
 
-            if (!IsMoving && DateTime.Now >= m_DecayTime)
+            if (!IsMoving && DateTime.UtcNow >= m_DecayTime)
             {
                 new DecayTimer(this).Start();
 

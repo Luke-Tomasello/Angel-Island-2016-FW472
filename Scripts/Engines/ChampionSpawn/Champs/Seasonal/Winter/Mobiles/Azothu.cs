@@ -53,7 +53,7 @@ namespace Server.Mobiles
     public class Azothu : BaseChampion
     {
         private TimeSpan m_BreathDelay = TimeSpan.FromSeconds(10.0);
-        private DateTime m_NextBreathTime = DateTime.Now;
+        private DateTime m_NextBreathTime = DateTime.UtcNow;
 
         public override ChampionSkullType SkullType { get { return ChampionSkullType.None; } }
         public override AuraType MyAura { get { return AuraType.Ice; } }
@@ -116,7 +116,7 @@ namespace Server.Mobiles
             {
                 Mobile combatant = this.Combatant;
 
-                if (DateTime.Now >= m_NextBreathTime)
+                if (DateTime.UtcNow >= m_NextBreathTime)
                 {
                     m = VerifyValidMobile(combatant, 8);
 
@@ -128,7 +128,7 @@ namespace Server.Mobiles
                             DoHarmful(m);
                         }
 
-                        m_NextBreathTime = DateTime.Now + m_BreathDelay;
+                        m_NextBreathTime = DateTime.UtcNow + m_BreathDelay;
                     }
                 }
             }

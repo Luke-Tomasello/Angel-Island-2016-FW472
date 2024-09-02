@@ -33,8 +33,8 @@
  *	12/23/08, Adam
  *		Update to use RunUO 2.0 restart model
  *	4/14/08, Adam
- *		Replace all explicit use of DateTime.Now with the new: public static DateTime Cron.GameTimeNow
- *		Since the AES system uses AutoRestart, then AutoRestart must also respect 'game time' and can no longer use DateTime.Now
+ *		Replace all explicit use of DateTime.UtcNow with the new: public static DateTime Cron.GameTimeNow
+ *		Since the AES system uses AutoRestart, then AutoRestart must also respect 'game time' and can no longer use DateTime.UtcNow
  *		files that need to opperate in this special time mode: CronScheduler.cs, AutoRestart.cs, AutomatedEventSystem.cs
  *	4/6/08, Adam
  *		if World.SaveOption.NoSaves is on, don't call AutoSave.Save() as it will still move the directories around
@@ -169,7 +169,7 @@ namespace Server.Misc
                         {
                             e.Mobile.SendMessage("You have initiated server shutdown.");
                             m_enabled = true;
-                            m_RestartTime = Cron.GameTimeNow;
+                            m_RestartTime = AdjustedDateTime.GameTime;
                             RestartDelay = TimeSpan.Zero;
                         }
                     }
@@ -191,9 +191,9 @@ namespace Server.Misc
                         }
 
                         m_RestartOffset = TimeSpan.FromHours(iHour) + TimeSpan.FromMinutes(iMinute) + TimeSpan.FromSeconds(iSecond);
-                        m_RestartTime = Cron.GameTimeNow.Date + m_RestartOffset;
+                        m_RestartTime = AdjustedDateTime.GameTime.Date + m_RestartOffset;
 
-                        if (m_RestartTime < Cron.GameTimeNow)
+                        if (m_RestartTime < AdjustedDateTime.GameTime)
                         {
                             m_RestartTime += TimeSpan.FromDays(1.0);
                         }
@@ -219,9 +219,9 @@ namespace Server.Misc
         {
             Priority = TimerPriority.FiveSeconds;
 
-            m_RestartTime = Cron.GameTimeNow.Date + m_RestartOffset;
+            m_RestartTime = AdjustedDateTime.GameTime.Date + m_RestartOffset;
 
-            if (m_RestartTime < Cron.GameTimeNow)
+            if (m_RestartTime < AdjustedDateTime.GameTime)
                 m_RestartTime += TimeSpan.FromDays(1.0);
         }
 
@@ -245,13 +245,13 @@ namespace Server.Misc
             if (m_Restarting || !m_enabled)
                 return;
 
-            if (Cron.GameTimeNow < m_RestartTime)
+            if (AdjustedDateTime.GameTime < m_RestartTime)
                 return;
 
             // warn the user 5 minutes before the server goes down
             if (ShutdownWarningInterval > TimeSpan.Zero)
             {
-                TimeSpan dx = (m_RestartTime + RestartDelay) - Cron.GameTimeNow;
+                TimeSpan dx = (m_RestartTime + RestartDelay) - AdjustedDateTime.GameTime;
                 dx = TimeSpan.FromMinutes(dx.TotalMinutes - 5);
                 Timer.DelayCall(dx, ShutdownWarningInterval, new TimerCallback(ShutdownWarning_Callback));
             }

@@ -258,9 +258,9 @@ namespace Server.Commands
                 Logger.Finish();
 
                 if (Trouble == true)
-                    acct.Comments.Add(new AccountComment("SYSTEM", DateTime.Now + "\nTag count: " + (acct.Comments.Count + 1) + "\nJailedTroubleMaker for " + sentence + " hours. Reason: " + m_Comment));
+                    acct.Comments.Add(new AccountComment("SYSTEM", DateTime.UtcNow + "\nTag count: " + (acct.Comments.Count + 1) + "\nJailedTroubleMaker for " + sentence + " hours. Reason: " + m_Comment));
                 else
-                    acct.Comments.Add(new AccountComment("SYSTEM", DateTime.Now + "\nTag count: " + (acct.Comments.Count + 1) + "\nJailed for " + sentence + " hours. Reason: " + m_Comment));
+                    acct.Comments.Add(new AccountComment("SYSTEM", DateTime.UtcNow + "\nTag count: " + (acct.Comments.Count + 1) + "\nJailed for " + sentence + " hours. Reason: " + m_Comment));
             }
 
             private void StablePets(PlayerMobile master)
@@ -372,9 +372,9 @@ namespace Server.Commands
                 Commands.CommandLogging.WriteLine(from, "{0} jailed {1}(Username: {2}) into cell {3} for {5} hours with reason: {4}.",
                     from.Name, pm.Name, acct.Username, m_Cell, m_Comment, sentence);
                 if (Trouble == true)
-                    acct.Comments.Add(new AccountComment(from.Name, DateTime.Now + "\nTag count: " + (acct.Comments.Count + 1) + "\nJailedTroubleMaker for " + sentence + " hours. Reason: " + m_Comment));
+                    acct.Comments.Add(new AccountComment(from.Name, DateTime.UtcNow + "\nTag count: " + (acct.Comments.Count + 1) + "\nJailedTroubleMaker for " + sentence + " hours. Reason: " + m_Comment));
                 else
-                    acct.Comments.Add(new AccountComment(from.Name, DateTime.Now + "\nTag count: " + (acct.Comments.Count + 1) + "\nJailed for " + sentence + " hours. Reason: " + m_Comment));
+                    acct.Comments.Add(new AccountComment(from.Name, DateTime.UtcNow + "\nTag count: " + (acct.Comments.Count + 1) + "\nJailed for " + sentence + " hours. Reason: " + m_Comment));
             }
 
             private void StablePets(Mobile from, PlayerMobile master)

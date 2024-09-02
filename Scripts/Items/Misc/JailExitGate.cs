@@ -22,7 +22,7 @@
 /* Scripts/Items/Misc/JailExitGate.cs
  * CHANGELOG
  *  11/13/05 Taran Kain
- *		Changed sentence back to using DateTime.Now, allowing players to burn off time in or out of game.
+ *		Changed sentence back to using DateTime.UtcNow, allowing players to burn off time in or out of game.
  *  11/06/05 Taran Kain
  *		Changed inmate sentence storage method to use GameTime - now players will only burn off their jailtime if they're in-game.
  *  09/01/05 Taran Kain
@@ -121,13 +121,13 @@ namespace Server.Items
             if (!m_Inmates.ContainsKey(from) || !(from is PlayerMobile))
                 return true;
 
-            if (!(m_Inmates[from] is DateTime) || ((DateTime)m_Inmates[from]) <= DateTime.Now)
+            if (!(m_Inmates[from] is DateTime) || ((DateTime)m_Inmates[from]) <= DateTime.UtcNow)
             {
                 m_Inmates.Remove(from);
                 return true;
             }
 
-            TimeSpan ts = (DateTime)m_Inmates[from] - DateTime.Now;
+            TimeSpan ts = (DateTime)m_Inmates[from] - DateTime.UtcNow;
             StringBuilder sb = new StringBuilder();
             if (ts.TotalHours >= 1)
             {
@@ -148,7 +148,7 @@ namespace Server.Items
             if (Instance == null || Instance.m_Inmates == null || !(inmate is PlayerMobile))
                 return;
 
-            Instance.m_Inmates[inmate] = DateTime.Now + TimeSpan.FromHours(hours);
+            Instance.m_Inmates[inmate] = DateTime.UtcNow + TimeSpan.FromHours(hours);
         }
 
         private void ValidateInmates()
@@ -160,7 +160,7 @@ namespace Server.Items
             for (int i = 0; i < count; i++)
             {
                 PlayerMobile pm = keys[i] as PlayerMobile;
-                if (pm == null || !(values[i] is DateTime) || ((DateTime)values[i]) <= DateTime.Now)
+                if (pm == null || !(values[i] is DateTime) || ((DateTime)values[i]) <= DateTime.UtcNow)
                     m_Inmates.Remove(keys[i]);
             }
         }
@@ -211,7 +211,7 @@ namespace Server.Items
                         {
                             Mobile m = reader.ReadMobile();
                             TimeSpan ts = reader.ReadTimeSpan();
-                            DateTime dt = DateTime.Now + ts;
+                            DateTime dt = DateTime.UtcNow + ts;
                             m_Inmates.Add(m, dt);
                         }
                         break;

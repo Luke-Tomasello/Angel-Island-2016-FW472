@@ -165,7 +165,7 @@ namespace Server.Accounting
             get { return m_ResetPassword; }
             set
             {
-                m_ResetPasswordRequestedTime = DateTime.Now;
+                m_ResetPasswordRequestedTime = DateTime.UtcNow;
                 m_ResetPassword = value;
             }
         }
@@ -357,7 +357,7 @@ namespace Server.Accounting
 
                 if (GetBanTags(out banTime, out banDuration))
                 {
-                    if (banDuration != TimeSpan.MaxValue && DateTime.Now >= (banTime + banDuration))
+                    if (banDuration != TimeSpan.MaxValue && DateTime.UtcNow >= (banTime + banDuration))
                     {
                         SetUnspecifiedBan(null); // clear
                         Banned = false;
@@ -522,7 +522,7 @@ namespace Server.Accounting
             if (banTime == DateTime.MinValue)
                 RemoveTag("BanTime");
             else
-                SetTag("BanTime", XmlConvert.ToString(banTime));
+                SetTag("BanTime", XmlConvert.ToString(banTime, XmlDateTimeSerializationMode.Utc));
 
             if (banDuration == TimeSpan.Zero)
                 RemoveTag("BanDuration");
@@ -862,7 +862,7 @@ namespace Server.Accounting
 
             m_AccessLevel = AccessLevel.Player;
 
-            m_Created = m_LastLogin = DateTime.Now;
+            m_Created = m_LastLogin = DateTime.UtcNow;
 
             m_Comments = new ArrayList();
             m_Tags = new ArrayList();
@@ -907,8 +907,8 @@ namespace Server.Accounting
 
             m_AccessLevel = (AccessLevel)Enum.Parse(typeof(AccessLevel), Accounts.GetText(node["accessLevel"], "Player"), true);
             m_Flags = Accounts.GetInt32(Accounts.GetText(node["flags"], "0"), 0);
-            m_Created = Accounts.GetDateTime(Accounts.GetText(node["created"], null), DateTime.Now);
-            m_LastLogin = Accounts.GetDateTime(Accounts.GetText(node["lastLogin"], null), DateTime.Now);
+            m_Created = Accounts.GetDateTime(Accounts.GetText(node["created"], null), DateTime.UtcNow);
+            m_LastLogin = Accounts.GetDateTime(Accounts.GetText(node["lastLogin"], null), DateTime.UtcNow);
 
             m_EmailAddress = Accounts.GetText(node["email"], "empty");
 
@@ -1328,7 +1328,7 @@ namespace Server.Accounting
                 xml.WriteEndElement();
 
                 xml.WriteStartElement("watchexpiredate");
-                xml.WriteString(XmlConvert.ToString(m_WatchExpire));
+                xml.WriteString(XmlConvert.ToString(m_WatchExpire, XmlDateTimeSerializationMode.Utc));
                 xml.WriteEndElement();
             }
 
@@ -1345,7 +1345,7 @@ namespace Server.Accounting
             xml.WriteEndElement();
 
             xml.WriteStartElement("resetpwdtime");
-            xml.WriteString(XmlConvert.ToString(m_ResetPasswordRequestedTime));
+            xml.WriteString(XmlConvert.ToString(m_ResetPasswordRequestedTime, XmlDateTimeSerializationMode.Utc));
             xml.WriteEndElement();
 
             if (m_AccessLevel != AccessLevel.Player)
@@ -1370,11 +1370,11 @@ namespace Server.Accounting
             }
 
             xml.WriteStartElement("created");
-            xml.WriteString(XmlConvert.ToString(m_Created));
+            xml.WriteString(XmlConvert.ToString(m_Created, XmlDateTimeSerializationMode.Utc));
             xml.WriteEndElement();
 
             xml.WriteStartElement("lastLogin");
-            xml.WriteString(XmlConvert.ToString(m_LastLogin));
+            xml.WriteString(XmlConvert.ToString(m_LastLogin, XmlDateTimeSerializationMode.Utc));
             xml.WriteEndElement();
 
             xml.WriteStartElement("chars");

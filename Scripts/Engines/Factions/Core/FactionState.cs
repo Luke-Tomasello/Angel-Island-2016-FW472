@@ -46,7 +46,7 @@ namespace Server.Factions
             {
                 for (int i = 0; i < m_LastBroadcasts.Length; ++i)
                 {
-                    if (DateTime.Now >= (m_LastBroadcasts[i] + BroadcastPeriod))
+                    if (DateTime.UtcNow >= (m_LastBroadcasts[i] + BroadcastPeriod))
                         return true;
                 }
 
@@ -58,9 +58,9 @@ namespace Server.Factions
         {
             for (int i = 0; i < m_LastBroadcasts.Length; ++i)
             {
-                if (DateTime.Now >= (m_LastBroadcasts[i] + BroadcastPeriod))
+                if (DateTime.UtcNow >= (m_LastBroadcasts[i] + BroadcastPeriod))
                 {
-                    m_LastBroadcasts[i] = DateTime.Now;
+                    m_LastBroadcasts[i] = DateTime.UtcNow;
                     break;
                 }
             }

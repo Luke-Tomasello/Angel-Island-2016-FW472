@@ -456,7 +456,7 @@ namespace Server.Mobiles
 						if ( bc2 != null )
 						{
 							this.SayTo( from, "The bonding of your pet's spirit to you has now begun." );
-							bc2.BondingBegin = DateTime.Now;
+							bc2.BondingBegin = DateTime.UtcNow;
 							m_BondList.Remove( bc2 );
 						}
 

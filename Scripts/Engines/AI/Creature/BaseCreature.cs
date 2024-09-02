@@ -962,13 +962,13 @@ namespace Server.Mobiles
         public virtual Faction FactionAllegiance { get { return null; } }
         public virtual int FactionSilverWorth { get { return 30; } }
 
-        private DateTime NextBandageTime = DateTime.Now;
+        private DateTime NextBandageTime = DateTime.UtcNow;
         public virtual bool CanBandage { get { return false; } }
         public virtual TimeSpan BandageDelay { get { return TimeSpan.FromSeconds(11.0); } }
         public virtual int BandageMin { get { return 30; } }
         public virtual int BandageMax { get { return 45; } }
 
-        private DateTime NextAuraTime = DateTime.Now;
+        private DateTime NextAuraTime = DateTime.UtcNow;
         public virtual AuraType MyAura { get { return AuraType.None; } }
         public virtual TimeSpan NextAuraDelay { get { return TimeSpan.FromSeconds(2.0); } }
         public virtual int AuraRange { get { return 2; } }
@@ -1309,7 +1309,7 @@ namespace Server.Mobiles
         public virtual void BreathStallMovement()
         {
             if (m_AI != null)
-                m_AI.NextMove = DateTime.Now + TimeSpan.FromSeconds(BreathStallTime);
+                m_AI.NextMove = DateTime.UtcNow + TimeSpan.FromSeconds(BreathStallTime);
         }
 
         public virtual void BreathPlayAngerSound()
@@ -1409,7 +1409,7 @@ namespace Server.Mobiles
             if (m_EndFlee == DateTime.MinValue)
                 return false;
 
-            if (DateTime.Now >= m_EndFlee)
+            if (DateTime.UtcNow >= m_EndFlee)
             {
                 StopFlee();
                 return false;
@@ -1420,7 +1420,7 @@ namespace Server.Mobiles
 
         public virtual void BeginFlee(TimeSpan maxDuration)
         {
-            m_EndFlee = DateTime.Now + maxDuration;
+            m_EndFlee = DateTime.UtcNow + maxDuration;
         }
 
         public BaseAI AIObject { get { return m_AI; } }
@@ -2244,7 +2244,7 @@ namespace Server.Mobiles
 
             m_Owners = new ArrayList();
 
-            m_NextReAcquireTime = DateTime.Now + ReacquireDelay;
+            m_NextReAcquireTime = DateTime.UtcNow + ReacquireDelay;
 
             ChangeAIType(AI);
 
@@ -2572,7 +2572,7 @@ namespace Server.Mobiles
                 if (m_bSummoned)
                 {
                     m_SummonEnd = reader.ReadDeltaTime();
-                    new UnsummonTimer(m_ControlMaster, this, m_SummonEnd - DateTime.Now).Start();
+                    new UnsummonTimer(m_ControlMaster, this, m_SummonEnd - DateTime.UtcNow).Start();
                 }
 
                 m_iControlSlots = reader.ReadInt();
@@ -3006,10 +3006,10 @@ namespace Server.Mobiles
                                     m_Loyalty += Utility.RandomMinMax(7, 13); // loyalty redo
 
                                 // if there was a bump in loyalty or the pet has not been feed in 5 minutes
-                                if (bump || DateTime.Now - LoyaltyCheck > TimeSpan.FromMinutes(5))
+                                if (bump || DateTime.UtcNow - LoyaltyCheck > TimeSpan.FromMinutes(5))
                                 {
                                     happier = true;
-                                    LoyaltyCheck = DateTime.Now + TimeSpan.FromHours(1.0);
+                                    LoyaltyCheck = DateTime.UtcNow + TimeSpan.FromHours(1.0);
                                 }
                                 else
                                     DebugSay("I'm not hungry");
@@ -3034,9 +3034,9 @@ namespace Server.Mobiles
                                 {
                                     if (BondingBegin == DateTime.MinValue)
                                     {
-                                        BondingBegin = DateTime.Now;
+                                        BondingBegin = DateTime.UtcNow;
                                     }
-                                    else if ((BondingBegin + BondingDelay) <= DateTime.Now)
+                                    else if ((BondingBegin + BondingDelay) <= DateTime.UtcNow)
                                     {
                                         IsBonded = true;
                                         BondingBegin = DateTime.MinValue;
@@ -3676,7 +3676,7 @@ namespace Server.Mobiles
                 if (m_bSummoned == value)
                     return;
 
-                m_NextReAcquireTime = DateTime.Now;
+                m_NextReAcquireTime = DateTime.UtcNow;
 
                 m_bSummoned = value;
                 Delta(MobileDelta.Noto);
@@ -3857,15 +3857,15 @@ namespace Server.Mobiles
         // Adam: Smart debug output. (anti spam implementation)
         //	Don't print the string unless it changes, or 5 seconds has passed.
         private string lastDebugString = null;
-        private DateTime lastDebugStringTime = DateTime.Now;
+        private DateTime lastDebugStringTime = DateTime.UtcNow;
         private void DebugOut(string text)
         {
-            TimeSpan sx = DateTime.Now - lastDebugStringTime;
+            TimeSpan sx = DateTime.UtcNow - lastDebugStringTime;
             if (lastDebugString != text || sx.TotalSeconds > 5)
             {
                 this.PublicOverheadMessage(MessageType.Regular, 41, false, text);
                 lastDebugString = text;
-                lastDebugStringTime = DateTime.Now;
+                lastDebugStringTime = DateTime.UtcNow;
             }
         }
 
@@ -4273,7 +4273,7 @@ namespace Server.Mobiles
                 {
 
                     this.Loyalty = (PetLoyalty)ReturnConfusedLoyalty(this);
-                    LoyaltyCheck = DateTime.Now + TimeSpan.FromHours(1.0); //reset loyalty time, no double drop
+                    LoyaltyCheck = DateTime.UtcNow + TimeSpan.FromHours(1.0); //reset loyalty time, no double drop
 
                     ControlTarget = null;
                     ControlOrder = OrderType.None;
@@ -4404,7 +4404,7 @@ namespace Server.Mobiles
             {
                 if (this.Spawner != null)
                 {
-                    if ((DateTime.Now - IOBTimeAcquired) < (this.Spawner.MaxDelay))
+                    if ((DateTime.UtcNow - IOBTimeAcquired) < (this.Spawner.MaxDelay))
                     {
                         ((PlayerMobile)IOBLeader).IOBJoinRestrictionTime = (IOBTimeAcquired + this.Spawner.MaxDelay);
                     }
@@ -4498,7 +4498,7 @@ namespace Server.Mobiles
                         (this.IOBAlignment == pm.IOBAlignment) && //safety check
                         (this.IOBFollower == false)) //safety check
                     {
-                        if (pm.IOBJoinRestrictionTime < DateTime.Now)
+                        if (pm.IOBJoinRestrictionTime < DateTime.UtcNow)
                         {
                             this.IOBFollower = true;
                             this.IOBLeader = pm;
@@ -4506,7 +4506,7 @@ namespace Server.Mobiles
                             this.Controlled = true;
 
                             pm.SendMessage(this.Name + " has joined you.");
-                            this.IOBTimeAcquired = DateTime.Now;
+                            this.IOBTimeAcquired = DateTime.UtcNow;
                         }
                         else
                         {
@@ -4683,7 +4683,7 @@ namespace Server.Mobiles
             {
                 // idling...
 
-                if (DateTime.Now >= m_IdleReleaseTime)
+                if (DateTime.UtcNow >= m_IdleReleaseTime)
                 {
                     m_IdleReleaseTime = DateTime.MinValue;
                     return false; // idle is over
@@ -4695,7 +4695,7 @@ namespace Server.Mobiles
             if (95 > Utility.Random(100))
                 return false; // not idling, but don't want to enter idle state
 
-            m_IdleReleaseTime = DateTime.Now + TimeSpan.FromSeconds(Utility.RandomMinMax(15, 25));
+            m_IdleReleaseTime = DateTime.UtcNow + TimeSpan.FromSeconds(Utility.RandomMinMax(15, 25));
 
             if (Body.IsHuman)
             {
@@ -4793,7 +4793,7 @@ namespace Server.Mobiles
         {
             int healed;
 
-            if (DateTime.Now >= NextBandageTime)
+            if (DateTime.UtcNow >= NextBandageTime)
             {
                 if (Poison != null)
                 {
@@ -4809,11 +4809,11 @@ namespace Server.Mobiles
                     this.Hits += healed;
                 }
 
-                NextBandageTime = DateTime.Now + BandageDelay;
+                NextBandageTime = DateTime.UtcNow + BandageDelay;
             }
 
             if (Poison == null && !IsHurt())
-                NextBandageTime = DateTime.Now + BandageDelay;
+                NextBandageTime = DateTime.UtcNow + BandageDelay;
         }
 
 
@@ -6212,7 +6212,7 @@ namespace Server.Mobiles
 
                 //Bonded pet will take statloss until this time
                 // initially 3.0 hours from death.
-                m_StatLossTime = DateTime.Now + TimeSpan.FromHours(3.0);
+                m_StatLossTime = DateTime.UtcNow + TimeSpan.FromHours(3.0);
 
                 ProcessDeltaQueue();
                 SendIncomingPacket();
@@ -6245,7 +6245,7 @@ namespace Server.Mobiles
                 if (owner == null || owner.Deleted || owner.Map != this.Map || !owner.InRange(this, 12) || !this.CanSee(owner) || !this.InLOS(owner))
                 {
                     if (this.OwnerAbandonTime == DateTime.MinValue)
-                        this.OwnerAbandonTime = DateTime.Now;
+                        this.OwnerAbandonTime = DateTime.UtcNow;
                 }
                 else
                 {
@@ -6607,7 +6607,7 @@ namespace Server.Mobiles
                 BardProvoked = false;
                 BardPacified = false;
                 BardTarget = null;
-                BardEndTime = DateTime.Now;
+                BardEndTime = DateTime.UtcNow;
 
                 Delta(MobileDelta.Noto);
             }
@@ -6674,7 +6674,7 @@ namespace Server.Mobiles
             }
 
             new UnsummonTimer(caster, creature, duration).Start();
-            creature.m_SummonEnd = DateTime.Now + duration;
+            creature.m_SummonEnd = DateTime.UtcNow + duration;
 
             creature.MoveToWorld(p, caster.Map);
 
@@ -6704,17 +6704,17 @@ namespace Server.Mobiles
         public virtual void OnThink()
         {
             // Record our last thought. See Hibernating
-            m_LastThought = DateTime.Now;
+            m_LastThought = DateTime.UtcNow;
 
             //loyalty msg check, give warning msg every 5 minutes if at confused loyalty.
-            if (DateTime.Now >= this.m_LoyaltyWarning)
+            if (DateTime.UtcNow >= this.m_LoyaltyWarning)
             {
                 if (this.Loyalty <= PetLoyalty.Confused) // loyalty redo
                 {
                     this.Say(1043270, this.Name); // * ~1_NAME~ looks around desperately *
                     this.PlaySound(this.GetIdleSound());
                 }
-                m_LoyaltyWarning = DateTime.Now + TimeSpan.FromMinutes(5.0);
+                m_LoyaltyWarning = DateTime.UtcNow + TimeSpan.FromMinutes(5.0);
             }
 
             //check that IOBFollower's leader is still wearing an IOB
@@ -6736,7 +6736,7 @@ namespace Server.Mobiles
             if (Controlled || IOBFollower || Hits < HitsMax)
                 RefreshLifespan();
 
-            if (EnableRummaging && CanRummageCorpses && !Summoned && !Controlled && DateTime.Now >= m_NextRummageTime)
+            if (EnableRummaging && CanRummageCorpses && !Summoned && !Controlled && DateTime.UtcNow >= m_NextRummageTime)
             {
                 double min, max;
 
@@ -6752,20 +6752,20 @@ namespace Server.Mobiles
                 }
 
                 double delay = min + (Utility.RandomDouble() * (max - min));
-                m_NextRummageTime = DateTime.Now + TimeSpan.FromMinutes(delay);
+                m_NextRummageTime = DateTime.UtcNow + TimeSpan.FromMinutes(delay);
             }
 
-            if (HasBreath && !Summoned && DateTime.Now >= m_NextBreathTime) // tested: controled dragons do breath fire, what about summoned skeletal dragons?
+            if (HasBreath && !Summoned && DateTime.UtcNow >= m_NextBreathTime) // tested: controled dragons do breath fire, what about summoned skeletal dragons?
             {
                 Mobile target = this.Combatant;
 
                 if (target != null && target.Alive && !target.IsDeadBondedPet && CanBeHarmful(target) && target.Map == this.Map && !IsDeadBondedPet && target.InRange(this, BreathRange) && InLOS(target) && !BardPacified)
                     BreathStart(target);
 
-                m_NextBreathTime = DateTime.Now + TimeSpan.FromSeconds(BreathMinDelay + (Utility.RandomDouble() * BreathMaxDelay));
+                m_NextBreathTime = DateTime.UtcNow + TimeSpan.FromSeconds(BreathMinDelay + (Utility.RandomDouble() * BreathMaxDelay));
             }
 
-            if (!(MyAura == AuraType.None) && DateTime.Now >= NextAuraTime)
+            if (!(MyAura == AuraType.None) && DateTime.UtcNow >= NextAuraTime)
             {
                 try
                 {
@@ -6789,7 +6789,7 @@ namespace Server.Mobiles
                             {
                                 m.Damage(Utility.Random(AuraMin, AuraMax), this);
                                 DoHarmful(m);
-                                NextAuraTime = DateTime.Now + NextAuraDelay;
+                                NextAuraTime = DateTime.UtcNow + NextAuraDelay;
                                 m.Paralyzed = false;
 
                                 switch (MyAura)
@@ -6812,7 +6812,7 @@ namespace Server.Mobiles
                                 ((BaseCreature)m).Combatant = null;
                                 ((BaseCreature)m).FocusMob = null;
                                 ((BaseCreature)m).AIObject.DoActionFlee();
-                                NextAuraTime = DateTime.Now + NextAuraDelay;
+                                NextAuraTime = DateTime.UtcNow + NextAuraDelay;
                                 m.FixedParticles(0x374A, 10, 15, 5013, EffectLayer.Waist);
 
                                 if (((BaseCreature)m).ControlMaster != null)
@@ -6910,7 +6910,7 @@ namespace Server.Mobiles
                 BardMaster = master;
                 BardTarget = target;
                 Combatant = target;
-                BardEndTime = DateTime.Now + TimeSpan.FromSeconds(30.0);
+                BardEndTime = DateTime.UtcNow + TimeSpan.FromSeconds(30.0);
 
                 if (target is BaseCreature)
                 {
@@ -6921,7 +6921,7 @@ namespace Server.Mobiles
                     t.BardMaster = master;
                     t.BardTarget = this;
                     t.Combatant = this;
-                    t.BardEndTime = DateTime.Now + TimeSpan.FromSeconds(30.0);
+                    t.BardEndTime = DateTime.UtcNow + TimeSpan.FromSeconds(30.0);
                 }
             }
             else
@@ -7129,7 +7129,7 @@ namespace Server.Mobiles
             if (owner == null || owner.Deleted || owner.Map != this.Map || !owner.InRange(this, 12) || !this.CanSee(owner) || !this.InLOS(owner))
             {
                 if (this.OwnerAbandonTime == DateTime.MinValue)
-                    this.OwnerAbandonTime = DateTime.Now;
+                    this.OwnerAbandonTime = DateTime.UtcNow;
             }
             else
             {
@@ -7178,10 +7178,10 @@ namespace Server.Mobiles
         [CommandProperty(AccessLevel.GameMaster)]
         public int RemoveStep { get { return m_RemoveStep; } set { m_RemoveStep = value; } }
 
-        private DateTime m_LastThought = DateTime.Now;
+        private DateTime m_LastThought = DateTime.UtcNow;
         public bool Hibernating
         {   // A creature is considered Hibernating if he has not 'thought' in the last minute
-            get { return DateTime.Now > m_LastThought + TimeSpan.FromMinutes(1); }
+            get { return DateTime.UtcNow > m_LastThought + TimeSpan.FromMinutes(1); }
         }
 
         #region Lifespan Code
@@ -7191,19 +7191,19 @@ namespace Server.Mobiles
         [CommandProperty(AccessLevel.GameMaster)]
         public TimeSpan Lifespan
         {
-            get { return m_lifespan - DateTime.Now; }
-            set { m_lifespan = DateTime.Now + value; m_LifespanMinutes = (int)value.TotalMinutes; }
+            get { return m_lifespan - DateTime.UtcNow; }
+            set { m_lifespan = DateTime.UtcNow + value; m_LifespanMinutes = (int)value.TotalMinutes; }
         }
 
         // Adam: Certain mobs are shorter lived
         public virtual void RefreshLifespan()
         {
-            m_lifespan = DateTime.Now + TimeSpan.FromMinutes(m_LifespanMinutes);
+            m_lifespan = DateTime.UtcNow + TimeSpan.FromMinutes(m_LifespanMinutes);
         }
 
         public bool IsPassedLifespan()
         {
-            if (DateTime.Now > m_lifespan)
+            if (DateTime.UtcNow > m_lifespan)
                 return true;
             else
                 return false;
@@ -7693,8 +7693,8 @@ namespace Server.Mobiles
                             if (owner == null || owner.Deleted || owner.Map != c.Map || !owner.InRange(c, 12) || !c.CanSee(owner) || !c.InLOS(owner))
                             {
                                 if (c.OwnerAbandonTime == DateTime.MinValue)
-                                    c.OwnerAbandonTime = DateTime.Now;
-                                else if ((c.OwnerAbandonTime + c.BondingAbandonDelay) <= DateTime.Now)
+                                    c.OwnerAbandonTime = DateTime.UtcNow;
+                                else if ((c.OwnerAbandonTime + c.BondingAbandonDelay) <= DateTime.UtcNow)
                                     toRemove.Add(c);
                             }
                             else
@@ -7708,10 +7708,10 @@ namespace Server.Mobiles
                         Mobile owner = c.ControlMaster;
 
                         // changed loyalty decrement
-                        if (DateTime.Now >= c.LoyaltyCheck)
+                        if (DateTime.UtcNow >= c.LoyaltyCheck)
                         {
                             c.Loyalty -= Utility.RandomMinMax(7, 13); // loyalty redo
-                            c.LoyaltyCheck = DateTime.Now + TimeSpan.FromHours(1.0);
+                            c.LoyaltyCheck = DateTime.UtcNow + TimeSpan.FromHours(1.0);
 
                             if (c.Loyalty <= PetLoyalty.Unhappy)
                             {

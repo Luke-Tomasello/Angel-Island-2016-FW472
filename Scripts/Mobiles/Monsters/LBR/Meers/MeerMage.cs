@@ -65,7 +65,7 @@ namespace Server.Mobiles
 
             VirtualArmor = 16;
 
-            m_NextAbilityTime = DateTime.Now + TimeSpan.FromSeconds(Utility.RandomMinMax(2, 5));
+            m_NextAbilityTime = DateTime.UtcNow + TimeSpan.FromSeconds(Utility.RandomMinMax(2, 5));
         }
 
         public override Poison PoisonImmune { get { return Poison.Lethal; } }
@@ -93,13 +93,13 @@ namespace Server.Mobiles
 
         public override void OnThink()
         {
-            if (DateTime.Now >= m_NextAbilityTime)
+            if (DateTime.UtcNow >= m_NextAbilityTime)
             {
                 Mobile combatant = this.Combatant;
 
                 if (combatant != null && combatant.Map == this.Map && combatant.InRange(this, 12) && IsEnemy(combatant, RelationshipFilter.None) && !UnderEffect(combatant))
                 {
-                    m_NextAbilityTime = DateTime.Now + TimeSpan.FromSeconds(Utility.RandomMinMax(20, 30));
+                    m_NextAbilityTime = DateTime.UtcNow + TimeSpan.FromSeconds(Utility.RandomMinMax(20, 30));
 
                     // TODO: Forest summon ability
 

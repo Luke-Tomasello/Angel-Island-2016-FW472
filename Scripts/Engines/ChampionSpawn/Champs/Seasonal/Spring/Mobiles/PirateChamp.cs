@@ -199,7 +199,7 @@ namespace Server.Mobiles
             lines[3] = "Locked true";
 
             // the chest will become movable in 10-25 minutes
-            DateTime SetTime = DateTime.Now + TimeSpan.FromMinutes(Utility.RandomMinMax(10, 25));
+            DateTime SetTime = DateTime.UtcNow + TimeSpan.FromMinutes(Utility.RandomMinMax(10, 25));
             new TimedSet(m_MetalChest, SetTime, lines).MoveItemToIntStorage();
 
             // add loot

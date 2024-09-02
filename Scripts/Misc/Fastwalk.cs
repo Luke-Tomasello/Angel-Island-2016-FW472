@@ -53,7 +53,7 @@ namespace Server.Misc
             {
                 m_Blocks.Add(e.NetState.Mobile, new List<DateTime>());
             }
-            m_Blocks[e.NetState.Mobile].Add(DateTime.Now);
+            m_Blocks[e.NetState.Mobile].Add(DateTime.UtcNow);
 
             if (ProtectionEnabled)
             {

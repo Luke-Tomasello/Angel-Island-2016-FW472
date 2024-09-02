@@ -49,7 +49,7 @@ namespace Server.Mobiles
     {
         private bool m_LastHidden = false;
         private OrderType m_OrderMode = OrderType.None;
-        private DateTime m_NextFlare = DateTime.Now + TimeSpan.FromSeconds(5.0 + (25.0 * Utility.RandomDouble()));
+        private DateTime m_NextFlare = DateTime.UtcNow + TimeSpan.FromSeconds(5.0 + (25.0 * Utility.RandomDouble()));
 
         [Constructable]
         public Basilisk()
@@ -252,10 +252,10 @@ namespace Server.Mobiles
 
         public void DoShadowWisp()
         {
-            if (DateTime.Now < m_NextFlare)
+            if (DateTime.UtcNow < m_NextFlare)
                 return;
 
-            m_NextFlare = DateTime.Now + TimeSpan.FromSeconds(5.0 + (25.0 * Utility.RandomDouble()));
+            m_NextFlare = DateTime.UtcNow + TimeSpan.FromSeconds(5.0 + (25.0 * Utility.RandomDouble()));
 
             this.FixedEffect(0x37C4, 1, 12, 1109, 6);
             this.PlaySound(0x1D3);

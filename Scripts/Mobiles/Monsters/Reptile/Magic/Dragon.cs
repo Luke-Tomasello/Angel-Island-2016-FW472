@@ -120,7 +120,7 @@ namespace Server.Mobiles
                 if (value == false)
                     m_Hatchdate = DateTime.MinValue;
                 else
-                    m_Hatchdate = DateTime.Now;
+                    m_Hatchdate = DateTime.UtcNow;
             }
         }
 
@@ -153,7 +153,7 @@ namespace Server.Mobiles
         {
             if ((Controlled || BreedingParticipant == true) &&          // wild, non-bred dragons don't age
                 Maturity != DragonMaturity.Egg &&
-                m_CheckedBody + TimeSpan.FromMinutes(30.0) < DateTime.Now)
+                m_CheckedBody + TimeSpan.FromMinutes(30.0) < DateTime.UtcNow)
             {
                 CheckGrow();
             }
@@ -195,14 +195,14 @@ namespace Server.Mobiles
             if (BreedingParticipant == false)
                 return;
 
-            m_CheckedBody = DateTime.Now;
+            m_CheckedBody = DateTime.UtcNow;
 
             if (Maturity == DragonMaturity.Ancient)
                 return; // no work to do
 
-            double weeks = (DateTime.Now - Hatchdate).TotalDays / 7;
+            double weeks = (DateTime.UtcNow - Hatchdate).TotalDays / 7;
             if (TestCenter.Enabled)
-                weeks = (DateTime.Now - Hatchdate).TotalHours / 7;
+                weeks = (DateTime.UtcNow - Hatchdate).TotalHours / 7;
             double stats = ((double)RawStr / StrMax + (double)RawInt / IntMax + (double)RawDex / DexMax) / StatCapFactor;
 
             // initialize with safe values
@@ -212,7 +212,7 @@ namespace Server.Mobiles
             double statmult = 1.0; // THIS PERMANENTLY AFFECTS STATS - IF IN DOUBT, LEAVE ALONE
             int hue = 0;
 
-            if (m_Maturity == DragonMaturity.Egg && m_Hatchdate <= DateTime.Now)
+            if (m_Maturity == DragonMaturity.Egg && m_Hatchdate <= DateTime.UtcNow)
             {
                 body = 0xCE;
                 mat = DragonMaturity.Infant;
@@ -257,7 +257,7 @@ namespace Server.Mobiles
 
             //if (IsStabled || Maturity == DragonMaturity.Egg)
             //{
-            m_LastGrowth = DateTime.Now;
+            m_LastGrowth = DateTime.UtcNow;
 
             Body = body;
             m_Maturity = mat;
@@ -1067,8 +1067,8 @@ namespace Server.Mobiles
             : base(m)
         {
             m_MateTarget = null;
-            m_BecameIdle = DateTime.Now;
-            m_NextMateAttempt = DateTime.Now + TimeSpan.FromSeconds(Utility.RandomMinMax(MinMateAttemptDelay, MaxMateAttemptDelay));
+            m_BecameIdle = DateTime.UtcNow;
+            m_NextMateAttempt = DateTime.UtcNow + TimeSpan.FromSeconds(Utility.RandomMinMax(MinMateAttemptDelay, MaxMateAttemptDelay));
             m_LastMate = DateTime.MinValue;
             m_BeganTheNasty = DateTime.MaxValue;
             m_Ignore = null;
@@ -1093,9 +1093,9 @@ namespace Server.Mobiles
                     m_Mobile.Alive &&                                                       // ...
                     mob.Maturity == Dragon.DragonMaturity.Adult &&                          // must be an adult
                     (double)m_Mobile.Hits / m_Mobile.HitsMax >= MateHealthThreshold &&      // must be minimum health
-                    m_BecameIdle + MateIdleDelay < DateTime.Now &&                          // wait after starting to wander
-                    m_LastMate + MaleMateDelay < DateTime.Now &&                            // wait after last mating - we gotta recoup!
-                    m_NextMateAttempt < DateTime.Now &&                                     // gotta give it a while between looking
+                    m_BecameIdle + MateIdleDelay < DateTime.UtcNow &&                          // wait after starting to wander
+                    m_LastMate + MaleMateDelay < DateTime.UtcNow &&                            // wait after last mating - we gotta recoup!
+                    m_NextMateAttempt < DateTime.UtcNow &&                                     // gotta give it a while between looking
                     InFireDungeon(m_Mobile))                                                // gotta be in fire dungeon
                 {
                     FindMate();
@@ -1107,7 +1107,7 @@ namespace Server.Mobiles
 
                         BreedingState = BreedState.Approaching;
                         Action = ActionType.Interact;
-                        m_BeganMateAttempt = DateTime.Now;
+                        m_BeganMateAttempt = DateTime.UtcNow;
                         m_Mobile.PlaySound(Utility.RandomList(364, 365, 362));
                     }
 
@@ -1172,7 +1172,7 @@ namespace Server.Mobiles
             // or, if we're already actually doing the nasty, we're not gonna give up
 
             /*	DEBUG VERSION -- so we can see what's going on
-			double seconds = ((m_BeganMateAttempt + MateAttemptTimout) - DateTime.Now).TotalSeconds;
+			double seconds = ((m_BeganMateAttempt + MateAttemptTimout) - DateTime.UtcNow).TotalSeconds;
 			double patience = Utility.RandomDouble() * m_Mobile.Patience;
 			if (this.m_Mobile.ControlMaster != null && this.m_Mobile.ControlMaster.AccessLevel > AccessLevel.Player && this.m_Mobile.ControlMaster.NetState != null)
 				this.m_Mobile.SayTo(this.m_Mobile.ControlMaster, String.Format("seconds {0} > patience {1}", seconds, patience));
@@ -1181,11 +1181,11 @@ namespace Server.Mobiles
 
             // original version - always times out on Patience
             //if (BreedingState != BreedState.Mating && 
-            //((m_BeganMateAttempt + MateAttemptTimout) - DateTime.Now).TotalSeconds > Utility.RandomDouble() * m_Mobile.Patience)
+            //((m_BeganMateAttempt + MateAttemptTimout) - DateTime.UtcNow).TotalSeconds > Utility.RandomDouble() * m_Mobile.Patience)
 
             // adam: new temp version until taran cn have a look .. here I'm simply removing Patience
             //	but keeping the basic timeout logic
-            if (BreedingState != BreedState.Mating && DateTime.Now > (m_BeganMateAttempt + MateAttemptTimout))
+            if (BreedingState != BreedState.Mating && DateTime.UtcNow > (m_BeganMateAttempt + MateAttemptTimout))
             {
                 m_Mobile.DebugSay("F it. This broad's too much work.");
 
@@ -1285,7 +1285,7 @@ namespace Server.Mobiles
                             break;
                         }
 
-                        if (m_BeganTheNasty + MateDuration < DateTime.Now)
+                        if (m_BeganTheNasty + MateDuration < DateTime.UtcNow)
                         {
                             // patience affects chance to successfully procreate
                             if (Utility.RandomDouble() < (MateSuccessChance + (m_Mobile.Patience - 10) / 500.0))
@@ -1382,7 +1382,7 @@ namespace Server.Mobiles
             m_BeganTheNasty = DateTime.MaxValue;
 
             if (Action == ActionType.Wander)
-                m_BecameIdle = DateTime.Now;
+                m_BecameIdle = DateTime.UtcNow;
 
             base.OnActionChanged();
         }
@@ -1391,7 +1391,7 @@ namespace Server.Mobiles
         {
             if (m_Mobile.ControlOrder == OrderType.None)
             {
-                m_BecameIdle = DateTime.Now; // action must = wander and order must = none, setting this in both ensures max wait
+                m_BecameIdle = DateTime.UtcNow; // action must = wander and order must = none, setting this in both ensures max wait
             }
 
             if (m_MateTarget != null)
@@ -1448,7 +1448,7 @@ namespace Server.Mobiles
                 return false; // must be minimum health                   
 
             if ((Action != ActionType.Wander && Action != ActionType.Interact) ||
-                m_Mobile.ControlOrder != OrderType.None || m_BecameIdle + MateIdleDelay > DateTime.Now)
+                m_Mobile.ControlOrder != OrderType.None || m_BecameIdle + MateIdleDelay > DateTime.UtcNow)
                 return false; // we are busy
 
             if (m_MateTarget == male)
@@ -1457,7 +1457,7 @@ namespace Server.Mobiles
             if (m_MateTarget != null && m_MateTarget != male)
                 return false; // we're already mating with someone else
 
-            if (m_LastMate + FemaleMateDelay > DateTime.Now)
+            if (m_LastMate + FemaleMateDelay > DateTime.UtcNow)
                 return false; // haven't waited long enough yet - need to recoup!
 
             // male's wisdom can up chances up to .10, our patience can up chances up to .05, our temper can lower chances up to .15
@@ -1472,7 +1472,7 @@ namespace Server.Mobiles
         {
             // mark us as gettin down
             Action = ActionType.Interact; // important that this happens BEFORE setting BeganTheNasty - OnActionChanged will overwrite it otherwise
-            m_BeganTheNasty = DateTime.Now;
+            m_BeganTheNasty = DateTime.UtcNow;
             m_MateTarget = mate;
         }
 
@@ -1480,11 +1480,11 @@ namespace Server.Mobiles
         {
             if (success)
             {
-                m_LastMate = DateTime.Now;
+                m_LastMate = DateTime.UtcNow;
             }
 
             m_MateTarget = null;
-            m_NextMateAttempt = DateTime.Now + TimeSpan.FromSeconds(Utility.RandomMinMax(MinMateAttemptDelay, MaxMateAttemptDelay));
+            m_NextMateAttempt = DateTime.UtcNow + TimeSpan.FromSeconds(Utility.RandomMinMax(MinMateAttemptDelay, MaxMateAttemptDelay));
             m_BeganTheNasty = DateTime.MaxValue;
             BreedingState = BreedState.None;
         }
@@ -1653,9 +1653,9 @@ namespace Server.Mobiles
             Weight = 8;
             Hue = 1053;
 
-            m_Birthdate = DateTime.Now + TimeSpan.FromDays(5.0 + 2 * Utility.RandomDouble());
+            m_Birthdate = DateTime.UtcNow + TimeSpan.FromDays(5.0 + 2 * Utility.RandomDouble());
             if (TestCenter.Enabled)
-                m_Birthdate = DateTime.Now + TimeSpan.FromMinutes(20.0 + 5 * Utility.RandomDouble());
+                m_Birthdate = DateTime.UtcNow + TimeSpan.FromMinutes(20.0 + 5 * Utility.RandomDouble());
             m_Chick = child;
             m_Hatch = null;
             m_Health = 5;
@@ -1678,7 +1678,7 @@ namespace Server.Mobiles
             if (m_Chick == null || m_Chick.Deleted)
                 return false;
 
-            TimeSpan ts = m_Birthdate - DateTime.Now;
+            TimeSpan ts = m_Birthdate - DateTime.UtcNow;
 
             if (ts < TimeSpan.Zero && Health > 0)
             {

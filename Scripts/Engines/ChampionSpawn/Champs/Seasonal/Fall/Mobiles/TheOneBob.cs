@@ -83,7 +83,7 @@ namespace Server.Mobiles
 
             VirtualArmor = 30;
 
-            m_NextSpeechTime = DateTime.Now + m_SpeechDelay;
+            m_NextSpeechTime = DateTime.UtcNow + m_SpeechDelay;
 
             PackItem(new Bandage(Utility.RandomMinMax(VirtualArmor, VirtualArmor * 2)));
             PackStrongPotions(6, 12);
@@ -118,7 +118,7 @@ namespace Server.Mobiles
 
         public override void OnThink()
         {
-            if (DateTime.Now >= m_NextSpeechTime)
+            if (DateTime.UtcNow >= m_NextSpeechTime)
             {
                 Mobile combatant = this.Combatant;
 
@@ -135,7 +135,7 @@ namespace Server.Mobiles
                         case 4: this.Say(true, "Yeah, lol"); break;
                     }
 
-                    m_NextSpeechTime = DateTime.Now + m_SpeechDelay;
+                    m_NextSpeechTime = DateTime.UtcNow + m_SpeechDelay;
                 }
 
                 base.OnThink();
@@ -153,16 +153,16 @@ namespace Server.Mobiles
 			if (combatant == null || combatant.Deleted || combatant.Map != Map || !InRange(combatant, 12) || !CanBeHarmful(combatant) || !InLOS(combatant))
 				return;
 
-			if (DateTime.Now >= m_NextBomb)
+			if (DateTime.UtcNow >= m_NextBomb)
 			{
 				ThrowBomb(combatant);
 
 				m_Thrown++;
 
 				if (0.75 >= Utility.RandomDouble() && (m_Thrown % 2) == 1) // 75% chance to quickly throw another bomb
-					m_NextBomb = DateTime.Now + TimeSpan.FromSeconds(3.0);
+					m_NextBomb = DateTime.UtcNow + TimeSpan.FromSeconds(3.0);
 				else
-					m_NextBomb = DateTime.Now + TimeSpan.FromSeconds(5.0 + (10.0 * Utility.RandomDouble())); // 5-15 seconds
+					m_NextBomb = DateTime.UtcNow + TimeSpan.FromSeconds(5.0 + (10.0 * Utility.RandomDouble())); // 5-15 seconds
 			}
 		}
 
@@ -393,7 +393,7 @@ namespace Server.Mobiles
 											case 3: this.Say(true, "Ye'll not get my swag!"); break;
 										}
                     
-										m_NextSpeechTime = DateTime.Now + m_SpeechDelay;*/
+										m_NextSpeechTime = DateTime.UtcNow + m_SpeechDelay;*/
                 }
             }
 

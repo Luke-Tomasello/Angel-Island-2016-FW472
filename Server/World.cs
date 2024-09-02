@@ -70,6 +70,7 @@
  */
 
 using Server.Guilds;
+using Server.Mobiles;
 using Server.Network;
 using System;
 using System.Collections;
@@ -454,7 +455,7 @@ namespace Server
 
             Console.WriteLine("World: Loading...");
 
-            DateTime start = DateTime.Now;
+            DateTime start = DateTime.UtcNow;
 
             m_Loading = true;
 
@@ -976,15 +977,15 @@ namespace Server
             }
 
             // adam: not currently used 
-            //DateTime copy = DateTime.Now;
+            //DateTime copy = DateTime.UtcNow;
             // make sure we take the snapshotted Temp and move it out into working data
             //if (Directory.Exists("Temp"))
             //Directory.Delete("Temp", true);
             //if (Directory.Exists("Saves/Temp"))
             //CopyDirectory("Saves/Temp", "Temp");
-            //Console.WriteLine("Copying Temp/ took {0}ms.", (DateTime.Now - copy).TotalMilliseconds);
+            //Console.WriteLine("Copying Temp/ took {0}ms.", (DateTime.UtcNow - copy).TotalMilliseconds);
 
-            Console.WriteLine("done ({1} items, {2} mobiles) ({0:F1} seconds)", (DateTime.Now - start).TotalSeconds, m_Items.Count, m_Mobiles.Count);
+            Console.WriteLine("done ({1} items, {2} mobiles) ({0:F1} seconds)", (DateTime.UtcNow - start).TotalSeconds, m_Items.Count, m_Mobiles.Count);
         }
         /*
 		private static bool CopyDirectory(string source, string dest)
@@ -1072,7 +1073,7 @@ namespace Server
 
             Console.WriteLine("World: Saving...");
 
-            DateTime startTime = DateTime.Now;
+            DateTime startTime = DateTime.UtcNow;
 
             // Adam: see comments in the function
             PackMemory(true);
@@ -1123,7 +1124,7 @@ namespace Server
             // Adam: final cleanup
             PackMemory(false);
 
-            DateTime endTime = DateTime.Now;
+            DateTime endTime = DateTime.UtcNow;
             Console.WriteLine("done in {0:F1} seconds.", (endTime - startTime).TotalSeconds);
 
             if (message)
@@ -1188,7 +1189,7 @@ namespace Server
                 //Pix: 12/15/05 - moved to heartbeat
                 //if ( m is IVendor )
                 //{
-                //	if ( ((IVendor)m).LastRestock + ((IVendor)m).RestockDelay < DateTime.Now )
+                //	if ( ((IVendor)m).LastRestock + ((IVendor)m).RestockDelay < DateTime.UtcNow )
                 //		restock.Add( m );
                 //}
 
@@ -1204,7 +1205,7 @@ namespace Server
             //{
             //	IVendor vend = (IVendor)restock[i];
             //	vend.Restock();
-            //	vend.LastRestock = DateTime.Now;
+            //	vend.LastRestock = DateTime.UtcNow;
             //}
 
             idx.Close();
@@ -1241,7 +1242,7 @@ namespace Server
             foreach (Item item in m_Items.Values)
             {
                 //Pix: removed to heartbeat 11/18/05
-                //if ( item.Decays && item.Parent == null && item.Map != Map.Internal && (item.LastMoved + item.DecayTime) <= DateTime.Now )
+                //if ( item.Decays && item.Parent == null && item.Map != Map.Internal && (item.LastMoved + item.DecayTime) <= DateTime.UtcNow )
                 //	decaying.Add( item );
 
                 long start = bin.Position;
@@ -1382,7 +1383,46 @@ namespace Server
                 return null;
             }
         }
-
+        // The Admin Account is for associating an owner with such things as specially placed vendors, and (event) houses and such.
+        public static Mobile GetAdminAcct()
+        {   // Admin account does things like owns houses (Custom Housing Area)
+            Serial Admin = CoreAI.AdminAccount;
+            Mobile admin = FindMobile(Admin);
+            if (admin == null)
+            {
+                Utility.Monitor.WriteLine("Warning: No admin account specified in World.GetAdminAcct(). Creating...", ConsoleColor.Red);
+                admin = CreateSystemAccount();
+                if (admin != null)
+                    admin.Name = "ADMIN";
+                CoreAI.AdminAccount = admin != null ? admin.Serial : Serial.MinusOne;
+            }
+            return admin;
+        }
+        public static Mobile GetSystemAcct()
+        {   // System account does things like execute commands in-game that need a mobile
+            Serial System = CoreAI.SystemAccount;
+            Mobile admin = FindMobile(System);
+            if (admin == null)
+            {
+                Utility.Monitor.WriteLine("Warning: No system account specified in World.GetSystemAcct(). Creating...", ConsoleColor.Red);
+                admin = CreateSystemAccount();
+                if (admin != null)
+                    admin.AccessLevelInternal = AccessLevel.System;
+                CoreAI.SystemAccount = admin != null ? admin.Serial : Serial.MinusOne;
+            }
+            else
+                admin.AccessLevelInternal = AccessLevel.System;
+            return admin;
+        }
+        public static Mobile CreateSystemAccount()
+        {
+            PlayerMobile system = new PlayerMobile();
+            system.Name = "SYSTEM";                         // recognizable
+            system.AccessLevel = AccessLevel.Administrator; // will keep him from getting cleaned up
+            system.IsIntMapStorage = true;                  // will keep him from getting cleaned up
+            system.MoveToWorld(new Point3D(), Map.Internal);
+            return system;
+        }
         public static Mobile FindMobile(Serial serial)
         {
             //return (Mobile)m_Mobiles[serial];
@@ -1496,12 +1536,12 @@ namespace Server
         public static void SaveSystem()
         {
             /* Adam, not currently used
-			DateTime copy = DateTime.Now;
+			DateTime copy = DateTime.UtcNow;
 			if (Directory.Exists("Saves/Temp"))
 				Directory.Delete("Saves/Temp", true);
 			if (Directory.Exists("Temp"))
 				CopyDirectory("Temp", "Saves/Temp");
-			Console.WriteLine("Copying Temp/ took {0}ms", (DateTime.Now - copy).TotalMilliseconds);
+			Console.WriteLine("Copying Temp/ took {0}ms", (DateTime.UtcNow - copy).TotalMilliseconds);
 			 */
 
             // take care of some World class-specific stuff

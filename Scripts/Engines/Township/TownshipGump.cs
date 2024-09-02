@@ -543,7 +543,7 @@ namespace Server.Gumps
                 y += 30;
 
                 AddHtml(20, y, 400, 35, "Recall In: " + (m_Stone.NoRecallInto ? "Disabled" : "Enabled"), false, false);
-                if (m_Stone.LastToggleRecallIn < DateTime.Now.AddMinutes(-30.0))
+                if (m_Stone.LastToggleRecallIn < DateTime.UtcNow.AddMinutes(-30.0))
                 {
                     AddButtonLabeled(300, y, (int)Buttons.TOGGLERECALLIN, (m_Stone.NoRecallInto ? "Enable" : "Disable"));
                 }
@@ -553,7 +553,7 @@ namespace Server.Gumps
                 }
                 y += 30;
                 AddHtml(20, y, 400, 35, "Recall Out: " + (m_Stone.NoRecallOut ? "Disabled" : "Enabled"), false, false);
-                if (m_Stone.LastToggleRecallOut < DateTime.Now.AddMinutes(-30.0))
+                if (m_Stone.LastToggleRecallOut < DateTime.UtcNow.AddMinutes(-30.0))
                 {
                     AddButtonLabeled(300, y, (int)Buttons.TOGGLERECALLOUT, (m_Stone.NoRecallOut ? "Enable" : "Disable"));
                 }
@@ -563,7 +563,7 @@ namespace Server.Gumps
                 }
                 y += 30;
                 AddHtml(20, y, 400, 35, "Gate Travel In: " + (m_Stone.NoGateInto ? "Disabled" : "Enabled"), false, false);
-                if (m_Stone.LastToggleGateIn < DateTime.Now.AddMinutes(-30.0))
+                if (m_Stone.LastToggleGateIn < DateTime.UtcNow.AddMinutes(-30.0))
                 {
                     AddButtonLabeled(300, y, (int)Buttons.TOGGLEGATEIN, (m_Stone.NoGateInto ? "Enable" : "Disable"));
                 }
@@ -573,7 +573,7 @@ namespace Server.Gumps
                 }
                 y += 30;
                 AddHtml(20, y, 400, 35, "Gate Travel Out: " + (m_Stone.NoGateOut ? "Disabled" : "Enabled"), false, false);
-                if (m_Stone.LastToggleGateOut < DateTime.Now.AddMinutes(-30.0))
+                if (m_Stone.LastToggleGateOut < DateTime.UtcNow.AddMinutes(-30.0))
                 {
                     AddButtonLabeled(300, y, (int)Buttons.TOGGLEGATEOUT, (m_Stone.NoGateOut ? "Enable" : "Disable"));
                 }
@@ -786,14 +786,14 @@ namespace Server.Gumps
                     m_Mobile.Target = new AddTownshipGoldTarget(m_Mobile, m_Stone);
                     break;
                 case (int)Buttons.TOGGLERECALLIN:
-                    if (m_Stone.LastToggleRecallIn < DateTime.Now.AddMinutes(-30.0))
+                    if (m_Stone.LastToggleRecallIn < DateTime.UtcNow.AddMinutes(-30.0))
                     {
                         if (m_Stone.GoldHeld >= Township.TownshipSettings.ChangeTravelCharge)
                         {
                             m_Stone.AddFeeRecord(m_Mobile.Name + " changed Recall In: " + Township.TownshipSettings.ChangeTravelCharge);
                             m_Stone.GoldHeld -= Township.TownshipSettings.ChangeTravelCharge;
                             m_Stone.NoRecallInto = !m_Stone.NoRecallInto;
-                            m_Stone.LastToggleRecallIn = DateTime.Now;
+                            m_Stone.LastToggleRecallIn = DateTime.UtcNow;
                             m_Mobile.SendMessage("Recall in is now " + (m_Stone.NoRecallInto ? "disabled." : "enabled."));
                         }
                         else
@@ -809,14 +809,14 @@ namespace Server.Gumps
                     m_Mobile.SendGump(new TownshipGump(m_Mobile, m_Stone));
                     break;
                 case (int)Buttons.TOGGLERECALLOUT:
-                    if (m_Stone.LastToggleRecallOut < DateTime.Now.AddMinutes(-30.0))
+                    if (m_Stone.LastToggleRecallOut < DateTime.UtcNow.AddMinutes(-30.0))
                     {
                         if (m_Stone.GoldHeld >= Township.TownshipSettings.ChangeTravelCharge)
                         {
                             m_Stone.AddFeeRecord(m_Mobile.Name + " changed Recall Out: " + Township.TownshipSettings.ChangeTravelCharge);
                             m_Stone.GoldHeld -= Township.TownshipSettings.ChangeTravelCharge;
                             m_Stone.NoRecallOut = !m_Stone.NoRecallOut;
-                            m_Stone.LastToggleRecallOut = DateTime.Now;
+                            m_Stone.LastToggleRecallOut = DateTime.UtcNow;
                             m_Mobile.SendMessage("Recall out is now " + (m_Stone.NoRecallOut ? "disabled." : "enabled."));
                         }
                         else
@@ -832,14 +832,14 @@ namespace Server.Gumps
                     m_Mobile.SendGump(new TownshipGump(m_Mobile, m_Stone));
                     break;
                 case (int)Buttons.TOGGLEGATEIN:
-                    if (m_Stone.LastToggleGateIn < DateTime.Now.AddMinutes(-30.0))
+                    if (m_Stone.LastToggleGateIn < DateTime.UtcNow.AddMinutes(-30.0))
                     {
                         if (m_Stone.GoldHeld >= Township.TownshipSettings.ChangeTravelCharge)
                         {
                             m_Stone.AddFeeRecord(m_Mobile.Name + " changed GateTravel In: " + Township.TownshipSettings.ChangeTravelCharge);
                             m_Stone.GoldHeld -= Township.TownshipSettings.ChangeTravelCharge;
                             m_Stone.NoGateInto = !m_Stone.NoGateInto;
-                            m_Stone.LastToggleGateIn = DateTime.Now;
+                            m_Stone.LastToggleGateIn = DateTime.UtcNow;
                             m_Mobile.SendMessage("Gate Travel in is now " + (m_Stone.NoGateInto ? "disabled." : "enabled."));
                         }
                         else
@@ -855,14 +855,14 @@ namespace Server.Gumps
                     m_Mobile.SendGump(new TownshipGump(m_Mobile, m_Stone));
                     break;
                 case (int)Buttons.TOGGLEGATEOUT:
-                    if (m_Stone.LastToggleGateOut < DateTime.Now.AddMinutes(-30.0))
+                    if (m_Stone.LastToggleGateOut < DateTime.UtcNow.AddMinutes(-30.0))
                     {
                         if (m_Stone.GoldHeld >= Township.TownshipSettings.ChangeTravelCharge)
                         {
                             m_Stone.AddFeeRecord(m_Mobile.Name + " changed GateTravel Out: " + Township.TownshipSettings.ChangeTravelCharge);
                             m_Stone.GoldHeld -= Township.TownshipSettings.ChangeTravelCharge;
                             m_Stone.NoGateOut = !m_Stone.NoGateOut;
-                            m_Stone.LastToggleGateOut = DateTime.Now;
+                            m_Stone.LastToggleGateOut = DateTime.UtcNow;
                             m_Mobile.SendMessage("Gate Travel out is now " + (m_Stone.NoGateOut ? "disabled." : "enabled."));
                         }
                         else
@@ -1440,7 +1440,7 @@ namespace Server.Gumps
                                 m_Stone.GoldHeld += amount;
                                 gold.Delete();
                                 from.SendMessage("You have deposited {0} into your township fund", amount);
-                                m_Stone.AddDepositRecord(string.Format("{0}: {1} deposited {2} gold.", DateTime.Now.ToShortDateString(), from.Name, amount));
+                                m_Stone.AddDepositRecord(string.Format("{0}: {1} deposited {2} gold.", DateTime.UtcNow.ToShortDateString(), from.Name, amount));
                             }
                             else
                             {
@@ -1448,7 +1448,7 @@ namespace Server.Gumps
                                 m_Stone.GoldHeld = TownshipStone.MAXGOLDHELD;
                                 gold.Amount -= difference;
                                 from.SendMessage("You have deposited {0} of {1} into your township fund", difference, amount);
-                                m_Stone.AddDepositRecord(string.Format("{0}: {1} deposited {2} gold.", DateTime.Now.ToShortDateString(), from.Name, difference));
+                                m_Stone.AddDepositRecord(string.Format("{0}: {1} deposited {2} gold.", DateTime.UtcNow.ToShortDateString(), from.Name, difference));
                             }
                         }
                         else if (item_targeted is BankCheck)
@@ -1461,7 +1461,7 @@ namespace Server.Gumps
                                 m_Stone.GoldHeld += amount;
                                 bankcheck.Delete();
                                 from.SendMessage("You have deposited {0} into your township fund", amount);
-                                m_Stone.AddDepositRecord(string.Format("{0}: {1} deposited a check worth {2} gold.", DateTime.Now.ToShortDateString(), from.Name, amount));
+                                m_Stone.AddDepositRecord(string.Format("{0}: {1} deposited a check worth {2} gold.", DateTime.UtcNow.ToShortDateString(), from.Name, amount));
                             }
                             else
                             {

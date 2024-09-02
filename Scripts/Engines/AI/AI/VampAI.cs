@@ -116,9 +116,9 @@ namespace Server.Mobiles
             DmgSlowsMovement = false;
             CanRun = true;
 
-            m_NextStunTime = DateTime.Now + m_StunDelay;
-            m_NextSpeakTime = DateTime.Now + m_SpeakDelay;
-            m_NextHypnotizeTime = DateTime.Now + m_HypnotizeDelay;
+            m_NextStunTime = DateTime.UtcNow + m_StunDelay;
+            m_NextSpeakTime = DateTime.UtcNow + m_SpeakDelay;
+            m_NextHypnotizeTime = DateTime.UtcNow + m_HypnotizeDelay;
         }
 
         public override void OnActionChanged()
@@ -257,7 +257,7 @@ namespace Server.Mobiles
         {
             m_Mobile.CanFly = false;
 
-            m_Mobile.NextReacquireTime = DateTime.Now;
+            m_Mobile.NextReacquireTime = DateTime.UtcNow;
             if (AcquireFocusMob(m_Mobile.RangePerception, m_Mobile.FightMode, false, false, true))
             {
                 if (m_Mobile.Debug)
@@ -302,7 +302,7 @@ namespace Server.Mobiles
                 {
                     // Our combatant is deleted, dead, hidden, or we cannot hurt them
                     // Try to find another combatant
-                    m_Mobile.NextReacquireTime = DateTime.Now;
+                    m_Mobile.NextReacquireTime = DateTime.UtcNow;
                     if (AcquireFocusMob(m_Mobile.RangePerception, m_Mobile.FightMode, false, false, true))
                     {
                         if (m_Mobile.Debug)
@@ -360,7 +360,7 @@ namespace Server.Mobiles
 
                 // STUN PUNCH: 50% chance to try an stun punch if we have stamina available, we are human form and our hands are free.
                 //	(Hypnotize on the other hand is only used if the vampire has something in his hands)
-                if (DateTime.Now >= m_NextStunTime)
+                if (DateTime.UtcNow >= m_NextStunTime)
                 {
                     bool stunChance = Utility.RandomBool();
                     bool isBat = m_Mobile is Vampire && ((Vampire)m_Mobile).BatForm == true;
@@ -370,7 +370,7 @@ namespace Server.Mobiles
                         isBat == false)
                     {
                         EventSink.InvokeStunRequest(new StunRequestEventArgs(m_Mobile));
-                        m_NextStunTime = DateTime.Now + m_StunDelay;
+                        m_NextStunTime = DateTime.UtcNow + m_StunDelay;
                     }
                 }
 
@@ -397,17 +397,17 @@ namespace Server.Mobiles
                     RunTo(c, false); //walk no need to run
                 }
                 //taunt if there stunned
-                if (DateTime.Now >= m_NextSpeakTime && c.Frozen && c is PlayerMobile && m_Mobile is Vampire && ((Vampire)m_Mobile).BatForm == false && m_Mobile.InRange(c, 1))
+                if (DateTime.UtcNow >= m_NextSpeakTime && c.Frozen && c is PlayerMobile && m_Mobile is Vampire && ((Vampire)m_Mobile).BatForm == false && m_Mobile.InRange(c, 1))
                 {
                     string s = GetMsg(c);
                     m_Mobile.Say(s);
-                    m_NextSpeakTime = DateTime.Now + m_SpeakDelay;
+                    m_NextSpeakTime = DateTime.UtcNow + m_SpeakDelay;
                 }
 
                 // HYPNOTIZE: may only hypnotize if holding a weapon OR you are a bat (otherwise we stun)
                 //	both bats and human-form vamps can hypnotize
                 // Note: WalkingDead and Vampire Champ hold weapons
-                if (DateTime.Now >= m_NextHypnotizeTime)
+                if (DateTime.UtcNow >= m_NextHypnotizeTime)
                 {
                     if (c != null)
                     {
@@ -424,7 +424,7 @@ namespace Server.Mobiles
                                     else
                                         m_Mobile.Emote("I am your master, do not fight me.");
 
-                                    m_NextHypnotizeTime = DateTime.Now + m_HypnotizeDelay;
+                                    m_NextHypnotizeTime = DateTime.UtcNow + m_HypnotizeDelay;
                                 }
                             }
                         }

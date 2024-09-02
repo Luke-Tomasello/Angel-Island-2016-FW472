@@ -183,10 +183,10 @@ namespace Server.Mobiles
             // if we are full str
             if (this.Hits == this.HitsMax)
                 // if 4 hours have passed without incident
-                if (DateTime.Now - m_DecayStats > TimeSpan.FromHours(4.0))
+                if (DateTime.UtcNow - m_DecayStats > TimeSpan.FromHours(4.0))
                 {
                     m_bThreatKnown = false;
-                    m_DecayStats = DateTime.Now;
+                    m_DecayStats = DateTime.UtcNow;
                     m_threatLevel = 0;
                 }
 
@@ -196,7 +196,7 @@ namespace Server.Mobiles
 
         public override void OnActionCombat()
         {   // refresh dynamic stats the decay timer
-            m_DecayStats = DateTime.Now;
+            m_DecayStats = DateTime.UtcNow;
             base.OnActionCombat();
         }
 

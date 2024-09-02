@@ -106,7 +106,7 @@ namespace Server.Items
             Container pack = attacker.Backpack;
 
             // Make sure we've been standing still for the standing delay (originally was: one second)
-            if (DateTime.Now > (attacker.LastMoveTime + TimeSpan.FromSeconds(CoreAI.StandingDelay))
+            if (DateTime.UtcNow > (attacker.LastMoveTime + TimeSpan.FromSeconds(CoreAI.StandingDelay))
                 || (Core.AOS && WeaponAbility.GetCurrentAbility(attacker) is MovingShot))
             {
                 if (attacker.HarmfulCheck(defender))

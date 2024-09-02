@@ -245,7 +245,7 @@ namespace Server.Mobiles
         {
             Mobile m = Combatant;
 
-            if (m == null || m.Deleted || !m.Alive || !Alive || m_NextAcidBreath > DateTime.Now || !CanBeHarmful(m))
+            if (m == null || m.Deleted || !m.Alive || !Alive || m_NextAcidBreath > DateTime.UtcNow || !CanBeHarmful(m))
                 return;
 
             PlaySound(0x118);
@@ -254,7 +254,7 @@ namespace Server.Mobiles
             TimeSpan delay = TimeSpan.FromSeconds(GetDistanceToSqrt(m) / 5.0);
             Timer.DelayCall(delay, new TimerStateCallback(EndAcidBreath), m);
 
-            m_NextAcidBreath = DateTime.Now + TimeSpan.FromSeconds(5);
+            m_NextAcidBreath = DateTime.UtcNow + TimeSpan.FromSeconds(5);
         }
 
         public void EndAcidBreath(object o)
@@ -280,7 +280,7 @@ namespace Server.Mobiles
         {
             Mobile m = Combatant;
 
-            if (m == null || m.Deleted || !m.Alive || !Alive || m_NextTunneling > DateTime.Now || !CanBeHarmful(m) || !m.InRange(this, 2))
+            if (m == null || m.Deleted || !m.Alive || !Alive || m_NextTunneling > DateTime.UtcNow || !CanBeHarmful(m) || !m.InRange(this, 2))
                 return;
 
             Frozen = true;
@@ -295,7 +295,7 @@ namespace Server.Mobiles
             Say("* The ant lion begins tunneling into the ground *");
 
             m_TunnelTimer = Timer.DelayCall(TimeSpan.FromSeconds(3), new TimerStateCallback(EndTunneling), m);
-            m_NextTunneling = DateTime.Now + TimeSpan.FromSeconds(Utility.RandomMinMax(12, 20));
+            m_NextTunneling = DateTime.UtcNow + TimeSpan.FromSeconds(Utility.RandomMinMax(12, 20));
         }
 
         public void EndTunneling(object o)

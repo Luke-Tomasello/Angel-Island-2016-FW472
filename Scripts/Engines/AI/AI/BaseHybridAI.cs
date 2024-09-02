@@ -459,7 +459,7 @@ namespace Server.Mobiles
                         if (m_Mobile.Hits < (m_Mobile.HitsMax * .25) || m_Mobile.Mana < (m_Mobile.ManaMax * .25))
                             DrinkHeal(m_Mobile);
 
-                if (m_Mobile.Skills[SkillName.Magery].Value >= 50.0 && m_Mobile.Spell == null && DateTime.Now >= m_Mobile.NextSpellTime)
+                if (m_Mobile.Skills[SkillName.Magery].Value >= 50.0 && m_Mobile.Spell == null && DateTime.UtcNow >= m_Mobile.NextSpellTime)
                 {
                     m_Mobile.DebugSay("Doing spell selection");
                     // We are ready to cast a spell

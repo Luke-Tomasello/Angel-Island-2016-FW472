@@ -112,7 +112,7 @@ namespace Server.Gumps
             ArrayList killers = new ArrayList();
             ArrayList toGive = new ArrayList();
 
-            //if ( DateTime.Now < ((PlayerMobile)m).NextMurderCountTime )
+            //if ( DateTime.UtcNow < ((PlayerMobile)m).NextMurderCountTime )
             //	return;
 
             bool bTimeRestricted = false; //false means they're out of time restriction
@@ -150,16 +150,16 @@ namespace Server.Gumps
                             {
                                 if (kt != null)
                                 {
-                                    if (DateTime.Now - kt.Time < TimeSpan.FromMinutes(2.0))
+                                    if (DateTime.UtcNow - kt.Time < TimeSpan.FromMinutes(2.0))
                                     {
                                         bTimeRestricted = true;
                                     }
-                                    kt.Time = DateTime.Now;
+                                    kt.Time = DateTime.UtcNow;
                                 }
                             }
                             else
                             {
-                                kt = new KillerTime(ai.Attacker, DateTime.Now);
+                                kt = new KillerTime(ai.Attacker, DateTime.UtcNow);
                                 pm.KillerTimes.Add(kt);
                             }
                         }
@@ -173,13 +173,13 @@ namespace Server.Gumps
                     ai.Reported = true;
                 }
 
-                if (ai.Attacker.Player && (DateTime.Now - ai.LastCombatTime) < TimeSpan.FromSeconds(30.0) && !toGive.Contains(ai.Attacker))
+                if (ai.Attacker.Player && (DateTime.UtcNow - ai.LastCombatTime) < TimeSpan.FromSeconds(30.0) && !toGive.Contains(ai.Attacker))
                     toGive.Add(ai.Attacker);
             }
 
             foreach (AggressorInfo ai in m.Aggressed)
             {
-                if (ai.Defender.Player && (DateTime.Now - ai.LastCombatTime) < TimeSpan.FromSeconds(30.0) && !toGive.Contains(ai.Defender))
+                if (ai.Defender.Player && (DateTime.UtcNow - ai.LastCombatTime) < TimeSpan.FromSeconds(30.0) && !toGive.Contains(ai.Defender))
                     toGive.Add(ai.Defender);
             }
 
@@ -209,7 +209,7 @@ namespace Server.Gumps
             if (killers.Count > 0)
                 new GumpTimer(m, killers).Start();
 
-            //((PlayerMobile)m).NextMurderCountTime = DateTime.Now + TimeSpan.FromMinutes(2.0);
+            //((PlayerMobile)m).NextMurderCountTime = DateTime.UtcNow + TimeSpan.FromMinutes(2.0);
         }
 
         private class GumpTimer : Timer
@@ -278,7 +278,7 @@ namespace Server.Gumps
             m_Victum = victum;
             m_Idx = idx;
 
-            m_MaxResponseTime = DateTime.Now + TimeSpan.FromMinutes(10);
+            m_MaxResponseTime = DateTime.UtcNow + TimeSpan.FromMinutes(10);
 
             BuildGump();
 
@@ -346,7 +346,7 @@ namespace Server.Gumps
             //check if we're more than 10 minutes from the gump creation time
             //if we are, then do nothing.
             if (!Core.EraAccurate)
-                if (m_MaxResponseTime < DateTime.Now)
+                if (m_MaxResponseTime < DateTime.UtcNow)
                     return;
 
             int buttonID = info.ButtonID;

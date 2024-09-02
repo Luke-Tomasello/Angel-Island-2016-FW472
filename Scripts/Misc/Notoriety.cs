@@ -322,7 +322,7 @@ namespace Server.Misc
                 if (target.Kills >= 5 || (body.IsMonster && IsSummoned(target.Owner as BaseCreature)) || (target.Owner is BaseCreature && (((BaseCreature)target.Owner).AlwaysMurderer || ((BaseCreature)target.Owner).IsAnimatedDead)))
                     actual = Notoriety.Murderer;
 
-                if (DateTime.Now >= (target.TimeOfDeath + Corpse.MonsterLootRightSacrifice))
+                if (DateTime.UtcNow >= (target.TimeOfDeath + Corpse.MonsterLootRightSacrifice))
                     return actual;
 
                 Party sourceParty = Party.Get(source);
@@ -469,7 +469,7 @@ namespace Server.Misc
             if (Core.AOS && (target.Blessed || (target is BaseVendor && ((BaseVendor)target).IsInvulnerable) || target is PlayerVendor || target is TownCrier))
                 return Notoriety.Invulnerable;
 
-            if (target.AccessLevel > AccessLevel.Player && target.AccessLevel != AccessLevel.Ignore)
+            if (target.AccessLevel > AccessLevel.Player && target.AccessLevel != AccessLevel.System)
                 return Notoriety.CanBeAttacked;
 
             #region Duel

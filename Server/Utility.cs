@@ -77,6 +77,51 @@ namespace Server
 {
     public class Utility
     {
+        public static string ValidFileName(string name, string replace = "")
+        {   // disallow device names recognized by thre operating system
+            if (name.ToLower().Equals("con") || name.ToLower().Equals("prn"))
+                name = '_' + name;
+            // make sure our 'name' doesn't have any illegal file name characters.
+            return string.Join(replace, name.Split(System.IO.Path.GetInvalidFileNameChars()));
+        }
+        public static bool StartsWithVowel(string text)
+        {
+            String vowels = "aeiou";
+            if (vowels.IndexOf(text.ToLower().Substring(0, 1)) != -1)
+            {
+                return true; // Start char is vowel
+            }
+            return false;
+        }
+        public static string SplitCamelCase(string str)
+        {
+            return System.Text.RegularExpressions.Regex.Replace(str, "([A-Z])", " $1", System.Text.RegularExpressions.RegexOptions.Compiled).Trim();
+        }
+        #region LocalTimer
+        public class LocalTimer
+        {
+            private long m_Timer = long.MaxValue;
+            private long m_Timeout = 0;
+            public bool Running { get { return m_Timer != long.MaxValue; } }
+            public void Start(long millisecond_timeout) { m_Timer = Core.TickCount; m_Timeout = millisecond_timeout; }
+            public void Start(double millisecond_timeout) { Start((long)millisecond_timeout); }
+            public void Stop() { m_Timer = long.MaxValue; m_Timeout = 0; }
+            public bool Triggered { get { return Core.TickCount > m_Timer + m_Timeout; } }
+            public long Remaining => (m_Timer + m_Timeout) - Core.TickCount;
+            public LocalTimer(long millisecond_timeout)
+            {
+                Start(millisecond_timeout: millisecond_timeout);
+            }
+            public LocalTimer(double millisecond_timeout)
+            {
+                Start((long)millisecond_timeout);
+            }
+            public LocalTimer()
+            {
+
+            }
+        }
+        #endregion Local Timer
         public static string GetShortPath(string path, bool raw = false)
         {
             if (raw == false)
@@ -533,17 +578,17 @@ namespace Server
 
             public void Start()
             {
-                m_startTime = DateTime.Now;
+                m_startTime = DateTime.UtcNow;
             }
 
             public void End()
             {
-                m_span = DateTime.Now - m_startTime;
+                m_span = DateTime.UtcNow - m_startTime;
             }
 
             public double Elapsed()
             {
-                TimeSpan tx = DateTime.Now - m_startTime;
+                TimeSpan tx = DateTime.UtcNow - m_startTime;
                 return tx.TotalSeconds;
             }
 
@@ -1703,7 +1748,7 @@ namespace Server
             public object Object { get { return m_object; } }       // return the thing we remember
             private double m_seconds;
             private DateTime m_Expiration;
-            public DateTime RefreshTime { get { return DateTime.Now + TimeSpan.FromSeconds(m_seconds); } }
+            public DateTime RefreshTime { get { return DateTime.UtcNow + TimeSpan.FromSeconds(m_seconds); } }
             public DateTime Expiration { get { return m_Expiration; } set { m_Expiration = value; } }
             public TimerStateCallback m_OnReleaseEventHandler;
             public TimerStateCallback OnReleaseEventHandler { get { return m_OnReleaseEventHandler; } }
@@ -1742,7 +1787,7 @@ namespace Server
                 foreach (DictionaryEntry de in m_MemoryCache)
                 {   // list expired elements
                     if (de.Value == null) continue;
-                    if (DateTime.Now > (de.Value as ObjectMemory).Expiration)
+                    if (DateTime.UtcNow > (de.Value as ObjectMemory).Expiration)
                         cleanup.Add(de.Key as object);
                 }
 

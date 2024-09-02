@@ -84,7 +84,7 @@ namespace Server.Mobiles
 
         public override void Restock()
         {
-            base.LastRestock = DateTime.Now;
+            base.LastRestock = DateTime.UtcNow;
 
             IBuyItemInfo[] buyInfo = this.GetBuyInfo();
 

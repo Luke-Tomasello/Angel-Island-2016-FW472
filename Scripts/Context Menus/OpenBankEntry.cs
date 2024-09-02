@@ -60,7 +60,7 @@ namespace Server.ContextMenus
             {
                 PlayerMobile pm = Owner.From as PlayerMobile;
 
-                if (pm != null && DateTime.Now - pm.LastStoleAt < TimeSpan.FromMinutes(2))
+                if (pm != null && DateTime.UtcNow - pm.LastStoleAt < TimeSpan.FromMinutes(2))
                 {
                     m_Banker.Say(500378); // Thou art a criminal and cannot access thy bank box.
                 }

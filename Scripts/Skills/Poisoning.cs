@@ -288,7 +288,7 @@ namespace Server.SkillHandlers
                             }
                         }
                         //pla: set 10 second delay before next skill use
-                        m_From.NextSkillTime = DateTime.Now + TimeSpan.FromSeconds(10.0);
+                        m_From.NextSkillTime = DateTime.UtcNow + TimeSpan.FromSeconds(10.0);
                     }
                 }
             }

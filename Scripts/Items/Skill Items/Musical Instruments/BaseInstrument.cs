@@ -571,7 +571,7 @@ namespace Server.Items
             protected override void OnTargetFinish(Mobile from)
             {
                 if (m_SetSkillTime)
-                    from.NextSkillTime = DateTime.Now;
+                    from.NextSkillTime = DateTime.UtcNow;
             }
 
             protected override void OnTarget(Mobile from, object targeted)

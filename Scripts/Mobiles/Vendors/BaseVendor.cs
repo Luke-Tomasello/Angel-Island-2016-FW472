@@ -290,7 +290,7 @@ namespace Server.Mobiles
             pack.Visible = false;
             AddItem(pack);
 
-            m_LastRestock = DateTime.Now;
+            m_LastRestock = DateTime.UtcNow;
         }
 
         public BaseVendor(Serial serial)
@@ -358,7 +358,7 @@ namespace Server.Mobiles
 
         protected void LoadSBInfo()
         {
-            m_LastRestock = DateTime.Now;
+            m_LastRestock = DateTime.UtcNow;
             m_NextRestockVariant = TimeSpan.FromMinutes((Utility.RandomDouble() * 20) - 10.0);
 
             InitSBInfo();
@@ -688,7 +688,7 @@ namespace Server.Mobiles
         {
             try
             {
-                m_LastRestock = DateTime.Now;
+                m_LastRestock = DateTime.UtcNow;
                 m_NextRestockVariant = TimeSpan.FromMinutes((Utility.RandomDouble() * 20) - 10.0);
 
                 IBuyItemInfo[] buyInfo = this.GetBuyInfo();
@@ -727,7 +727,7 @@ namespace Server.Mobiles
                     return;
                 }
 
-                if (DateTime.Now - m_LastRestock > RestockDelay)
+                if (DateTime.UtcNow - m_LastRestock > RestockDelay)
                     Restock();
 
                 UpdateBuyInfo();
@@ -854,7 +854,7 @@ namespace Server.Mobiles
 
                     Item item = (Item)playerItems[i];
 
-                    if ((item.LastMoved + InventoryDecayTime) <= DateTime.Now)
+                    if ((item.LastMoved + InventoryDecayTime) <= DateTime.UtcNow)
                         item.Delete();
                 }
 

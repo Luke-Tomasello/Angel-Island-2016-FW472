@@ -52,7 +52,7 @@ namespace Server.Mobiles
         {
             bool dac = base.DoActionCombat();
 
-            if (m_Mobile.Spell == null && DateTime.Now >= m_Mobile.NextSpellTime)
+            if (m_Mobile.Spell == null && DateTime.UtcNow >= m_Mobile.NextSpellTime)
             {
                 if (m_Mobile.Spell == null || !(m_Mobile.Spell as Spell).Cast())
                     EquipWeapon();
@@ -67,7 +67,7 @@ namespace Server.Mobiles
         {
             bool daw = base.DoActionWander();
 
-            if (m_Mobile.Spell == null && DateTime.Now >= m_Mobile.NextSpellTime)
+            if (m_Mobile.Spell == null && DateTime.UtcNow >= m_Mobile.NextSpellTime)
             {
                 if (m_Mobile.Spell == null || !(m_Mobile.Spell as Spell).Cast())
                     EquipWeapon();

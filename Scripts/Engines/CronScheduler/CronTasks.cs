@@ -143,8 +143,7 @@ namespace Server.Engines.CronScheduler
             Cron.Register(new CItemDecay().ItemDecay, "*/30 * * * *");
 
             // Account cleanup - daily (7:? AM)
-            string acs = Cron.CronJob.Compile("? 7 * * *");                 // was "1 7 * * *"
-            Cron.Register(new CAccountCleanup().AccountCleanup, acs);       // random minute the 7th hour
+            Cron.Register(new CAccountCleanup().AccountCleanup, "? 7 * * *");       // random minute the 7th hour
 
             // Check NPCWork - every 15 minutes
             Cron.Register(new CNPCWork().NPCWork, "*/15 * * * *");
@@ -153,19 +152,15 @@ namespace Server.Engines.CronScheduler
             Cron.Register(new CTownCrier().TownCrier, "*/10 * * * *");
 
             // internal map mobile/item cleanup - every 60 minutes
-            string mcs = Cron.CronJob.Compile("? * * * *");                     // was "3 * * * *" 
-            Cron.Register(new CIntMapMobileCleanup().IntMapMobileCleanup, mcs); // random minute of every hour
-            string ics = Cron.CronJob.Compile("? * * * *");                     // was "7 * * * *"
-            Cron.Register(new CIntMapItemCleanup().IntMapItemCleanup, ics);     // random minute of every hour
+            Cron.Register(new CIntMapMobileCleanup().IntMapMobileCleanup, "? * * * *"); // random minute of every hour
+            Cron.Register(new CIntMapItemCleanup().IntMapItemCleanup, "? * * * *");     // random minute of every hour
 
             // find players using the robot skills - every 60 minutes
-            string fss = Cron.CronJob.Compile("? * * * *");                     // was "9 * * * *"
-            Cron.Register(new CFindSkill().FindSkill, fss);                     // random minute of every hour
+            Cron.Register(new CFindSkill().FindSkill, "? * * * *");                     // random minute of every hour
 
             // expire old mobiles - once per day
             // We were doing this every 60 minutes but were STILL seeing 3-4 second lags. See comments above
-            string mls = Cron.CronJob.Compile("? 3 * * *");                         // was "29 3 * * *"
-            Cron.Register(new CMobileLifespanCleanup().MobileLifespanCleanup, mls); // random minute of 3 o'clock hour
+            Cron.Register(new CMobileLifespanCleanup().MobileLifespanCleanup, "? 3 * * *"); // random minute of 3 o'clock hour
 
             // Killer time cleanup - every 30 minutes
             Cron.Register(new CKillerTimeCleanup().KillerTimeCleanup, "*/30 * * * *");
@@ -177,14 +172,12 @@ namespace Server.Engines.CronScheduler
             Cron.Register(new CMurderCountDecay().MurderCountDecay, "*/15 * * * *");
 
             // Plant Growth - daily (6:? AM)
-            string pgs = Cron.CronJob.Compile("? 6 * * *");                     // was "13 6 * * *"
-            Cron.Register(new CPlantGrowth().PlantGrowth, pgs);                 // random minute of 6 o'clock hour
+            Cron.Register(new CPlantGrowth().PlantGrowth, "? 6 * * *");                 // random minute of 6 o'clock hour
 
             // Overland Merchant CHANCE - every hour
             if (Core.UOAI || Core.UOAR)
             {
-                string oms = Cron.CronJob.Compile("? * * * *");                     // was "17 * * * *"
-                Cron.Register(new COverlandSystem().OverlandSystem, oms);           // random minute of every hour
+                Cron.Register(new COverlandSystem().OverlandSystem, "? * * * *");           // random minute of every hour
             }
 
             // Reload the Spawner Cache - daily (6:19 AM)
@@ -228,33 +221,27 @@ namespace Server.Engines.CronScheduler
             //Cron.Register(null, new CCrazyMapDayAES().CrazyMapDayAES, "0 12 * * 6", true, new Cron.CronLimit(5, DayOfWeek.Saturday, Cron.CronLimit.isldom.must_not_be_ldom));
 
             // every 24 hours cleanup orphaned guildstones (6:? AM)
-            string gcs = Cron.CronJob.Compile("? 6 * * *");                         // was "22 6 * * *"
-            Cron.Register(new CGuildstoneCleanup().GuildstoneCleanup, gcs);         // random minute of the 6 o'clock hour
+            Cron.Register(new CGuildstoneCleanup().GuildstoneCleanup, "? 6 * * *");         // random minute of the 6 o'clock hour
 
             // every 24 hours cleanup orphaned Player NPCs (6:? AM)
-            string pns = Cron.CronJob.Compile("? 6 * * *");                         // was "23 6 * * *"
-            Cron.Register(new CPlayerNPCCleanup().PlayerNPCCleanup, pns);           // random minute of the 6 o'clock hour
+            Cron.Register(new CPlayerNPCCleanup().PlayerNPCCleanup, "? 6 * * *");           // random minute of the 6 o'clock hour
 
             // every 24 hours 'standard' cleanup (6:? AM)
-            string scs = Cron.CronJob.Compile("? 6 * * *");                         // was "24 6 * * *"
-            Cron.Register(new CStandardCleanup().StandardCleanup, scs);             // random minute of the 6 o'clock hour
+            Cron.Register(new CStandardCleanup().StandardCleanup, "? 6 * * *");             // random minute of the 6 o'clock hour
 
             // every 24 hours Strongbox cleanup (6:? AM)
-            string sbs = Cron.CronJob.Compile("? 6 * * *");                         // was "25 6 * * *"
-            Cron.Register(new CStrongboxCleanup().StrongboxCleanup, sbs);           // random minute of the 6 o'clock hour
+            Cron.Register(new CStrongboxCleanup().StrongboxCleanup, "? 6 * * *");           // random minute of the 6 o'clock hour
 
             // every 10 minutes collect account statistics
             Cron.Register(new CAccountStatistics().AccountStatistics, "*/10 * * * *");
 
             // every hour run through guild fealty checks
-            string gfs = Cron.CronJob.Compile("? * * * *");                         // was "42 * * * *"
-            Cron.Register(new CGuildFealty().GuildFealty, gfs);                     // random minute of each hour
+            Cron.Register(new CGuildFealty().GuildFealty, "? * * * *");                     // random minute of each hour
 
             // every hour run through PlayerQuestCleanup checks
             if (Core.UOAI || Core.UOAR)
             {
-                string pqs = Cron.CronJob.Compile("? * * * *");                         // was "43 * * * *"
-                Cron.Register(new CPlayerQuestCleanup().PlayerQuestCleanup, pqs);       // random minute of each hour
+                Cron.Register(new CPlayerQuestCleanup().PlayerQuestCleanup, "? * * * *");       // random minute of each hour
             }
 
             if (Core.UOAI || Core.UOAR)
@@ -264,8 +251,7 @@ namespace Server.Engines.CronScheduler
             }
 
             // every 24 hours rotate player command logs (6:? AM)
-            string lrs = Cron.CronJob.Compile("? 6 * * 1");                         // was "26 6 * * 1"
-            Cron.Register(new CLogRotation().LogRotation, lrs);                     // random minute of the 6 o'clock hour on Monday
+            Cron.Register(new CLogRotation().LogRotation, "? 6 * * 1");                     // random minute of the 6 o'clock hour on Monday
 
             // at 2AM backup the complete RunUO directory (~8min)
             // (at 1:50 issue warning)
@@ -284,12 +270,10 @@ namespace Server.Engines.CronScheduler
             }
 
             // WealthTracker - 3 AM daily
-            string wts = Cron.CronJob.Compile("? 3 * * *");                         // was "3 3 * * *"
-            Cron.Register(new CWealthTracker().WealthTracker, wts);                 // random minute of the 3AM hour
+            Cron.Register(new CWealthTracker().WealthTracker, "? 3 * * *");                 // random minute of the 3AM hour
 
             // ConsumerPriceIndex - 3 AM daily
-            string cis = Cron.CronJob.Compile("? 3 * * *");                         // was "4 3 * * *"
-            Cron.Register(new CConsumerPriceIndex().ConsumerPriceIndex, cis);       // random minute of the 3AM hour
+            Cron.Register(new CConsumerPriceIndex().ConsumerPriceIndex, "? 3 * * *");       // random minute of the 3AM hour
 
             if (Core.UOAI || Core.UOAR)
             {
@@ -418,10 +402,10 @@ namespace Server.Engines.CronScheduler
                             if (ox is BaseCreature)
                             {
                                 BaseCreature bc = ox as BaseCreature;
-                                if (DateTime.Now > bc.LastStableChargeTime + TimeSpan.FromMinutes(Clock.MinutesPerUODay))
+                                if (DateTime.UtcNow > bc.LastStableChargeTime + TimeSpan.FromMinutes(Clock.MinutesPerUODay))
                                 {
                                     // rset the clock
-                                    bc.LastStableChargeTime = DateTime.Now;
+                                    bc.LastStableChargeTime = DateTime.UtcNow;
 
                                     if (bc.GetFlag(CreatureFlags.StableHold) == true)
                                     {   // add this cost to the total fees
@@ -487,7 +471,7 @@ namespace Server.Engines.CronScheduler
                 {
                     iChecked++;
 
-                    if (((IVendor)m).LastRestock + ((IVendor)m).RestockDelay < DateTime.Now)
+                    if (((IVendor)m).LastRestock + ((IVendor)m).RestockDelay < DateTime.UtcNow)
                     {
                         restock.Add(m);
                     }
@@ -498,7 +482,7 @@ namespace Server.Engines.CronScheduler
             {
                 IVendor vend = (IVendor)restock[i];
                 vend.Restock();
-                vend.LastRestock = DateTime.Now;
+                vend.LastRestock = DateTime.UtcNow;
             }
 
             return iChecked;
@@ -527,7 +511,7 @@ namespace Server.Engines.CronScheduler
                 && item.Parent == null          // not on a player
                 && item.Map != Map.Internal;    // things on the internal map are dealt with elsewhere
 
-            return rules && (item.LastMoved + item.DecayTime) <= DateTime.Now;
+            return rules && (item.LastMoved + item.DecayTime) <= DateTime.UtcNow;
         }
 
         private int ItemDecayWorker(out int ItemsDeleted)
@@ -626,7 +610,7 @@ namespace Server.Engines.CronScheduler
                 if (acct.LastLogin == acct.Created)
                 {
                     // 7 days old
-                    TimeSpan delta = DateTime.Now - acct.LastLogin;
+                    TimeSpan delta = DateTime.UtcNow - acct.LastLogin;
                     if (delta.TotalDays > 7)
                     {
                         return 1;
@@ -638,7 +622,7 @@ namespace Server.Engines.CronScheduler
             // if empty AND inactive for 30 days (they have logged in at some point)
             if (empty)
             {
-                TimeSpan delta = DateTime.Now - acct.LastLogin;
+                TimeSpan delta = DateTime.UtcNow - acct.LastLogin;
                 if (delta.TotalDays > 30)
                 {
                     return 2;
@@ -650,7 +634,7 @@ namespace Server.Engines.CronScheduler
             // trim all non-staff accounts inactive for 360 days
             if (staff == false)
             {
-                TimeSpan delta = DateTime.Now - acct.LastLogin;
+                TimeSpan delta = DateTime.UtcNow - acct.LastLogin;
                 if (delta.TotalDays == 360)
                 {   // account will be deleted in about 5 days
                     EmailCleanupWarning(acct);
@@ -662,7 +646,7 @@ namespace Server.Engines.CronScheduler
             // trim all non-staff accounts inactive for 365 days
             if (staff == false)
             {
-                TimeSpan delta = DateTime.Now - acct.LastLogin;
+                TimeSpan delta = DateTime.UtcNow - acct.LastLogin;
                 if (delta.TotalDays > 365)
                 {
                     return 3;
@@ -673,7 +657,7 @@ namespace Server.Engines.CronScheduler
             // trim all non-staff account and not logged in for 30 days
             if (TestCenter.Enabled == true && staff == false)
             {
-                TimeSpan delta = DateTime.Now - acct.LastLogin;
+                TimeSpan delta = DateTime.UtcNow - acct.LastLogin;
                 if (delta.TotalDays > CoreAI.TCAcctCleanupDays)
                 {
                     return 4;
@@ -695,7 +679,7 @@ namespace Server.Engines.CronScheduler
 													}
 											}
 
-											TimeSpan delta = DateTime.Now - acct.LastLogin;
+											TimeSpan delta = DateTime.UtcNow - acct.LastLogin;
 											TimeSpan gamePlayDelta = acct.LastLogin - acct[place].CreationTime;
 
 											if (delta.TotalDays > 30 && gamePlayDelta.TotalMinutes < 5)
@@ -727,7 +711,7 @@ namespace Server.Engines.CronScheduler
                     if (a.EmailAddress != null && SmtpDirect.CheckEmailAddy(a.EmailAddress, false) == true)
                     {
                         string subject = "Angel Island: Your account will be deleted in about 5 days";
-                        string body = String.Format("\nThis message is to inform you that your account '{0}' will be deleted on {1} if it remains unused.\n\nIf you decide not to return to Angel Island, we would like wish you well and thank you for playing our shard.\n\nBest Regards,\n  The Angel Island Team\n\n", a.ToString(), DateTime.Now + TimeSpan.FromDays(5));
+                        string body = String.Format("\nThis message is to inform you that your account '{0}' will be deleted on {1} if it remains unused.\n\nIf you decide not to return to Angel Island, we would like wish you well and thank you for playing our shard.\n\nBest Regards,\n  The Angel Island Team\n\n", a.ToString(), DateTime.UtcNow + TimeSpan.FromDays(5));
                         Emailer mail = new Emailer();
                         mail.SendEmail(a.EmailAddress, subject, body, false);
                     }
@@ -2282,7 +2266,7 @@ namespace Server.Engines.CronScheduler
                     Server.Engines.CronScheduler.ServerWarsMsg er = new Server.Engines.CronScheduler.ServerWarsMsg();
 
                     // from Ransome AES
-                    DateTime EventStartTime = ServerWars.EventStartTime;        // DateTime.Now.AddDays(1.0);		// 24 hours from now
+                    DateTime EventStartTime = ServerWars.EventStartTime;        // DateTime.UtcNow.AddDays(1.0);		// 24 hours from now
                     DateTime EventEndTime = ServerWars.EventEndTime;            // EventStartTime.AddHours(3.0);	// 3 hour event
                     DateTime EventStartTimeEastern = EventStartTime + TimeSpan.FromHours(3);
 
@@ -2388,7 +2372,7 @@ namespace Server.Engines.CronScheduler
                     Server.Engines.CronScheduler.RansomQuestReminderMsg er = new Server.Engines.CronScheduler.RansomQuestReminderMsg();
 
                     // from Ransome AES
-                    DateTime EventStartTime = KinRansom.EventStartTime;     // DateTime.Now.AddDays(1.0);		// 24 hours from now
+                    DateTime EventStartTime = KinRansom.EventStartTime;     // DateTime.UtcNow.AddDays(1.0);		// 24 hours from now
                     DateTime EventEndTime = KinRansom.EventEndTime;         // EventStartTime.AddHours(3.0);	// 3 hour event
                                                                             //DateTime ChestOpenTime = KinRansom.ChestOpenTime;		// EventEndTime.AddMinutes(-15.0);	// at 2hrs and 45 min, open the chest
 
@@ -2452,7 +2436,7 @@ namespace Server.Engines.CronScheduler
         {
             try
             {
-                DateTime dtNow = DateTime.Now;
+                DateTime dtNow = DateTime.UtcNow;
                 //Get Number Online Now
                 int numberOnline = Server.Network.NetState.Instances.Count;
                 int numberUniqueIPOnline = 0;
@@ -2598,7 +2582,7 @@ namespace Server.Engines.CronScheduler
                 foreach (Guild g in BaseGuild.List.Values)
                 {
                     count++;
-                    if (g.LastFealty + TimeSpan.FromDays(1.0) < DateTime.Now)
+                    if (g.LastFealty + TimeSpan.FromDays(1.0) < DateTime.UtcNow)
                         g.CalculateGuildmaster();
                 }
                 return count;
@@ -2649,7 +2633,7 @@ namespace Server.Engines.CronScheduler
 
                     count++;
                     // expiration date. See sister check in PlayerQuestDeed.cs
-                    if (DateTime.Now > bc.LastMoved + TimeSpan.FromHours(24.0))
+                    if (DateTime.UtcNow > bc.LastMoved + TimeSpan.FromHours(24.0))
                         ToDelete.Add(bc);
                 }
 
@@ -2770,7 +2754,7 @@ namespace Server.Engines.CronScheduler
         public void BackupRunUO()
         {
             System.Console.Write("Sending maintenance message...");
-            DateTime now = DateTime.Now;
+            DateTime now = DateTime.UtcNow;
             DateTime when = new DateTime(now.Year, now.Month, now.Day, 2, 0, 0, 0);
             TimeSpan delta = when - now;
             string text = String.Format("Maintenance in {0:00.00} minutes and should last for {1} minutes.", delta.TotalMinutes, 8);
@@ -2788,7 +2772,7 @@ namespace Server.Engines.CronScheduler
         public void BackupWorldData()
         {
             System.Console.Write("Sending maintenance message...");
-            DateTime now = DateTime.Now;
+            DateTime now = DateTime.UtcNow;
             DateTime when = new DateTime(now.Year, now.Month, now.Day, 4, 0, 0, 0);
             TimeSpan delta = when - now;
             string text = String.Format("Maintenance in {0:00.00} minutes and should last for {1} minutes.", delta.TotalMinutes, 4);
@@ -3183,7 +3167,7 @@ namespace Server.Engines.CronScheduler
             // if not empty AND active within the last N days, send a reminder
             if (empty == false)
             {
-                TimeSpan delta = DateTime.Now - acct.LastLogin;
+                TimeSpan delta = DateTime.UtcNow - acct.LastLogin;
                 if (delta.TotalDays <= days)
                 {   // send a reminder
                     return true;

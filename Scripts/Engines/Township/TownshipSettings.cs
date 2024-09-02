@@ -53,9 +53,9 @@ namespace Server.Township
             if (m_sLastActivityLevelLimitCalculation == DateTime.MinValue)
             {
                 //if we've just come up from a restart, then set the last calc to Now.
-                m_sLastActivityLevelLimitCalculation = DateTime.Now;
+                m_sLastActivityLevelLimitCalculation = DateTime.UtcNow;
             }
-            else if (m_sLastActivityLevelLimitCalculation + TimeSpan.FromHours(24.0) < DateTime.Now)
+            else if (m_sLastActivityLevelLimitCalculation + TimeSpan.FromHours(24.0) < DateTime.UtcNow)
             {
                 double idealAILW = 1000.0; //hahahahahah ideal.  good joke, eh?
 

@@ -134,7 +134,7 @@ namespace Server.SkillHandlers
                     }
 
                     //pla: set 10 second delay before next skill use
-                    from.NextSkillTime = DateTime.Now + TimeSpan.FromSeconds(10.0);
+                    from.NextSkillTime = DateTime.UtcNow + TimeSpan.FromSeconds(10.0);
 
                 }
                 else if (targeted is BaseFactionTrap)

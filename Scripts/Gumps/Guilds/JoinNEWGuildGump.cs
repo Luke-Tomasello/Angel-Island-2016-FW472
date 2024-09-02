@@ -61,7 +61,7 @@ namespace Server.Gumps
 					// do it
 					stone.Guild.AddMember(from);
 					from.DisplayGuildTitle = true;
-					DateTime tx = DateTime.Now.AddDays(14);
+					DateTime tx = DateTime.UtcNow.AddDays(14);
 					string title = String.Format("{0}/{1}", tx.Day, tx.Month);
 					from.GuildTitle = title;
 					from.GuildFealty = stone.Guild.Leader;

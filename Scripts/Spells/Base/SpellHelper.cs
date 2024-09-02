@@ -301,7 +301,7 @@ namespace Server.Spells
             {
                 AggressorInfo info = (AggressorInfo)m.Aggressed[i];
 
-                if (info.Defender.Player && (DateTime.Now - info.LastCombatTime) < CombatHeatDelay)
+                if (info.Defender.Player && (DateTime.UtcNow - info.LastCombatTime) < CombatHeatDelay)
                     return true;
             }
 

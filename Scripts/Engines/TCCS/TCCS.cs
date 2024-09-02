@@ -85,7 +85,7 @@ namespace Server.Engines
             m_DateTime = dt;
             m_Enabled = true;
             m_Type = type;
-            m_EntryID = ((TimeSpan)(DateTime.Now - DateTime.MinValue)).TotalMilliseconds;
+            m_EntryID = ((TimeSpan)(DateTime.UtcNow - DateTime.MinValue)).TotalMilliseconds;
         }
 
         public bool Enabled
@@ -132,7 +132,7 @@ namespace Server.Engines
             }
 
             xml.WriteStartElement("datetime");
-            xml.WriteString(XmlConvert.ToString(m_DateTime, XmlDateTimeSerializationMode.Unspecified));
+            xml.WriteString(XmlConvert.ToString(m_DateTime, XmlDateTimeSerializationMode.Utc));
             xml.WriteEndElement();
 
             xml.WriteStartElement("linecount");
@@ -172,7 +172,7 @@ namespace Server.Engines
             else
                 m_Enabled = false;
 
-            m_DateTime = XmlUtility.GetDateTime(XmlUtility.GetText(node["datetime"], null), DateTime.Now);
+            m_DateTime = XmlUtility.GetDateTime(XmlUtility.GetText(node["datetime"], null), DateTime.UtcNow);
 
             int linecount = XmlUtility.GetInt32(XmlUtility.GetText(node["linecount"], "0"), 0);
             m_Lines = new string[linecount];
@@ -387,7 +387,7 @@ namespace Server.Engines
 
             foreach (ListEntry le in TheList)
             {
-                if (le.DateTime < DateTime.Now)
+                if (le.DateTime < DateTime.UtcNow)
                 {
                     toDelete.Add(le);
                     le.Enabled = false;

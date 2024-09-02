@@ -143,7 +143,7 @@ namespace Server.Spells.NPC
 
                 m_Caster = caster;
 
-                m_End = DateTime.Now + duration;
+                m_End = DateTime.UtcNow + duration;
 
                 m_Timer = new InternalTimer(this, duration, caster.InLOS(this), canFit);
                 m_Timer.Start();
@@ -233,7 +233,7 @@ namespace Server.Spells.NPC
                             Effects.SendLocationParticles(EffectItem.Create(m_Item.Location, m_Item.Map, EffectItem.DefaultDuration), 0x376A, 9, 10, 5040);
                         }
                     }
-                    else if (DateTime.Now > m_Item.m_End)
+                    else if (DateTime.UtcNow > m_Item.m_End)
                     {
                         m_Item.Delete();
                         Stop();

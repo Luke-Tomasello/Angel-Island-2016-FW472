@@ -76,8 +76,8 @@ namespace Server.Commands
                 dir = Match(existing, "Commands");
                 if (dir != null)
                 {
-                    TimeSpan tx = DateTime.Now - new DateTime(2000, 1, 1);
-                    string ToName = String.Format("{0}, {1:X}", DateTime.Now.ToLongDateString(), (int)tx.TotalSeconds);
+                    TimeSpan tx = DateTime.UtcNow - new DateTime(2000, 1, 1);
+                    string ToName = String.Format("{0}, {1:X}", DateTime.UtcNow.ToLongDateString(), (int)tx.TotalSeconds);
                     try { dir.MoveTo(FormatDirectory(root, ToName, "")); }
                     catch (Exception ex)
                     {

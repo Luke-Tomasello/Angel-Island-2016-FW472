@@ -487,14 +487,14 @@ namespace Server.Mobiles
                 if (m is PlayerMobile)
                 {
                     Direction = GetDirectionTo(m);
-                    TimeSpan ts = DateTime.Now - m_LastReadyChestTalk;
+                    TimeSpan ts = DateTime.UtcNow - m_LastReadyChestTalk;
                     if (ts.TotalSeconds > 7 || m_LastReadyChestTalk == DateTime.MinValue)
                     {
                         if (Utility.RandomBool())
                             this.Say("Excuse me {0}, but you will need to stand back.", m.Name);
                         else
                             this.Say("Please stand back {0} while I dig this up.", m.Name);
-                        m_LastReadyChestTalk = DateTime.Now;
+                        m_LastReadyChestTalk = DateTime.UtcNow;
                     }
                     return;
                 }

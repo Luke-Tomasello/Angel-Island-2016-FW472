@@ -142,7 +142,7 @@ namespace Server.Mobiles
         public ChickenEgg(Chicken child)
             : base()
         {
-            m_Birthdate = DateTime.Now + TimeSpan.FromDays(2.0 + Utility.RandomDouble());
+            m_Birthdate = DateTime.UtcNow + TimeSpan.FromDays(2.0 + Utility.RandomDouble());
             m_Chick = child;
             m_Hatch = null;
             m_Health = 5;
@@ -161,7 +161,7 @@ namespace Server.Mobiles
                 if (m_Chick == null || m_Chick.Deleted)
                     return false;
 
-                TimeSpan ts = m_Birthdate - DateTime.Now;
+                TimeSpan ts = m_Birthdate - DateTime.UtcNow;
 
                 if (ts < TimeSpan.Zero && Health > 0)
                 {
@@ -456,8 +456,8 @@ namespace Server.Mobiles
             : base(m)
         {
             m_MateTarget = null;
-            m_BecameIdle = DateTime.Now;
-            m_NextMateAttempt = DateTime.Now + TimeSpan.FromSeconds(Utility.RandomMinMax(MinMateAttemptDelay, MaxMateAttemptDelay));
+            m_BecameIdle = DateTime.UtcNow;
+            m_NextMateAttempt = DateTime.UtcNow + TimeSpan.FromSeconds(Utility.RandomMinMax(MinMateAttemptDelay, MaxMateAttemptDelay));
             m_LastMate = DateTime.MinValue;
             m_BeganTheNasty = DateTime.MaxValue;
             m_Ignore = null;
@@ -474,9 +474,9 @@ namespace Server.Mobiles
             if (CoreAI.IsDynamicFeatureSet(CoreAI.FeatureBits.BreedingEnabled))
                 if (!m_Mobile.Female &&                                                     // males do the finding
                     (double)m_Mobile.Hits / m_Mobile.HitsMax > MateHealthThreshold &&       // must be minimum health
-                    m_BecameIdle + MateIdleDelay < DateTime.Now &&                          // wait after starting to wander
-                    m_LastMate + MaleMateDelay < DateTime.Now &&                                // wait after last mating - we gotta recoup!
-                    m_NextMateAttempt < DateTime.Now)                                       // gotta give it a while between looking
+                    m_BecameIdle + MateIdleDelay < DateTime.UtcNow &&                          // wait after starting to wander
+                    m_LastMate + MaleMateDelay < DateTime.UtcNow &&                                // wait after last mating - we gotta recoup!
+                    m_NextMateAttempt < DateTime.UtcNow)                                       // gotta give it a while between looking
                 {
                     FindMate();
                     m_NextMateAttempt += TimeSpan.FromSeconds(Utility.RandomMinMax(MinMateAttemptDelay, MaxMateAttemptDelay));
@@ -627,7 +627,7 @@ namespace Server.Mobiles
                             break;
                         }
 
-                        if (m_BeganTheNasty + MateDuration < DateTime.Now)
+                        if (m_BeganTheNasty + MateDuration < DateTime.UtcNow)
                         {
                             // patience affects chance to successfully procreate
                             if (Utility.RandomDouble() < (MateSuccessChance + (m_Mobile.Patience - 10) / 500.0))
@@ -724,7 +724,7 @@ namespace Server.Mobiles
             m_BeganTheNasty = DateTime.MaxValue;
 
             if (Action == ActionType.Wander)
-                m_BecameIdle = DateTime.Now;
+                m_BecameIdle = DateTime.UtcNow;
 
             base.OnActionChanged();
         }
@@ -733,7 +733,7 @@ namespace Server.Mobiles
         {
             if (m_Mobile.ControlOrder == OrderType.None)
             {
-                m_BecameIdle = DateTime.Now; // action must = wander and order must = none, setting this in both ensures max wait
+                m_BecameIdle = DateTime.UtcNow; // action must = wander and order must = none, setting this in both ensures max wait
             }
 
             if (m_MateTarget != null)
@@ -784,7 +784,7 @@ namespace Server.Mobiles
                 return false; // only tame chickens mate
 
             if ((Action != ActionType.Wander && Action != ActionType.Interact) ||
-                m_Mobile.ControlOrder != OrderType.None || m_BecameIdle + MateIdleDelay > DateTime.Now)
+                m_Mobile.ControlOrder != OrderType.None || m_BecameIdle + MateIdleDelay > DateTime.UtcNow)
                 return false; // we are busy
 
             if (m_MateTarget == male)
@@ -793,7 +793,7 @@ namespace Server.Mobiles
             if (m_MateTarget != null && m_MateTarget != male)
                 return false; // we're already mating with someone else
 
-            if (m_LastMate + FemaleMateDelay > DateTime.Now)
+            if (m_LastMate + FemaleMateDelay > DateTime.UtcNow)
                 return false; // haven't waited long enough yet - need to recoup!
 
             // male's wisdom can up chances up to .10, our patience can up chances up to .05, our temper can lower chances up to .15
@@ -808,7 +808,7 @@ namespace Server.Mobiles
         {
             // mark us as gettin down
             Action = ActionType.Interact; // important that this happens BEFORE setting BeganTheNasty - OnActionChanged will overwrite it otherwise
-            m_BeganTheNasty = DateTime.Now;
+            m_BeganTheNasty = DateTime.UtcNow;
             m_MateTarget = mate;
         }
 
@@ -816,11 +816,11 @@ namespace Server.Mobiles
         {
             if (success)
             {
-                m_LastMate = DateTime.Now;
+                m_LastMate = DateTime.UtcNow;
             }
 
             m_MateTarget = null;
-            m_NextMateAttempt = DateTime.Now + TimeSpan.FromSeconds(Utility.RandomMinMax(MinMateAttemptDelay, MaxMateAttemptDelay));
+            m_NextMateAttempt = DateTime.UtcNow + TimeSpan.FromSeconds(Utility.RandomMinMax(MinMateAttemptDelay, MaxMateAttemptDelay));
             m_BeganTheNasty = DateTime.MaxValue;
             BreedingState = BreedState.None;
         }

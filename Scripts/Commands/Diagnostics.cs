@@ -689,7 +689,7 @@ namespace Server.Commands
                             continue;
 
                         // have they logged in within the last 90 days?
-                        TimeSpan delta = DateTime.Now - ax.LastLogin;
+                        TimeSpan delta = DateTime.UtcNow - ax.LastLogin;
                         if (delta.TotalDays > 90)
                             continue;
 

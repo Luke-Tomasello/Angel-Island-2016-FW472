@@ -220,7 +220,7 @@ namespace Server.Mobiles
         // see if the item has been sitting on the ground long enough to qualify
         private static bool CheckThreshold(Item item, TimeSpan threshold)
         {
-            return DateTime.Now > (item.LastMoved + threshold);
+            return DateTime.UtcNow > (item.LastMoved + threshold);
         }
 
         private bool IgnoreFilter(Item item)
@@ -344,7 +344,7 @@ namespace Server.Mobiles
             private Mobile m_mobile;
 
             public DeleteTimer(Mobile mob, DateTime time)
-                : base(time - DateTime.Now)
+                : base(time - DateTime.UtcNow)
             {
                 m_mobile = mob;
                 Priority = TimerPriority.OneMinute;
@@ -368,7 +368,7 @@ namespace Server.Mobiles
                 m_Timer.Stop();
                 m_Timer = null;
             }
-            m_Timer = new DeleteTimer(this, DateTime.Now + TimeSpan.FromMinutes(m_DeleteMinutes));
+            m_Timer = new DeleteTimer(this, DateTime.UtcNow + TimeSpan.FromMinutes(m_DeleteMinutes));
             m_Timer.Start();
         }
 
@@ -398,11 +398,11 @@ namespace Server.Mobiles
         // knowledge any managers (of groundskeepers) will have. A timesheet if you will.
         private class GroundskeeperStatus
         {
-            private DateTime m_LastScan = DateTime.Now;
+            private DateTime m_LastScan = DateTime.UtcNow;
             public DateTime LastScan { get { return m_LastScan; } set { m_LastScan = value; } }
             public TimeSpan ScanFreq { get { return new TimeSpan(0, 0, 60 * 2 + Utility.Random(120)); } }   // can Scan every 3'ish minutes
 
-            private DateTime m_LastSpawn = DateTime.Now;
+            private DateTime m_LastSpawn = DateTime.UtcNow;
             public DateTime LastSpawn { get { return m_LastSpawn; } set { m_LastSpawn = value; } }
             public TimeSpan SpawnFreq { get { return new TimeSpan(0, 0, 60 * 3 + Utility.Random(120)); } }  // can spawn every 5'ish minutes
             public GroundskeeperStatus()
@@ -430,7 +430,7 @@ namespace Server.Mobiles
 
             // if we've spawned a groundskeeper recently, no need to continue
             // if we've scanned recently, no need to continue
-            if (DateTime.Now > al.LastSpawn + al.SpawnFreq && DateTime.Now > al.LastScan + al.ScanFreq)
+            if (DateTime.UtcNow > al.LastSpawn + al.SpawnFreq && DateTime.UtcNow > al.LastScan + al.ScanFreq)
             {
                 ArrayList list = new ArrayList();
                 if (DoScan(m, al, list))
@@ -447,7 +447,7 @@ namespace Server.Mobiles
 
         private static bool DoScan(Mobile m, GroundskeeperStatus al, ArrayList list)
         {
-            al.LastScan = DateTime.Now;
+            al.LastScan = DateTime.UtcNow;
             TimeSpan threshold = new TimeSpan(0, 3, 0);     // age of item on the ground before we care
             int trash = 0;
             foreach (Item item in m.GetItemsInRange(12))    // 12 tiles?
@@ -493,7 +493,7 @@ namespace Server.Mobiles
 
         private static void DoSpawn(GroundskeeperStatus al, ArrayList list)
         {
-            al.LastSpawn = DateTime.Now;
+            al.LastSpawn = DateTime.UtcNow;
             foreach (Item ix in list)
                 if (ix is Item)
                 {   // first see if there is already a grounds keeper on the job.

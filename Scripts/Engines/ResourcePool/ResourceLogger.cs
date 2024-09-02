@@ -64,7 +64,7 @@ namespace Server.Engines.ResourcePool
         {
             m_TransType = ttype;
             m_TransactionID = ResourceLogger.GetTransID();
-            m_Date = DateTime.Now;
+            m_Date = DateTime.UtcNow;
             ResName = "";
             Amount = 0;
             Price = 0;

@@ -377,7 +377,7 @@ namespace Server.Mobiles
                                     {
                                         PlayerMobile pm = e.Mobile as PlayerMobile;
 
-                                        if (DateTime.Now - pm.LastStoleAt < TimeSpan.FromMinutes(2))
+                                        if (DateTime.UtcNow - pm.LastStoleAt < TimeSpan.FromMinutes(2))
                                         {
                                             this.Say(500378); // Thou art a criminal and cannot access thy bank box.
                                             break;

@@ -147,11 +147,11 @@ namespace Server.Items
                 // Display decay info to owner or Counselor+
                 if (from.AccessLevel >= AccessLevel.Counselor)
                 {
-                    this.LabelTo(from, string.Format("[Staff Info Only] This tent will fall apart at {0}", DateTime.Now + TimeSpan.FromMinutes(m_BaseHouse.DecayMinutesStored)));
+                    this.LabelTo(from, string.Format("[Staff Info Only] This tent will fall apart at {0}", DateTime.UtcNow + TimeSpan.FromMinutes(m_BaseHouse.DecayMinutesStored)));
                 }
                 else if (valid && from.Account == m_BaseHouse.Owner.Account)
                 {
-                    TimeSpan decay = m_BaseHouse.StructureDecayTime - DateTime.Now;
+                    TimeSpan decay = m_BaseHouse.StructureDecayTime - DateTime.UtcNow;
                     int days = decay.Days;
                     double hours = decay.Hours;
                     hours += ((double)decay.Minutes) / 60;

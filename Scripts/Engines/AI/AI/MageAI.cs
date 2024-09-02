@@ -160,7 +160,7 @@ namespace Server.Mobiles
 
                 m_Mobile.Combatant = m_Mobile.FocusMob;
                 Action = ActionType.Combat;
-                m_NextCastTime = DateTime.Now;
+                m_NextCastTime = DateTime.UtcNow;
             }
             else if (SmartAI && m_Mobile.Mana < m_Mobile.ManaMax)
             {
@@ -481,7 +481,7 @@ namespace Server.Mobiles
         /*public virtual bool OtherAttackers(Mobile cur)
 		{
 			//anything that hasnt attacked us in over a minute is low priority
-			DateTime LowAttackIntrest = DateTime.Now - TimeSpan.FromMinutes(1.0);
+			DateTime LowAttackIntrest = DateTime.UtcNow - TimeSpan.FromMinutes(1.0);
 			//somehow current target just went null so forget about it.
 			if(cur == null)
 				return true;
@@ -546,7 +546,7 @@ namespace Server.Mobiles
                     tryReveal = true;
                 }
             }
-            else if (m_Mobile.Mana >= 30 && m_Mobile.Skills.Magery.Value >= 70 && (m_Mobile.Spell == null || (m_Mobile.Spell != null && m_Mobile.Spell.GetType() != typeof(RevealSpell))) && DateTime.Now >= m_Mobile.NextSpellTime)
+            else if (m_Mobile.Mana >= 30 && m_Mobile.Skills.Magery.Value >= 70 && (m_Mobile.Spell == null || (m_Mobile.Spell != null && m_Mobile.Spell.GetType() != typeof(RevealSpell))) && DateTime.UtcNow >= m_Mobile.NextSpellTime)
             {
                 int range = 1 + (int)(m_Mobile.Skills[SkillName.Magery].Value / 20.0);
 
@@ -678,7 +678,7 @@ namespace Server.Mobiles
                     }
                 }
 
-                if (m_Mobile.Spell == null && DateTime.Now > m_NextCastTime && m_Mobile.InRange(c, 12))
+                if (m_Mobile.Spell == null && DateTime.UtcNow > m_NextCastTime && m_Mobile.InRange(c, 12))
                 {
                     // We are ready to cast a spell
 
@@ -753,7 +753,7 @@ namespace Server.Mobiles
                             delay = TimeSpan.FromSeconds(min + ((max - min) * Utility.RandomDouble()));
                         }
 
-                        m_NextCastTime = DateTime.Now + delay;
+                        m_NextCastTime = DateTime.UtcNow + delay;
                     }
                 }
                 else if (m_Mobile.Spell == null || !m_Mobile.Spell.IsCasting)

@@ -94,7 +94,7 @@ namespace Server.Gumps
         private AITeleportQueryGump(Mobile m)
             : base(0, 0)
         {
-            m_MaxResponseTime = DateTime.Now + TimeSpan.FromMinutes(5);
+            m_MaxResponseTime = DateTime.UtcNow + TimeSpan.FromMinutes(5);
 
             BuildGump();
 
@@ -136,7 +136,7 @@ namespace Server.Gumps
 
             //check if we're more than 5 minutes from the gump creation time
             //if we are, then do nothing.
-            if (m_MaxResponseTime < DateTime.Now)
+            if (m_MaxResponseTime < DateTime.UtcNow)
             {
                 return;
             }

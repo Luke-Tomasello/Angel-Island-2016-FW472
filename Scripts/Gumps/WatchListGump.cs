@@ -167,7 +167,7 @@ namespace Server.Gumps
                 //check account level first
                 if (pmacct != null && pmacct.Watched)
                 {
-                    if (DateTime.Now < pmacct.WatchExpire)
+                    if (DateTime.UtcNow < pmacct.WatchExpire)
                     {
                         list.Add(m);
                     }
@@ -181,7 +181,7 @@ namespace Server.Gumps
                 {
                     if (pm.WatchList)
                     {
-                        if (DateTime.Now < pm.WatchExpire)
+                        if (DateTime.UtcNow < pm.WatchExpire)
                         {
                             if (!list.Contains(m))
                             {
@@ -527,17 +527,17 @@ namespace Server.Gumps
                             string duration = "";
                             if (info.IsSwitched(101)) //1 month
                             {
-                                m_AccountTarget.WatchExpire = DateTime.Now + TimeSpan.FromDays(30.0);
+                                m_AccountTarget.WatchExpire = DateTime.UtcNow + TimeSpan.FromDays(30.0);
                                 duration = "one month";
                             }
                             else if (info.IsSwitched(102)) //1 week
                             {
-                                m_AccountTarget.WatchExpire = DateTime.Now + TimeSpan.FromDays(7.0);
+                                m_AccountTarget.WatchExpire = DateTime.UtcNow + TimeSpan.FromDays(7.0);
                                 duration = "one week";
                             }
                             else if (info.IsSwitched(103)) //24 hours
                             {
-                                m_AccountTarget.WatchExpire = DateTime.Now + TimeSpan.FromDays(1.0);
+                                m_AccountTarget.WatchExpire = DateTime.UtcNow + TimeSpan.FromDays(1.0);
                                 duration = "24 hours";
                             }
                             else //permanent
@@ -573,17 +573,17 @@ namespace Server.Gumps
                             string duration = "";
                             if (info.IsSwitched(101)) //1 month
                             {
-                                targ.WatchExpire = DateTime.Now + TimeSpan.FromDays(30.0);
+                                targ.WatchExpire = DateTime.UtcNow + TimeSpan.FromDays(30.0);
                                 duration = "one month";
                             }
                             else if (info.IsSwitched(102)) //1 week
                             {
-                                targ.WatchExpire = DateTime.Now + TimeSpan.FromDays(7.0);
+                                targ.WatchExpire = DateTime.UtcNow + TimeSpan.FromDays(7.0);
                                 duration = "one week";
                             }
                             else if (info.IsSwitched(103)) //24 hours
                             {
-                                targ.WatchExpire = DateTime.Now + TimeSpan.FromDays(1.0);
+                                targ.WatchExpire = DateTime.UtcNow + TimeSpan.FromDays(1.0);
                                 duration = "24 hours";
                             }
                             else //permanent

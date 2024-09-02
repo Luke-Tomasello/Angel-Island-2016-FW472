@@ -113,7 +113,7 @@ namespace Server.Admin
             m_Stream.Write((int)World.Items.Count);
             m_Stream.Write((int)Core.ScriptItems);
 
-            m_Stream.Write((uint)(DateTime.Now - Clock.ServerStart).TotalSeconds);
+            m_Stream.Write((uint)(DateTime.UtcNow - Clock.ServerStart).TotalSeconds);
             m_Stream.Write((uint)GC.GetTotalMemory(false));
             m_Stream.WriteAsciiNull(netVer);
             m_Stream.WriteAsciiNull(os);

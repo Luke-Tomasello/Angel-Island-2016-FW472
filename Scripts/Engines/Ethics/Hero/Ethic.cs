@@ -58,7 +58,7 @@ namespace Server.Ethics.Hero
             }
             else
             {
-                if ((mob.CreationTime + TimeSpan.FromHours(24)) > DateTime.Now)
+                if ((mob.CreationTime + TimeSpan.FromHours(24)) > DateTime.UtcNow)
                     return false;
 
                 return true;

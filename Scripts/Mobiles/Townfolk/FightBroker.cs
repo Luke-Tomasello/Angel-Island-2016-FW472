@@ -276,7 +276,7 @@ namespace Server.Mobiles
                 {
                     if (fm.Mobile == m)
                     {
-                        fm.Time = DateTime.Now;
+                        fm.Time = DateTime.UtcNow;
                         bAdd = false;
                     }
                 }
@@ -380,7 +380,7 @@ namespace Server.Mobiles
                 List<FightMember> toRemove = new List<FightMember>();
                 foreach (FightMember fm in m_participants)
                 {
-                    if (DateTime.Now - fm.Time > TimeSpan.FromHours(REGISTER_TIME))
+                    if (DateTime.UtcNow - fm.Time > TimeSpan.FromHours(REGISTER_TIME))
                     {
                         toRemove.Add(fm);
                     }
@@ -395,7 +395,7 @@ namespace Server.Mobiles
 
                 foreach (FightMember fm in m_healer_interferers)
                 {
-                    if (DateTime.Now - fm.Time > TimeSpan.FromHours(INTERFERER_TIME))
+                    if (DateTime.UtcNow - fm.Time > TimeSpan.FromHours(INTERFERER_TIME))
                     {
                         toRemove.Add(fm);
                     }
@@ -678,7 +678,7 @@ namespace Server.Mobiles
             public FightMember(Mobile m)
             {
                 m_Mobile = m;
-                m_DateTime = DateTime.Now;
+                m_DateTime = DateTime.UtcNow;
             }
         }
 
@@ -692,7 +692,7 @@ namespace Server.Mobiles
             {
                 from.CloseGump(typeof(ConfirmRegisterGump));
 
-                m_GumpTime = DateTime.Now;
+                m_GumpTime = DateTime.UtcNow;
 
                 AddPage(0);
 
@@ -711,7 +711,7 @@ namespace Server.Mobiles
 
                 if (info.ButtonID == 1)
                 {
-                    if (DateTime.Now > m_GumpTime.AddSeconds(10.0))
+                    if (DateTime.UtcNow > m_GumpTime.AddSeconds(10.0))
                     {
                         from.SendMessage("You have taken too long to respond, please revisit the fight broker to register.");
                     }

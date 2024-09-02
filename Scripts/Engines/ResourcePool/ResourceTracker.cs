@@ -179,7 +179,7 @@ namespace Server.Engines.ResourcePool
 
         public static void ResourceTrack_OnCommand(CommandEventArgs e)
         {
-            DateTime begin = DateTime.Now;
+            DateTime begin = DateTime.UtcNow;
 
             if (!Directory.Exists(OUTPUT_DIRECTORY))
                 Directory.CreateDirectory(OUTPUT_DIRECTORY);
@@ -280,7 +280,7 @@ namespace Server.Engines.ResourcePool
                 sw.Close();
             }
 
-            TimeSpan ts = DateTime.Now - begin;
+            TimeSpan ts = DateTime.UtcNow - begin;
             Console.WriteLine("finished in {0} seconds.", (double)ts.Milliseconds / (double)1000);
         }
     }

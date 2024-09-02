@@ -42,7 +42,7 @@ namespace Server.Commands
 
         public static void TotalRespawn_OnCommand(CommandEventArgs e)
         {
-            DateTime begin = DateTime.Now;
+            DateTime begin = DateTime.UtcNow;
 
             World.Broadcast(0x35, true, "The world is respawning, please wait.");
 
@@ -63,7 +63,7 @@ namespace Server.Commands
                 }
             }
 
-            DateTime end = DateTime.Now;
+            DateTime end = DateTime.UtcNow;
 
             TimeSpan timeTaken = end - begin;
             World.Broadcast(0x35, true, "World spawn complete. The entire process took {0:00.00} seconds.", timeTaken.TotalSeconds);

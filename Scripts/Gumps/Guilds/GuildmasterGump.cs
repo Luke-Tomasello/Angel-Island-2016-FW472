@@ -119,7 +119,7 @@ namespace Server.Gumps
                 AddHtmlLocalized(55, 190, 470, 30, 1011114, false, false); // Go to the WAR menu.
             }
 
-            if (DateTime.Now >= m_Guild.GuildWarRingChangeTime.AddMinutes(CoreAI.GWRChangeDelayMinutes))
+            if (DateTime.UtcNow >= m_Guild.GuildWarRingChangeTime.AddMinutes(CoreAI.GWRChangeDelayMinutes))
             {
                 if (m_Guild.GuildWarRing)
                 {
@@ -307,10 +307,10 @@ namespace Server.Gumps
                     }
                 case 13: //Guild War Ring toggle
                     {
-                        if (DateTime.Now >= m_Guild.GuildWarRingChangeTime.AddMinutes(CoreAI.GWRChangeDelayMinutes))
+                        if (DateTime.UtcNow >= m_Guild.GuildWarRingChangeTime.AddMinutes(CoreAI.GWRChangeDelayMinutes))
                         {
                             m_Guild.GuildWarRing = !m_Guild.GuildWarRing;
-                            m_Guild.GuildWarRingChangeTime = DateTime.Now;
+                            m_Guild.GuildWarRingChangeTime = DateTime.UtcNow;
 
                             if (m_Guild.GuildWarRing)
                             {

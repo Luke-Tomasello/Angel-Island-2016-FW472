@@ -49,9 +49,9 @@ namespace Server.Commands
 
             if (m is PlayerMobile)
             {
-                //m.SendMessage("Server time is: {0} PST.", DateTime.Now);
+                //m.SendMessage("Server time is: {0} PST.", DateTime.UtcNow);
 
-                //AdjustedDateTime ddt = new AdjustedDateTime(DateTime.Now);
+                //AdjustedDateTime ddt = new AdjustedDateTime(DateTime.UtcNow);
                 DateTime ddt = AdjustedDateTime.ServerTime;
                 m.SendMessage("Server time is: {0} {1}.", ddt.ToShortTimeString(), AdjustedDateTime.ServerTimezone);
             }

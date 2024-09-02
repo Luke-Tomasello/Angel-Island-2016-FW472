@@ -218,7 +218,7 @@ namespace Server.Misc
             if (a != null && a.AccessLevel == AccessLevel.Player)
             {
                 // 30 days young
-                TimeSpan delta = DateTime.Now - a.Created;
+                TimeSpan delta = DateTime.UtcNow - a.Created;
                 if (delta.TotalDays <= 30 && Accounting.Accounts.IPLookup(from.NetState.Address) == false)
                 {   // unconditional add
                     // from.SendGump(new JoinNEWGuildGump(from));
@@ -231,7 +231,7 @@ namespace Server.Misc
                         // do it
                         stone.Guild.AddMember(from);
                         from.DisplayGuildTitle = true;
-                        DateTime tx = DateTime.Now.AddDays(14);
+                        DateTime tx = DateTime.UtcNow.AddDays(14);
                         string title = String.Format("{0}/{1}", tx.Month, tx.Day);
                         from.GuildTitle = title;
                         from.GuildFealty = stone.Guild.Leader != null ? stone.Guild.Leader : from;

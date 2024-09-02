@@ -84,7 +84,7 @@ namespace Server.Misc
             if (a == null)
                 return "";
 
-            TimeSpan ts = DateTime.Now - a.Created;
+            TimeSpan ts = DateTime.UtcNow - a.Created;
 
             string v;
 

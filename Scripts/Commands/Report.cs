@@ -50,7 +50,7 @@ namespace Server.Commands
 
         public static void Report_OnCommand(CommandEventArgs e)
         {
-            if (m_Reporters[e.Mobile] != null && ((DateTime)m_Reporters[e.Mobile]) > DateTime.Now - TimeSpan.FromHours(4.0) && e.Mobile.AccessLevel == AccessLevel.Player)
+            if (m_Reporters[e.Mobile] != null && ((DateTime)m_Reporters[e.Mobile]) > DateTime.UtcNow - TimeSpan.FromHours(4.0) && e.Mobile.AccessLevel == AccessLevel.Player)
                 e.Mobile.SendMessage("You have already reported someone. You must wait to do it again.");
             else
             {
@@ -64,7 +64,7 @@ namespace Server.Commands
             ArrayList reporters = new ArrayList(m_Reporters.Keys);
             foreach (Mobile m in reporters)
             {
-                if ((DateTime)m_Reporters[m] < DateTime.Now - TimeSpan.FromHours(4))
+                if ((DateTime)m_Reporters[m] < DateTime.UtcNow - TimeSpan.FromHours(4))
                     m_Reporters.Remove(m);
             }
         }
@@ -121,7 +121,7 @@ namespace Server.Commands
                 if (info.ButtonID == 1) // continue
                 {
                     m_Player.Report(from);
-                    Report.m_Reporters[from] = DateTime.Now;
+                    Report.m_Reporters[from] = DateTime.UtcNow;
                     from.SendMessage("You have reported " + m_Player.Name + " to staff.");
 
                     // don't announce to staff if staff is being reported!

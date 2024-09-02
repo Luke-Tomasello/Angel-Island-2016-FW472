@@ -217,7 +217,7 @@ namespace Server.Mobiles
                     m_Timer = null;
                 }
 
-                m_MsgTime = DateTime.Now + TimeSpan.FromMinutes(duration);
+                m_MsgTime = DateTime.UtcNow + TimeSpan.FromMinutes(duration);
                 m_Timer = new MsgTimer(this, m_MsgTime);
                 m_Timer.Start();
 
@@ -244,7 +244,7 @@ namespace Server.Mobiles
             private BaseOverland m_mobile;
 
             public MsgTimer(BaseOverland m, DateTime time)
-                : base(time - DateTime.Now)
+                : base(time - DateTime.UtcNow)
             {
                 m_mobile = m;
                 Priority = TimerPriority.OneMinute;

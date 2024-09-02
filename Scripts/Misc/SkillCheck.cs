@@ -102,7 +102,7 @@
 //                PlayerMobile pm = (PlayerMobile) from;
 
 //                pm.LastSkillUsed = skillName;
-//                pm.LastSkillTime = DateTime.Now;
+//                pm.LastSkillTime = DateTime.UtcNow;
 //            }
 
 
@@ -192,9 +192,9 @@
 
 //                    //debug message
 //                    //pm.SendMessage("Minimum time is " + minTimeBetweenGains.TotalSeconds + " seconds");
-//                    //pm.SendMessage("time since last gain is " + (DateTime.Now - lastgain) );
+//                    //pm.SendMessage("time since last gain is " + (DateTime.UtcNow - lastgain) );
 
-//                    if( minTimeBetweenGains > (DateTime.Now - lastgain) )
+//                    if( minTimeBetweenGains > (DateTime.UtcNow - lastgain) )
 //                    {
 //                        bGain = false;
 //                        //debug message
@@ -202,7 +202,7 @@
 //                    }
 //                    else
 //                    {
-//                        pm.LastSkillGainTime[skill.SkillID] = DateTime.Now;
+//                        pm.LastSkillGainTime[skill.SkillID] = DateTime.UtcNow;
 //                    }
 //                }
 
@@ -442,10 +442,10 @@
 
 //        //public static void GainStat( Mobile from, Stat stat )
 //        //{
-//        //    if ( (from.LastStatGain + m_StatGainDelay) >= DateTime.Now )
+//        //    if ( (from.LastStatGain + m_StatGainDelay) >= DateTime.UtcNow )
 //        //        return;
 
-//        //    from.LastStatGain = DateTime.Now;
+//        //    from.LastStatGain = DateTime.UtcNow;
 
 //        //    bool atrophy = false;//( (from.RawStatTotal / (double)from.StatCap) >= Utility.RandomDouble() );
 

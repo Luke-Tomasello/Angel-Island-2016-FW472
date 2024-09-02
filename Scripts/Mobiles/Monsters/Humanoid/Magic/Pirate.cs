@@ -96,7 +96,7 @@ namespace Server.Mobiles
             IOBAlignment = IOBAlignment.Pirate;
             Hue = Utility.RandomSkinHue();
             SpeechHue = Utility.RandomDyedHue();
-            m_NextSpeechTime = DateTime.Now + m_SpeechDelay;
+            m_NextSpeechTime = DateTime.UtcNow + m_SpeechDelay;
 
             FightStyle = FightStyle.Melee | FightStyle.Magic | FightStyle.Smart | FightStyle.Bless | FightStyle.Curse;
             UsesHumanWeapons = false;
@@ -221,7 +221,7 @@ namespace Server.Mobiles
         }
         public override void OnThink()
         {
-            if (DateTime.Now >= m_NextSpeechTime)
+            if (DateTime.UtcNow >= m_NextSpeechTime)
             {
                 Mobile combatant = this.Combatant;
 
@@ -237,7 +237,7 @@ namespace Server.Mobiles
                         case 3: this.Say(true, "Keel haul ye we will!"); break;
                     }
 
-                    m_NextSpeechTime = DateTime.Now + m_SpeechDelay;
+                    m_NextSpeechTime = DateTime.UtcNow + m_SpeechDelay;
                 }
 
                 base.OnThink();
@@ -325,7 +325,7 @@ namespace Server.Mobiles
                         case 3: this.Say(true, "Ye'll not get my swag!"); break;
                     }
 
-                    m_NextSpeechTime = DateTime.Now + m_SpeechDelay;
+                    m_NextSpeechTime = DateTime.UtcNow + m_SpeechDelay;
                 }
             }
 

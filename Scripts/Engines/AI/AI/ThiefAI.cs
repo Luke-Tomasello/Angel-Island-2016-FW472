@@ -106,7 +106,7 @@ namespace Server.Mobiles
 				{
 					EventSink.InvokeDisarmRequest( new DisarmRequestEventArgs( m_Mobile ) );
 				}
-				if ( m_toDisarm != null && m_toDisarm.IsChildOf( combatant.Backpack ) && m_Mobile.NextSkillTime <= DateTime.Now && (m_toDisarm.LootType != LootType.Blessed && m_toDisarm.LootType != LootType.Newbied) )
+				if ( m_toDisarm != null && m_toDisarm.IsChildOf( combatant.Backpack ) && m_Mobile.NextSkillTime <= DateTime.UtcNow && (m_toDisarm.LootType != LootType.Blessed && m_toDisarm.LootType != LootType.Newbied) )
 				{
 					m_Mobile.DebugSay( "Trying to steal from combatant." );
 					m_Mobile.UseSkill( SkillName.Stealing );
@@ -115,7 +115,7 @@ namespace Server.Mobiles
 						m_Mobile.Target.Invoke( m_Mobile, m_toDisarm );
 					}
 				}
-				else if ( m_toDisarm == null && m_Mobile.NextSkillTime <= DateTime.Now )
+				else if ( m_toDisarm == null && m_Mobile.NextSkillTime <= DateTime.UtcNow )
 				{
 					Container cpack = combatant.Backpack;
 					Item steala = cpack.FindItemByType( typeof ( Bandage ) );

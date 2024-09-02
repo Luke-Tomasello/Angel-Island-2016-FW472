@@ -140,7 +140,7 @@ namespace Server.Engines.Help
         {
             return false;
             //Server.Accounting.Account acct = m.Account as Account;
-            //return ( acct != null && (DateTime.Now - acct.Created) < TimeSpan.FromHours( 24.0 ) );
+            //return ( acct != null && (DateTime.UtcNow - acct.Created) < TimeSpan.FromHours( 24.0 ) );
         }
 
         public HelpGump(Mobile from)

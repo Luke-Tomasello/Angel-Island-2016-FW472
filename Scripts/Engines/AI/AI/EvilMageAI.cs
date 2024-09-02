@@ -122,7 +122,7 @@ namespace Server.Mobiles
 
                 m_Mobile.Combatant = m_Mobile.FocusMob;
                 Action = ActionType.Combat;
-                m_NextCastTime = DateTime.Now;
+                m_NextCastTime = DateTime.UtcNow;
             }
             else if (SmartAI && m_Mobile.Mana < m_Mobile.ManaMax)
             {
@@ -691,7 +691,7 @@ namespace Server.Mobiles
                 }
             }
 
-            if (m_Mobile.Spell == null && DateTime.Now > m_NextCastTime && m_Mobile.InRange(c, 12))
+            if (m_Mobile.Spell == null && DateTime.UtcNow > m_NextCastTime && m_Mobile.InRange(c, 12))
             {
                 // We are ready to cast a spell
 
@@ -771,7 +771,7 @@ namespace Server.Mobiles
                         delay = TimeSpan.FromSeconds(min + ((max - min) * Utility.RandomDouble()));
                     }
 
-                    m_NextCastTime = DateTime.Now + delay;
+                    m_NextCastTime = DateTime.UtcNow + delay;
                 }
             }
             else if (m_Mobile.Spell == null || !m_Mobile.Spell.IsCasting)

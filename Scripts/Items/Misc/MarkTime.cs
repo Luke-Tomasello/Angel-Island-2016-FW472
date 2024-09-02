@@ -52,7 +52,7 @@ namespace Server.Items
             if (m is PlayerMobile)
             {
                 PlayerMobile pm = m as PlayerMobile;
-                DateTime now = DateTime.Now;
+                DateTime now = DateTime.UtcNow;
                 TimeSpan ts = now - pm.LastTimeMark;
                 pm.LastTimeMark = now;
                 pm.SendMessage(string.Format("{0:00.00} seconds", ts.TotalSeconds));

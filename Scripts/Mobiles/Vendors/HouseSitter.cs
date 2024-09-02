@@ -227,7 +227,7 @@ namespace Server.Mobiles
                 {
                     if (m_NumberOfRefreshes < MAXNUMBEROFREFRESHES)
                     {
-                        if (!house.m_NeverDecay && ((house.StructureDecayTime - DateTime.Now) < TimeSpan.FromDays(REFRESHUNTILDAYS)))
+                        if (!house.m_NeverDecay && ((house.StructureDecayTime - DateTime.UtcNow) < TimeSpan.FromDays(REFRESHUNTILDAYS)))
                         {
                             int costperday = house.MaxSecures * CHARGEPERSECURE;
                             Container cont = m_Owner.BankBox;

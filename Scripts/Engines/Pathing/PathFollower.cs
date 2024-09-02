@@ -133,7 +133,7 @@ namespace Server
         {
             m_Path = null;
             m_SectorPoints = null;
-            m_LastPathTime = DateTime.Now - RepathDelay;
+            m_LastPathTime = DateTime.UtcNow - RepathDelay;
         }
 
         private Point3D[] m_SectorPoints;
@@ -152,7 +152,7 @@ namespace Server
 
             // check if we need to use SectorPath, or if goal is close enough to use FastAStar
             if (!FastAStarAlgorithm.Instance.CheckCondition(m_From, m_From.Map, m_From.Location, goal) &&
-                (m_SectorPoints == null || goal != m_LastEndGoalLoc) && (m_LastPathTime + RepathDelay) <= DateTime.Now)
+                (m_SectorPoints == null || goal != m_LastEndGoalLoc) && (m_LastPathTime + RepathDelay) <= DateTime.UtcNow)
             {
                 m_LastEndGoalLoc = goal;
                 m_SectorPoints = Server.PathAlgorithms.Sector.SectorPathAlgorithm.FindWaypoints(m_From, m_From.Map, m_From.Location, goal);
@@ -163,7 +163,7 @@ namespace Server
 
             if (bigpath || m_Path == null)
                 repath = true;
-            else if ((!m_Path.Success || goal != m_LastGoalLoc) && (m_LastPathTime + RepathDelay) <= DateTime.Now)
+            else if ((!m_Path.Success || goal != m_LastGoalLoc) && (m_LastPathTime + RepathDelay) <= DateTime.UtcNow)
                 repath = true;
             else if (m_Path.Success && Check(m_From.Location, m_LastGoalLoc, 0))
                 repath = true;
@@ -186,7 +186,7 @@ namespace Server
             {
                 goal = (Point3D)s.Pop();
 
-                m_LastPathTime = DateTime.Now;
+                m_LastPathTime = DateTime.UtcNow;
                 m_LastGoalLoc = goal;
 
                 if ((m_Path = new MovementPath(m_From, goal)).Success)

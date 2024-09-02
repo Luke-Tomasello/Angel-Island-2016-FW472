@@ -1631,7 +1631,7 @@ namespace Server.Items.Consoles
     public abstract class TuningConsole : Item
     {
         private Mobile m_owner = null;                                              // cannot give to another player
-        private DateTime m_expiration = DateTime.Now + TimeSpan.FromHours(4.0);     // self destruct in 4 hours
+        private DateTime m_expiration = DateTime.UtcNow + TimeSpan.FromHours(4.0);     // self destruct in 4 hours
 
         public TuningConsole()
             : base(0x1F14)
@@ -1662,7 +1662,7 @@ namespace Server.Items.Consoles
                     return;
                 }
 
-                if (DateTime.Now > m_expiration)
+                if (DateTime.UtcNow > m_expiration)
                 {
                     from.SendMessage("This console has expired.");
                     from.SendMessage("Deleting...");

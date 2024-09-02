@@ -84,7 +84,7 @@ namespace Server.Commands
 
             object[] state = new object[8];
 
-            TimeSpan ts = DateTime.Now - new DateTime(2007, 1, 1);
+            TimeSpan ts = DateTime.UtcNow - new DateTime(2007, 1, 1);
             state[0] = "HID" + ((uint)ts.TotalMinutes).ToString("X");
             state[1] = "two-story mud and straw hut";
             state[2] = false;
@@ -299,7 +299,7 @@ namespace Server.Commands
 
             // Date/Time this version of this house was captured
             //	Displayed in the House Gump.
-            DateTime CaptureDate = DateTime.Now;
+            DateTime CaptureDate = DateTime.UtcNow;
             XmlElement CaptureElement = xmlDoc.CreateElement("Capture");
             CaptureElement.InnerText = CaptureDate.ToString();
             newHouse.AppendChild(CaptureElement);

@@ -80,12 +80,12 @@ namespace Server.BountySystem
             m_bLordBritishBonus = LBBonus;
             m_placername = PlacerName;
 
-            m_datePlaced = DateTime.Now;
+            m_datePlaced = DateTime.UtcNow;
         }
 
         public Bounty(XmlElement node)
         {
-            m_datePlaced = BountyKeeper.GetDateTime(BountyKeeper.GetText(node["date"], null), DateTime.Now);
+            m_datePlaced = BountyKeeper.GetDateTime(BountyKeeper.GetText(node["date"], null), DateTime.UtcNow);
             m_reward = BountyKeeper.GetInt32(BountyKeeper.GetText(node["amount"], "0"), 0);
 
             int serial = BountyKeeper.GetInt32(BountyKeeper.GetText(node["wanted"], "0"), 0);
@@ -163,7 +163,7 @@ namespace Server.BountySystem
         {
             string strWanted = player_wanted.Serial.Value.ToString();
             string strPlaced = player_placed.Serial.Value.ToString();
-            string strDate = XmlConvert.ToString(m_datePlaced);
+            string strDate = XmlConvert.ToString(m_datePlaced, XmlDateTimeSerializationMode.Utc);
             string strAmount = m_reward.ToString();
 
             if (strWanted == null ||

@@ -447,13 +447,13 @@ namespace Server.Mobiles
                 lines[0] = String.Format("Lord British declares the treasure hunt at {0} unlawful and calls for a citizen militia to dispatch this party of criminals.", location);
                 lines[1] = String.Format("Let it be known across the land; Lord British requires taxes paid on all treasure recovered within his kingdom.");
 
-                DateTime dt = DateTime.Now + TimeSpan.FromMinutes(10);
+                DateTime dt = DateTime.UtcNow + TimeSpan.FromMinutes(10);
                 Engines.ListEntry le = new Engines.ListEntry(lines, null, dt, Engines.ListEntryType.TownCrier);
                 Engines.TCCS.AddEntry(le);
 
                 foreach (PlayerMobile m in m_players)
                 {
-                    m.MakeCriminal(dt - DateTime.Now);
+                    m.MakeCriminal(dt - DateTime.UtcNow);
                 }
             }
         }

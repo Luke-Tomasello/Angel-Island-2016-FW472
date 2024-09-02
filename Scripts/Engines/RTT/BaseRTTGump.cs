@@ -142,7 +142,7 @@ namespace Server.RTT
             SetupGump();
 
             //Save when we launched the gump for later recording
-            m_RTTLaunched = DateTime.Now;
+            m_RTTLaunched = DateTime.UtcNow;
 
             // if the player fails to respond in 'timeout' time, then we will cound this as an RTT failure.
             //	this does two things: (1) makes the next test 5 minutes from now, (2) will move them closer to being counted as a macroer
@@ -164,7 +164,7 @@ namespace Server.RTT
                 }
 
                 int button = info.ButtonID;
-                TimeSpan diff = DateTime.Now - m_RTTLaunched;
+                TimeSpan diff = DateTime.UtcNow - m_RTTLaunched;
 
                 if (button == m_CorrectResponse + m_CorrectResponseOffset)
                 {

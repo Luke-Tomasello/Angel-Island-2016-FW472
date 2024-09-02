@@ -132,7 +132,7 @@ namespace Server.Engines.Help
         public PageEntry(Mobile sender, string message, PageType type)
         {
             m_Sender = sender;
-            m_Sent = DateTime.Now;
+            m_Sent = DateTime.UtcNow;
             m_Message = Utility.FixHtml(message);
             m_Type = type;
             m_PageLocation = sender.Location;

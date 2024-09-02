@@ -48,7 +48,7 @@ namespace Server.Mobiles
         public ArcherAI(BaseCreature m)
             : base(m)
         {
-            m_NextShotTime = DateTime.Now + m_ShotDelay;
+            m_NextShotTime = DateTime.UtcNow + m_ShotDelay;
         }
 
         public override bool DoActionWander()
@@ -124,7 +124,7 @@ namespace Server.Mobiles
             {
                 //caculate delta offset for when to stop and fire.
                 DateTime NextFire = m_Mobile.NextCombatTime;
-                bool bTimeout = (DateTime.Now + TimeSpan.FromSeconds(0.25)) >= NextFire;
+                bool bTimeout = (DateTime.UtcNow + TimeSpan.FromSeconds(0.25)) >= NextFire;
 
                 //pause to fire when need be, based on swing timer and core delay
                 //computer swing time via next combat time and then subtract 0.25 as
@@ -134,12 +134,12 @@ namespace Server.Mobiles
                     if (m_Mobile.Debug)
                         m_Mobile.DebugSay("pauseing to shoot");
 
-                    m_NextShotTime = DateTime.Now + m_ShotDelay;
+                    m_NextShotTime = DateTime.UtcNow + m_ShotDelay;
                     m_Mobile.Direction = m_Mobile.GetDirectionTo(c);
                 }
 
                 //only run when were not waiting for a shot delay
-                if (DateTime.Now >= m_NextShotTime)
+                if (DateTime.UtcNow >= m_NextShotTime)
                 {
 
                     if (WalkMobileRange(c, 1, true, m_Mobile.RangeFight, m_Mobile.Weapon.MaxRange - 2))

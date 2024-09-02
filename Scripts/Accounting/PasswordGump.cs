@@ -96,7 +96,7 @@ namespace Server.Gumps
                             {
                                 if (a.AccountActivated)
                                 {
-                                    if ((DateTime.Now - a.ResetPasswordRequestedTime) < TimeSpan.FromDays(1.0))
+                                    if ((DateTime.UtcNow - a.ResetPasswordRequestedTime) < TimeSpan.FromDays(1.0))
                                     {
                                         m_From.SendMessage("Reset password already requested.");
                                     }

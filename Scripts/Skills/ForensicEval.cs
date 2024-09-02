@@ -84,7 +84,7 @@ namespace Server.SkillHandlers
                 int amount = 0;
 
                 //10 second defualt delay, reset this if invalid target
-                from.NextSkillTime = DateTime.Now + TimeSpan.FromSeconds(10.0);
+                from.NextSkillTime = DateTime.UtcNow + TimeSpan.FromSeconds(10.0);
 
                 if (target is Mobile)
                 {
@@ -313,7 +313,7 @@ namespace Server.SkillHandlers
                 }
                 else
                 {
-                    from.NextSkillTime = DateTime.Now + TimeSpan.FromSeconds(1.0);
+                    from.NextSkillTime = DateTime.UtcNow + TimeSpan.FromSeconds(1.0);
                     from.SendMessage("You have specified an invalid target. Try again.");
                     from.Target = new ForensicTarget();
                     from.RevealingAction();
@@ -323,7 +323,7 @@ namespace Server.SkillHandlers
             protected override void OnTargetCancel(Mobile from, TargetCancelType cancelType)
             {
                 //pla: on target cancel, reset netx skill time to 1 second
-                from.NextSkillTime = DateTime.Now + TimeSpan.FromSeconds(1.0);
+                from.NextSkillTime = DateTime.UtcNow + TimeSpan.FromSeconds(1.0);
             }
         }
     }

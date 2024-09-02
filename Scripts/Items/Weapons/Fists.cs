@@ -344,7 +344,7 @@ namespace Server.Items
                     return;
                 }
 
-                if (m.NextAbilityTime > DateTime.Now)
+                if (m.NextAbilityTime > DateTime.UtcNow)
                 {
                     m.SendMessage("You must wait to perform a special ability");
                     m.HasAbilityReady = false;

@@ -1232,7 +1232,7 @@ namespace Server.Items
                     if (m_Jewel != null)
                     {
                         // this item has exired - special event items
-                        if (DateTime.Now > m_Jewel.Expiration)
+                        if (DateTime.UtcNow > m_Jewel.Expiration)
                         {   // wipe special properties
                             m_Jewel.Name = null;
                             m_Jewel.MagicCharges = 0;

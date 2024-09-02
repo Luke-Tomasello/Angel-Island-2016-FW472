@@ -45,7 +45,7 @@ namespace Server.Commands
             // make it known			
             Server.World.Broadcast(0x35, true, "The world is rehydrating, please wait.");
             Console.WriteLine("World: rehydrating...");
-            DateTime startTime = DateTime.Now;
+            DateTime startTime = DateTime.UtcNow;
 
             LogHelper Logger = new LogHelper("RehydrateWorld.log", e.Mobile, true);
 
@@ -87,7 +87,7 @@ namespace Server.Commands
 
             e.Mobile.SendMessage("{0} containers actually Rehydrated", count);
 
-            DateTime endTime = DateTime.Now;
+            DateTime endTime = DateTime.UtcNow;
             Console.WriteLine("done in {0:F1} seconds.", (endTime - startTime).TotalSeconds);
             Server.World.Broadcast(0x35, true, "World rehydration complete. The entire process took {0:F1} seconds.", (endTime - startTime).TotalSeconds);
         }

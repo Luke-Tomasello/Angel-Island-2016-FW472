@@ -83,7 +83,7 @@ namespace Server.Multis
 
             if (from.AccessLevel >= AccessLevel.GameMaster)
             {
-                base.LabelTo(from, "[GM Info Only: Collapse Time: {0}]", DateTime.Now + TimeSpan.FromMinutes(m_Structure.DecayMinutesStored));
+                base.LabelTo(from, "[GM Info Only: Collapse Time: {0}]", DateTime.UtcNow + TimeSpan.FromMinutes(m_Structure.DecayMinutesStored));
             }
 
             base.LabelTo(from, m_Structure.DecayState());
@@ -339,7 +339,7 @@ namespace Server.Multis
             m_Owner = null;
             Name = "a static house sign";
             Movable = false;
-            m_BuiltOn = DateTime.Now;
+            m_BuiltOn = DateTime.UtcNow;
         }
 
         public StaticHouseSign(Serial serial)

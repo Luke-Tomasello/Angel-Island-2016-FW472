@@ -78,7 +78,7 @@
  *		Changed NextSpellDelay to 1.0 seconds
  *		Removed AoS FC value from Casting time equasion
  *		Changed OnDisturbDelay()
- *		Amended m_Caster.NextSpellTime = DateTime.Now + GetDisturbRecovery();
+ *		Amended m_Caster.NextSpellTime = DateTime.UtcNow + GetDisturbRecovery();
  */
 using Server.Commands;
 using Server.Items;
@@ -461,7 +461,7 @@ namespace Server.Spells
                 // ..
 
                 if (type == DisturbType.Hurt)
-                    m_Caster.NextSpellTime = DateTime.Now + GetDisturbRecovery();
+                    m_Caster.NextSpellTime = DateTime.UtcNow + GetDisturbRecovery();
                 else
                     TimeSpan.FromSeconds(GetDisturbRecovery().TotalSeconds);
 
@@ -479,7 +479,7 @@ namespace Server.Spells
                 Targeting.Target.Cancel(m_Caster);
 
                 if (type == DisturbType.EquipRequest || type == DisturbType.Hurt)
-                    m_Caster.NextSpellTime = DateTime.Now + GetDisturbRecovery();
+                    m_Caster.NextSpellTime = DateTime.UtcNow + GetDisturbRecovery();
                 else
                     TimeSpan.FromSeconds(GetDisturbRecovery().TotalSeconds);
             }
@@ -517,7 +517,7 @@ namespace Server.Spells
 
         public bool Cast()
         {
-            m_StartCastTime = DateTime.Now;
+            m_StartCastTime = DateTime.UtcNow;
 
             if (Core.AOS && m_Caster.Spell is Spell && ((Spell)m_Caster.Spell).State == SpellState.Sequencing)
                 ((Spell)m_Caster.Spell).Disturb(DisturbType.NewCast);
@@ -538,8 +538,8 @@ namespace Server.Spells
             {
                 m_Caster.SendLocalizedMessage(502643); // You can not cast a spell while frozen.
             }
-            //else if ( CheckNextSpellTime && DateTime.Now < m_Caster.NextSpellTime )
-            else if (DateTime.Now < m_Caster.NextSpellTime)
+            //else if ( CheckNextSpellTime && DateTime.UtcNow < m_Caster.NextSpellTime )
+            else if (DateTime.UtcNow < m_Caster.NextSpellTime)
             {
                 m_Caster.SendLocalizedMessage(502644); // You must wait for that spell to have an effect.
             }
@@ -720,8 +720,8 @@ namespace Server.Spells
             if (Core.AOS)
                 return TimeSpan.Zero;
 
-            //double delay = 1.0 - Math.Sqrt( (DateTime.Now - m_StartCastTime).TotalSeconds / GetCastDelay().TotalSeconds );
-            double smerxhatesthis = (DateTime.Now - m_StartCastTime).TotalSeconds;
+            //double delay = 1.0 - Math.Sqrt( (DateTime.UtcNow - m_StartCastTime).TotalSeconds / GetCastDelay().TotalSeconds );
+            double smerxhatesthis = (DateTime.UtcNow - m_StartCastTime).TotalSeconds;
             double delay = GetCastDelay().TotalSeconds - smerxhatesthis;
             if (delay < 0.2)
                 delay = 0.2;
@@ -1062,7 +1062,7 @@ namespace Server.Spells
                     m_Spell.m_CastTimer = null;
                     m_Spell.m_Caster.OnSpellCast(m_Spell);
                     m_Spell.m_Caster.Region.OnSpellCast(m_Spell.m_Caster, m_Spell);
-                    m_Spell.m_Caster.NextSpellTime = DateTime.Now + m_Spell.GetCastRecovery();// Spell.NextSpellDelay;
+                    m_Spell.m_Caster.NextSpellTime = DateTime.UtcNow + m_Spell.GetCastRecovery();// Spell.NextSpellDelay;
 
                     Target originalTarget = m_Spell.m_Caster.Target;
 

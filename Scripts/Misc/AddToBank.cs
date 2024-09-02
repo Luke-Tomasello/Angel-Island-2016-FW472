@@ -101,14 +101,14 @@ namespace Server.Commands
 
                 Server.World.Broadcast(0x35, true, "Performing routine maintenance, please wait.");
                 Console.WriteLine("AddToBank: working...");
-                DateTime startTime = DateTime.Now;
+                DateTime startTime = DateTime.UtcNow;
 
                 from.SendMessage("Placing {0} into bank boxes...", ((Item)targ).Name == null ? "an item" : ((Item)targ).Name.ToString());
                 CommandLogging.WriteLine(from, "{0} {1} adding {2} to bank boxes )", from.AccessLevel, CommandLogging.Format(from), CommandLogging.Format(targ));
 
                 GiveItem(from, (Item)targ, m_Amount, m_CopyProperties, m_GiveRule, m_Access);
 
-                DateTime endTime = DateTime.Now;
+                DateTime endTime = DateTime.UtcNow;
                 Console.WriteLine("done in {0:F1} seconds.", (endTime - startTime).TotalSeconds);
                 Server.World.Broadcast(0x35, true, "Routine maintenance complete. The entire process took {0:F1} seconds.", (endTime - startTime).TotalSeconds);
             }

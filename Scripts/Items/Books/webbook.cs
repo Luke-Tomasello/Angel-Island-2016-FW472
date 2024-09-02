@@ -31,7 +31,7 @@ namespace Server.Gumps
     {
         private string m_Description;
         private string m_URL;
-        private DateTime lastused = DateTime.Now;
+        private DateTime lastused = DateTime.UtcNow;
         private TimeSpan delay = TimeSpan.FromSeconds(5);
 
         [CommandProperty(AccessLevel.GameMaster)]
@@ -73,14 +73,14 @@ namespace Server.Gumps
 
         public override void OnDoubleClick(Mobile from)
         {
-            if (lastused + delay > DateTime.Now)
+            if (lastused + delay > DateTime.UtcNow)
             {
                 from.SendMessage("Your request is already being processed. Please wait 5 seconds between uses.");
                 return;
             }
             else
             {
-                lastused = DateTime.Now;
+                lastused = DateTime.UtcNow;
                 from.LaunchBrowser(m_URL);
             }
         }

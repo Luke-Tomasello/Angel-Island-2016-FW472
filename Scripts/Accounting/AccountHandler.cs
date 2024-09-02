@@ -223,7 +223,7 @@ namespace Server.Misc
                     state.Send(new DeleteResult(DeleteResultType.CharBeingPlayed));
                     state.Send(new CharacterListUpdate(acct));
                 }
-                else if (RestrictDeletion && DateTime.Now < (m.CreationTime + DeleteDelay))
+                else if (RestrictDeletion && DateTime.UtcNow < (m.CreationTime + DeleteDelay))
                 {
                     state.Send(new DeleteResult(DeleteResultType.CharTooYoung));
                     state.Send(new CharacterListUpdate(acct));
@@ -394,7 +394,7 @@ namespace Server.Misc
                 Console.WriteLine("Login: {0}: Past IP limit threshold", e.State);
 
                 using (StreamWriter op = new StreamWriter("ipLimits.log", true))
-                    op.WriteLine("{0}\tPast IP limit threshold\t{1}", e.State, DateTime.Now);
+                    op.WriteLine("{0}\tPast IP limit threshold\t{1}", e.State, DateTime.UtcNow);
 
                 // tell other accounts on this IP what's going on
                 IPLimiter.Notify(e.State.Address);
@@ -470,7 +470,7 @@ namespace Server.Misc
                 e.Accepted = true;
 
                 acct.LogAccess(e.State);
-                acct.LastLogin = DateTime.Now;
+                acct.LastLogin = DateTime.UtcNow;
             }
 
             if (!e.Accepted)
@@ -514,7 +514,7 @@ namespace Server.Misc
                 Console.WriteLine("Login: {0}: Past IP limit threshold", e.State);
 
                 using (StreamWriter op = new StreamWriter("ipLimits.log", true))
-                    op.WriteLine("{0}\tPast IP limit threshold\t{1}", e.State, DateTime.Now);
+                    op.WriteLine("{0}\tPast IP limit threshold\t{1}", e.State, DateTime.UtcNow);
 
                 // tell other accounts on this IP what's going on
                 IPLimiter.Notify(e.State.Address);
@@ -588,7 +588,7 @@ namespace Server.Misc
                     Console.WriteLine("Login: {0}({1}): Past OFFLINE IP limit threshold.  Accts: {2} ", e.Username, e.State, strAccts);
                     using (StreamWriter sw1 = new StreamWriter("offlineIPLimits.log", true))
                     {
-                        sw1.WriteLine("{0}:{1}\tPast OFFLINE IP limit threshold\t{2}\tAccounts:{3}", e.Username, e.State, DateTime.Now, strAccts);
+                        sw1.WriteLine("{0}:{1}\tPast OFFLINE IP limit threshold\t{2}\tAccounts:{3}", e.Username, e.State, DateTime.UtcNow, strAccts);
 
                         for (int i = 0; i < NetState.Instances.Count; ++i)
                         {

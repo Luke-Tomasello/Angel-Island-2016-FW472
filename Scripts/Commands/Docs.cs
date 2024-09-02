@@ -49,11 +49,11 @@ namespace Server.Commands
         {
             World.Broadcast(0x35, true, "Documentation is being generated, please wait.");
 
-            DateTime startTime = DateTime.Now;
+            DateTime startTime = DateTime.UtcNow;
 
             Document();
 
-            DateTime endTime = DateTime.Now;
+            DateTime endTime = DateTime.UtcNow;
 
             World.Broadcast(0x35, true, "Documentation has been completed. The entire process took {0:F1} seconds.", (endTime - startTime).TotalSeconds);
         }

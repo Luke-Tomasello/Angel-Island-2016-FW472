@@ -785,7 +785,7 @@ namespace Server.Mobiles
             public VendorItemMemory()
             {
                 // one hour grace period
-                m_GracePeriod = DateTime.Now.AddMinutes((double)CoreAI.GracePeriod);
+                m_GracePeriod = DateTime.UtcNow.AddMinutes((double)CoreAI.GracePeriod);
             }
         }
 
@@ -822,10 +822,10 @@ namespace Server.Mobiles
                 {   // check to see if we are within the grace period
                     VendorItemMemory vim = m_memory[vi.Item] as VendorItemMemory;
                     if (vim == null) return false;
-                    if (DateTime.Now > vim.GracePeriod)
+                    if (DateTime.UtcNow > vim.GracePeriod)
                     {   // reset graceperiod
                         // one hour grace period
-                        vim.GracePeriod = DateTime.Now.AddMinutes((double)CoreAI.GracePeriod);
+                        vim.GracePeriod = DateTime.UtcNow.AddMinutes((double)CoreAI.GracePeriod);
                         return true;    // user should be charged
                     }
                 }
@@ -1644,7 +1644,7 @@ namespace Server.Mobiles
                 {
                     VendorItemMemory vim = de.Value as VendorItemMemory;
                     if (vim != null)
-                        if (DateTime.Now > vim.GracePeriod)
+                        if (DateTime.UtcNow > vim.GracePeriod)
                             Cleanup.Add(de.Key);
                 }
 

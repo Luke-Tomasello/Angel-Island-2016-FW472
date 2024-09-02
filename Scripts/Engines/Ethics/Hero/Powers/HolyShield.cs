@@ -223,8 +223,8 @@ namespace Server.Ethics.Hero
                 //	teleport destination would trap the player. We have these PASS tiles to fit them with a special flag that allows them to 
                 //	pass through the shield. You get one of these flags by <somehow> getting inside the shield, for instance teleport.
                 TimeSpan remaining = TimeSpan.FromSeconds(1);
-                if (DateTime.Now < Timer.NextTick)
-                    remaining = Timer.NextTick - DateTime.Now;
+                if (DateTime.UtcNow < Timer.NextTick)
+                    remaining = Timer.NextTick - DateTime.UtcNow;
 
                 m.ExpirationFlags.Add(new Mobile.ExpirationFlag(m, Mobile.ExpirationFlagID.ShieldIgnore, remaining));
                 return true;

@@ -150,7 +150,7 @@ namespace Server.Items
             try
             {
                 // do not print a message more than once per minute, or twice for the same player
-                bool timeout = DateTime.Now - LastAccess > TimeSpan.FromMinutes(1.0);
+                bool timeout = DateTime.UtcNow - LastAccess > TimeSpan.FromMinutes(1.0);
                 if (timeout == true && from != m_LastPlayer)
                     m_LastPlayer = from;
                 else

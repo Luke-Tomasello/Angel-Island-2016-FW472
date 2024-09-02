@@ -174,17 +174,17 @@ namespace Server.Commands
                             return null;
                         }
 
-                        if (from.AccessLevel < (reading ? attr.ReadLevel : attr.WriteLevel))
+                        if ((from == null ? AccessLevel.GameMaster : from.AccessLevel) < (reading ? attr.ReadLevel : attr.WriteLevel))
                         {
-                            failReason = String.Format("You must be at least {0} to {1} the property '{2}'.",
+                            failReason = string.Format("You must be at least {0} to {1} the property '{2}'.",
                                 Mobile.GetAccessLevelName((reading ? attr.ReadLevel : attr.WriteLevel)), reading ? "get" : "set", propertyName);
 
                             return null;
                         }
 
-                        if (from.AccessLevel < (reading ? attr.ReadLevel : attr.WriteLevel))
+                        if ((from == null ? AccessLevel.GameMaster : from.AccessLevel) < (reading ? attr.ReadLevel : attr.WriteLevel))
                         {
-                            failReason = String.Format("You must be at least {0} to {1} the property '{2}'.",
+                            failReason = string.Format("You must be at least {0} to {1} the property '{2}'.",
                                 Mobile.GetAccessLevelName(attr.ReadLevel), reading ? "get" : "set", propertyName);
 
                             return null;
@@ -377,13 +377,6 @@ namespace Server.Commands
 
             if (value == null)
                 toString = "(-null-)";
-            else if (value is AccessLevel)
-            {
-                if ((AccessLevel)value == AccessLevel.Ignore)
-                    return AccessLevel.Player.ToString();
-                else
-                    return value.ToString();
-            }
             else if (IsNumeric(type))
                 toString = String.Format("{0} (0x{0:X})", value);
             else if (IsChar(type))

@@ -61,13 +61,13 @@ namespace Server.Engines
         {
             get
             {
-                if (CurIndex == LastIndex || DateTime.Now > EndDate)
+                if (CurIndex == LastIndex || DateTime.UtcNow > EndDate)
                 {
                     Expire();
                     return false;
                 }
 
-                if (DateTime.Now < StartDate)
+                if (DateTime.UtcNow < StartDate)
                     return false;
 
                 return true;

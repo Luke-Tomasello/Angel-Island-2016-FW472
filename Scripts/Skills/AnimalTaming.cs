@@ -133,7 +133,7 @@ namespace Server.SkillHandlers
             protected override void OnTargetFinish(Mobile from)
             {
                 if (m_SetSkillTime)
-                    from.NextSkillTime = DateTime.Now;
+                    from.NextSkillTime = DateTime.UtcNow;
             }
 
             protected override void OnTarget(Mobile from, object targeted)
@@ -241,63 +241,63 @@ namespace Server.SkillHandlers
                     if (Multis.BaseHouse.FindHouseAt(m_Tamer) != null)
                     {   // cannot be trained in a house
                         m_BeingTamed.Remove(m_Creature);
-                        m_Tamer.NextSkillTime = DateTime.Now;
+                        m_Tamer.NextSkillTime = DateTime.UtcNow;
                         m_Tamer.SendMessage("You may not tame that creature from the safety of a house!"); // You may not tame that creature from the safety of a house!
                         Stop();
                     }
                     else if (!m_Tamer.InRange(m_Creature, 6))
                     {
                         m_BeingTamed.Remove(m_Creature);
-                        m_Tamer.NextSkillTime = DateTime.Now;
+                        m_Tamer.NextSkillTime = DateTime.UtcNow;
                         m_Tamer.SendLocalizedMessage(502795); // You are too far away to continue taming.
                         Stop();
                     }
                     else if (!m_Tamer.CheckAlive())
                     {
                         m_BeingTamed.Remove(m_Creature);
-                        m_Tamer.NextSkillTime = DateTime.Now;
+                        m_Tamer.NextSkillTime = DateTime.UtcNow;
                         m_Tamer.SendLocalizedMessage(502796); // You are dead, and cannot continue taming.
                         Stop();
                     }
                     else if (!m_Tamer.CanSee(m_Creature) || !m_Tamer.InLOS(m_Creature))
                     {
                         m_BeingTamed.Remove(m_Creature);
-                        m_Tamer.NextSkillTime = DateTime.Now;
+                        m_Tamer.NextSkillTime = DateTime.UtcNow;
                         m_Tamer.SendLocalizedMessage(502800); // You can't see that.
                         Stop();
                     }
                     else if (!m_Creature.Tamable)
                     {
                         m_BeingTamed.Remove(m_Creature);
-                        m_Tamer.NextSkillTime = DateTime.Now;
+                        m_Tamer.NextSkillTime = DateTime.UtcNow;
                         m_Tamer.SendLocalizedMessage(502469); // That being can not be tamed.
                         Stop();
                     }
                     else if (m_Creature.Controlled)
                     {
                         m_BeingTamed.Remove(m_Creature);
-                        m_Tamer.NextSkillTime = DateTime.Now;
+                        m_Tamer.NextSkillTime = DateTime.UtcNow;
                         m_Tamer.SendLocalizedMessage(502804); // That animal looks tame already.
                         Stop();
                     }
                     else if (m_Creature.BardProvoked)
                     {
                         m_BeingTamed.Remove(m_Creature);
-                        m_Tamer.NextSkillTime = DateTime.Now;
+                        m_Tamer.NextSkillTime = DateTime.UtcNow;
                         m_Tamer.SendMessage("That creature is too angry to tame.");
                         Stop();
                     }
                     else if (m_Creature.Owners.Count >= BaseCreature.MaxOwners && !m_Creature.Owners.Contains(m_Tamer))
                     {
                         m_BeingTamed.Remove(m_Creature);
-                        m_Tamer.NextSkillTime = DateTime.Now;
+                        m_Tamer.NextSkillTime = DateTime.UtcNow;
                         m_Tamer.SendLocalizedMessage(1005615); // This animal has had too many owners and is too upset for you to tame.
                         Stop();
                     }
                     else if (MustBeSubdued(m_Creature))
                     {
                         m_BeingTamed.Remove(m_Creature);
-                        m_Tamer.NextSkillTime = DateTime.Now;
+                        m_Tamer.NextSkillTime = DateTime.UtcNow;
                         m_Tamer.SendLocalizedMessage(1054025); // You must subdue this creature before you can tame it!
                         Stop();
                     }
@@ -314,7 +314,7 @@ namespace Server.SkillHandlers
                         if (Core.UOAI || Core.UOAR || Core.UOMO || PublishInfo.Publish >= 13.6)
                             m_Tamer.RevealingAction();
 
-                        m_Tamer.NextSkillTime = DateTime.Now;
+                        m_Tamer.NextSkillTime = DateTime.UtcNow;
                         m_BeingTamed.Remove(m_Creature);
 
                         if (m_Creature.Paralyzed)

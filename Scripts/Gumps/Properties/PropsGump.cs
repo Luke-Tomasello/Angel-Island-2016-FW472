@@ -472,10 +472,7 @@ namespace Server.Gumps
             }
             else if (o is AccessLevel)
             {
-                if ((AccessLevel)o == AccessLevel.Ignore)
-                    return AccessLevel.Player.ToString();
-                else
-                    return o.ToString();
+                return o.ToString();
             }
             else if (o is string)
             {

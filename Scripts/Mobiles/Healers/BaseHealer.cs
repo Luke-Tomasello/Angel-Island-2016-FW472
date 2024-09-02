@@ -133,7 +133,7 @@ namespace Server.Mobiles
             PackItem(new HealPotion());
             PackItem(new CurePotion());
 
-            m_NextRecallHomeTime = DateTime.Now + RecallDelay;
+            m_NextRecallHomeTime = DateTime.UtcNow + RecallDelay;
         }
 
         public override VendorShoeType ShoeType { get { return VendorShoeType.Sandals; } }
@@ -162,7 +162,7 @@ namespace Server.Mobiles
         {
             // Healers try to recall home if they were lured away or trapped
             //Console.WriteLine("thinking");
-            if (RecallTimerSet == true && DateTime.Now >= m_NextRecallHomeTime)
+            if (RecallTimerSet == true && DateTime.UtcNow >= m_NextRecallHomeTime)
             {
                 new NpcRecallSpell(this, null, SpawnerLocation).Cast();
                 RecallTimerSet = false;
@@ -191,13 +191,13 @@ namespace Server.Mobiles
                 if (Location.X >= start.X - RangeHome && Location.Y >= start.Y - RangeHome && Location.X < end.X + RangeHome && Location.Y < end.Y + RangeHome)
                 {   //reset timer were back in are home area
                     RecallTimerSet = false;
-                    m_NextRecallHomeTime = DateTime.Now + RecallDelay;
+                    m_NextRecallHomeTime = DateTime.UtcNow + RecallDelay;
                     return false;
                 }
                 else
                 {   //start are timer - we need to get home!
                     if (RecallTimerSet == false)
-                        m_NextRecallHomeTime = DateTime.Now + RecallDelay;
+                        m_NextRecallHomeTime = DateTime.UtcNow + RecallDelay;
 
                     RecallTimerSet = true;
                     return true;
@@ -221,9 +221,9 @@ namespace Server.Mobiles
         public override void OnMovement(Mobile m, Point3D oldLocation)
         {
 
-            if (!m.Frozen && !m.Alive && DateTime.Now >= m_NextResurrect && InRange(m, 4) && !InRange(oldLocation, 4) && InLOS(m))
+            if (!m.Frozen && !m.Alive && DateTime.UtcNow >= m_NextResurrect && InRange(m, 4) && !InRange(oldLocation, 4) && InLOS(m))
             {
-                m_NextResurrect = DateTime.Now + ResurrectDelay;
+                m_NextResurrect = DateTime.UtcNow + ResurrectDelay;
 
                 BaseHouse house = BaseHouse.FindHouseAt(m);
 
