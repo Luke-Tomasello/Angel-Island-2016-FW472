@@ -19,6 +19,13 @@
  *
  ***************************************************************************/
 
+/* Server\Item.cs
+ * ChangeLog:
+ *  9/3/2024, Adam (SendMessageTo)
+ *      Add SendMessageTo(). This allows items to communicate with the player.
+ *      BaseHouse uses this for "(secured)" messages etc.
+ */
+
 using Server.Items;
 using Server.Network;
 using System;
@@ -4223,7 +4230,16 @@ namespace Server
             else
                 return ((IEntity)root).Location;
         }
+        public void SendMessageTo(Mobile to, bool ascii, int hue, string message)
+        {
+            if (Deleted || !to.CanSee(this))
+                return;
 
+            if (ascii)
+                to.Send(new AsciiMessage(m_Serial, m_ItemID, MessageType.Regular, hue, 3, "", message));
+            else
+                to.Send(new UnicodeMessage(m_Serial, m_ItemID, MessageType.Regular, hue, 3, "ENU", "", message));
+        }
         public void SendLocalizedMessageTo(Mobile to, int number)
         {
             if (Deleted || !to.CanSee(this))

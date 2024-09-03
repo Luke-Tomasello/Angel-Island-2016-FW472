@@ -21,6 +21,8 @@
 
 /* Scripts/Multis/BaseHouse.cs
  * ChangeLog
+ *  9/3/21, Adam
+ *      Added "(locked down)" and "(secured)" labels.
  *  8/26/2024, Adam (TentBackpack)
  *      Disallow players from "I wish to release this" on tent backpacks.
  *	3/17/16, Adam
@@ -2049,6 +2051,7 @@ namespace Server.Multis
                 }
                 else
                 {
+                    item.SendMessageTo(m, false, 0x3B2, "(locked down)");
                     SetLockdown(item, true);
                     return true;
                 }
@@ -2351,7 +2354,11 @@ namespace Server.Multis
             }
             else if (IsLockedDown(item))
             {
+#if RunUO
                 item.PublicOverheadMessage(Server.Network.MessageType.Label, 0x3B2, 501657);//[no longer locked down]
+#else
+                item.SendLocalizedMessageTo(m, 501657); // (no longer locked down)
+#endif
                 SetLockdown(item, false);
                 //TidyItemList( m_LockDowns );
             }
@@ -2417,6 +2424,7 @@ namespace Server.Multis
                 }
                 else
                 {
+                    item.SendMessageTo(m, false, 0x3B2, "(secured)");
                     info = new SecureInfo((Container)item, SecureLevel.CoOwners);
 
                     item.IsLockedDown = false;
@@ -4099,10 +4107,10 @@ namespace Server.Multis
 
     public enum SecureLevel
     {
-        Owner,
-        CoOwners,
-        Friends,
-        Anyone
+        Owner,      // Only the player who secured the item and the owner of the house has access to open/use the item.
+        CoOwners,   // Only the Co-Owners and the owner of the house has access to open/use the item.
+        Friends,    // Friends, Co-Owners, and the owner of the house has access to open/use the item.
+        Anyone      // For a Public House, anyone can open/use the item. For a Private House, anyone who has access can open/use the item.
     }
 
     public class SecureInfo : ISecurable

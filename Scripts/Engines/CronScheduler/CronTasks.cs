@@ -2823,6 +2823,11 @@ namespace Server.Engines.CronScheduler
     {
         public void FreezeDryInit()
         {
+            if (!World.FreezeDryEnabled)
+            {
+                Utility.Monitor.WriteLine("Freeze Dry disabled.", ConsoleColor.White);
+                return;
+            }
             System.Console.Write("Freeze Dry starup init...");
             Utility.TimeCheck tc = new Utility.TimeCheck();
             tc.Start();
