@@ -29,6 +29,7 @@ using Server.Accounting;
 using Server.Items;
 using Server.Mobiles;
 using Server.Network;
+using Server.Targeting;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -70,6 +71,10 @@ namespace Server.Commands
                     case "prepworldfordistribution":
                         PrepWorldForDistribution(e);
                         break;
+
+                    case "buildwarrior":
+                        BuildWarrior(e);
+                        break;
                 }
             }
             catch (Exception ex)
@@ -77,6 +82,163 @@ namespace Server.Commands
                 LogHelper.LogException(ex);
             }
         }
+        #region Build Player
+        private static void BuildAdam(CommandEventArgs e)
+        {
+
+            e.Mobile.SendMessage("Target player to construct...");
+            e.Mobile.Target = new BuildAdamTarget(); // Call our target
+        }
+        public class BuildAdamTarget : Target
+        {
+            public BuildAdamTarget()
+                : base(17, true, TargetFlags.None)
+            {
+            }
+
+            protected override void OnTarget(Mobile from, object target)
+            {
+                if (target is PlayerMobile player)
+                {
+                    // all skills 100
+                    Server.Skills skills = player.Skills;
+                    for (int i = 0; i < skills.Length; ++i)
+                        skills[i].Base = 100.0;
+
+                    // now for the stats
+                    player.RawDex = 0;
+                    player.RawInt = 0;
+                    player.RawStr = 0;
+                    player.Stam = player.RawDex = 30000;
+                    player.Mana = player.RawInt = 30000;
+                    player.Hits = player.RawStr = 30000;
+
+                    player.Karma = 30000;
+                    player.Fame = 30000;
+                    from.SendMessage("Adam built.");
+                }
+                else
+                {
+                    from.SendMessage("That is not a PlayerMobile.");
+                    return;
+                }
+            }
+        }
+        private static void BuildMage(CommandEventArgs e)
+        {
+
+            e.Mobile.SendMessage("Target player to construct...");
+            e.Mobile.Target = new BuildMageTarget(); // Call our target
+        }
+        private static void NormalizePlayer(Mobile m)
+        {
+            if (!m.Alive)
+                m.Resurrect();
+            //m.Blessed = false;
+            //m.AccessLevel = AccessLevel.Player;
+            m.BodyValue = 400;
+
+            if (m.Poison != null)
+                m.CurePoison(m);
+
+            if (m is PlayerMobile pm)
+                pm.Mortal = false;
+        }
+        public class BuildMageTarget : Target
+        {
+            public BuildMageTarget()
+                : base(17, true, TargetFlags.None)
+            {
+            }
+
+            protected override void OnTarget(Mobile from, object target)
+            {
+                if (target is PlayerMobile player)
+                {
+                    NormalizePlayer(player);
+
+                    // first clear all the skills
+                    Server.Skills skills = player.Skills;
+                    for (int i = 0; i < skills.Length; ++i)
+                        skills[i].Base = 0.0;
+
+                    // build us a mage
+                    skills[SkillName.Swords].Base = 100.0;
+                    skills[SkillName.Anatomy].Base = 100.0;
+                    skills[SkillName.Tactics].Base = 100.0;
+                    skills[SkillName.Healing].Base = 100.0;
+                    skills[SkillName.Magery].Base = 100.0;
+                    skills[SkillName.MagicResist].Base = 100.0;
+                    skills[SkillName.Meditation].Base = 100.0;
+
+                    // now for the stats
+                    player.RawDex = 0;
+                    player.RawInt = 0;
+                    player.RawStr = 0;
+                    player.Stam = player.RawDex = 35;
+                    player.Mana = player.RawInt = 100;
+                    player.Hits = player.RawStr = 90;
+
+                    from.SendMessage("Mage built.");
+                }
+                else
+                {
+                    from.SendMessage("That is not a PlayerMobile.");
+                    return;
+                }
+            }
+        }
+        private static void BuildWarrior(CommandEventArgs e)
+        {
+
+            e.Mobile.SendMessage("Target player to construct...");
+            e.Mobile.Target = new BuildWarriorTarget(); // Call our target
+        }
+        public class BuildWarriorTarget : Target
+        {
+            public BuildWarriorTarget()
+                : base(17, true, TargetFlags.None)
+            {
+            }
+
+            protected override void OnTarget(Mobile from, object target)
+            {
+                if (target is PlayerMobile player)
+                {
+                    NormalizePlayer(player);
+
+                    // first clear all the skills
+                    Server.Skills skills = player.Skills;
+                    for (int i = 0; i < skills.Length; ++i)
+                        skills[i].Base = 0.0;
+
+                    // build us a warrior
+                    skills[SkillName.Swords].Base = 100.0;
+                    skills[SkillName.Anatomy].Base = 100.0;
+                    skills[SkillName.Tactics].Base = 100.0;
+                    skills[SkillName.Healing].Base = 100.0;
+                    skills[SkillName.Magery].Base = 100.0;
+                    skills[SkillName.MagicResist].Base = 100.0;
+                    skills[SkillName.Meditation].Base = 100.0;
+
+                    // now for the stats
+                    player.RawDex = 0;
+                    player.RawInt = 0;
+                    player.RawStr = 0;
+                    player.Stam = player.RawDex = 100;
+                    player.Mana = player.RawInt = 25;
+                    player.Hits = player.RawStr = 100;
+
+                    from.SendMessage("Warrior built.");
+                }
+                else
+                {
+                    from.SendMessage("That is not a PlayerMobile.");
+                    return;
+                }
+            }
+        }
+        #endregion Build Player
         #region Prep World For Distribution
         private static void PrepWorldForDistribution(CommandEventArgs e)
         {
