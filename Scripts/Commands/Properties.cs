@@ -268,7 +268,8 @@ namespace Server.Commands
 
             if (p == null)
             {
-                from.SendMessage("Property \"{0}\" does not exist on that object.", name);
+                if (from != null)
+                    from.SendMessage("Property \"{0}\" does not exist on that object.", name);
                 return null;
             }
             return InternalGetOnlyValue(o, p);

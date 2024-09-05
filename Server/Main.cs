@@ -93,6 +93,14 @@ namespace Server
         private static bool m_Building;                 // gives GMs access to certain world building commands during world construction
         private static bool m_Developer;                // developers machine, allows direct login to any server
 
+        public static class RuleSets
+        {
+            public static bool TentAnnexation()
+            {
+                return (m_UOAI || m_UOSP) && CoreAI.TentAnnexation;
+            }
+        }
+
         private static bool m_Profiling;
         private static DateTime m_ProfileStart;
         private static TimeSpan m_ProfileTime;

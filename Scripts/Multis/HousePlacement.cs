@@ -219,7 +219,7 @@ namespace Server.Multis
 			 * 4) The foundation must rest flatly on a surface. Any bumps around the foundation are not allowed.
 			 * 5) No foundation tile may reside over terrain which is viewed as a road.
 			 * 6) Tried to place a tent but the area ws not clear of other retions
-			 * 7) if we are placing a house and there is a tent there at that we do not own, fail
+			 * 7) if we are placing a house and there is a tent there at that we do not own, annex it if settings allow
 			 * 8) tried to place a non-tent and the area wasn't a valid region
 			 */
 
@@ -249,21 +249,13 @@ namespace Server.Multis
                         if (RegionCheck != HousePlacementResult.Valid)
                             return RegionCheck; // Broke rule #6
                     }
-                    if (TentComponents != null && TentComponents.Count > 0)
-                    {   // if we are placing a house and there is a tent there at that we do not own, fail
-                        foreach (BaseHouse bx in TentComponents)
-                        {   // disabled annex() in tent.cs until better understood
-                            if (bx != null && bx.Owner != from)
-                                return RegionCheck; // Broke rule #7
-                        }
-                    }
-                    else
-                    {   // if we are placing a house, the area better either be clear or a tent
-                        if (RegionCheck != HousePlacementResult.Valid && RegionCheck != HousePlacementResult.TentRegion)
-                            return RegionCheck; // Broke rule #7
 
-                        ////
-                        // save the list of all the addon components from the tent as we will want to exclude them from further tests
+                    // if we are placing a house, the area better either be clear or a tent(s)
+                    if (RegionCheck != HousePlacementResult.Valid && RegionCheck != HousePlacementResult.TentRegion)
+                        return RegionCheck; // Broke rule #7
+
+                    // save the list of all the addon components from the tent as we will want to exclude them from further tests
+                    if (Core.RuleSets.TentAnnexation())
                         if (RegionCheck == HousePlacementResult.TentRegion && region != null)
                         {
                             BaseHouse house = (region as HouseRegion).House;
@@ -299,7 +291,7 @@ namespace Server.Multis
                                 }
                             }
                         }
-                    }
+
                     // otherwise, all is a go!
                     #endregion REGION_CHECK
 

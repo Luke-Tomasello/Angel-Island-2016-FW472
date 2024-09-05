@@ -280,6 +280,7 @@ namespace Server
         public static int WorldSaveFrequency = 30;
 
         public static bool DebugItemDecayOutput = false;
+        public static bool TentAnnexation = true;
 
 
         // trim all non-staff account and not logged in for N days - heartbeat
@@ -685,6 +686,10 @@ namespace Server
                 xml.WriteString(DebugItemDecayOutput ? "1" : "0");
                 xml.WriteEndElement();
 
+                xml.WriteStartElement("TentAnnexation");
+                xml.WriteString(TentAnnexation ? "1" : "0");
+                xml.WriteEndElement();
+                
                 xml.WriteStartElement("TCAcctCleanupDays");
                 xml.WriteString(TCAcctCleanupDays.ToString());
                 xml.WriteEndElement();
@@ -868,6 +873,8 @@ namespace Server
             WorldSaveFrequency = GetInt32(GetText(root["WorldSaveFrequency"], "30"), 30);
 
             DebugItemDecayOutput = (GetInt32(GetText(root["DebugItemDecayOutput"], "0"), 0) != 0);
+
+            TentAnnexation = (GetInt32(GetText(root["TentAnnexation"], TentAnnexation ? "1" : "0"), 0) != 0);
 
             TCAcctCleanupDays = GetInt32(GetText(root["TCAcctCleanupDays"], "30"), 30);
 

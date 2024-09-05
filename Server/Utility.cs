@@ -77,6 +77,10 @@ namespace Server
 {
     public class Utility
     {
+        public static bool Chance(double chance)
+        {
+            return (chance >= Utility.RandomDouble());
+        }
         public static string ValidFileName(string name, string replace = "")
         {   // disallow device names recognized by thre operating system
             if (name.ToLower().Equals("con") || name.ToLower().Equals("prn"))
