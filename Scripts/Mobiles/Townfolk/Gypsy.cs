@@ -88,13 +88,13 @@ namespace Server.Mobiles
                 case 3: AddItem(new KrisnaHair(Utility.RandomHairHue())); break;
             }
 
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
                 PackGold(26);
         }
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 switch (Utility.Random(4))
                 {

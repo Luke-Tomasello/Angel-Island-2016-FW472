@@ -71,8 +71,8 @@ namespace Server.Mobiles
         }
 
         public override HideType HideType { get { return HideType.Spined; } }
-        public override int Hides { get { return Core.UOAI || Core.UOAR ? 5 : 20; } }
-        public override int Meat { get { return Core.UOAI || Core.UOAR ? 1 : 19; } }
+        public override int Hides { get { return Core.UOAI || Core.UOREN ? 5 : 20; } }
+        public override int Meat { get { return Core.UOAI || Core.UOREN ? 1 : 19; } }
 
 
         public override void InitBody()
@@ -91,7 +91,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGem();
                 PackGem();

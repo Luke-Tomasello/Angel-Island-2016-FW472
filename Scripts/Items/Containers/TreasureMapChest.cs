@@ -243,7 +243,7 @@ namespace Server.Items
         {
             cont.Movable = false;
 
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
 
                 // the speial Overland Treasure Hunter NPC 'unlocks' the chest for you!

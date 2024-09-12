@@ -20,8 +20,12 @@
  ***************************************************************************/
 
 /* ChangeLog:
-	6/5/04, Pix
-		Merged in 1.0RC0 code.
+ *  9/10/2024, Adam
+ *      Add hooks so we can adjust both distance and cooling off period.
+ *      If you try to cast too fast:
+ *          "You lack sufficient spirit cohesion to attempt that."
+ * 	6/5/04, Pix
+ * 	    Merged in 1.0RC0 code.
 */
 
 using Server.Items;
@@ -50,6 +54,11 @@ namespace Server.Spells.Third
             if (Server.Misc.WeightOverloading.IsOverloaded(Caster))
             {
                 Caster.SendLocalizedMessage(502359, "", 0x22); // Thou art too encumbered to move.
+                return false;
+            }
+            else if (CheckDelay(Caster, check_only: true) == false)
+            {
+                Caster.SendMessage("You lack sufficient spirit cohesion to attempt that.");
                 return false;
             }
 
@@ -86,6 +95,10 @@ namespace Server.Spells.Third
             {
                 Caster.SendLocalizedMessage(501942); // That location is blocked.
             }
+            else if (CheckDelay(Caster) == false)
+            {
+                Caster.SendMessage("You lack sufficient spirit cohesion to attempt that.");
+            }
             else if (CheckSequence())
             {
                 SpellHelper.Turn(Caster, orig);
@@ -106,13 +119,24 @@ namespace Server.Spells.Third
 
             FinishSequence();
         }
+        public static Memory SpiritCohesion = new Memory();
+        public bool CheckDelay(Mobile from, bool check_only = false)
+        {
+            if (SpiritCohesion.Recall(from) == false)
+            {   // nope, don't remember him.
+                if (!check_only)
+                    SpiritCohesion.Remember(from, null, CoreAI.TeleDelay);
+                return true;
+            }
 
+            return false;
+        }
         public class InternalTarget : Target
         {
             private TeleportSpell m_Owner;
 
             public InternalTarget(TeleportSpell owner)
-                : base(12, true, TargetFlags.None)
+                : base(CoreAI.TeleTiles/*12*/, true, TargetFlags.None)
             {
                 m_Owner = owner;
             }

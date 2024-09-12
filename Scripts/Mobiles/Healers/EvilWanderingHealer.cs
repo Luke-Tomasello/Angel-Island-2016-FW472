@@ -52,7 +52,7 @@ namespace Server.Mobiles
         [Constructable]
         public EvilWanderingHealer()
         {
-            AI = (Core.UOAI || Core.UOAR) ? AIType.AI_HumanMage : AIType.AI_Mage;
+            AI = (Core.UOAI || Core.UOREN) ? AIType.AI_HumanMage : AIType.AI_Mage;
             ActiveSpeed = 0.2;
             PassiveSpeed = 0.8;
             RangePerception = BaseCreature.DefaultRangePerception;

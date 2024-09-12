@@ -75,7 +75,7 @@ namespace Server.Mobiles
             m_NextAbilityTime = DateTime.UtcNow + TimeSpan.FromSeconds(Utility.RandomMinMax(2, 5));
         }
 
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOAR ? true : true; } }
+        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : true; } }
         public override bool InitialInnocent { get { return true; } }
 
         public override int GetHurtSound()
@@ -145,7 +145,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 Container pack = new Backpack();
 

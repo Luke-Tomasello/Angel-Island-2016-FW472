@@ -70,7 +70,7 @@ namespace Server.Mobiles
 
         public override Poison PoisonImmune { get { return Poison.Deadly; } }
         public override Poison HitPoison { get { return Poison.Deadly; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 3 : 0; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 3 : 0; } }
         public override int Meat { get { return 2; } }
 
         public TerathanAvenger(Serial serial)
@@ -80,7 +80,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGold(400, 500);
                 PackItem(new SpidersSilk(10));

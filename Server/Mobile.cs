@@ -19,6 +19,12 @@
  *
  ***************************************************************************/
 
+/* Server\Mobile.cs
+ * ChangeLog:
+ *	9/10/2024, Adam
+ *	    BlockDamage is now persistent to staff, cleared on deserialization for all else
+ */
+
 using Server.Accounting;
 using Server.ContextMenus;
 using Server.Guilds;
@@ -517,8 +523,9 @@ namespace Server
             ToDelete = 0x00000002,          // is this mobile marked for deletion?
             StaffOwned = 0x00000004,        // is this mobile owned by staff?
             IsIntMapStorage = 0x00000008,   // Adam: Is Internal Map Storage?
-            InvisibleShield = 0x00000010,       // under the effect of the NPC Invisible Shield Spell
-            SuicideBomber = 0x00000020, // did this player detonate an explosion on their person?
+            InvisibleShield = 0x00000010,   // under the effect of the NPC Invisible Shield Spell
+            SuicideBomber = 0x00000020,     // did this player detonate an explosion on their person?
+            BlockDamage = 0x00000040,       // Are we blocking damage on this mobile
         }
 
         private void SetFlag(MobileFlags flag, bool value)
@@ -809,7 +816,7 @@ namespace Server
 			set{ m_DefaultStamRate = value; }
 		}*/
 
-        public static RegenRateHandler ManaRegenRateHandler
+public static RegenRateHandler ManaRegenRateHandler
         {
             get { return m_ManaRegenRate; }
             set { m_ManaRegenRate = value; }
@@ -4542,7 +4549,12 @@ namespace Server
         {
             return false;
         }
-
+        public virtual void OnHit(Mobile attacker, Mobile defender)
+        {
+        }
+        public virtual void OnMiss(Mobile attacker, Mobile defender)
+        {
+        }
         public virtual void Lift(Item item, int amount, out bool rejected, out LRReason reject)
         {
             rejected = true;
@@ -5413,13 +5425,21 @@ namespace Server
         /// <seealso cref="Hits" />
         /// <seealso cref="Kill" />
         /// </summary>
-        public virtual void OnDamage(int amount, Mobile from, bool willKill)
-        {
+        public virtual void OnDamage(int amount, Mobile from, bool willKill, object source_weapon)
+        {   // tell the mobile that damaged us, how they did.
+            //	this is implemented for debugging low-damage complaints.
+            //	See implementation in PlayerMobile
+            if (from != null)
+                from.OnGaveDamage(amount, this, willKill, source_weapon);
+            /*(else) Timer tick damage, from like poison doesn't have a 'from' mobile */
+        }
+        public virtual void OnGaveDamage(int amount, Mobile from, bool willKill, object source_weapon)
+        {   // see comment above
         }
 
-        public virtual void Damage(int amount)
+        public virtual void Damage(int amount, object source_weapon)
         {
-            Damage(amount, null);
+            Damage(amount, null, source_weapon: source_weapon);
         }
 
         public virtual bool CanBeDamaged()
@@ -5427,25 +5447,22 @@ namespace Server
             return !m_Blessed;
         }
 
-        // turn this off in props to block player damage
-        #region DEVELOPER DAMAGE TEST
+        // turn this off in props to block mobile damage
         // default is to allow normal damage
-        // DO NOT SERIALIZE
-        private bool m_BlockDamage = false;
+        // Safety: Cleared on deserialize for non player mobiles
         [CommandProperty(AccessLevel.Administrator, AccessLevel.Administrator)]
         public bool BlockDamage
         {
-            get { return m_BlockDamage; }
-            set { m_BlockDamage = value; }
+            get { return GetFlag(MobileFlags.BlockDamage); }
+            set { SetFlag(MobileFlags.BlockDamage, value); }
         }
-        #endregion DEVELOPER DAMAGE TEST
 
         #region HIT DAMAGE TEST
         /*private static double t_totalTimesHit = 0;
 		private static double t_totalDamage = 0;*/
         #endregion HIT DAMAGE TEST
 
-        public virtual void Damage(int amount, Mobile from)
+        public virtual void Damage(int amount, Mobile from, object source_weapon)
         {
             if (!CanBeDamaged())
                 return;
@@ -5548,7 +5565,7 @@ namespace Server
                         }
                 }
 
-                OnDamage(amount, from, newHits < 0);
+                OnDamage(amount, from, newHits < 0, source_weapon: source_weapon);
 
                 if (newHits < 0)
                 {
@@ -6131,6 +6148,11 @@ namespace Server
                     }
             }
 
+            // clear BlockDamage for any non staff members
+            // (we don't want tamables or players with this feature set.)
+            if (this.AccessLevel == AccessLevel.Player)
+                SetFlag(MobileFlags.BlockDamage, false);
+
 #if wrong_sauce
 			//Pix: special logic to ensure the DefensiveSpell lock in m_Actions exists if it should
 			//Note protection is a different beast since there are timers that control
@@ -6378,7 +6400,7 @@ namespace Server
         private DateTime m_CreationTime;
 
         [CommandProperty(AccessLevel.GameMaster, AccessLevel.Administrator)]
-        public DateTime CreationTime
+        public DateTime Created
         {
             get
             {
@@ -8195,7 +8217,7 @@ namespace Server
         {
             get
             {
-                if (Core.UOAI || Core.UOAR || Core.UOMO || PublishInfo.Publish >= 13)
+                if (Core.UOAI || Core.UOREN || Core.UOMO || PublishInfo.Publish >= 13)
                 {
                     // Hit Point Calculation
                     //	The following change will be made to the manner in which hit points are calculated for players.
@@ -11348,7 +11370,7 @@ namespace Server
 
         // I don't know when shopkeepers got their title
         // Question(12) on the boards
-        public virtual bool ClickTitle { get { return (Core.UOAI || Core.UOAR || Core.UOMO || PublishInfo.Publish > 8) ? true : false; } }
+        public virtual bool ClickTitle { get { return (Core.UOAI || Core.UOREN || Core.UOMO || PublishInfo.Publish > 8) ? true : false; } }
 
         private static bool m_DisableHiddenSelfClick = true;
 
@@ -11444,7 +11466,7 @@ namespace Server
             // http://martin.brenner.de/ultima/uo/news1.html
             // the (invulnerable) tag has been removed; invulnerable NPCs and players can now be identified by the yellow hue of their name
             // Adam: June 2, 2001 probably means Publish 12 which was July 24, 2001
-            if (IsInvulnerable && !Core.UOAI && !Core.UOAR && !Core.UOMO && PublishInfo.Publish < 12)
+            if (IsInvulnerable && !Core.UOAI && !Core.UOREN && !Core.UOMO && PublishInfo.Publish < 12)
                 suffix = String.Concat(suffix, " ", "(invulnerable)");
 
             string val;
@@ -11471,7 +11493,7 @@ namespace Server
         // Adam: to allow us to restart the same world under a different rule set, we need to reset the name hue here
         public int CalcInvulNameHue()
         {
-            if (IsInvulnerable && !Core.AOS && (Core.UOAI || Core.UOAR || Core.UOMO || PublishInfo.Publish >= 12))
+            if (IsInvulnerable && !Core.AOS && (Core.UOAI || Core.UOREN || Core.UOMO || PublishInfo.Publish >= 12))
                 return 0x35;
             else
                 return -1;

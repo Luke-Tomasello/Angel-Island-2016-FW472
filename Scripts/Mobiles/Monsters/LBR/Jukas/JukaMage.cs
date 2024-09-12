@@ -92,7 +92,7 @@ namespace Server.Mobiles
         }
 
         public override bool AlwaysMurderer { get { return true; } }
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOAR ? true : true; } }
+        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : true; } }
         public override int Meat { get { return 1; } }
 
         private DateTime m_NextAbilityTime;
@@ -194,7 +194,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 Container bag = new Bag();
 

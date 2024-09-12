@@ -50,6 +50,7 @@ using System;
 using System.Collections;
 using System.Net;
 using System.Reflection;
+using TextCopy;
 
 namespace Server.Commands
 {
@@ -73,6 +74,7 @@ namespace Server.Commands
             Register(new AliasedSetCommand(AccessLevel.GameMaster, "Squelch", "squelched", "true", ObjectTypes.Mobiles));
             Register(new AliasedSetCommand(AccessLevel.GameMaster, "Unsquelch", "squelched", "false", ObjectTypes.Mobiles));
             Register(new GetCommand());
+            Register(new CopyCommand());
             Register(new GetTypeCommand());
             Register(new DeleteCommand());
             Register(new RestockCommand());
@@ -577,7 +579,55 @@ namespace Server.Commands
             }
         }
     }
+    /// <summary>
+    /// Only useful on developer's machines as the developer's/Server's clipboard will be used
+    /// </summary>
+    public class CopyCommand : BaseCommand
+    {
+        public CopyCommand()
+        {
+            AccessLevel = AccessLevel.Counselor;
+            Supports = CommandSupport.All;
+            Commands = new string[] { "Copy" };
+            ObjectTypes = ObjectTypes.All;
+            Usage = "Copy <propertyName>";
+            Description = "Copies a property value by name of a targeted object to the clipboard.";
+        }
 
+        public override void Execute(CommandEventArgs e, object obj)
+        {
+            string result = string.Empty;
+            if (e.Length == 1)
+            {
+                result = Properties.GetValue(e.Mobile, obj, e.GetString(0));
+
+                if (result == "Property not found." || result == "Property is write only." || result.StartsWith("Getting this property"))
+                    LogFailure(result);
+                else
+                    AddResponse(result);
+            }
+            else
+            {
+                LogFailure("Format: Copy <propertyName>");
+            }
+
+            if (Responses.Count > 0)
+            {
+                string[] tokens = result.Split(' ');
+                string text = string.Empty;
+                bool recording = false;
+                for (int i = 0; i < tokens.Length; i++)
+                {
+                    if (recording == true)
+                        text += tokens[i] + " ";
+                    else if (recording == false && tokens[i] == "=")
+                        recording = true;
+                }
+                text = text.Trim().Trim('\"');
+                ClipboardService.SetText(text);
+            }
+        }
+    }
     public class AliasedSetCommand : BaseCommand
     {
         private string m_Name;

@@ -19,7 +19,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>.\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET472</DefineConstants>
+		<DefineConstants>$(DefineConstants);NET472</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -30,7 +30,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>.\</OutputPath>
-    <DefineConstants>TRACE;NET472</DefineConstants>
+		<DefineConstants>$(DefineConstants);NET472</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -2466,6 +2466,7 @@
     <Compile Include="Server\Notoriety.cs" />
     <Compile Include="Server\ObjectPropertyList.cs" />
     <Compile Include="Server\Party.cs" />
+    <Compile Include="Server\Patcher.cs" />
     <Compile Include="Server\Point3DList.cs" />
     <Compile Include="Server\Poison.cs" />
     <Compile Include="Server\PublishInfo.cs" />
@@ -2575,6 +2576,9 @@
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.3</Version>
+    </PackageReference>
+    <PackageReference Include="TextCopy">
+      <Version>6.2.1</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

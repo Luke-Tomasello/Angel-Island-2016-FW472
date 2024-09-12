@@ -21,6 +21,8 @@
 
 /* Scripts/Mobiles/PlayerMobile.cs
  * ChangeLog:
+ *  9/10/2024, Adam
+ *      Incorporate Yoar's StamDrain accumulator (from WeightOverloading)
  *	3/9/2016, Adam
  *		o ApplyMagic() is now called called from PlayerMobile.OnLogin() to active magic properties of clothing and jewelry.
  *	3/8/2016, Adam
@@ -633,7 +635,7 @@ namespace Server.Mobiles
         // called on a timer
         private void GoBlind()
         {   // no blindness on other shards
-            if (Core.UOAI || Core.UOAR || Core.UOMO)
+            if (Core.UOAI || Core.UOREN || Core.UOMO)
             {
                 // process rules
                 // make sure the player is dead and the timer has not been reset
@@ -1384,6 +1386,13 @@ namespace Server.Mobiles
             get { return m_StepsTaken; }
             set { m_StepsTaken = value; }
         }
+        
+        private double m_StamDrain; // Yoar: Accumulate stamina drain - not serialized
+        public double StamDrain
+        {
+            get { return m_StamDrain; }
+            set { m_StamDrain = value; }
+        }
 
         #region ZCodeMiniGames
         private int m_ZCodeMiniGameID;
@@ -1862,7 +1871,7 @@ namespace Server.Mobiles
             // if this player is in prison and they have been logged out for 3 hours, empty their backpack
             //	this attempts to thwart fully loaded prison mules from veing viable.
             //	Note: players can still stash stuff around the prison.
-            if ((Core.UOAI || Core.UOAR) && pm != null)
+            if ((Core.UOAI || Core.UOREN) && pm != null)
             {
                 try
                 {
@@ -2585,7 +2594,7 @@ namespace Server.Mobiles
                     strBase = this.RawStr;
                 }
 
-                if (Core.UOAI || Core.UOAR || Core.UOMO || PublishInfo.Publish >= 13)
+                if (Core.UOAI || Core.UOREN || Core.UOMO || PublishInfo.Publish >= 13)
                 {
                     // Hit Point Calculation
                     //	The following change will be made to the manner in which hit points are calculated for players.
@@ -3094,7 +3103,7 @@ namespace Server.Mobiles
             m_NoRecursion = false;
         }
 
-        public override void OnDamage(int amount, Mobile from, bool willKill)
+        public override void OnDamage(int amount, Mobile from, bool willKill, object source_weapon)
         {
             if (amount > (Core.AOS ? 25 : 0))
             {
@@ -3104,11 +3113,67 @@ namespace Server.Mobiles
                     c.Slip();
             }
 
-            WeightOverloading.FatigueOnDamage(this, amount);
+            if (this.BlockDamage == false)
+                WeightOverloading.FatigueOnDamage(this, amount);
 
-            base.OnDamage(amount, from, willKill);
+            base.OnDamage(amount, from, willKill, source_weapon: source_weapon);
+        }
+        // records the damage dealt to whomever you are fighting
+        //	this is implemented for debugging low-damage complaints.
+        //	See implemention in Mobile
+        public override void OnGaveDamage(int amount, Mobile to, bool willKill, object source_weapon)
+        {   // we delivered this much damage on our last strike or spell
+            DamageTracker(amount, to, source_weapon);
         }
 
+        #region DAMAGE TRACKER
+        DateTime DamageTracker_start = DateTime.UtcNow;
+        double DamageTracker_damage = 0;
+        bool clock_started = false;
+        public void DamageTracker(int amount, Mobile to, object source_weapon)
+        {
+            int DamageAbsorbed_amount = 0;
+
+            if (Core.DAMAGE == 0)           // off
+                return;                     // if not turned on, ignore
+
+            if (to == null)                 // anything's possible
+                return;
+
+            if (Core.DAMAGE == 2)           // reset
+            {
+                Core.DAMAGE = 1;            // resume on state
+                clock_started = false;
+                DamageTracker_damage = 0;
+            }
+            if (clock_started == false)     // start the clock on first damage
+            {
+                clock_started = true;
+                DamageTracker_start = DateTime.UtcNow;
+            }
+
+            // Aquire Virtual Armor Absorbtion
+            // lets get the damage absorbed from my strike. (Base Weapon records this)
+            BaseWeapon bw = source_weapon as BaseWeapon;    // it's a baseweapon
+            if (bw != null && bw.Parent == this)            // and it's me
+                DamageAbsorbed_amount = bw.DamageAbsorbed;  // record the absorbed damage
+
+            DamageTracker_damage += amount;     // total actual damage done thus far
+            amount += DamageAbsorbed_amount;    // how much damage we delivered before absorbtion
+            TimeSpan ts = DateTime.UtcNow - DamageTracker_start;
+            string damage_over_time = string.Format("This damage: {0} -{1} damage absorbed for {2}/{3} total damage over time",
+                amount,
+                DamageAbsorbed_amount,
+                DamageTracker_damage,
+                (int)ts.TotalSeconds);
+            SendMessage(damage_over_time);
+            string filename = string.Format("DamageTracker-{0}.log", this.Name);
+            LogHelper logger = new LogHelper(filename, false, true);
+            logger.Log(LogType.Text, damage_over_time);
+            logger.Finish();
+        }
+
+        #endregion
         public static int ComputeSkillTotal(Mobile m)
         {
             int total = 0;
@@ -3136,7 +3201,7 @@ namespace Server.Mobiles
             if (this.SavagePaintExpiration != TimeSpan.Zero)
             {
                 // Ai uses HUE value and not the BodyMod as there is no sitting graphic
-                if (!Core.UOSP && !Core.UOMO && !Core.UOAI && !Core.UOAR)
+                if (!Core.UOSP && !Core.UOMO && !Core.UOAI && !Core.UOREN)
                     this.BodyMod = (this.Female ? 184 : 183);
                 else
                     this.HueMod = 0;
@@ -3842,7 +3907,7 @@ namespace Server.Mobiles
             {
                 m_LastShortDecayed = DateTime.UtcNow;
 
-                if ((Core.UOAI || Core.UOAR) && Inmate && Alive)
+                if ((Core.UOAI || Core.UOREN) && Inmate && Alive)
                 {
                     m_ShortTermElapse = this.GameTime + TimeSpan.FromHours(4);
                 }
@@ -3860,7 +3925,7 @@ namespace Server.Mobiles
 
             if (m_LongTermElapse < this.GameTime)
             {
-                if ((Core.UOAI || Core.UOAR) && Inmate && Alive)
+                if ((Core.UOAI || Core.UOREN) && Inmate && Alive)
                 {
                     m_LongTermElapse = this.GameTime + TimeSpan.FromHours(20);
                 }
@@ -4169,8 +4234,42 @@ namespace Server.Mobiles
                 this.SendMessage(76, "You can't send a message to your guild if you don't belong to one.");
             }
         }
+        public override void OnHit(Mobile attacker, Mobile defender)
+        {
+            if (attacker == this)
+                MissTracker(attacker, defender, false);
+        }
+        public override void OnMiss(Mobile attacker, Mobile defender)
+        {
+            if (attacker == this)
+                MissTracker(attacker, defender, true);
+        }
 
-        public override void Damage(int amount, Mobile from)
+        #region MISS TRACKER
+        double MissTracker_miss = 0;
+        double MissTracker_hit = 0;
+        public void MissTracker(Mobile attacker, Mobile defender, bool miss)
+        {
+            if (Core.HITMISS == 0)         // off
+                return;                     // if not turned on, ignore
+
+            if (Core.HITMISS == 2)         // reset
+            {
+                Core.HITMISS = 1;          // resume on state
+                MissTracker_miss = MissTracker_hit = 0;
+                return;
+            }
+            if (miss) MissTracker_miss++; else MissTracker_hit++;
+            double average = (MissTracker_hit / (MissTracker_miss + MissTracker_hit)) * 100.0;
+            string message = string.Format("Misses: {0}, Hits:{1}. Hit average {2}%", MissTracker_miss, MissTracker_hit, (int)average);
+            attacker.SendMessage(message);
+            string filename = string.Format("MissTracker-{0}.log", this.Name);
+            LogHelper logger = new LogHelper(filename, false, true);
+            logger.Log(LogType.Text, message);
+            logger.Finish();
+        }
+        #endregion
+        public override void Damage(int amount, Mobile from, object source_weapon)
         {
             //if ( Spells.Necromancy.EvilOmenSpell.CheckEffect( this ) )
             //amount = (int)(amount * 1.25);
@@ -4183,7 +4282,7 @@ namespace Server.Mobiles
 						from.Damage( amount, from );
 					}
 			*/
-            base.Damage(amount, from);
+            base.Damage(amount, from, source_weapon: source_weapon);
 
             //Explosion Potion Check
             if (amount >= CoreAI.ExplosionPotionSensitivityLevel)
@@ -4599,7 +4698,7 @@ namespace Server.Mobiles
                         if (SavagePaintExpiration > TimeSpan.Zero)
                         {
                             // Ai uses HUE value and not the BodyMod as there is no sitting graphic
-                            if (!Core.UOSP && !Core.UOMO && !Core.UOAI && !Core.UOAR)
+                            if (!Core.UOSP && !Core.UOMO && !Core.UOAI && !Core.UOREN)
                                 BodyMod = (Female ? 184 : 183);
                             else
                                 HueMod = 0;
@@ -5315,7 +5414,7 @@ namespace Server.Mobiles
             bool running = ((dir & Direction.Running) != 0);
 
             bool onHorse;
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 onHorse = (AccessLevel > AccessLevel.Player) && (this.Mount != null);
             }
@@ -5513,7 +5612,7 @@ namespace Server.Mobiles
         public override void OnSingleClick(Mobile from)
         {
             #region UOAI UOMO
-            if (Core.UOAI || Core.UOAR || Core.UOMO)
+            if (Core.UOAI || Core.UOREN || Core.UOMO)
             {
                 if (Deleted)
                     return;

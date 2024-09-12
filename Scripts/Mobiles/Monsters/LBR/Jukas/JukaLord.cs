@@ -72,7 +72,7 @@ namespace Server.Mobiles
             // TODO: Bandage self
         }
 
-        public override void OnDamage(int amount, Mobile from, bool willKill)
+        public override void OnDamage(int amount, Mobile from, bool willKill, object source_weapon)
         {
             if (from != null && !willKill && amount > 5 && from.Player && 5 > Utility.Random(100))
             {
@@ -87,7 +87,7 @@ namespace Server.Mobiles
                 this.Say(true, String.Format(toSay[Utility.Random(toSay.Length)], from.Name));
             }
 
-            base.OnDamage(amount, from, willKill);
+            base.OnDamage(amount, from, willKill, source_weapon: source_weapon);
         }
 
         public override int GetIdleSound()
@@ -106,7 +106,7 @@ namespace Server.Mobiles
         }
 
         public override bool AlwaysMurderer { get { return true; } }
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOAR ? true : true; } }
+        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : true; } }
         public override int Meat { get { return 1; } }
 
         public JukaLord(Serial serial)
@@ -116,7 +116,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackItem(new Arrow(Utility.RandomMinMax(25, 35)));
                 PackItem(new Arrow(Utility.RandomMinMax(25, 35)));

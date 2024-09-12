@@ -87,23 +87,65 @@ namespace Server
         private static bool m_UOSP;                     // Siege
         private static bool m_UOTC;                     // Test Center
         private static bool m_UOAI;                     // Angel Island
-        private static bool m_UOAR;                     // AI Resurrection
+        private static bool m_UOREN;                    // Renaissance
         private static bool m_UOMO;                     // Mortalis
         private static bool m_UOEV;                     // Event Shard
+        private static int m_HITMISS;                   // special flag to allow test center players to view their hit/miss stats over time
+        private static int m_DAMAGE;                    // special flag to allow test center players to view their damage dealt stats over time
         private static bool m_Building;                 // gives GMs access to certain world building commands during world construction
         private static bool m_Developer;                // developers machine, allows direct login to any server
 
         public static class RuleSets
         {
+
+            #region Shards
+            public static bool AngelIslandRules()
+            { return m_UOAI; }
+            public static bool TestCenterRules()
+            { return m_UOTC; }
+            public static bool MortalisRules()
+            { return m_UOMO; }
+            public static bool EventShardRules()
+            { return m_UOEV; }
+            public static bool SiegeRules()
+            { return m_UOSP; }
+            public static bool RenaissanceRules()
+            { return m_UOREN; }
+            public static bool LoginServerRules()
+            {
+                // not really right. In the AI 7, we have an explicit login server.
+                //  Here, AI doubles as a shard and a login server.
+#if GMN         // defined in GMN Core 3.0.csproj.user
+                // never a login server on game-master.net
+                return false;
+#else
+                return Core.UOAI && !Core.UOTC; 
+#endif
+            }
+            public static bool StandardShardRules()
+            {
+                return SiegeRules() || MortalisRules() || RenaissanceRules();
+            }
+            #endregion Shards
+
+            #region Rules
             public static bool TentAnnexation()
             {
                 return (m_UOAI || m_UOSP) && CoreAI.TentAnnexation;
             }
+            #endregion Rules
         }
 
         private static bool m_Profiling;
         private static DateTime m_ProfileStart;
         private static TimeSpan m_ProfileTime;
+
+        private static bool m_Patching = true;          // default is to run the patcher at startup.
+        public static bool Patching
+        {
+            get { return m_Patching; }
+            set { m_Patching = value; }
+        }
 
         private static MessagePump m_MessagePump;
 
@@ -400,24 +442,35 @@ namespace Server
                 return !OldEthics;
             }
         }
+        #region Damage Tracker
+        public static int HITMISS
+        {
+            get
+            {
+                return m_HITMISS;
+            }
+            set
+            {
+                m_HITMISS = value;
+            }
+        }
+        public static int DAMAGE
+        {
+            get
+            {
+                return m_DAMAGE;
+            }
+            set
+            {
+                m_DAMAGE = value;
+            }
+        }
+        #endregion Damage tracker
         private static ReleasePhase m_releasePhase;
         public static ReleasePhase ReleasePhase
         {
             get { return m_releasePhase; }
             set { m_releasePhase = value; }
-        }
-        public static bool LoginServer
-        {
-            get
-            {   // not really right. In the AI 7, we have an explicit login server.
-                //  Here, AI doubles as a shard and a login server.
-#if GMN 
-                // never a login server on game-master.met
-                return false;
-#else
-                return Core.UOAI && !Core.UOTC; 
-#endif
-            }
         }
 
         public static bool T2A
@@ -432,7 +485,7 @@ namespace Server
         {
             get
             {
-                return PublishInfo.Publish < 4 || Core.UOAI || Core.UOAR;
+                return PublishInfo.Publish < 4 || Core.UOAI || Core.UOREN;
             }
         }
 
@@ -496,11 +549,11 @@ namespace Server
             }
         }
 
-        public static bool UOAR
+        public static bool UOREN
         {
             get
             {
-                return m_UOAR;
+                return m_UOREN;
             }
         }
 
@@ -556,7 +609,6 @@ namespace Server
             }
         }
 
-
         public static string ExePath
         {
             get
@@ -567,7 +619,6 @@ namespace Server
                 return m_ExePath;
             }
         }
-
         public static string BaseDirectory
         {
             get
@@ -599,13 +650,13 @@ namespace Server
                     try
                     {
                         bool isDevelopmerMachine = false;
-                        if (m_BaseDirectory.ToLower().Contains(@"\debug\") || m_BaseDirectory.ToLower().Contains(@"\release\"))
+                        if (BaseDirectory.ToLower().Contains(@"\debug\") || BaseDirectory.ToLower().Contains(@"\release\"))
                             isDevelopmerMachine = true;
 
                         if (isDevelopmerMachine)
-                            m_DataDirectory = Path.GetFullPath(Path.Combine(m_BaseDirectory, "../../../", "Data"));
+                            m_DataDirectory = Path.GetFullPath(Path.Combine(BaseDirectory, "../../../", "Data"));
                         else
-                            m_DataDirectory = Path.GetFullPath(Path.Combine(m_BaseDirectory, "Data"));
+                            m_DataDirectory = Path.GetFullPath(Path.Combine(BaseDirectory, "Data"));
                     }
                     catch
                     {
@@ -616,6 +667,27 @@ namespace Server
                 return m_DataDirectory;
             }
         }
+        private static string m_LogsDirectory;
+        public static string LogsDirectory
+        {
+            get
+            {
+                if (m_LogsDirectory == null)
+                {
+                    try
+                    {
+                        return m_LogsDirectory = Path.Combine(BaseDirectory, "Logs");
+                    }
+                    catch
+                    {
+                        // don't default this. we want the system to blow up if either the developer's or production machine is not setup correctly
+                    }
+                }
+
+                return m_LogsDirectory;
+            }
+        }
+
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Console.WriteLine(e.IsTerminating ? "Error:" : "Warning:");
@@ -792,8 +864,8 @@ namespace Server
                     m_UOTC = true; //
                 else if (Insensitive.Equals(args[i], "-uosp"))
                     m_UOSP = true;
-                else if (Insensitive.Equals(args[i], "-uoar"))
-                    m_UOAR = true;
+                else if (Insensitive.Equals(args[i], "-uoren"))
+                    m_UOREN = true;
                 else if (Insensitive.Equals(args[i], "-uomo"))
                     m_UOMO = true;
                 else if (Insensitive.Equals(args[i], "-uoai"))
@@ -802,6 +874,8 @@ namespace Server
                     m_UOEV = true;
                 else if (Insensitive.Equals(args[i], "-build"))
                     m_Building = true;
+                else if (Insensitive.Equals(args[i], "-nopatch"))
+                    m_Patching = false;
                 else if (Insensitive.Equals(args[i], "-developer"))
                     m_Developer = true;
                 else if (Insensitive.Equals(args[i], "-beta"))
@@ -815,7 +889,7 @@ namespace Server
             int server_count = 0;
             if (m_UOAI == true) server_count++;
             if (m_UOSP == true) server_count++;
-            if (m_UOAR == true) server_count++;
+            if (m_UOREN == true) server_count++;
             if (m_UOMO == true) server_count++;
             if (server_count == 0)
             {
@@ -868,11 +942,11 @@ namespace Server
             {
                 m_Server = "Mortalis";
             }
-            else if (LoginServer)
+            else if (Core.RuleSets.LoginServerRules())
             {
                 m_Server = "Login Server";
             }
-            else if (Core.UOAR)
+            else if (Core.UOREN)
             {
                 m_Server = "Renaissance";
             }
@@ -1021,7 +1095,7 @@ namespace Server
             Utility.Monitor.WriteLine("[Resource Pool is {0}.]", ConsoleColorEnabled(state), TextEnabled(state));
             state = Core.m_UOTC;
             Utility.Monitor.WriteLine("[Test Center functionality is {0}.]", ConsoleColorEnabled(state), TextEnabled(state));
-            state = Core.LoginServer;
+            state = Core.RuleSets.LoginServerRules();
             Utility.Monitor.WriteLine("[Login Server functionality is {0}.]", ConsoleColorEnabled(state), TextEnabled(state));
             state = m_releasePhase == ReleasePhase.Beta;
             Utility.Monitor.WriteLine("[Beta functionality is {0}.]", ConsoleColorEnabled(state), TextEnabled(state));

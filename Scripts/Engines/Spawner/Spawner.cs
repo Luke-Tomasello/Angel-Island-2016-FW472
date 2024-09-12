@@ -197,9 +197,9 @@ namespace Server.Mobiles
 		 * If a shopkeeper is killed, a new shopkeeper will appear as soon as another player (other than the one that killed it) approaches.
 		 * http://www.uoguide.com/Publish_4
 		 */
-        private Memory m_badGuys = !Core.UOAI && !Core.UOAR && !Core.UOMO && PublishInfo.Publish >= 4 ? new Memory() : null;
+        private Memory m_badGuys = !Core.UOAI && !Core.UOREN && !Core.UOMO && PublishInfo.Publish >= 4 ? new Memory() : null;
         public Memory BadGuys { get { return m_badGuys; } }
-        public override bool HandlesOnMovement { get { return (!Core.UOAI && !Core.UOAR && !Core.UOMO && PublishInfo.Publish >= 4) ? true : false; } }
+        public override bool HandlesOnMovement { get { return (!Core.UOAI && !Core.UOREN && !Core.UOMO && PublishInfo.Publish >= 4) ? true : false; } }
         public override void OnMovement(Mobile m, Point3D oldLocation)
         {
             if (m != null && m.Player)

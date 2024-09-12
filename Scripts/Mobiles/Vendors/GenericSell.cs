@@ -54,7 +54,7 @@ namespace Server.Mobiles
 
         public void Add(Type type)
         {
-            if (Core.UOAI || Core.UOAR || Core.UOMO)
+            if (Core.UOAI || Core.UOREN || Core.UOMO)
             {   // these shards support the balanced buyback system
                 if (ResourcePool.IsPooledResource(type))
                 {

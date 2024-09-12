@@ -1263,7 +1263,7 @@ namespace Server.Items
                 return false;
 
             #region Kin
-            if (Core.UOMO || Core.UOAI || Core.UOAR)
+            if (Core.UOMO || Core.UOAI || Core.UOREN)
                 if (this.IOBAlignment != IOBAlignment.None)
                 {
                     if (from is PlayerMobile)

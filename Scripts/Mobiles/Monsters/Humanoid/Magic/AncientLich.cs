@@ -113,7 +113,7 @@ namespace Server.Mobiles
         }
 
         // Auto-dispel is UOR - http://forums.uosecondage.com/viewtopic.php?f=8&t=6901
-        public override bool AutoDispel { get { return Core.UOAI || Core.UOAR ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
+        public override bool AutoDispel { get { return Core.UOAI || Core.UOREN ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
         public override bool Unprovokable { get { return true; } }
         public override Poison PoisonImmune { get { return Poison.Lethal; } }
 
@@ -159,9 +159,9 @@ namespace Server.Mobiles
             }
         }
 
-        public override void Damage(int amount, Mobile from)
+        public override void Damage(int amount, Mobile from, object source_weapon)
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 CheckGuardians();
 
@@ -169,12 +169,12 @@ namespace Server.Mobiles
                     amount = 1;
             }
 
-            base.Damage(amount, from);
+            base.Damage(amount, from, source_weapon: source_weapon);
         }
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGold(1200, 1600);
                 PackScroll(6, 8);

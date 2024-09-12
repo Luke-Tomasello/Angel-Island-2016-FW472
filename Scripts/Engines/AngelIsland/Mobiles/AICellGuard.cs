@@ -64,7 +64,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 DropWeapon(1, 1);
                 DropWeapon(1, 1);

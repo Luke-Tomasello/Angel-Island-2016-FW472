@@ -56,7 +56,7 @@ namespace Server.Mobiles
         {
             public InternalSellInfo()
             {
-                if (!Core.UOAI && !Core.UOAR && !Core.UOSP && !Core.UOMO)
+                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
                 {   // cash buyback
                     Add(typeof(RawFishSteak), 1);
                     Add(typeof(Fish), 1);

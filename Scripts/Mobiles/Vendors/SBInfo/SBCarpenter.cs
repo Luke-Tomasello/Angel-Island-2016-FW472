@@ -70,7 +70,7 @@ namespace Server.Mobiles
         {
             public InternalBuyInfo()
             {
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                 {
                     // Jade: Add new fountain deeds (currently commented out because they are bugged)
                     // Adam: waiting on the ability to name the library bookcase
@@ -117,7 +117,7 @@ namespace Server.Mobiles
                 Add(new GenericBuyInfo(typeof(Axle), 2, 20, 0x105B, 0));
                 Add(new GenericBuyInfo(typeof(Nails), 3, 20, 0x102E, 0));
 
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                 {
                     Add(new GenericBuyInfo(typeof(Server.Township.Sledgehammer), Utility.Random(230, 260), 20, 0x1439, 0));
                     Add(new GenericBuyInfo(typeof(Server.Township.DemolitionAx), Utility.Random(230, 260), 20, 0x13FB, 0));
@@ -129,13 +129,13 @@ namespace Server.Mobiles
         {
             public InternalSellInfo()
             {
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                 {   // balanced buyback system
                     Add(typeof(Board));
                     Add(typeof(Log));
                 }
 
-                if (!Core.UOAI && !Core.UOAR && !Core.UOSP && !Core.UOMO)
+                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
                 {   // cash buyback
                     Add(typeof(WoodenBox), 7);
                     Add(typeof(SmallCrate), 5);

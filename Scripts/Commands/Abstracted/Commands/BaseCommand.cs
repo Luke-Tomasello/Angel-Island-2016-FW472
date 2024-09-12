@@ -32,6 +32,8 @@
 using Server.Gumps;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Server.Commands
 {
@@ -100,7 +102,14 @@ namespace Server.Commands
             m_Responses = new ArrayList();
             m_Failures = new ArrayList();
         }
-
+        public ReadOnlyCollection<object> Responses
+        {
+            get
+            {
+                List<object> list = new List<object>(m_Responses.ToArray());
+                return list.AsReadOnly();
+            }
+        }
         public static bool IsAccessible(Mobile from, object obj)
         {
             if (from.AccessLevel >= AccessLevel.Administrator || obj == null)

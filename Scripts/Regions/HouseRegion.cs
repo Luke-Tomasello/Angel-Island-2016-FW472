@@ -265,7 +265,7 @@ namespace Server.Regions
                     from.SendLocalizedMessage(502094); // You must be in your house to do this.
                 }
             }
-            else if (e.Speech.ToLower() == "i wish to make this decorative" && (Core.UOAI || Core.UOAR)) // i wish to make this decorative
+            else if (e.Speech.ToLower() == "i wish to make this decorative" && (Core.UOAI || Core.UOREN)) // i wish to make this decorative
             {
                 if (!isFriend)
                 {
@@ -277,7 +277,7 @@ namespace Server.Regions
                     from.Target = new HouseDecoTarget(true, m_House);
                 }
             }
-            else if (e.Speech.ToLower() == "i wish to make this functional" && (Core.UOAI || Core.UOAR)) // i wish to make this functional
+            else if (e.Speech.ToLower() == "i wish to make this functional" && (Core.UOAI || Core.UOREN)) // i wish to make this functional
             {
                 if (!isFriend)
                 {

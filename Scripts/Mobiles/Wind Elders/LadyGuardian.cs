@@ -143,9 +143,9 @@ namespace Server.Mobiles
         }
 
         public override bool AlwaysMurderer { get { return true; } }
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOAR ? true : false; } }
+        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : false; } }
         public override Poison PoisonImmune { get { return null; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 5 : 0; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 5 : 0; } }
 
         public override bool Uncalmable
         {
@@ -165,7 +165,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackReg(20);
                 PackReg(20);
@@ -213,7 +213,7 @@ namespace Server.Mobiles
             return base.OnBeforeDeath();
         }
 
-        public override void Damage(int amount, Mobile from)
+        public override void Damage(int amount, Mobile from, object source_weapon)
         {
             Mobile combatant = this.Combatant;
 
@@ -237,7 +237,7 @@ namespace Server.Mobiles
                 }
             }
 
-            base.Damage(amount, from);
+            base.Damage(amount, from, source_weapon: source_weapon);
         }
 
         public override void OnMovement(Mobile m, Point3D oldLocation)

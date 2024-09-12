@@ -59,7 +59,7 @@ namespace Server.Mobiles
                 Add(new GenericBuyInfo(typeof(Tongs), 13, 14, 0xFBB, 0));
                 Add(new GenericBuyInfo(typeof(SmithHammer), 4, 16, 0x13E3, 0));
 
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                 {   // balanced buyback system
                     Add(new GenericBuyInfo(typeof(IronIngot)));
                     Add(new GenericBuyInfo(typeof(DullCopperIngot)));
@@ -78,7 +78,7 @@ namespace Server.Mobiles
         {
             public InternalSellInfo()
             {
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                 {   // balanced buyback system
                     Add(typeof(IronIngot));
                     Add(typeof(DullCopperIngot));
@@ -100,7 +100,7 @@ namespace Server.Mobiles
                     Add(typeof(ValoriteOre));
                 }
 
-                if (!Core.UOAI && !Core.UOAR && !Core.UOSP && !Core.UOMO)
+                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
                 {   // cash buyback
                     Add(typeof(Tongs), 7);
                     Add(typeof(IronIngot), 4);

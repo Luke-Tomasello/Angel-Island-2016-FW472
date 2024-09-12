@@ -925,7 +925,7 @@ namespace Server.Items
                 {
                     PlayerMobile pm = (PlayerMobile)m;
 
-                    if (Core.UOMO || Core.UOAI || Core.UOAR)
+                    if (Core.UOMO || Core.UOAI || Core.UOREN)
                         if (this.IOBAlignment != IOBAlignment.None)
                         {
                             if (pm.IOBEquipped == true)
@@ -1543,7 +1543,7 @@ namespace Server.Items
                 iMax = (iMax * 3) / 2; // Fixed order of precedence bug
                 iMin = (iMin * 3) / 2;
 
-                if (Core.UOAI || Core.UOAR)
+                if (Core.UOAI || Core.UOREN)
                 {
                     // make exceptional clothes newbied
                     this.LootType = LootType.Newbied;

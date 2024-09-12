@@ -21,6 +21,8 @@
 
 /* Engines/CoreManagement/CoreManagementConsole.cs
  * ChangeLog
+ *  9/10/2024, Adam
+ *      Add StaminaDrainByWeight. Set in CoreManagementConsole, used in WeightOverloading
  *	3/5/16, Adam
  *		Add a new FeatureBits.PlayerAccountWipe for wiping all player accounts as part of usual 
  *			account cleanup logic (it's fully logged.) 
@@ -758,7 +760,21 @@ namespace Server.Items
                     CoreAI.ClearDynamicFeature(CoreAI.FeatureBits.PlayerAccountWipe);
             }
         }
-
+        [CommandProperty(AccessLevel.GameMaster, AccessLevel.Administrator)]
+        public bool StaminaDrainByWeight
+        {
+            get
+            {
+                return CoreAI.IsDynamicFeatureSet(CoreAI.FeatureBits.StaminaDrainByWeight);
+            }
+            set
+            {
+                if (value == true)
+                    CoreAI.SetDynamicFeature(CoreAI.FeatureBits.StaminaDrainByWeight);
+                else
+                    CoreAI.ClearDynamicFeature(CoreAI.FeatureBits.StaminaDrainByWeight);
+            }
+        }
         [CommandProperty(AccessLevel.GameMaster, AccessLevel.Administrator)]
         public bool IOBShardWide
         {

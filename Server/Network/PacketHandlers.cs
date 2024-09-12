@@ -1811,7 +1811,7 @@ namespace Server.Network
             IEntity target = World.FindEntity(pvSrc.ReadInt32());
 
             // publish 14 introduced context menus
-            if (!Core.UOAI && !Core.UOAR && !Core.UOMO && PublishInfo.Publish < 14)
+            if (!Core.UOAI && !Core.UOREN && !Core.UOMO && PublishInfo.Publish < 14)
                 return;
 
             if (from != null && target != null && from.Map == target.Map && from.CanSee(target))
@@ -2203,7 +2203,7 @@ namespace Server.Network
         {
             //If not we're on the login server then we need to assume we've got a valid
             // id since it passed that shard's login.
-            if (!Core.LoginServer)
+            if (!Core.RuleSets.LoginServerRules())
             {
                 return true;
             }

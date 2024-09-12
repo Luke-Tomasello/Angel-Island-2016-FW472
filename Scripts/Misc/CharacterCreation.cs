@@ -110,7 +110,7 @@ namespace Server.Misc
                 m.AddItem(pack);
             }
 
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackItem(new RedBook("a book", m.Name, 20, true));
                 PackItem(new Gold(204));    // Adam: add the magic starting gold of 204
@@ -476,7 +476,7 @@ namespace Server.Misc
 
             CityInfo city;
 
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 /*
 				 * Our numbers have been so low lately (< 50), it's once again important

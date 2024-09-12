@@ -98,7 +98,7 @@ namespace Server.Ethics.Hero
                 from.DoHarmful(combatant);
 
                 // death
-                AOS.Damage(combatant, from, combatant.Hits, combatant.Hits, 0, 0, 0, 0);
+                AOS.Damage(combatant, from, combatant.Hits, combatant.Hits, 0, 0, 0, 0, source_weapon: this);
                 combatant.Poison = Poison.Lethal;   // die on next tick
 
                 // This power consumes a huge amount of lifeforce, but allows you to target a hero and simply kill them dead. 

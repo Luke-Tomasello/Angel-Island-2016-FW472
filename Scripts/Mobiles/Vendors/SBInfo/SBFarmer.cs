@@ -83,7 +83,7 @@ namespace Server.Mobiles
                 Add(new GenericBuyInfo(typeof(Pear), 3, 20, 0x994, 0));
                 Add(new GenericBuyInfo("1060834", typeof(Engines.Plants.PlantBowl), 2, 20, 0x15FD, 0));
 
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                     Add(new GenericBuyInfo(typeof(SeedBox), 10000, 20, 0x9A9, 0x1CE));
             }
         }
@@ -92,7 +92,7 @@ namespace Server.Mobiles
         {
             public InternalSellInfo()
             {
-                if (!Core.UOAI && !Core.UOAR && !Core.UOSP && !Core.UOMO)
+                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
                 {   // cash buyback
                     Add(typeof(Pitcher), 5);
                     Add(typeof(Eggs), 1);

@@ -72,7 +72,7 @@ namespace Server.Mobiles
                     Add(new GenericBuyInfo(typeof(Bolt), 5, 20, 0x1BFB, 0));
                 }
 
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                 {   // balanced buyback system
                     Add(new GenericBuyInfo(typeof(Arrow)));
                     Add(new GenericBuyInfo(typeof(Bolt)));
@@ -109,7 +109,7 @@ namespace Server.Mobiles
                 Add(new GenericBuyInfo("1041205", typeof(Multis.SmallBoatDeed), 12500, 20, 0x14F2, 0));
                 Add(new GenericBuyInfo("1041055", typeof(GuildDeed), 12450, 20, 0x14F0, 0));
 
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                     Add(new GenericBuyInfo("Township Deed", typeof(TownshipDeed), Township.TownshipSettings.TSDeedCost, 20, 0x14F0, Township.TownshipSettings.Hue));
 
                 Add(new GenericBuyInfo("1041060", typeof(HairDye), 60, 20, 0xEFF, 0));
@@ -118,7 +118,7 @@ namespace Server.Mobiles
                 Add(new GenericBuyInfo(typeof(Backgammon), 2, 20, 0xE1C, 0));
                 Add(new GenericBuyInfo(typeof(Dices), 2, 20, 0xFA7, 0));
 
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                 {
                     Add(new GenericBuyInfo("bounty ledger", typeof(BountyLedger), 1000, 20, 0xEFA, 0x3C1));
                     Add(new GenericBuyInfo("Flag Stone Deed", typeof(FlagStoneAddonDeed), 45000, 20, 0x14f0, 0x0));
@@ -140,13 +140,13 @@ namespace Server.Mobiles
         {
             public InternalSellInfo()
             {
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                 {   // balanced buyback system
                     Add(typeof(Arrow));
                     Add(typeof(Bolt));
                 }
 
-                if (!Core.UOAI && !Core.UOAR && !Core.UOSP && !Core.UOMO)
+                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
                 {   // cash buyback
                     Add(typeof(Backpack), 7);
                     Add(typeof(Pouch), 3);

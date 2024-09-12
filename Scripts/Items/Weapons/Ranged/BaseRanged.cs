@@ -195,7 +195,7 @@ namespace Server.Items
                             OnMiss(attacker, defender);
                     }
 
-                    if (Core.UOAI || Core.UOAR)
+                    if (Core.UOAI || Core.UOREN)
                     {   // set weapon to be unpoisoned
                         Poison = null;
                         PoisonCharges = 0;

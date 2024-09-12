@@ -980,7 +980,7 @@ namespace Server.Mobiles
         #region Bonding
         public const bool BondingEnabled = true;
 
-        public virtual bool IsBondable { get { return (BondingEnabled && (PublishInfo.Publish >= 16.0 || Core.UOAI || Core.UOAR) && !Summoned); } }
+        public virtual bool IsBondable { get { return (BondingEnabled && (PublishInfo.Publish >= 16.0 || Core.UOAI || Core.UOREN) && !Summoned); } }
         public virtual TimeSpan BondingDelay { get { return TimeSpan.FromDays(7.0); } }
         public virtual TimeSpan BondingAbandonDelay { get { return TimeSpan.FromDays(1.0); } }
 
@@ -1030,7 +1030,7 @@ namespace Server.Mobiles
             }
             set
             {   // world respawn required to reset all creatures to 'none'
-                m_IOBAlignment = Core.UOAI || Core.UOAR ? value : IOBAlignment.None;
+                m_IOBAlignment = Core.UOAI || Core.UOREN ? value : IOBAlignment.None;
             }
         }
 
@@ -1368,7 +1368,7 @@ namespace Server.Mobiles
 
             if (physDamage == 0 && fireDamage == 0 && coldDamage == 0 && poisDamage == 0 && nrgyDamage == 0)
             {   // Unresistable damage even in AOS
-                target.Damage(BreathComputeDamage(), this);
+                target.Damage(BreathComputeDamage(), this, source_weapon: this);
             }
             else
             {
@@ -1380,7 +1380,7 @@ namespace Server.Mobiles
                     damage -= damage * (.1 * distance);
                     if (damage <= 0.0) damage = 1.0;
                 }
-                AOS.Damage(target, this, (int)damage, physDamage, fireDamage, coldDamage, poisDamage, nrgyDamage);
+                AOS.Damage(target, this, (int)damage, physDamage, fireDamage, coldDamage, poisDamage, nrgyDamage, source_weapon: this);
             }
         }
 
@@ -1564,7 +1564,7 @@ namespace Server.Mobiles
         public virtual bool IsFriend(Mobile m, RelationshipFilter filter)
         {
             // all other shards check OppositionGroup
-            if (!Core.UOAI && !Core.UOAR)
+            if (!Core.UOAI && !Core.UOREN)
             {
                 OppositionGroup g = this.OppositionGroup;
 
@@ -1660,7 +1660,7 @@ namespace Server.Mobiles
         public virtual bool IsEnemy(Mobile m, RelationshipFilter filter)
         {
             // all other shards check OppositionGroup
-            if (!Core.UOAI && !Core.UOAR)
+            if (!Core.UOAI && !Core.UOREN)
             {
                 OppositionGroup g = this.OppositionGroup;
 
@@ -1833,11 +1833,11 @@ namespace Server.Mobiles
             }
         }
 
-        public override void Damage(int amount, Mobile from)
+        public override void Damage(int amount, Mobile from, object source_weapon)
         {
             int oldHits = this.Hits;
 
-            base.Damage(amount, from);
+            base.Damage(amount, from, source_weapon: source_weapon);
 
             if (SubdueBeforeTame && !Controlled)
             {
@@ -2051,7 +2051,7 @@ namespace Server.Mobiles
             }
         }
 
-        public override void OnDamage(int amount, Mobile from, bool willKill)
+        public override void OnDamage(int amount, Mobile from, bool willKill, object source_weapon)
         {
             RefreshLifespan();
 
@@ -2066,7 +2066,7 @@ namespace Server.Mobiles
             if (m_AI != null)
                 m_AI.Activate();
 
-            base.OnDamage(amount, from, willKill);
+            base.OnDamage(amount, from, willKill, source_weapon: source_weapon);
         }
 
         public virtual void OnDamagedBySpell(Mobile from)
@@ -2254,7 +2254,7 @@ namespace Server.Mobiles
                 speechType.OnConstruct(this);
 
             // our siege shard has 'at spawn' loot
-            if (!Core.UOAI && !Core.UOAR)
+            if (!Core.UOAI && !Core.UOREN)
                 GenerateLoot(true);     // 'at spawn' loot
 
             //new creature, give it a lifespan
@@ -4357,7 +4357,7 @@ namespace Server.Mobiles
                             }
                         }
 
-                        AOS.Damage(aggressor, 50, 0, 100, 0, 0, 0);
+                        AOS.Damage(aggressor, 50, 0, 100, 0, 0, 0, aggressor);
                         aggressor.FixedParticles(0x36BD, 20, 10, 5044, EffectLayer.Head);
                         aggressor.PlaySound(0x307);
 
@@ -5150,7 +5150,7 @@ namespace Server.Mobiles
             if (!spawning)
                 m_KillersLuck = LootPack.GetLuckChanceForKiller(this);
 
-            if (spawning == true && (Core.UOAI || Core.UOAR))
+            if (spawning == true && (Core.UOAI || Core.UOREN))
                 throw new ApplicationException("You cannot call GenerateLoot() at spawn time for Angel Island.");
 
             GenerateLoot();
@@ -5661,7 +5661,7 @@ namespace Server.Mobiles
 
         public void PackItem(Item item)
         {   // adam: default is to try to pack an enchanted scroll
-            PackItem(item, Core.UOAI || Core.UOAR ? true : false);
+            PackItem(item, Core.UOAI || Core.UOREN ? true : false);
         }
 
         public void PackItem(Type type, double chance)
@@ -5677,7 +5677,7 @@ namespace Server.Mobiles
             for (int yx = 0; yx < amount; yx++)
             {
                 Item item = Loot.Construct(type);
-                PackItem(item, Core.UOAI || Core.UOAR ? true : false);
+                PackItem(item, Core.UOAI || Core.UOREN ? true : false);
             }
         }
 
@@ -5875,7 +5875,7 @@ namespace Server.Mobiles
             #region Dungeon rares (Angel Island only)
             // most dungeon creatures with Str > 50 now have a chance to drop something rare
             //	1 in 2000 chance (good luck!)
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 Item rare = Loot.RareFactoryItem(0.0005);
                 if (!Summoned && !NoKillAwards && !IsBonded && rare != null && this.Str > 50 && (SpellHelper.IsFeluccaDungeon(this.Map, this.Location) || SpellHelper.IsFeluccaWind(this.Map, this.Location)))
@@ -5912,7 +5912,7 @@ namespace Server.Mobiles
 
                 #region Paragon (Angel Island Only)
                 // give a little boost in loot for paragon creatures
-                if (Core.UOAI || Core.UOAR)
+                if (Core.UOAI || Core.UOREN)
                 {
                     if (Paragon == true)
                     {
@@ -6666,7 +6666,7 @@ namespace Server.Mobiles
                 }
             }
 
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 // apply Spirit Speak bonus
                 creature.SetHits((int)(creature.Hits + creature.Hits * (caster.Skills.SpiritSpeak.Value / 200)), false);
@@ -6787,7 +6787,7 @@ namespace Server.Mobiles
                             // Adam: add IsDeadBondedPet to the test to keep from attacking dead bonded pets
                             if (m.Map == this.Map && m.Alive && !m.IsDeadBondedPet)
                             {
-                                m.Damage(Utility.Random(AuraMin, AuraMax), this);
+                                m.Damage(Utility.Random(AuraMin, AuraMax), this, source_weapon: this);
                                 DoHarmful(m);
                                 NextAuraTime = DateTime.UtcNow + NextAuraDelay;
                                 m.Paralyzed = false;

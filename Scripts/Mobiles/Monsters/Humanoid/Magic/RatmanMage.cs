@@ -72,7 +72,7 @@ namespace Server.Mobiles
             VirtualArmor = 44;
         }
 
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOAR ? true : true; } }
+        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : true; } }
         public override int Meat { get { return 1; } }
         public override int Hides { get { return 8; } }
         public override HideType HideType { get { return HideType.Spined; } }
@@ -94,7 +94,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGold(175, 225);
                 PackReg(6);

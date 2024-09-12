@@ -155,7 +155,7 @@ namespace Server.Mobiles
         {
             public InternalSellInfo()
             {
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                 {
                     // balanced buyback system
                     Add(typeof(Board));
@@ -180,7 +180,7 @@ namespace Server.Mobiles
                     Add(typeof(ValoriteOre));
                 }
 
-                if (!Core.UOAI && !Core.UOAR && !Core.UOSP && !Core.UOMO)
+                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
                 {   // cash buyback
                     Add(typeof(Tongs), 7);
                     Add(typeof(IronIngot), 4);

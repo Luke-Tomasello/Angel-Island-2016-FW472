@@ -1006,7 +1006,7 @@ namespace Server.ContextMenus
 
         public override void OnClick()
         {
-            if (this.Owner.From.CreationTime + HireAge > DateTime.UtcNow && this.Owner.From.AccessLevel == AccessLevel.Player)
+            if (this.Owner.From.Created + HireAge > DateTime.UtcNow && this.Owner.From.AccessLevel == AccessLevel.Player)
                 this.Owner.From.SendMessage("I'm sorry, do I know you?");
             else
                 this.Owner.From.SendGump(new Mobiles.TownCrierGump(this.Owner.From, Mobiles.GlobalTownCrierEntryList.Instance));

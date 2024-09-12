@@ -299,7 +299,7 @@ namespace Server.Items
                                 if (m_Trapper != null && !m_Trapper.Deleted)
                                     from.Aggressors.Add(AggressorInfo.Create(m_Trapper, from, true));
 
-                                AOS.Damage(from, damage, 0, 100, 0, 0, 0);
+                                AOS.Damage(from, damage, 0, 100, 0, 0, 0, this);
 
                                 // Your skin blisters from the heat!
                                 from.LocalOverheadMessage(Network.MessageType.Regular, 0x2A, 503000);
@@ -313,7 +313,7 @@ namespace Server.Items
                     case TrapType.MagicTrap:
                         {
                             if (from.InRange(loc, 1))
-                                from.Damage(m_TrapPower);
+                                from.Damage(m_TrapPower, source_weapon: this);
                             //AOS.Damage( from, m_TrapPower, 0, 100, 0, 0, 0 );
 
                             Effects.PlaySound(loc, Map, 0x307);
@@ -344,7 +344,7 @@ namespace Server.Items
                                 if (m_Trapper != null && !m_Trapper.Deleted)
                                     from.Aggressors.Add(AggressorInfo.Create(m_Trapper, from, true));
 
-                                AOS.Damage(from, damage, 100, 0, 0, 0, 0);
+                                AOS.Damage(from, damage, 100, 0, 0, 0, 0, this);
 
                                 // A dart imbeds itself in your flesh!
                                 from.LocalOverheadMessage(Network.MessageType.Regular, 0x62, 502998);
@@ -371,7 +371,7 @@ namespace Server.Items
                                 }
                                 else
                                 {
-                                    AOS.Damage(from, m_TrapPower, 0, 0, 0, 100, 0);
+                                    AOS.Damage(from, m_TrapPower, 0, 0, 0, 100, 0, this);
                                     poison = Poison.Greater;
                                 }
 

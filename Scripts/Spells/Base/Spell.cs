@@ -127,7 +127,7 @@ namespace Server.Spells
 
         public virtual bool RevealOnCast { get { return true; } }
         public virtual bool ClearHandsOnCast { get { return true; } }
-        public virtual bool EquipSpellbookOnCast { get { return !Core.UOAI && !Core.UOAR && !Core.UOMO && Core.CheckPublish(5) ? true : false; } }
+        public virtual bool EquipSpellbookOnCast { get { return !Core.UOAI && !Core.UOREN && !Core.UOMO && Core.CheckPublish(5) ? true : false; } }
 
         public virtual bool DelayedDamage { get { return false; } }
 

@@ -101,7 +101,7 @@ namespace Server.Mobiles
 
         public override bool IsEnemy(Mobile m, RelationshipFilter filter)
         {
-            if (!Core.UOAI && !Core.UOAR)
+            if (!Core.UOAI && !Core.UOREN)
                 if (m.Player && m.FindItemOnLayer(Layer.Helm) is OrcishKinMask)
                     return false;
 
@@ -112,13 +112,13 @@ namespace Server.Mobiles
         {
             base.AggressiveAction(aggressor, criminal);
 
-            if (!Core.UOAI && !Core.UOAR)
+            if (!Core.UOAI && !Core.UOREN)
             {
                 Item item = aggressor.FindItemOnLayer(Layer.Helm);
 
                 if (item is OrcishKinMask)
                 {
-                    AOS.Damage(aggressor, 50, 0, 100, 0, 0, 0);
+                    AOS.Damage(aggressor, 50, 0, 100, 0, 0, 0, this);
                     item.Delete();
                     aggressor.FixedParticles(0x36BD, 20, 10, 5044, EffectLayer.Head);
                     aggressor.PlaySound(0x307);
@@ -126,9 +126,9 @@ namespace Server.Mobiles
             }
         }
 
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOAR ? true : true; } }
+        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : true; } }
         // Auto-dispel is UOR - http://forums.uosecondage.com/viewtopic.php?f=8&t=6901
-        public override bool AutoDispel { get { return Core.UOAI || Core.UOAR ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
+        public override bool AutoDispel { get { return Core.UOAI || Core.UOREN ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
 
         public override void OnDamagedBySpell(Mobile caster)
         {
@@ -192,7 +192,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGold(600, 700);
                 PackItem(new ShadowIronOre(25));

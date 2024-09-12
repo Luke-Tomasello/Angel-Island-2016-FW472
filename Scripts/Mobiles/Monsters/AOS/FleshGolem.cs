@@ -73,7 +73,7 @@ namespace Server.Mobiles
             VirtualArmor = 34;
         }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 1 : 0; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 1 : 0; } }
 
         public FleshGolem(Serial serial)
             : base(serial)

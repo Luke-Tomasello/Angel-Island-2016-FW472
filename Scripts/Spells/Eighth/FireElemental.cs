@@ -70,7 +70,7 @@ namespace Server.Spells.Eighth
             if (CheckSequence())
             {
                 TimeSpan duration = TimeSpan.FromSeconds((2 * Caster.Skills.Magery.Fixed) / 10);
-                SpellHelper.Summon(new FireElemental(Core.UOAI || Core.UOAR ? true : false), Caster, 0x217, duration, false, false);
+                SpellHelper.Summon(new FireElemental(Core.UOAI || Core.UOREN ? true : false), Caster, 0x217, duration, false, false);
             }
 
             FinishSequence();

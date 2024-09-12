@@ -659,7 +659,7 @@ namespace Server.Items
             else if (m_Decoder != null)
             {   // non tattered
                 // "an adeptly drawn treasure map";
-                if (Core.UOAI || Core.UOAR || Core.UOMO || (Core.UOSP && PublishInfo.Publish >= 13))
+                if (Core.UOAI || Core.UOREN || Core.UOMO || (Core.UOSP && PublishInfo.Publish >= 13))
                     LabelTo(from, 1041516 + m_Level);
                 else
                     LabelTo(from, String.Format("a treasure map"));
@@ -667,7 +667,7 @@ namespace Server.Items
             else
             {   // tattered
                 // "a tattered, adeptly drawn treasure map"
-                if (Core.UOAI || Core.UOAR || Core.UOMO || (Core.UOSP && PublishInfo.Publish >= 13))
+                if (Core.UOAI || Core.UOREN || Core.UOMO || (Core.UOSP && PublishInfo.Publish >= 13))
                 {
                     LabelTo(from, 1041510 + m_Level);
                     LabelTo(from, m_Map == Map.Felucca ? 1041502 : 1041503);

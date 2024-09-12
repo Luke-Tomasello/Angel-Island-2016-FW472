@@ -67,7 +67,7 @@ namespace Server.Mobiles
         }
 
         public override int Meat { get { return 1; } }
-        public override int Hides { get { return Core.UOAI || Core.UOAR ? 6 : Utility.Random(3) == 0 ? 6 : 0; } }
+        public override int Hides { get { return Core.UOAI || Core.UOREN ? 6 : Utility.Random(3) == 0 ? 6 : 0; } }
         public override FoodType FavoriteFood { get { return FoodType.Fish | FoodType.Meat | FoodType.FruitsAndVegies | FoodType.Eggs; } }
 
         public GiantRat(Serial serial)
@@ -77,7 +77,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
                 PackGold(0, 25);
             else
             {

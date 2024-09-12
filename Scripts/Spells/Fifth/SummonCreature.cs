@@ -92,7 +92,7 @@ namespace Server.Spells.Fifth
                 try
                 {
                     BaseCreature creature = null;
-                    if ((Core.UOAI || Core.UOAR) && Caster.Skills.SpiritSpeak.Value > 50 && (Caster.Skills.SpiritSpeak.Value / 100) >= Utility.RandomDouble())
+                    if ((Core.UOAI || Core.UOREN) && Caster.Skills.SpiritSpeak.Value > 50 && (Caster.Skills.SpiritSpeak.Value / 100) >= Utility.RandomDouble())
                     {
                         creature = new HordeMinionFamiliar();
                         creature.ControlSlots = 3;

@@ -124,7 +124,7 @@ namespace Server.Mobiles
             AddItem(new BoneArms());
             AddItem(new BoneLegs());
 
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 AddItem(new DeerMask(), 1);         // always newbied on AI
             }
@@ -139,7 +139,7 @@ namespace Server.Mobiles
 
         public override bool IsEnemy(Mobile m, RelationshipFilter filter)
         {
-            if (!Core.UOAI && !Core.UOAR)
+            if (!Core.UOAI && !Core.UOREN)
                 // Ai uses HUE value and not the BodyMod as there is no sitting graphic
                 if ((m.BodyMod == 183 || m.BodyMod == 184) || m.HueMod == 0)
                     return false;
@@ -151,11 +151,11 @@ namespace Server.Mobiles
         {
             base.AggressiveAction(aggressor, criminal);
 
-            if (!Core.UOAI && !Core.UOAR)
+            if (!Core.UOAI && !Core.UOREN)
             {   // Ai uses HUE value and not the BodyMod as there is no sitting graphic
                 if ((aggressor.BodyMod == 183 || aggressor.BodyMod == 184) || aggressor.HueMod == 0)
                 {
-                    AOS.Damage(aggressor, 50, 0, 100, 0, 0, 0);
+                    AOS.Damage(aggressor, 50, 0, 100, 0, 0, 0, this);
                     aggressor.BodyMod = 0;
                     aggressor.HueMod = -1;
                     aggressor.FixedParticles(0x36BD, 20, 10, 5044, EffectLayer.Head);
@@ -170,7 +170,7 @@ namespace Server.Mobiles
 
         public override void AlterMeleeDamageTo(Mobile to, ref int damage)
         {
-            if (!Core.UOAI && !Core.UOAR)
+            if (!Core.UOAI && !Core.UOREN)
                 if (to is Dragon || to is WhiteWyrm || to is SwampDragon || to is Drake || to is Nightmare || to is Daemon)
                     damage *= 3;
         }
@@ -349,7 +349,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGold(200, 250);
                 PackReg(10, 15);

@@ -21,6 +21,8 @@
 
 /* Scripts/Commands/Handlers.cs
  * CHANGELOG
+ *  9/10/2024, Adam,
+ *      Enhance [go command to understand locations described by runes, within runebooks, sextant coords, etc.
  *	3/12/11, Adam
  *		Add a [shard command to tell the user which shard they are on
  *		believe me, with SP, AI, MO, and TC and EVENT verdsions of each, it's needed.
@@ -1140,9 +1142,275 @@ namespace Server.Commands
 
             return (map != null && map != Map.Internal);
         }
+        private static Point3D GetMarkLocation(Mobile m, ref Map map, string description)
+        {
+            if (m.Backpack == null)
+                return Point3D.Zero;
 
+            ArrayList list = m.Backpack.FindAllItems();
+            foreach (Item item in list)
+            {
+                if (item is RecallRune)
+                {
+                    RecallRune rune = (RecallRune)item;
+
+                    if (rune.Marked && rune.TargetMap != null && rune.Description != null && rune.Description.Equals(description, StringComparison.OrdinalIgnoreCase))
+                    {
+                        map = rune.TargetMap;
+                        return rune.Target;
+                    }
+                }
+                else if (item is Moonstone)
+                {
+                    Moonstone stone = (Moonstone)item;
+
+                    if (stone.Marked && stone.Description != null && stone.Description.Equals(description, StringComparison.OrdinalIgnoreCase))
+                    {
+                        // map = stone.TargetMap; no map info
+                        return stone.Destination;
+                    }
+                }
+                else if (item is Runebook)
+                {
+                    Runebook book = (Runebook)item;
+
+                    for (int i = 0; i < book.Entries.Count; ++i)
+                    {
+                        RunebookEntry entry = (RunebookEntry)book.Entries[i];
+
+                        if (entry.Map != null && entry.Description.Equals(description, StringComparison.OrdinalIgnoreCase))
+                        {
+                            map = entry.Map;
+                            return entry.Location;
+                        }
+                    }
+                }
+            }
+
+            return Point3D.Zero;
+        }
         [Usage("Go [name | serial | (x y [z]) | (deg min (N | S) deg min (E | W))]")]
         [Description("With no arguments, this command brings up the go menu. With one argument, (name), you are moved to that regions \"go location.\" Or, if a numerical value is specified for one argument, (serial), you are moved to that object. Two or three arguments, (x y [z]), will move your character to that location. When six arguments are specified, (deg min (N | S) deg min (E | W)), your character will go to an approximate of those sextant coordinates.")]
+#if true
+        private static void Go_OnCommand(CommandEventArgs e)
+        {
+            Mobile from = e.Mobile;
+            if (from == null) return;
+
+            from.LightLevel = 100;
+#if false
+            if (Core.RuleSets.TestCenterRules() && from.AccessLevel == AccessLevel.Player)
+            {
+                Dictionary<string, Point3D> places = new(StringComparer.OrdinalIgnoreCase)
+                {   // factions
+                    { "Council of Mages", new Point3D(3750, 2241, 20) },
+                    { "CouncilofMages", new Point3D(3750, 2241, 20) },
+                    { "Council", new Point3D(3750, 2241, 20) },
+                    { "COM", new Point3D(3750, 2241, 20) },
+                    { "C", new Point3D(3750, 2241, 20) },
+
+                    { "Minax", new Point3D(1172, 2593, 0) },
+                    { "M", new Point3D(1172, 2593, 0) },
+
+                    { "Shadowlords", new Point3D(969, 768, 0) },
+                    { "Shadow Lords", new Point3D(969, 768, 0) },
+                    { "Shadow", new Point3D(969, 768, 0) },
+                    { "SL", new Point3D(969, 768, 0) },
+                    { "S", new Point3D(969, 768, 0) },
+
+                    { "True Britannians", new Point3D(1419, 1622, 20) },
+                    { "TrueBritannians", new Point3D(1419, 1622, 20) },
+                    { "True", new Point3D(1419, 1622, 20) },
+                    { "TB", new Point3D(1419, 1622, 20) },
+                    { "True Brits", new Point3D(1419, 1622, 20) },
+                    { "TrueBrits", new Point3D(1419, 1622, 20) },
+                    { "T", new Point3D(1419, 1622, 20) },
+                    // towns
+                    {"Britain", new Point3D(1592, 1680, 10) },
+                    {"Magincia", new Point3D(3714, 2235, 20) },
+                    {"Minoc", new Point3D(2471, 439, 15 )},
+                    {"Moonglow", new Point3D(4436,1083, 0) },
+                    {"Skara Brae", new Point3D( 576, 2200, 0) },
+                    {"Trinsic", new Point3D(1914, 2717, 20) },
+                    {"Vesper", new Point3D( 2982, 818, 0) },
+                    { "Yew", new Point3D(548, 979, 0) },
+                };
+                string dest = string.Empty;
+                foreach (string s in e.Arguments)
+                {
+                    dest += s;
+                    if (places.ContainsKey(dest))
+                    {
+                        e.Mobile.MoveToWorld(places[s], e.Mobile.Map);
+                        return;
+                    }
+                    else
+                        dest += " ";
+                }
+                from.SendMessage("Format: Go [<faction_name> | <town_name>");
+            }
+            else
+#endif
+            if (from.AccessLevel > AccessLevel.Player)
+            {
+                if (e.Length == 0)
+                {
+                    GoGump.DisplayTo(from);
+                }
+                else if (e.Length == 1)
+                {
+                    try
+                    {
+                        int ser = e.GetInt32(0);
+
+                        IEntity ent = World.FindEntity(ser);
+
+                        if (ent is Item)
+                        {
+                            Item item = (Item)ent;
+
+                            Map map = item.Map;
+                            Point3D loc = item.GetWorldLocation();
+
+                            Mobile owner = item.RootParent as Mobile;
+
+                            if (owner != null && (owner.Map != null && owner.Map != Map.Internal) && !from.CanSee(owner))
+                            {
+                                from.SendMessage("You can not go to what you can not see.");
+                                return;
+                            }
+                            else if (owner != null && (owner.Map == null || owner.Map == Map.Internal) && owner.Hidden && owner.AccessLevel >= from.AccessLevel)
+                            {
+                                from.SendMessage("You can not go to what you can not see.");
+                                return;
+                            }
+                            else if (!FixMap(ref map, ref loc, item))
+                            {
+                                from.SendMessage("That is an internal item and you cannot go to it.");
+                                return;
+                            }
+
+                            from.MoveToWorld(loc, map);
+
+                            return;
+                        }
+                        else if (ent is Mobile)
+                        {
+                            Mobile m = (Mobile)ent;
+
+                            Map map = m.Map;
+                            Point3D loc = m.Location;
+
+                            Mobile owner = m;
+
+                            if (owner != null && (owner.Map != null && owner.Map != Map.Internal) && !from.CanSee(owner))
+                            {
+                                from.SendMessage("You can not go to what you can not see.");
+                                return;
+                            }
+                            else if (owner != null && (owner.Map == null || owner.Map == Map.Internal) && owner.Hidden && owner.AccessLevel >= from.AccessLevel)
+                            {
+                                from.SendMessage("You can not go to what you can not see.");
+                                return;
+                            }
+                            else if (!FixMap(ref map, ref loc, m))
+                            {
+                                from.SendMessage("That is an internal mobile and you cannot go to it.");
+                                return;
+                            }
+
+                            from.MoveToWorld(loc, map);
+
+                            return;
+                        }
+                        else
+                        {
+                            Map map = Map.Felucca;
+                            if (GetMarkLocation(e.Mobile, ref map, e.GetString(0)) != Point3D.Zero)
+                            {
+                                from.Location = GetMarkLocation(e.Mobile, ref map, e.GetString(0));
+                                from.Map = map;
+                                return;
+                            }
+                            else if (Region.FindByName(e.GetString(0), e.Mobile.Map) != null)
+                            {
+                                string name = e.GetString(0);
+                                //var list = from.Map.RegionsSorted;//.Values.ToList();
+                                var list = from.Map.Regions;//.Values.ToList();
+
+                                for (int i = 0; i < list.Count; ++i)
+                                {
+                                    Region r = (Region)list[i];
+
+                                    if (Insensitive.Equals(r.Name, name))
+                                    {
+                                        from.Location = new Point3D(r.GoLocation);
+                                        return;
+                                    }
+                                }
+                            }
+                            // look for something like x,y,z (no spaces)
+                            else if (e.ArgString.Contains(","))
+                            {
+                                string new_string = e.ArgString.Replace(",", " ");
+                                string[] args = new_string.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                                Go_OnCommand(new CommandEventArgs(e.Mobile, e.Command, new_string, args));
+                                return;
+                            }
+                            else
+                            {
+                                if (ser != 0)
+                                    from.SendMessage("No object with that serial was found.");
+                                else
+                                    from.SendMessage("No region with that name was found.");
+                            }
+                            return;
+                        }
+                    }
+                    catch (Exception ex) { EventSink.InvokeLogException(new LogExceptionEventArgs(ex)); }
+                    from.SendMessage("Region name not found");
+                }
+                else if (e.Length == 2)
+                {
+                    Map map = from.Map;
+
+                    if (map != null)
+                    {
+                        /// 6/1/2021, Adam: Allow comma delimited coords
+                        /// For example; [go 4406, 1032
+                        int[] ints = Utility.IntParser(string.Join(" ", e.Arguments));
+                        from.Location = new Point3D(ints[0], ints[1], map.GetAverageZ(ints[0], ints[1]));
+                    }
+                }
+                else if (e.Length == 3)
+                {
+                    /// 5/25/2021, Adam: Allow comma delimited coords
+                    /// For example; [go 4406, 1032, 1
+                    int[] ints = Utility.IntParser(string.Join(" ", e.Arguments));
+                    from.Location = new Point3D(ints[0], ints[1], ints[2]);
+                }
+                else if (e.Length == 4 || e.Length == 6)
+                {
+                    // length == 6 is old-style sextant: [go 55 54 N 72 54 W
+                    // length == 7 is new-style sextant: [go 55� 54'N 72� 54'W
+                    Map map = from.Map;
+
+                    if (map != null)
+                    {
+                        Point3D p = Sextant.Parse(map, string.Join(" ", e.Arguments));
+                        if (p != Point3D.Zero)
+                            from.Location = p;
+                        else
+                            from.SendMessage("Sextant reverse lookup failed.");
+                    }
+                }
+                else
+                {
+                    from.SendMessage("Format: Go [name | serial | (x y [z]) | (deg min (N | S) deg min (E | W)]");
+                }
+            }
+        }
+#else
         private static void Go_OnCommand(CommandEventArgs e)
         {
             Mobile from = e.Mobile;
@@ -1281,7 +1549,7 @@ namespace Server.Commands
                 from.SendMessage("Format: Go [name | serial | (x y [z]) | (deg min (N | S) deg min (E | W)]");
             }
         }
-
+#endif
         [Usage("Help")]
         [Description("Lists all available commands.")]
         public static void Help_OnCommand(CommandEventArgs e)

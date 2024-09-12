@@ -98,7 +98,7 @@ namespace Server.Items
 
             if (pm.Location.X >= 3352 && pm.Location.Y >= 285 && pm.Location.X <= 3357 && pm.Location.Y <= 292) //Added in a check to make sure issuer of Mortality command is next to the Sacrafice Shrine.
             {
-                TimeSpan age = DateTime.UtcNow - pm.CreationTime;
+                TimeSpan age = DateTime.UtcNow - pm.Created;
                 if (age < TimeSpan.FromDays(7.0))
                 {
                     pm.SendMessage("Thou'rt too young to swear thy beliefs on thy soul.");
@@ -314,17 +314,17 @@ namespace Server.Items
         {
             base.OnSpeech(e);
 
-            if (e.Speech.ToLower() == "i choose a life of mortality" && (Core.UOAI || Core.UOAR) && !e.Handled && Utility.InRange(Location, e.Mobile.Location, Ankhs.ShrineRange))
+            if (e.Speech.ToLower() == "i choose a life of mortality" && (Core.UOAI || Core.UOREN) && !e.Handled && Utility.InRange(Location, e.Mobile.Location, Ankhs.ShrineRange))
             {
                 Ankhs.Permadeath(e.Mobile as PlayerMobile, this);
                 return;
             }
-            else if (e.Speech.ToLower() == "me nub follow human rules" && (Core.UOAI || Core.UOAR) && !e.Handled && Utility.InRange(Location, e.Mobile.Location, Ankhs.ShrineRange))//New command for rejecting law of this land to set Long Term Counts to 5.
+            else if (e.Speech.ToLower() == "me nub follow human rules" && (Core.UOAI || Core.UOREN) && !e.Handled && Utility.InRange(Location, e.Mobile.Location, Ankhs.ShrineRange))//New command for rejecting law of this land to set Long Term Counts to 5.
             {
                 Ankhs.RejectLaw(e.Mobile as PlayerMobile, this);
                 return;
             }
-            else if (e.Speech.ToLower() == "i reject the law of this land" && (Core.UOAI || Core.UOAR) && !e.Handled && Utility.InRange(Location, e.Mobile.Location, Ankhs.ShrineRange))//New command for rejecting law of this land to set Long Term Counts to 5.
+            else if (e.Speech.ToLower() == "i reject the law of this land" && (Core.UOAI || Core.UOREN) && !e.Handled && Utility.InRange(Location, e.Mobile.Location, Ankhs.ShrineRange))//New command for rejecting law of this land to set Long Term Counts to 5.
             {
                 Ankhs.RejectLaw(e.Mobile as PlayerMobile, this);
                 return;
@@ -502,17 +502,17 @@ namespace Server.Items
         {
             base.OnSpeech(e);
 
-            if (e.Speech.ToLower() == "i choose a life of mortality" && (Core.UOAI || Core.UOAR) && !e.Handled && Utility.InRange(Location, e.Mobile.Location, Ankhs.ShrineRange))
+            if (e.Speech.ToLower() == "i choose a life of mortality" && (Core.UOAI || Core.UOREN) && !e.Handled && Utility.InRange(Location, e.Mobile.Location, Ankhs.ShrineRange))
             {
                 Ankhs.Permadeath(e.Mobile as PlayerMobile, this);
                 return;
             }
-            else if (e.Speech.ToLower() == "me nub follow human rules" && (Core.UOAI || Core.UOAR) && !e.Handled && Utility.InRange(Location, e.Mobile.Location, Ankhs.ShrineRange))//New command for rejecting law of this land to set Long Term Counts to 5.
+            else if (e.Speech.ToLower() == "me nub follow human rules" && (Core.UOAI || Core.UOREN) && !e.Handled && Utility.InRange(Location, e.Mobile.Location, Ankhs.ShrineRange))//New command for rejecting law of this land to set Long Term Counts to 5.
             {
                 Ankhs.RejectLaw(e.Mobile as PlayerMobile, this);
                 return;
             }
-            else if (e.Speech.ToLower() == "i reject the law of this land" && (Core.UOAI || Core.UOAR) && !e.Handled && Utility.InRange(Location, e.Mobile.Location, Ankhs.ShrineRange))//New command for rejecting law of this land to set Long Term Counts to 5.
+            else if (e.Speech.ToLower() == "i reject the law of this land" && (Core.UOAI || Core.UOREN) && !e.Handled && Utility.InRange(Location, e.Mobile.Location, Ankhs.ShrineRange))//New command for rejecting law of this land to set Long Term Counts to 5.
             {
                 Ankhs.RejectLaw(e.Mobile as PlayerMobile, this);
                 return;

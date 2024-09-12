@@ -172,7 +172,7 @@ namespace Server
                     //Console.WriteLine("Old Damage {0}, new Damage {1}",damage,Moddamage);
                 }
 
-                AOS.Damage(m_Mobile, (int)Moddamage, 0, 0, 0, 100, 0);
+                AOS.Damage(m_Mobile, (int)Moddamage, 0, 0, 0, 100, 0, this);
 
                 if ((m_Index % m_Poison.m_MessageInterval) == 0)
                 {

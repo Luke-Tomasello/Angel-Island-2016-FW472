@@ -69,8 +69,8 @@ namespace Server.Mobiles
         }
 
         public override Poison PoisonImmune { get { return Poison.Lethal; } }
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOAR ? true : true; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 3 : 0; } }
+        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : true; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 3 : 0; } }
 
         public override bool InitialInnocent { get { return true; } }
 
@@ -164,7 +164,7 @@ namespace Server.Mobiles
                     m.PlaySound(0x00E);
                     m.PlaySound(0x1BC);
 
-                    AOS.Damage(m, this, Utility.RandomMinMax(30, 40) - (Core.AOS ? 0 : 10), 100, 0, 0, 0, 0);
+                    AOS.Damage(m, this, Utility.RandomMinMax(30, 40) - (Core.AOS ? 0 : 10), 100, 0, 0, 0, 0, source_weapon: this);
 
                     states[1] = count + 1;
 
@@ -181,7 +181,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGold(200, 400);
 

@@ -72,11 +72,11 @@ namespace Server.Mobiles
         }
 
         public override bool HasBreath { get { return true; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 2 : 0; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 2 : 0; } }
 
         public override int Hides { get { return 10; } }
         public override HideType HideType { get { return HideType.Horned; } }
-        public override int Scales { get { return (Core.UOAI || Core.UOAR || PublishInfo.PublishDate < Core.PlagueOfDespair) ? 0 : 8; } }
+        public override int Scales { get { return (Core.UOAI || Core.UOREN || PublishInfo.PublishDate < Core.PlagueOfDespair) ? 0 : 8; } }
         public override ScaleType ScaleType { get { return ScaleType.Blue; } }
         public override int FishSteaks { get { return 1; } }
 
@@ -87,7 +87,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 //PackItem( new SpecialFishingNet() );
                 PackGold(25, 50);

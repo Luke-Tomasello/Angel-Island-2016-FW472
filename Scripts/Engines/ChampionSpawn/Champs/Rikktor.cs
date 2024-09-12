@@ -77,7 +77,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (!Core.UOAI && !Core.UOAR)
+            if (!Core.UOAI && !Core.UOREN)
             {
                 AddLoot(LootPack.UltraRich, 4);
             }
@@ -85,11 +85,11 @@ namespace Server.Mobiles
 
         public override Poison PoisonImmune { get { return Poison.Lethal; } }
         public override ScaleType ScaleType { get { return ScaleType.All; } }
-        public override int Scales { get { return (Core.UOAI || Core.UOAR || PublishInfo.PublishDate < Core.PlagueOfDespair) ? 0 : 20; } }
+        public override int Scales { get { return (Core.UOAI || Core.UOREN || PublishInfo.PublishDate < Core.PlagueOfDespair) ? 0 : 20; } }
 
-        public override void Damage(int amount, Mobile from)
+        public override void Damage(int amount, Mobile from, object source_weapon)
         {
-            base.Damage(amount, from);
+            base.Damage(amount, from, source_weapon: source_weapon);
 
             if (0.30 >= Utility.RandomDouble())
                 Earthquake();
@@ -132,7 +132,7 @@ namespace Server.Mobiles
 
                 DoHarmful(m);
 
-                AOS.Damage(m, this, (int)damage, 100, 0, 0, 0, 0);
+                AOS.Damage(m, this, (int)damage, 100, 0, 0, 0, 0, source_weapon: this);
 
                 if (m.Alive && m.Body.IsHuman && !m.Mounted)
                     m.Animate(20, 7, 1, true, false, 0); // take hit

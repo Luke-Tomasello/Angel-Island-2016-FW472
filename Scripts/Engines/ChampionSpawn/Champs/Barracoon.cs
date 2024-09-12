@@ -92,7 +92,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (!Core.UOAI && !Core.UOAR)
+            if (!Core.UOAI && !Core.UOREN)
             {
                 AddLoot(LootPack.UltraRich, 3);
             }
@@ -101,7 +101,7 @@ namespace Server.Mobiles
         public override bool AlwaysMurderer { get { return true; } }
         public override Poison PoisonImmune { get { return Poison.Deadly; } }
         // Auto-dispel is UOR - http://forums.uosecondage.com/viewtopic.php?f=8&t=6901
-        public override bool AutoDispel { get { return Core.UOAI || Core.UOAR ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
+        public override bool AutoDispel { get { return Core.UOAI || Core.UOREN ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
         public override bool ShowFameTitle { get { return false; } }
         public override bool ClickTitle { get { return false; } }
 
@@ -241,9 +241,9 @@ namespace Server.Mobiles
                 Polymorph(this);
         }
 
-        public override void Damage(int amount, Mobile from)
+        public override void Damage(int amount, Mobile from, object source_weapon)
         {
-            base.Damage(amount, from);
+            base.Damage(amount, from, source_weapon: source_weapon);
 
             DoSpecialAbility(from);
         }

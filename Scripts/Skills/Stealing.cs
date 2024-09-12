@@ -308,7 +308,7 @@ namespace Server.SkillHandlers
                     Item hat = from.FindItemOnLayer(Layer.Helm);      // Added by OldSalty 6/12/04 from here...
                     if (hat is OrcishKinMask && (target is Orc || target is OrcBomber || target is OrcBrute || target is OrcCaptain || target is OrcishLord || target is OrcishMage))
                     {
-                        AOS.Damage(from, 50, 0, 100, 0, 0, 0);
+                        AOS.Damage(from, 50, 0, 100, 0, 0, 0, this);
                         hat.Delete();
                         from.FixedParticles(0x36BD, 20, 10, 5044, EffectLayer.Head);
                         from.PlaySound(0x307);

@@ -63,10 +63,10 @@ namespace Server.Mobiles
             Karma = 5000;
         }
 
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOAR ? true : true; } }
+        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : true; } }
         public override bool InitialInnocent { get { return true; } }
 
-        public override void OnDamage(int amount, Mobile from, bool willKill)
+        public override void OnDamage(int amount, Mobile from, bool willKill, object source_weapon)
         {
             if (from != null && !willKill && amount > 3 && from != null && !InRange(from, 7))
             {
@@ -74,7 +74,7 @@ namespace Server.Mobiles
                 SpellHelper.Damage(TimeSpan.FromSeconds(1.0), from, this, Utility.RandomMinMax(30, 40) - (Core.AOS ? 0 : 10), 100, 0, 0, 0, 0);
             }
 
-            base.OnDamage(amount, from, willKill);
+            base.OnDamage(amount, from, willKill, source_weapon: source_weapon);
         }
 
         public override int GetHurtSound()
@@ -94,7 +94,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGold(25, 50);
             }

@@ -99,7 +99,7 @@ namespace Server.Mobiles
         public override bool Unprovokable { get { return true; } }
         public override Poison PoisonImmune { get { return Poison.Lethal; } }
         public override bool DisallowAllMoves { get { return true; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 5 : 0; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 5 : 0; } }
 
         public HarrowerTentacles(Serial serial)
             : base(serial)
@@ -108,7 +108,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGold(400, 650);
                 PackMagicEquipment(1, 3, 1.0, 1.0);
@@ -209,7 +209,7 @@ namespace Server.Mobiles
                     if (m_Owner.Harrower != null)
                         m_Owner.Harrower.Hits += 20;
 
-                    m.Damage(20, m_Owner);
+                    m.Damage(20, m_Owner, source_weapon: this);
                 }
 
                 m_ToDrain.Clear();

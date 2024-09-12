@@ -82,9 +82,9 @@ namespace Server.Mobiles
         protected TimeSpan SpeechDelay { get { return m_SpeechDelay; } }
         private DateTime m_NextSpeechTime;
         protected DateTime NextSpeechTime { get { return m_NextSpeechTime; } set { m_NextSpeechTime = value; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 4 : 0; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 4 : 0; } }
         public override bool AlwaysMurderer { get { return true; } }
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOAR ? true : false; } }
+        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : false; } }
         public override bool ShowFameTitle { get { return false; } }
         public override bool ClickTitle { get { return true; } }
         private int m_Version;
@@ -258,7 +258,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGem();
                 PackMagicEquipment(1, 3);
@@ -306,7 +306,7 @@ namespace Server.Mobiles
             }
         }
 
-        public override void Damage(int amount, Mobile from)
+        public override void Damage(int amount, Mobile from, object source_weapon)
         {
             Mobile combatant = this.Combatant;
 
@@ -329,7 +329,7 @@ namespace Server.Mobiles
                 }
             }
 
-            base.Damage(amount, from);
+            base.Damage(amount, from, source_weapon: source_weapon);
         }
 
         public override bool OnBeforeDeath()

@@ -101,7 +101,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGem(2);
                 PackItem(new Bone());
@@ -222,7 +222,7 @@ namespace Server.Mobiles
                 BeginTunneling();
         }
 
-        public override void OnDamage(int amount, Mobile from, bool willKill)
+        public override void OnDamage(int amount, Mobile from, bool willKill, object source_weapon)
         {
             if (m_TunnelTimer != null && m_TunnelTimer.Running)
             {
@@ -235,7 +235,7 @@ namespace Server.Mobiles
             if (0.25 >= Utility.RandomDouble())
                 BeginAcidBreath();
 
-            base.OnDamage(amount, from, willKill);
+            base.OnDamage(amount, from, willKill, source_weapon: source_weapon);
         }
 
         #region Acid Breath
@@ -266,7 +266,7 @@ namespace Server.Mobiles
             if (0.2 >= Utility.RandomDouble())
                 m.ApplyPoison(this, Poison.Greater);
 
-            AOS.Damage(m, Utility.RandomMinMax(20, 40), 0, 0, 0, 100, 0);
+            AOS.Damage(m, Utility.RandomMinMax(20, 40), 0, 0, 0, 100, 0, this);
         }
         #endregion
 

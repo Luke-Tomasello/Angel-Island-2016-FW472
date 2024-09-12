@@ -98,7 +98,7 @@ namespace Server.SkillHandlers
                             }
                             else
                             {
-                                if (PublishInfo.Publish >= 16 || Core.UOAI || Core.UOAR)
+                                if (PublishInfo.Publish >= 16 || Core.UOAI || Core.UOREN)
                                 {
                                     from.CloseGump(typeof(AnimalLoreGump));
                                     from.SendGump(new AnimalLoreGump(c, from));

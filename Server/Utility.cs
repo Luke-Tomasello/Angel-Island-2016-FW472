@@ -72,11 +72,29 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Server
 {
     public class Utility
     {
+        public static int[] IntParser(string value)
+        {
+            List<int> list = new List<int>();
+            try
+            {
+                value = Regex.Replace(value, "[^0-9-]", " ");
+                string[] tokens = value.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                for (int ix = 0; ix < tokens.Length; ix++)
+                    list.Add(Convert.ToInt32(tokens[ix]));
+
+                return list.ToArray();
+            }
+            catch
+            {
+                return list.ToArray();
+            }
+        }
         public static bool Chance(double chance)
         {
             return (chance >= Utility.RandomDouble());
@@ -87,6 +105,24 @@ namespace Server
                 name = '_' + name;
             // make sure our 'name' doesn't have any illegal file name characters.
             return string.Join(replace, name.Split(System.IO.Path.GetInvalidFileNameChars()));
+        }
+        private static Serial m_FileSerial = Serial.Zero;
+        public static string GameTimeFileStamp(bool id = false)
+        {
+            DateTime dt = AdjustedDateTime.GameTime;
+            string temp = dt.ToString("MMMM dd yyyy" + ", " + "hh:mm:ss tt");
+            if (id)
+                // ids are used to distinguish file names that may resolve to the same name otherwise
+                temp += string.Format(" ({0})", m_FileSerial++);
+            return ValidFileName(temp, " ");
+        }
+        public static string GameTimeFileStamp(DateTime dt, bool id = false)
+        {
+            string temp = dt.ToString("MMMM dd yyyy" + ", " + "hh:mm:ss tt");
+            if (id)
+                // ids are used to distinguish file names that may resolve to the same name otherwise
+                temp += string.Format(" ({0})", m_FileSerial++);
+            return ValidFileName(temp, " ");
         }
         public static bool StartsWithVowel(string text)
         {
@@ -329,8 +365,20 @@ namespace Server
 
             return ce.Names;
         }
+        public static void EnsurePath(string path)
+        {
+            string path_part = Path.GetDirectoryName(path);
+            if (!Directory.Exists(path_part))
+                Directory.CreateDirectory(path_part);
+        }
         public static class Monitor
         {
+            private static string m_ConsoleOutEcho = null;
+            public static string ConsoleOutEcho
+            {
+                get { return m_ConsoleOutEcho; }
+                set { m_ConsoleOutEcho = value; }
+            }
             public static void Write(string text, ConsoleColor color)
             {
                 System.Console.Out.Flush();
@@ -348,13 +396,30 @@ namespace Server
                 System.Console.Out.Flush();
                 PushColor(color);
                 System.Console.WriteLine(text);
-                //if (m_ConsoleOutEcho != null)
-                //{
-                //    EnsurePath(m_ConsoleOutEcho);
-                //    File.AppendAllLines(m_ConsoleOutEcho, new string[] { text }, Encoding.UTF8);
-                //}
+                if (m_ConsoleOutEcho != null)
+                {
+                    EnsurePath(m_ConsoleOutEcho);
+                    File.AppendAllLines(m_ConsoleOutEcho, new string[] { text }, Encoding.UTF8);
+                }
                 PopColor();
                 System.Console.Out.Flush();
+            }
+            public static void ErrorOut(string text, ConsoleColor color)
+            {
+                Console.Error.Flush();
+                PushColor(color);
+                Console.Error.WriteLine(text);
+                if (m_ConsoleOutEcho != null)
+                {
+                    EnsurePath(m_ConsoleOutEcho);
+                    File.AppendAllLines(m_ConsoleOutEcho, new string[] { text });
+                }
+                PopColor();
+                Console.Error.Flush();
+            }
+            public static void ErrorOut(string format, ConsoleColor color, params object[] args)
+            {
+                ErrorOut(string.Format(format, args), color);
             }
         }
         public static class World

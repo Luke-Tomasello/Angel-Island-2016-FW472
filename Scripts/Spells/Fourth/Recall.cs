@@ -181,7 +181,7 @@ namespace Server.Spells.Fourth
             {
                 Caster.SendLocalizedMessage(502412); // There are no charges left on that item.
             }
-            else if ((Core.UOAI || Core.UOAR || Core.UOSP) && BaseBoat.FindBoatAt(loc, map, 16) != null)
+            else if ((Core.UOAI || Core.UOREN || Core.UOSP) && BaseBoat.FindBoatAt(loc, map, 16) != null)
             {
                 // disallow recalling onto the boat (AI&SP) - they recalled off their key
                 Caster.SendLocalizedMessage(501942); // That location is blocked.

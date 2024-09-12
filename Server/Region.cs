@@ -21,6 +21,8 @@
 
 /* Server/Region.cs
  * CHANGELOG:
+ *  9/10/2024, Adam
+ *      Add FindByName()
  *	2/21/11, Adam
  *		Renamed from base region to region to better match the RunUO file structure.
  *		Please see the file Scripts/Regions/BaseRegion.cs for additional comments.
@@ -1837,7 +1839,15 @@ Console.WriteLine("done");
 
             return map.DefaultRegion;
         }
+        public static Region FindByName(string name, Map map)
+        {
+            if (map != null && map != Map.Internal)
+                foreach (Region rx in Regions)
+                    if (rx != null && rx.Map == map && rx.Name.ToLower() == name.ToLower())
+                        return rx;
 
+            return null;
+        }
         public virtual bool IsMobileCountable(Mobile aggressor)
         {
             return true;

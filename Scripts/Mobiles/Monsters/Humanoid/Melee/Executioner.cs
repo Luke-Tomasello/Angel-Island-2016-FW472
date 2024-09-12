@@ -49,7 +49,7 @@ namespace Server.Mobiles
             Title = "the executioner";
             Hue = Utility.RandomSkinHue();
 
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 SetStr(386, 400);
                 SetDex(70, 90);
@@ -122,9 +122,9 @@ namespace Server.Mobiles
 
         public override void OnGaveMeleeAttack(Mobile target)
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
                 if (0.25 >= Utility.RandomDouble() && target is PlayerMobile)
-                    target.Damage(Utility.RandomMinMax(15, 25), this);
+                    target.Damage(Utility.RandomMinMax(15, 25), this, source_weapon: this);
 
             base.OnGaveMeleeAttack(target);
         }
@@ -136,7 +136,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGold(300, 450);
                 // Category 2 MID

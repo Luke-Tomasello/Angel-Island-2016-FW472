@@ -269,7 +269,7 @@ namespace Server.Engines.Craft
             AddCraft(typeof(Key), 1044050, "iron key", 20.0, 70.0, typeof(IronIngot), "Ingots", 3, 1044037);
 
             int index = 0;
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 // wea: added siege tent
                 index = AddCraft(typeof(TentPole), 1044050, "tent pole", 75.0, 101.32, typeof(Board), "Board", 15, 1044351);

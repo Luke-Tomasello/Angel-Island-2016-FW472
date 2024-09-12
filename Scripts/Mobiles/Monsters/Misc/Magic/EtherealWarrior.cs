@@ -105,7 +105,7 @@ namespace Server.Mobiles
         {
             base.OnGaveMeleeAttack(defender);
 
-            defender.Damage(Utility.Random(10, 10), this);
+            defender.Damage(Utility.Random(10, 10), this, source_weapon: this);
             defender.Stam -= Utility.Random(10, 10);
             defender.Mana -= Utility.Random(10, 10);
         }
@@ -114,7 +114,7 @@ namespace Server.Mobiles
         {
             base.OnGotMeleeAttack(attacker);
 
-            attacker.Damage(Utility.Random(10, 10), this);
+            attacker.Damage(Utility.Random(10, 10), this, source_weapon: this);
             attacker.Stam -= Utility.Random(10, 10);
             attacker.Mana -= Utility.Random(10, 10);
         }
@@ -126,7 +126,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGem();
                 PackGem();

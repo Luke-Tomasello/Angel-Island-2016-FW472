@@ -47,8 +47,8 @@ namespace Server.Mobiles
         public override bool DeleteCorpseOnDeath { get { return Summoned; } }
         public override bool AlwaysMurderer { get { return true; } } // Or Llama vortices will appear gray.
 
-        public override double DispelDifficulty { get { return Core.UOAI || Core.UOAR ? 56.0 : 80.0; } }
-        public override double DispelFocus { get { return Core.UOAI || Core.UOAR ? 45.0 : 20; } }
+        public override double DispelDifficulty { get { return Core.UOAI || Core.UOREN ? 56.0 : 80.0; } }
+        public override double DispelFocus { get { return Core.UOAI || Core.UOREN ? 45.0 : 20; } }
 
 
         [Constructable]
@@ -75,7 +75,7 @@ namespace Server.Mobiles
             SetStam(250);
             SetMana(0);
 
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
                 SetDamage(25, 30);
             else
                 SetDamage(14, 17);

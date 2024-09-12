@@ -82,7 +82,7 @@ namespace Server.Ethics.Evil
                     Effects.SendMovingEffect(from.Mobile, mob, 0x36E4, 7, 0, false, true, 33, 0);
                     mob.PlaySound(0x210);
                     int damage = Utility.Random(20, 40);
-                    mob.Damage(damage, from.Mobile);
+                    mob.Damage(damage, from.Mobile, source_weapon: this);
                 }
                 else
                 {

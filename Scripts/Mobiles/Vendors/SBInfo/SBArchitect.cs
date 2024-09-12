@@ -60,13 +60,13 @@ namespace Server.Mobiles
         {
             public InternalBuyInfo()
             {
-                if ((Core.UOAI || Core.UOAR || Core.UOMO) || (Core.UOSP && PublishInfo.Publish >= 11))
+                if ((Core.UOAI || Core.UOREN || Core.UOMO) || (Core.UOSP && PublishInfo.Publish >= 11))
                     Add(new GenericBuyInfo("1041280", typeof(InteriorDecorator), 10000, 20, 0xFC1, 0));
 
                 // I'm guessing this was in all publishes of Siege?
                 Add(new GenericBuyInfo("Survey Tool", typeof(SurveyTool), 5000, 20, 0x14F6, 0));
 
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                 {
                     Add(new GenericBuyInfo(typeof(MetalHouseDoorDeed), 25000, 20, 0x14F0, 0));
                     Add(new GenericBuyInfo(typeof(DarkWoodHouseDoorDeed), 25000, 20, 0x14F0, 0));
@@ -96,7 +96,7 @@ namespace Server.Mobiles
         {
             public InternalSellInfo()
             {
-                if (!Core.UOAI && !Core.UOAR && !Core.UOSP && !Core.UOMO)
+                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
                 {   // cash buyback
                     Add(typeof(InteriorDecorator), 5000);
                 }

@@ -72,7 +72,7 @@ namespace Server.Mobiles
         }
 
         public override int Meat { get { return 1; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 4 : 0; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 4 : 0; } }
 
         public override AuraType MyAura { get { return AuraType.Hate; } }
         public override int AuraRange { get { return 5; } }
@@ -110,7 +110,7 @@ namespace Server.Mobiles
                 int toDrain = Utility.RandomMinMax(10, 40);
 
                 Hits += toDrain;
-                m.Damage(toDrain, this);
+                m.Damage(toDrain, this, source_weapon: this);
             }
         }
 
@@ -137,7 +137,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGold(450, 700);
                 PackScroll(1, 7);

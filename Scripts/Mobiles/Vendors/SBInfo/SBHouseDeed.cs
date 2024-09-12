@@ -77,7 +77,7 @@ namespace Server.Mobiles
                 Add(new GenericBuyInfo("deed to a small stone keep", typeof(KeepDeed), KeepDeed.m_price, 20, 0x14F0, 0));
                 Add(new GenericBuyInfo("deed to a castle", typeof(CastleDeed), CastleDeed.m_price, 20, 0x14F0, 0));
 
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                 {
                     System.Collections.Generic.List<Server.Multis.StaticHousing.StaticHouseDescription> shList = Server.Multis.StaticHousing.StaticHouseHelper.GetAllStaticHouseDescriptions();
                     foreach (Server.Multis.StaticHousing.StaticHouseDescription shd in shList)
@@ -103,7 +103,7 @@ namespace Server.Mobiles
         {
             public InternalSellInfo()
             {
-                if (!Core.UOAI && !Core.UOAR && !Core.UOSP && !Core.UOMO)
+                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
                 {   // cash buyback
                     Add(typeof(StonePlasterHouseDeed), StonePlasterHouseDeed.m_price);
                     Add(typeof(FieldStoneHouseDeed), FieldStoneHouseDeed.m_price);

@@ -66,7 +66,7 @@ namespace Server.Mobiles
             VirtualArmor = 30;
         }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 1 : 0; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 1 : 0; } }
         public override int Meat { get { return 4; } }
 
         public TerathanWarrior(Serial serial)
@@ -76,7 +76,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGold(60, 90);
                 // Category 2 MID

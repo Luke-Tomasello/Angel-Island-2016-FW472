@@ -78,12 +78,12 @@ namespace Server.Mobiles
             CantWalk = true;
         }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 1 : 0; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 1 : 0; } }
         public override bool HasBreath { get { return true; } }
         public override int Hides { get { return 10; } }
         public override HideType HideType { get { return HideType.Horned; } }
         public override int Meat { get { return 10; } }
-        public override int Scales { get { return (Core.UOAI || Core.UOAR || PublishInfo.PublishDate < Core.PlagueOfDespair) ? 0 : 8; } }
+        public override int Scales { get { return (Core.UOAI || Core.UOREN || PublishInfo.PublishDate < Core.PlagueOfDespair) ? 0 : 8; } }
         public override ScaleType ScaleType { get { return ScaleType.Blue; } }
 
         public DeepSeaSerpent(Serial serial)
@@ -93,7 +93,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGold(150, 200);
                 PackItem(new SulfurousAsh(4));

@@ -561,7 +561,7 @@ namespace Server.Items
                         if (GetFlag(PotFlags.Dud1pt) == true)
                             damage = 1;
 
-                        AOS.Damage(m, from, damage, 0, 100, 0, 0, 0);
+                        AOS.Damage(m, from, damage, 0, 100, 0, 0, 0, source_weapon: this);
                     }
                 }
                 else if (o is BaseExplosionPotion)

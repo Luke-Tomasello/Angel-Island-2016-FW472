@@ -73,7 +73,7 @@ namespace Server.Mobiles
         public override Poison HitPoison { get { return Poison.Lethal; } }
         public override double HitPoisonChance { get { return 0.75; } }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 5 : 0; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 5 : 0; } }
 
         public PoisonElemental(Serial serial)
             : base(serial)
@@ -82,7 +82,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGold(250, 325);
                 PackScroll(1, 7);

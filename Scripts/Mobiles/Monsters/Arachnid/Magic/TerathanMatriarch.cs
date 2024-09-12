@@ -64,7 +64,7 @@ namespace Server.Mobiles
             Karma = -10000;
         }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 4 : 0; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 4 : 0; } }
 
         public TerathanMatriarch(Serial serial)
             : base(serial)
@@ -73,7 +73,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGold(300, 400);
                 PackItem(new SpidersSilk(10));

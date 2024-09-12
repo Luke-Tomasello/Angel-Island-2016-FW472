@@ -21,6 +21,8 @@
 
 /* Engines/AngelIsland/CoreAI.cs
  * ChangeLog
+ *  9/10/2024, Adam
+ *      Add StaminaDrainByWeight. Set in CoreManagementConsole, used in WeightOverloading
  *	3/5/16, Adam
  *		Add the featurebit PlayerAccountWipe which executes in the usual account cleanup in CrobTasks.cs
  *		The bit is reset after all all accounts are wiped. Houses are also cleaned up with the wipe.
@@ -314,6 +316,9 @@ namespace Server
 
         public static double SlayerWeaponDropRate = 0.05;
 
+        public static double TeleDelay = 0.0;
+        public static int TeleTiles = 12;
+
         public enum FeatureBits
         {
             InmateRecallExploitCheck = 0x01,
@@ -334,17 +339,17 @@ namespace Server
             RazorNegotiateWarnAndKick = 0x8000,
             NewPlayerStartingArea = 0x10000,
             NewPlayerGuild = 0x20000,
-            PetNeedsLOS = 0x40000,      // in DoOrderAttack() for pets: give up if target is not in LOS (addresses the gate pet to give counts exploit)
+            PetNeedsLOS = 0x40000,              // in DoOrderAttack() for pets: give up if target is not in LOS (addresses the gate pet to give counts exploit)
             LogStableCharges = 0x80000,
             ArmorAbsorbClassic = 0x100000,      // use the scaled armor AR to calculate how much damage is absorbed
-            SpiritSpeakUsageReport = 0x200000,      // send admins system messages regarding SpirtHeal, and SlayerStrike 
-            OldFlee = 0x400000,     // BaseAI seems to have a bug where they clear FocusMob in OnActionChanged().Flee
-            TreasureMapUsageReport = 0x800000,      // send admins system messages regarding treasure map decoded 
-            SeaGypsyUsageReport = 0x1000000,        // send admins system messages sea gypsy escorts 
+            SpiritSpeakUsageReport = 0x200000,  // send admins system messages regarding SpirtHeal, and SlayerStrike 
+            OldFlee = 0x400000,                 // BaseAI seems to have a bug where they clear FocusMob in OnActionChanged().Flee
+            TreasureMapUsageReport = 0x800000,  // send admins system messages regarding treasure map decoded 
+            SeaGypsyUsageReport = 0x1000000,    // send admins system messages sea gypsy escorts 
             IPBinderEnabled = 0x2000000,        // This is pixie's code to block account access if some combination of account/ip actions are taken
             PlayerAccountWipe = 0x4000000,      // Set this bit to wipe all Player access accounts. Owner access only, auto resets after wipe. Houses and all possessions go too
+            StaminaDrainByWeight = 0x8000000,   // Set this bit to enable stamina drain by weight
         };
-
 
         public static void Configure()
         {
@@ -391,6 +396,13 @@ namespace Server
                 xml.WriteStartDocument(true);
 
                 xml.WriteStartElement("CoreAI");
+                
+                xml.WriteStartElement("TeleDelay");
+                xml.WriteString(TeleDelay.ToString());
+                xml.WriteEndElement();
+                xml.WriteStartElement("TeleTiles");
+                xml.WriteString(TeleTiles.ToString());
+                xml.WriteEndElement();
 
                 xml.WriteStartElement("StingerMinHP");
                 xml.WriteString(StingerMinHP.ToString());
@@ -763,6 +775,9 @@ namespace Server
             doc.Load(filePath);
 
             XmlElement root = doc["CoreAI"];
+
+            TeleDelay = GetDouble(GetText(root["TeleDelay"], TeleDelay.ToString()), TeleDelay);
+            TeleTiles = GetValue(root["TeleTiles"], TeleTiles);
 
             StingerMinHP = GetValue(root["StingerMinHP"], StingerMinHP);
             StingerMaxHP = GetValue(root["StingerMaxHP"], StingerMaxHP);

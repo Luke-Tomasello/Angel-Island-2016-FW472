@@ -21,6 +21,9 @@
 
 /* Scripts\Engines\Craft\Core\CraftGump.cs
  *	CHANGE LOG
+ *	9/9/2024, Adam (FormatNameString)
+ *	    Workaround a bug when dealing with metal types.
+ *	    Prefer the text to the Cliloc id
  * 04,arpil,2004 edited gumps and uploaded gump changed for carp/woodworking lines 70-76 gump changes 
  * 07,april,2004 edited lines 70-76 again to refix the gumps i screwed up in the first place :)
  */
@@ -28,8 +31,12 @@
 using Server.Gumps;
 using Server.Items;
 using Server.Network;
+using Server.Text;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Server.Engines.Craft
 {
@@ -154,6 +161,13 @@ namespace Server.Engines.Craft
                     nameNumber = subResource.NameNumber;
                 }
 
+                // 9/9/2024, Adam: Workaround a bug when dealing with metal types.
+                //  Prefer the text to the Cliloc id
+                if (FormatNameString(m_From, nameNumber, out nameString))
+                {
+                    nameNumber = -1;
+                }
+
                 AddButton(15, 362, 4005, 4007, GetButtonID(6, 0), GumpButtonType.Reply, 0);
 
                 if (nameNumber > 0)
@@ -226,13 +240,53 @@ namespace Server.Engines.Craft
 
                 AddButton(220, 60 + (index * 20), 4005, 4007, GetButtonID(5, i), GumpButtonType.Reply, 0);
 
+#if true
+                // 9/9/2024, Adam: Workaround a bug when dealing with metal types.
+                //  Prefer the text to the Cliloc id
+                string nameString = subResource.NameString;
+                int nameNumber = subResource.NameNumber;
+
+                if (FormatNameString(m_From, nameNumber, out nameString))
+                {
+                    nameNumber = -1;
+                }
+
+                if (nameNumber > 0)
+                    AddHtmlLocalized(255, 63 + (index * 20), 250, 18, nameNumber, LabelColor, false, false);
+                else
+                    AddLabel(255, 60 + (index * 20), LabelHue, nameString);
+#else
                 if (subResource.NameNumber > 0)
                     AddHtmlLocalized(255, 63 + (index * 20), 250, 18, subResource.NameNumber, LabelColor, false, false);
                 else
                     AddLabel(255, 60 + (index * 20), LabelHue, subResource.NameString);
+#endif
             }
         }
-
+        private bool FormatNameString(Mobile from, int nameNumber, out string nameString)
+        {
+            if (Cliloc.Lookup.TryGetValue(nameNumber, out nameString) && from != null && from.Backpack != null)
+            {   // barbed leather / hides (10)
+                List<string> list = new List<string>(nameString.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries));
+                list = list.Select(item => item.Trim()).ToList();   // trim
+                list = list.Select(t => Regex.Replace(t, @"\s+", "")).ToList(); // remove white
+                int count = 0;
+                List<Item> list_items = new List<Item>(from.Backpack.GetDeepItems().Cast<Item>().ToList());
+                List<Type> list_types = new List<Type>();
+                foreach (string s in list)
+                    if (ScriptCompiler.FindTypeByName(s) != null)
+                        list_types.Add(ScriptCompiler.FindTypeByName(s));
+                // okay, now we have a list of types to search for
+                foreach (Type t in list_types)
+                    foreach (Item item in list_items)
+                        if (item.GetType() == t)
+                            count += item.Amount;
+                
+                nameString = string.Format("{0} ({1})", nameString, count);
+                return true;
+            }
+            return false;
+        }
         public void CreateMakeLastList()
         {
             CraftContext context = m_CraftSystem.GetContext(m_From);

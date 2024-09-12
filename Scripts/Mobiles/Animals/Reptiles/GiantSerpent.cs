@@ -70,7 +70,7 @@ namespace Server.Mobiles
         public override Poison HitPoison { get { return (0.8 >= Utility.RandomDouble() ? Poison.Greater : Poison.Deadly); } }
 
         public override int Meat { get { return 4; } }
-        public override int Hides { get { return Core.UOAI || Core.UOAR ? 15 : 20; } }
+        public override int Hides { get { return Core.UOAI || Core.UOREN ? 15 : 20; } }
         public override HideType HideType { get { return HideType.Spined; } }
 
         public GiantSerpent(Serial serial)
@@ -80,7 +80,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGold(50, 100);
                 PackItem(new Bone());

@@ -70,7 +70,7 @@ namespace Server.Mobiles
         // Blackthorn's Revenge is when we got the Todd McFarlane (crap) bodies
         //	Blackthorn's Revenge was release 2/12/2002 according to UOGuide.
         // Since Publish 15 was 1/9/2002, we can safely exclude Todd McFarlane bodies pre Publish 15
-        private bool Blackthorns_Revenge = (PublishInfo.Publish > 15 && (Core.UOAI || Core.UOAR || Core.UOMO) == false);
+        private bool Blackthorns_Revenge = (PublishInfo.Publish > 15 && (Core.UOAI || Core.UOREN || Core.UOMO) == false);
 
         [Constructable]
         public EvilMageLord()
@@ -104,7 +104,7 @@ namespace Server.Mobiles
             VirtualArmor = 16;
         }
 
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOAR ? true : true; } }
+        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : true; } }
         public override bool AlwaysMurderer { get { return true; } }
         public override int Meat { get { return 1; } }
 
@@ -127,7 +127,7 @@ namespace Server.Mobiles
         {
             WipeLayers();
 
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 if (Utility.RandomBool())
                     AddItem(new Shoes(Utility.RandomBlueHue()));
@@ -253,7 +253,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackReg(23);
                 PackScroll(2, 7);

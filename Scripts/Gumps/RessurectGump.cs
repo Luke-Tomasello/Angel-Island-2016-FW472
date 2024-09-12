@@ -99,7 +99,7 @@ namespace Server.Gumps
             AddHtmlLocalized(0, 20, 400, 35, 1011022, false, false); // <center>Resurrection</center>
 
             #region UOAI
-            if (Core.UOAI || Core.UOAR || Core.UOMO)
+            if (Core.UOAI || Core.UOREN || Core.UOMO)
             {
                 /* It is possible for you to be resurrected here by this healer. Do you wish to try?<br>
 				 * CONTINUE - You chose to try to come back to life now.<br>

@@ -60,12 +60,12 @@ namespace Server.Mobiles
                 /* Shopkeeper NPCs do not sell any resources (Ingots, Cloth, etc.))
 				 * http://www.uoguide.com/Siege_Perilous
 				 */
-                if (!Core.UOSP && !Core.UOAI && !Core.UOAR && !Core.UOMO)
+                if (!Core.UOSP && !Core.UOAI && !Core.UOREN && !Core.UOMO)
                 {
                     Add(new GenericBuyInfo(typeof(Leather), 6, 20, 0x1081, 0));
                 }
 
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                 {   // balanced buyback
                     Add(new GenericBuyInfo(typeof(Leather)));
                     Add(new GenericBuyInfo(typeof(SpinedLeather)));
@@ -73,7 +73,7 @@ namespace Server.Mobiles
                     Add(new GenericBuyInfo(typeof(BarbedLeather)));
                 }
 
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                     Add(new GenericBuyInfo("1041279", typeof(TaxidermyKit), 30000, 20, 0x1EBA, 0));//changed price of taxidermykit from 100k to 30k Lego eater.
                 else if (Core.UOSP && PublishInfo.Publish >= 11)
                     Add(new GenericBuyInfo("1041279", typeof(TaxidermyKit), 90000, 20, 0x1EBA, 0));
@@ -105,7 +105,7 @@ namespace Server.Mobiles
         {
             public InternalSellInfo()
             {
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                 {   // balanced buyback system
                     Add(typeof(Leather));
                     Add(typeof(Hides));
@@ -117,7 +117,7 @@ namespace Server.Mobiles
                     Add(typeof(HornedHides));
                 }
 
-                if (!Core.UOAI && !Core.UOAR && !Core.UOSP && !Core.UOMO)
+                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
                 {   // cash buyback
                     Add(typeof(LeatherArms), 40);
                     Add(typeof(LeatherChest), 52);

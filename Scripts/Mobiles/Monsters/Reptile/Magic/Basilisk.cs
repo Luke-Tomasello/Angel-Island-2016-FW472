@@ -88,9 +88,9 @@ namespace Server.Mobiles
 
         public override bool ReAcquireOnMovement { get { return true; } }
         // Auto-dispel is UOR - http://forums.uosecondage.com/viewtopic.php?f=8&t=6901
-        public override bool AutoDispel { get { return Core.UOAI || Core.UOAR ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
+        public override bool AutoDispel { get { return Core.UOAI || Core.UOREN ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
         public override Poison PoisonImmune { get { return Poison.Deadly; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 4 : 0; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 4 : 0; } }
         public override int Meat { get { return 10; } }
         public override int Hides { get { return 20; } }
         public override HideType HideType { get { return HideType.Barbed; } }
@@ -157,7 +157,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGold(400, 500);
                 PackItem(new DeadlyPoisonPotion());

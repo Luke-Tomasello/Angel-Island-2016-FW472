@@ -89,17 +89,11 @@ namespace Server
 
         public static Point2D Parse(string value)
         {
-            int start = value.IndexOf('(');
-            int end = value.IndexOf(',', start + 1);
-
-            string param1 = value.Substring(start + 1, end - (start + 1)).Trim();
-
-            start = end;
-            end = value.IndexOf(')', start + 1);
-
-            string param2 = value.Substring(start + 1, end - (start + 1)).Trim();
-
-            return new Point2D(Convert.ToInt32(param1), Convert.ToInt32(param2));
+            int[] tab = Utility.IntParser(value);
+            if (tab.Length == 2)
+                return new Point2D(tab[0], tab[1]);
+            else
+                return new Point2D();
         }
 
         public override bool Equals(object o)
@@ -283,22 +277,19 @@ namespace Server
 
         public static Point3D Parse(string value)
         {
-            int start = value.IndexOf('(');
-            int end = value.IndexOf(',', start + 1);
-
-            string param1 = value.Substring(start + 1, end - (start + 1)).Trim();
-
-            start = end;
-            end = value.IndexOf(',', start + 1);
-
-            string param2 = value.Substring(start + 1, end - (start + 1)).Trim();
-
-            start = end;
-            end = value.IndexOf(')', start + 1);
-
-            string param3 = value.Substring(start + 1, end - (start + 1)).Trim();
-
-            return new Point3D(Convert.ToInt32(param1), Convert.ToInt32(param2), Convert.ToInt32(param3));
+            if (!string.IsNullOrEmpty(value))
+            {
+                int[] tab = Utility.IntParser(value);
+                if (tab.Length == 3)
+                    return new Point3D(Convert.ToInt32(tab[0]), Convert.ToInt32(tab[1]), Convert.ToInt32(tab[2]));
+                else
+                    return new Point3D();
+            }
+            else
+            {
+                //Utility.ConsoleOut("Unable to parse Point3D().", ConsoleColor.Red);
+                return new Point3D();
+            }
         }
 
         public static bool operator ==(Point3D l, Point3D r)

@@ -62,8 +62,8 @@ namespace Server.Mobiles
             VirtualArmor = 40;
         }
 
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOAR ? true : true; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 1 : 1; } }
+        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : true; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 1 : 1; } }
         public override int Meat { get { return 2; } }
 
         public Troll(Serial serial)
@@ -73,7 +73,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
                 PackGold(50, 100);
             else
             {

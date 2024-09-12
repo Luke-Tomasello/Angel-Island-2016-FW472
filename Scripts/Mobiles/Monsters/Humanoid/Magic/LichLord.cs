@@ -95,9 +95,9 @@ namespace Server.Mobiles
             VirtualArmor = 50;
         }
 
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOAR ? true : true; } }
+        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : true; } }
         public override Poison PoisonImmune { get { return Poison.Lethal; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 5 : 0; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 5 : 0; } }
 
         public LichLord(Serial serial)
             : base(serial)
@@ -106,7 +106,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackItem(new GnarledStaff());
                 PackScroll(3, 7);

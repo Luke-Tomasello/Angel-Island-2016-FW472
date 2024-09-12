@@ -97,17 +97,17 @@ namespace Server.Mobiles
             InitBody();
             InitOutfit();
 
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
                 PackItem(new Bandage(Utility.RandomMinMax(1, 15)));
         }
 
         public override int Meat { get { return 1; } }
         public override bool AlwaysMurderer { get { return true; } }
         public override bool ShowFameTitle { get { return false; } }
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOAR ? true : false; } }
+        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : false; } }
 
-        public override bool CanBandage { get { return Core.UOAI || Core.UOAR ? true : base.CanBandage; } }
-        public override TimeSpan BandageDelay { get { return Core.UOAI || Core.UOAR ? TimeSpan.FromSeconds(Utility.RandomMinMax(10, 13)) : base.BandageDelay; } }
+        public override bool CanBandage { get { return Core.UOAI || Core.UOREN ? true : base.CanBandage; } }
+        public override TimeSpan BandageDelay { get { return Core.UOAI || Core.UOREN ? TimeSpan.FromSeconds(Utility.RandomMinMax(10, 13)) : base.BandageDelay; } }
 
         public override void InitBody()
         {
@@ -125,7 +125,7 @@ namespace Server.Mobiles
             AddItem(new BoneArms());
             AddItem(new BoneLegs());
 
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 // all savages wear a mask, but won't drop this one
                 //	see GenerateLoot for the mask they do drop
@@ -155,7 +155,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGold(100, 150);
 
@@ -250,7 +250,7 @@ namespace Server.Mobiles
 
         public override bool IsEnemy(Mobile m, RelationshipFilter filter)
         {
-            if (!Core.UOAI && !Core.UOAR)
+            if (!Core.UOAI && !Core.UOREN)
                 // Ai uses HUE value and not the BodyMod as there is no sitting graphic
                 if ((m.BodyMod == 183 || m.BodyMod == 184) || m.HueMod == 0)
                     return false;
@@ -262,11 +262,11 @@ namespace Server.Mobiles
         {
             base.AggressiveAction(aggressor, criminal);
 
-            if (!Core.UOAI && !Core.UOAR)
+            if (!Core.UOAI && !Core.UOREN)
             {   // Ai uses HUE value and not the BodyMod as there is no sitting graphic
                 if ((aggressor.BodyMod == 183 || aggressor.BodyMod == 184) || aggressor.HueMod == 0)
                 {
-                    AOS.Damage(aggressor, 50, 0, 100, 0, 0, 0);
+                    AOS.Damage(aggressor, 50, 0, 100, 0, 0, 0, this);
                     aggressor.BodyMod = 0;
                     aggressor.HueMod = -1;
                     aggressor.FixedParticles(0x36BD, 20, 10, 5044, EffectLayer.Head);
@@ -286,7 +286,7 @@ namespace Server.Mobiles
 
         public override void AlterMeleeDamageTo(Mobile to, ref int damage)
         {
-            if (!Core.UOAI && !Core.UOAR)
+            if (!Core.UOAI && !Core.UOREN)
                 if (to is Dragon || to is WhiteWyrm || to is SwampDragon || to is Drake || to is Nightmare || to is Daemon)
                     damage *= 3;
         }

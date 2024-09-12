@@ -49,7 +49,7 @@ namespace Server.Mobiles
     [CorpseName("corpse of a salty seadog")]
     public class PirateWench : Pirate
     {
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 3 : 0; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 3 : 0; } }
 
         [Constructable]
         public PirateWench()
@@ -109,7 +109,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGem();
                 PackReg(8, 12);

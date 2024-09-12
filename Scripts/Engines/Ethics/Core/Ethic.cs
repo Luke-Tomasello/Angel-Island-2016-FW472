@@ -301,7 +301,7 @@ namespace Server.Ethics
                     if (!ethic.IsEligible(e.Mobile))
                     {
                         if (Core.OldEthics)
-                            if ((e.Mobile.CreationTime + TimeSpan.FromHours(24)) > DateTime.UtcNow)
+                            if ((e.Mobile.Created + TimeSpan.FromHours(24)) > DateTime.UtcNow)
                                 e.Mobile.SendLocalizedMessage(502593); // Thou art too young to choose this fate.
                         break;
                     }

@@ -21,6 +21,10 @@
 
 /* Script/Misc/AutoSave.cs
  * CHANGELOG:
+ *  9/10/2024, Adam (Backup)
+ *      New Backup strategy. Now matches what we do in Core 6.
+ *      Basically, all saves are saved to a time-stamped folder. 
+ *      We will use an external daemon for cleaning up old versions.
  *	5/15/10, adam
  *		Automatically create a 1 backup each day of the form: Archive-17May10
  *	8/22/07, Adam
@@ -169,7 +173,116 @@ namespace Server.Misc
             }
 
         }
+#if true
+        public static void Backup()
+        {
+            string filename = Utility.GameTimeFileStamp();  // 'Game Time' Format: "August 31 2023, 06 11 34 PM"
+            //if (Server.Misc.AutoSave.FinalSave)             // final save before we go down
+            //    filename += "(final)";                      // add a special tag to indicate this is the last save before the patch
 
+            Backup(filename);
+        }
+        private static void Backup(string filename)
+        {
+            Console.WriteLine("Backing up...");
+
+            string root = Path.Combine(Core.BaseDirectory, "Backups\\Automatic");
+            string saves = Path.Combine(Core.BaseDirectory, "Saves");
+
+            //m_fileManagerDatabase.Enqueue(filename);        // save/load these for periodic cleanup
+            Console.WriteLine("File Manager: Enqueueing {0}", filename);
+            if (Directory.Exists(saves))
+            {
+                try { Directory.Move(saves, FormatDirectory(root, filename, "")); }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    Console.WriteLine("We'll copy instead.");
+                    try { DirectoryCopy(saves, FormatDirectory(root, filename, ""), true); }
+                    catch { Console.WriteLine("Cannot copy Saves directory. Giving up."); }
+                }
+            }
+            else
+                Console.WriteLine("{0} does not exist!", saves);
+
+            // 1/18/22, Adam: disabling this.. Our Google backup (server-side) allows the files to get deleted, but not the directories.
+            //  kinda ugly, need to find a better way. For now I'll just delete old backups manually
+#if false
+            if (false)
+                while (m_fileManagerDatabase.Count > CoreAI.BackupCount)
+                {
+                    string[] existing = Directory.GetDirectories(root);
+                    DirectoryInfo dir;
+                    string toDelete = m_fileManagerDatabase.Dequeue();
+                    dir = Match(existing, toDelete);
+                    Console.WriteLine("File Manager: Dequeuing {0}", toDelete);
+                    if (dir != null && Directory.Exists(dir.FullName))
+                    {
+                        Console.WriteLine("File Manager: Deleting {0}", dir.Name);
+                        // asynchronous file delete
+                        //Task.Factory.StartNew(path => Directory.Delete((string)path, true), dir.FullName);
+                        try { dir.Delete(true); }
+                        catch { Console.WriteLine("Cannot delete backup directory {0}. Giving up.", dir.Name); }
+                    }
+                }
+#endif
+        }
+
+        private static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
+        {
+            // Get the subdirectories for the specified directory.
+            DirectoryInfo dir = new DirectoryInfo(sourceDirName);
+
+            if (!dir.Exists)
+            {
+                throw new DirectoryNotFoundException(
+                    "Source directory does not exist or could not be found: "
+                    + sourceDirName);
+            }
+
+            DirectoryInfo[] dirs = dir.GetDirectories();
+
+            // If the destination directory doesn't exist, create it.       
+            Directory.CreateDirectory(destDirName);
+
+            // Get the files in the directory and copy them to the new location.
+            FileInfo[] files = dir.GetFiles();
+            foreach (FileInfo file in files)
+            {
+                string tempPath = Path.Combine(destDirName, file.Name);
+                file.CopyTo(tempPath, true);
+            }
+
+            // If copying subdirectories, copy them and their contents to new location.
+            if (copySubDirs)
+            {
+                foreach (DirectoryInfo subdir in dirs)
+                {
+                    string tempPath = Path.Combine(destDirName, subdir.Name);
+                    DirectoryCopy(subdir.FullName, tempPath, copySubDirs);
+                }
+            }
+        }
+
+        private static DirectoryInfo Match(string[] paths, string match)
+        {
+            for (int i = 0; i < paths.Length; ++i)
+            {
+                DirectoryInfo info = new DirectoryInfo(paths[i]);
+
+                if (info.Name.StartsWith(match))
+                    return info;
+            }
+
+            return null;
+        }
+
+        private static string FormatDirectory(string root, string name, string timeStamp)
+        {
+            return Path.Combine(root, string.Format("{0}", name));
+        }
+
+#else
         private static string[] m_Backups = new string[]
             {
                 "Third Backup",
@@ -306,5 +419,6 @@ namespace Server.Misc
                     now.Second
                 );
         }
+#endif
     }
 }

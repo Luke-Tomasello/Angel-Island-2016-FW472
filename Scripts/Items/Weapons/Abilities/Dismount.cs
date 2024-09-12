@@ -97,7 +97,7 @@ namespace Server.Items
             Timer.DelayCall(BlockMountDuration, new TimerStateCallback(ReleaseMountLock), defender);
 
             if (!attacker.Mounted)
-                AOS.Damage(defender, attacker, Utility.RandomMinMax(15, 25), 100, 0, 0, 0, 0);
+                AOS.Damage(defender, attacker, Utility.RandomMinMax(15, 25), 100, 0, 0, 0, 0, source_weapon: this);
         }
 
         private void ReleaseMountLock(object state)

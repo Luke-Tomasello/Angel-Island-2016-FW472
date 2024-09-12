@@ -88,7 +88,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGold(350, 500);
                 PackMagicEquipment(1, 3, 0.30, 0.30);

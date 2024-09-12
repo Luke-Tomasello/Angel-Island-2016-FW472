@@ -47,7 +47,7 @@ namespace Server.Mobiles
     [CorpseName("corpse of a salty seadog")]
     public class PirateDeckHand : Pirate
     {
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 2 : 0; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 2 : 0; } }
 
         [Constructable]
         public PirateDeckHand()
@@ -95,7 +95,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGem();
                 PackMagicEquipment(1, 3);

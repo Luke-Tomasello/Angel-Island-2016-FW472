@@ -141,7 +141,7 @@ namespace Server
                     else if (Core.UOMO)
                         m_ListenerEndPoints[0] = new IPEndPoint(IPAddress.Any, MortalisPort);
 //#if !GMN
-                    else if (Core.UOAR)
+                    else if (Core.UOREN)
                         m_ListenerEndPoints[0] = new IPEndPoint(IPAddress.Any, RenaissancePort);
 //#endif
                     else

@@ -50,7 +50,7 @@ namespace Server.Mobiles
         {
             public InternalBuyInfo()
             {
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                 {   // balanced buyback system
                     Add(new GenericBuyInfo(typeof(Leather)));
                     Add(new GenericBuyInfo(typeof(SpinedLeather)));
@@ -58,7 +58,7 @@ namespace Server.Mobiles
                     Add(new GenericBuyInfo(typeof(BarbedLeather)));
                 }
 
-                if (!Core.UOAI && !Core.UOAR && !Core.UOSP && !Core.UOMO)
+                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
                 {   // cash buyback
                     Add(new GenericBuyInfo(typeof(Hides), 3, 40, 0x1079, 0));
                 }
@@ -69,7 +69,7 @@ namespace Server.Mobiles
         {
             public InternalSellInfo()
             {
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                 {   // balanced buyback system
                     Add(typeof(Leather));
                     Add(typeof(Hides));
@@ -81,7 +81,7 @@ namespace Server.Mobiles
                     Add(typeof(HornedHides));
                 }
 
-                if (!Core.UOAI && !Core.UOAR && !Core.UOSP && !Core.UOMO)
+                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
                 {   // cash buyback
                     Add(typeof(Hides), 2);
                 }

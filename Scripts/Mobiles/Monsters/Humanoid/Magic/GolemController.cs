@@ -67,14 +67,14 @@ namespace Server.Mobiles
     {
         [Constructable]
         public GolemController()
-            : base(Core.UOAI || Core.UOAR ? AIType.AI_BaseHybrid : AIType.AI_Mage, FightMode.All | FightMode.Closest, 16, 1, 0.1, 0.25)
+            : base(Core.UOAI || Core.UOREN ? AIType.AI_BaseHybrid : AIType.AI_Mage, FightMode.All | FightMode.Closest, 16, 1, 0.1, 0.25)
         {
             Title = "the controller";
             Hue = 0x455;
 
             FightStyle = FightStyle.Magic | FightStyle.Smart | FightStyle.Bless | FightStyle.Curse;
 
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 BardImmune = true;
                 UsesHumanWeapons = false;
@@ -85,7 +85,7 @@ namespace Server.Mobiles
                 CrossHeals = true;  // classic Angel Island Golem Controllers
             }
 
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 SetStr(90);
                 SetDex(35);
@@ -125,12 +125,12 @@ namespace Server.Mobiles
             InitBody();
             InitOutfit();
 
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
                 VirtualArmor = 21;
             else
                 VirtualArmor = 16;
 
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackItem(new Bandage(Utility.RandomMinMax(VirtualArmor, VirtualArmor * 2)));
                 PackStrongPotions(6, 12);
@@ -160,7 +160,7 @@ namespace Server.Mobiles
         {
             Name = NameList.RandomName("golem controller");
 
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 if (Female = Utility.RandomBool())
                     Body = 401;
@@ -180,7 +180,7 @@ namespace Server.Mobiles
             AddArcane(new LeatherGloves());
             AddArcane(new Cloak());
 
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 // black kilt now drops from the spawner in Wrong only
                 Kilt kilt = new Kilt(0x1);
@@ -215,7 +215,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGold(125, 175);
                 //drop 0-8 empty bottles on death

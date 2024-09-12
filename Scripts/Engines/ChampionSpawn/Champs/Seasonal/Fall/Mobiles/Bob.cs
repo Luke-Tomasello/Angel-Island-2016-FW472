@@ -65,7 +65,7 @@ namespace Server.Mobiles
 
         public override bool AlwaysMurderer { get { return true; } }
         public override bool ShowFameTitle { get { return false; } }
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOAR ? true : false; } }
+        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : false; } }
 
         public override bool CanBandage { get { return true; } }
         public override TimeSpan BandageDelay { get { return TimeSpan.FromSeconds(Utility.RandomMinMax(10, 13)); } }

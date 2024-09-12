@@ -320,7 +320,7 @@ namespace Server.Items
                         to.PlaySound(0x54);
                         to.LocalOverheadMessage(MessageType.Regular, 0xEE, 1010524); // Searing heat scorches thy skin.
 
-                        AOS.Damage(to, to, Utility.RandomMinMax(10, 40), 0, 100, 0, 0, 0);
+                        AOS.Damage(to, to, Utility.RandomMinMax(10, 40), 0, 100, 0, 0, 0, source_weapon: this);
 
                         break;
                     }
@@ -329,7 +329,7 @@ namespace Server.Items
                         to.PlaySound(0x223);
                         to.LocalOverheadMessage(MessageType.Regular, 0x62, 1010525); // Pain lances through thee from a sharp metal blade.
 
-                        AOS.Damage(to, to, Utility.RandomMinMax(10, 40), 100, 0, 0, 0, 0);
+                        AOS.Damage(to, to, Utility.RandomMinMax(10, 40), 100, 0, 0, 0, 0, source_weapon: this);
 
                         break;
                     }
@@ -338,7 +338,7 @@ namespace Server.Items
                         to.BoltEffect(0);
                         to.LocalOverheadMessage(MessageType.Regular, 0xDA, 1010526); // Lightning arcs through thy body.
 
-                        AOS.Damage(to, to, Utility.RandomMinMax(10, 40), 0, 0, 0, 0, 100);
+                        AOS.Damage(to, to, Utility.RandomMinMax(10, 40), 0, 0, 0, 0, 100, source_weapon: this);
 
                         break;
                     }

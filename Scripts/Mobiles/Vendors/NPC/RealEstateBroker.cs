@@ -220,7 +220,7 @@ namespace Server.Mobiles
             // o) NPC real estate brokers will now buy house deeds back at 20% below the base price of the deed, or the original
             //	price paid when the deed was purchased from a vendor (whichever is lower).
             // o) House deed prices when reselling to real estate agents raised to the correct level on Siege Perilous
-            if (!Core.UOAI && !Core.UOAR && !Core.UOMO && PublishInfo.Publish < 11)
+            if (!Core.UOAI && !Core.UOREN && !Core.UOMO && PublishInfo.Publish < 11)
                 return GenericBuyInfo.ComputeSiegeMarkup(price); // 100%
 
             return AOS.Scale(price, 80); // refunds 80% of the purchase price

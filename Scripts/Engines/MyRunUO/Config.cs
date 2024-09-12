@@ -65,7 +65,7 @@ namespace Server.Engines.MyRunUO
             {
                 Enabled = true;
 
-                if ((Core.UOAI || Core.UOAR) && !Core.UOTC)
+                if ((Core.UOAI || Core.UOREN) && !Core.UOTC)
                 {
                     Enabled = false;
                     Console.WriteLine("MyRunUO: Disabled.");

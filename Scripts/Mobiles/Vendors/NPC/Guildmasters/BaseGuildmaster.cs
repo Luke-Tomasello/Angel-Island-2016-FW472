@@ -103,7 +103,7 @@ namespace Server.Mobiles
                         SayTo(from, 501047); // Thou art already a member of our guild.
                     else if (pm.NpcGuild != NpcGuild.None)
                         SayTo(from, 501046); // Thou must resign from thy other guild first.
-                    else if (pm.GameTime < JoinGameAge || (pm.CreationTime + JoinAge) > DateTime.UtcNow)
+                    else if (pm.GameTime < JoinGameAge || (pm.Created + JoinAge) > DateTime.UtcNow)
                         SayTo(from, 501048); // You are too young to join my guild...
                     else if (CheckCustomReqs(pm))
                         SayPriceTo(from);
@@ -147,7 +147,7 @@ namespace Server.Mobiles
                 {
                     SayTo(from, 501046); // Thou must resign from thy other guild first.
                 }
-                else if (pm.GameTime < JoinGameAge || (pm.CreationTime + JoinAge) > DateTime.UtcNow)
+                else if (pm.GameTime < JoinGameAge || (pm.Created + JoinAge) > DateTime.UtcNow)
                 {
                     SayTo(from, 501048); // You are too young to join my guild...
                 }

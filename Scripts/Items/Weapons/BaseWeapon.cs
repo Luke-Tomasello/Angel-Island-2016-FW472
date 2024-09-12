@@ -209,6 +209,7 @@ namespace Server.Items
         private SlayerName m_Slayer;
         private SkillMod m_SkillMod, m_MageMod;
         private CraftResource m_Resource;
+        private int m_DamageAbsorbed;   // not serialized: used to determine how much damage was absorbed in the last hit (diagnostics)
 
         //private bool m_Cursed; // Is this weapon cursed via Curse Weapon necromancer spell? Temporary; not serialized.
         //private bool m_Consecrated; // Is this weapon blessed via Consecrate Weapon paladin ability? Temporary; not serialized.
@@ -310,7 +311,8 @@ namespace Server.Items
             get { return m_Identified; }
             set { m_Identified = value; InvalidateProperties(); }
         }
-
+        // not serialized: used to determine how much damage was absorbed in the last hit (diagnostics)
+        public int DamageAbsorbed { get { return m_DamageAbsorbed; } set { m_DamageAbsorbed = value; } }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public int HitPoints
@@ -989,9 +991,18 @@ namespace Server.Items
                 }
 
                 if (CheckHit(attacker, defender) && CheckInterference(attacker, defender) == false)
+                {
                     OnHit(attacker, defender);
+                    attacker.OnHit(attacker, defender);     // 7/2/21, Adam: notify the mobile base class
+                    defender.OnHit(attacker, defender);
+
+                }
                 else
+                {
                     OnMiss(attacker, defender);
+                    attacker.OnMiss(attacker, defender);     // 7/2/21, Adam: notify the mobile base class
+                    defender.OnMiss(attacker, defender);
+                }
             }
 
             return GetDelay(attacker);
@@ -1091,6 +1102,9 @@ namespace Server.Items
 
         public virtual int AbsorbDamage(Mobile attacker, Mobile defender, int damage)
         {
+            // we will save this value and report the delta to the attacker for damage adsorbed tracking.
+            int old_damage = damage;
+
             if (Core.AOS)
                 return AbsorbDamageAOS(attacker, defender, damage);
 
@@ -1186,6 +1200,9 @@ namespace Server.Items
 
                 damage -= Utility.Random(from, (to - from) + 1);
             }
+
+            // record how much damage was absorbed (diagnostics)
+            DamageAbsorbed = old_damage - damage;
 
             return damage;
         }
@@ -1372,7 +1389,7 @@ namespace Server.Items
             #endregion
 
             int packInstinctBonus = 0;
-            if (PublishInfo.Publish >= 16 || Core.UOAI || Core.UOAR || Core.UOMO)
+            if (PublishInfo.Publish >= 16 || Core.UOAI || Core.UOREN || Core.UOMO)
                 packInstinctBonus = GetPackInstinctBonus(attacker, defender);
 
             // adam: limit to PvM only (for now)
@@ -1417,7 +1434,7 @@ namespace Server.Items
 
             AOS.ArmorIgnore = (a is ArmorIgnore);
 
-            damageGiven = AOS.Damage(defender, attacker, damage, phys, fire, cold, pois, nrgy);
+            damageGiven = AOS.Damage(defender, attacker, damage, phys, fire, cold, pois, nrgy, source_weapon: this);
 
             AOS.ArmorIgnore = false;
 
@@ -1456,7 +1473,7 @@ namespace Server.Items
                 a.OnHit(attacker, defender, damage);
 
             #region AI Style Special Move
-            if (Core.UOAI || Core.UOAR || Core.UOMO)
+            if (Core.UOAI || Core.UOREN || Core.UOMO)
             {
                 TimeSpan AbilityDelay = TimeSpan.FromSeconds(20.0);
 
@@ -1488,7 +1505,7 @@ namespace Server.Items
                             defender.SendLocalizedMessage(1060091); // You take extra damage from the crushing attack!
                             defender.PlaySound(0x1E1);
                             defender.FixedParticles(0, 1, 0, 9946, EffectLayer.Head);
-                            defender.Damage(crush, atkr);       // brings dmg total up to 150%
+                            defender.Damage(crush, atkr, source_weapon: this);       // brings dmg total up to 150%
 
                             Effects.SendMovingParticles(new Entity(Serial.Zero, new Point3D(defender.X, defender.Y, defender.Z + 50), defender.Map), new Entity(Serial.Zero, new Point3D(defender.X, defender.Y, defender.Z + 20), defender.Map), 0xFB4, 1, 0, false, false, 0, 3, 9501, 1, 0, EffectLayer.Head, 0x100);
 
@@ -1510,11 +1527,15 @@ namespace Server.Items
                             atkr.NextAbilityTime = DateTime.UtcNow + AbilityDelay;
 
                             defender.SendLocalizedMessage(1060166); // You feel disoriented!
+#if true
+                            defender.AddStatMod(new StatMod(StatType.Int, "Concussion", -(defender.RawInt / 2), TimeSpan.FromSeconds(30.0)));
+#else   
                             int mana_test = Math.Max(defender.Mana / 2, defender.ManaMax / 2);
                             if (mana_test < defender.Mana)
                             {
                                 defender.Mana = mana_test;
                             }
+#endif
                             defender.PlaySound(0x213);
                             defender.FixedParticles(0x377A, 1, 32, 9949, 1153, 0, EffectLayer.Head);
                         }
@@ -1701,7 +1722,7 @@ namespace Server.Items
 
                 from.DoHarmful(m, true);
                 m.FixedEffect(0x3779, 1, 15, hue, 0);
-                AOS.Damage(m, from, (int)(GetBaseDamage(from, m) * scalar), phys, fire, cold, pois, nrgy);
+                AOS.Damage(m, from, (int)(GetBaseDamage(from, m) * scalar), phys, fire, cold, pois, nrgy, source_weapon: this);
             }
         }
 
@@ -2053,7 +2074,7 @@ namespace Server.Items
 
             if (Type == WeaponType.Axe)
             {
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                 {   // AI style bonus 
                     // The bonus is 20% of the lumberjack skill
                     /* Compute lumberjacking bonus
@@ -2106,13 +2127,16 @@ namespace Server.Items
             }
 
             // New quality bonus:
+#if false
             double qualityBonus = ((int)m_Quality - 1) * 0.2;
-
+#else
+            double qualityBonus = 0.0;
+#endif
             // Apply bonuses
             damage += (damage * tacticsBonus) + (damage * strBonus) + (damage * anatomyBonus) + (damage * lumberBonus) + (damage * qualityBonus) + ((damage * VirtualDamageBonus) / 100);
 
             // Old quality bonus:
-#if false
+#if true
 			/* Apply quality offset
 			 * : Low         : -4
 			 * : Regular     :  0
@@ -2132,8 +2156,15 @@ namespace Server.Items
             if (m_DamageLevel != WeaponDamageLevel.Regular)
                 damage += (2.0 * (int)m_DamageLevel) - 1.0;
 
+#if false
             // Halve the computed damage and return
             damage /= 2.0;
+#else
+            // Halve the computed damage and return
+            // 7/13/21, Adam: This was a bug, and has been fixed.
+            //  See the caller of this function where we correctly scale the damage based on what you're fighting.
+            // damage /= 2.0;
+#endif
 
             WeaponAbility a = WeaponAbility.GetCurrentAbility(attacker);
 
@@ -2148,7 +2179,14 @@ namespace Server.Items
             if (Core.AOS)
                 return ComputeDamageAOS(attacker, defender);
 
-            return (int)ScaleDamageOld(attacker, GetBaseDamage(attacker, defender), true, true);
+            int damage =  (int)ScaleDamageOld(attacker, GetBaseDamage(attacker, defender), true, true);
+
+            // pre-AOS, halve damage if the defender is a player or the attacker is not a player
+            if (PublishInfo.Publish < 16)
+                if (defender is PlayerMobile || !(attacker is PlayerMobile))
+                    damage = (int)(damage / 2.0);
+            
+            return damage;
         }
 
         public virtual void PlayHurtAnimation(Mobile from)
@@ -3811,7 +3849,7 @@ namespace Server.Items
 						}
 					}
 #endif
-        #endregion
+#endregion
     }
 
     public enum CheckSlayerResult

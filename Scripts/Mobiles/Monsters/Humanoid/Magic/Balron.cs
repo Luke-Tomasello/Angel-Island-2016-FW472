@@ -85,12 +85,12 @@ namespace Server.Mobiles
 
         }
 
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOAR ? true : true; } }
+        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : true; } }
         public override Poison PoisonImmune { get { return Poison.Deadly; } }
         public override int Meat { get { return 1; } }
         // Auto-dispel is UOR - http://forums.uosecondage.com/viewtopic.php?f=8&t=6901
-        public override bool AutoDispel { get { return Core.UOAI || Core.UOAR ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 0 : 5; } }
+        public override bool AutoDispel { get { return Core.UOAI || Core.UOREN ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 0 : 5; } }
 
         public Balron(Serial serial)
             : base(serial)
@@ -99,7 +99,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackReg(3);
                 PackItem(new Longsword());

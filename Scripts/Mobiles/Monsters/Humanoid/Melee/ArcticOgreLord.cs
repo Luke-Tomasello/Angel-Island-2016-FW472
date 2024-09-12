@@ -88,7 +88,7 @@ namespace Server.Mobiles
         public override Poison PoisonImmune { get { return Poison.Regular; } }
         public override AuraType MyAura { get { return AuraType.Ice; } }
         // Auto-dispel is UOR - http://forums.uosecondage.com/viewtopic.php?f=8&t=6901
-        public override bool AutoDispel { get { return Core.UOAI || Core.UOAR ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
+        public override bool AutoDispel { get { return Core.UOAI || Core.UOREN ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
 
         public ArcticOgreLord(Serial serial)
             : base(serial)
@@ -97,7 +97,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGold(2500, 3500);
                 PackItem(new Club());

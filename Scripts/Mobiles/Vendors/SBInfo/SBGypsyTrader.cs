@@ -57,7 +57,7 @@ namespace Server.Mobiles
         {
             public InternalBuyInfo()
             {
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                 {
                     Add(new GenericBuyInfo("Gender Change Deed", typeof(GenderChangeDeed), 100000, 20, 0x14F0, 0x0));
                     Add(new GenericBuyInfo("Name Change Deed", typeof(NameChangeDeed), 100000, 20, 0x14F0, 0x0));

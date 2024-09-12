@@ -67,7 +67,7 @@ namespace Server.Mobiles
             VirtualArmor = 60;
         }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 5 : 5; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 5 : 5; } }
 
         public BloodElemental(Serial serial)
             : base(serial)
@@ -76,7 +76,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGold(500, 700);
                 PackMagicEquipment(1, 3, 0.50, 0.50);

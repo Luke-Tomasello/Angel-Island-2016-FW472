@@ -224,7 +224,7 @@ namespace Server.Items
                 return;
             }
 
-            to.Damage(1, from);
+            to.Damage(1, from, source_weapon: b);
 
             //freeze target
             if (!to.Mounted)
@@ -433,7 +433,7 @@ namespace Server.Items
 
         public int OnCraft(int quality, bool makersMark, Mobile from, CraftSystem craftSystem, Type typeRes, BaseTool tool, CraftItem craftItem, int resHue)
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 Bola b = (Bola)this;
                 b.Quality = (WeaponQuality)quality;

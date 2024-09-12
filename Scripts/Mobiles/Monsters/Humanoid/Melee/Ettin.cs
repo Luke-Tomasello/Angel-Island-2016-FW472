@@ -62,9 +62,9 @@ namespace Server.Mobiles
             VirtualArmor = 38;
         }
 
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOAR ? true : true; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 1 : 0; } }
-        public override int Meat { get { return Core.UOAI || Core.UOAR ? 4 : 5; } }
+        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : true; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 1 : 0; } }
+        public override int Meat { get { return Core.UOAI || Core.UOREN ? 4 : 5; } }
 
         public Ettin(Serial serial)
             : base(serial)
@@ -73,7 +73,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackPotion();
                 PackGold(100, 150);

@@ -45,7 +45,7 @@ namespace Server.Mobiles
     public class PirateChamp : Pirate
     {
         private MetalChest m_MetalChest = null;
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 5 : 0; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 5 : 0; } }
 
         [Constructable]
         public PirateChamp()

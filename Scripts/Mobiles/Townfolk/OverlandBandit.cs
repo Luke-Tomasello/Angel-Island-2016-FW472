@@ -247,7 +247,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 // if it's being announced, it's better loot because more risk
                 if (Announce == true)

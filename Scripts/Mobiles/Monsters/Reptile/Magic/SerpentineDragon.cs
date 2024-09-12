@@ -92,13 +92,13 @@ namespace Server.Mobiles
 
         public override bool HasBreath { get { return true; } } // fire breath enabled
                                                                 // Auto-dispel is UOR - http://forums.uosecondage.com/viewtopic.php?f=8&t=6901
-        public override bool AutoDispel { get { return Core.UOAI || Core.UOAR ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
+        public override bool AutoDispel { get { return Core.UOAI || Core.UOREN ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
         public override HideType HideType { get { return HideType.Barbed; } }
         public override int Hides { get { return 40; } }
         public override int Meat { get { return 20; } }
-        public override int Scales { get { return (Core.UOAI || Core.UOAR || PublishInfo.PublishDate < Core.PlagueOfDespair) ? 0 : 6; } }
+        public override int Scales { get { return (Core.UOAI || Core.UOREN || PublishInfo.PublishDate < Core.PlagueOfDespair) ? 0 : 6; } }
         public override ScaleType ScaleType { get { return (Utility.RandomBool() ? ScaleType.Black : ScaleType.White); } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 4 : 0; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 4 : 0; } }
 
         public SerpentineDragon(Serial serial)
             : base(serial)
@@ -124,7 +124,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGem();
                 PackGem();

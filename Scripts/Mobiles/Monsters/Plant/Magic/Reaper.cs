@@ -65,7 +65,7 @@ namespace Server.Mobiles
         }
 
         public override Poison PoisonImmune { get { return Poison.Greater; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 2 : 0; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 2 : 0; } }
         public override bool DisallowAllMoves { get { return true; } }
 
         public Reaper(Serial serial)
@@ -75,7 +75,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackItem(new Log(10));
                 PackGold(0, 50);

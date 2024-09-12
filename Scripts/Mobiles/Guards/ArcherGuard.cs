@@ -300,7 +300,7 @@ namespace Server.Mobiles
                     if (target is BaseCreature)
                         ((BaseCreature)target).NoKillAwards = true;
 
-                    target.Damage(target.HitsMax, m_Owner);
+                    target.Damage(target.HitsMax, m_Owner, source_weapon: this);
                     target.Kill(); // just in case, maybe Damage is overriden on some shard
 
                     if (target.Corpse != null && !target.Player)

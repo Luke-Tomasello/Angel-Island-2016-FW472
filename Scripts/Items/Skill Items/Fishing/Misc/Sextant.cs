@@ -21,12 +21,15 @@
 
 /* Scripts/Items/Skill Items/Fishing/Misc/Sextant.cs
  * CHANGELOG:
+ *  9/10/2024, Adam (Parse)
+ *      Add parse method. We use tis in the [go command for going to a location via sextant coords.
  *	02/11/06, Adam
  *		Make common the formatting of sextant coords.
  */
 
 using Server.Network;
 using System;
+using System.Collections.Generic;
 
 namespace Server.Items
 {
@@ -188,6 +191,57 @@ namespace Server.Items
             ySouth = south;
 
             return true;
+        }
+
+        public static string Normalize(string desc)
+        {
+            // length == 4 is old - style sextant: [go 55 54 N 72 54 W
+            // length == 6 is new-style sextant: [go 55� 54'N 72� 54'W
+            // if (e.Length == 6) patch coords to old-style
+            String[] args = desc.Split(new char[] { ' ', '\'', '�' }, StringSplitOptions.RemoveEmptyEntries);
+            try
+            {
+                int.Parse(args[0]);
+                return string.Join(" ", args); ;
+            }
+            catch
+            {
+                List<String> list = new List<String>(args);
+                list.Remove(args[0]);
+                return string.Join(" ", list.ToArray());
+            }
+        }
+        public static Point3D Parse(Map map, string desc)
+        {
+            String clean = Normalize(desc).ToUpper();
+            String[] args = clean.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+            Point3D px = new Point3D();
+
+            try
+            {
+                int xLong = Int32.Parse(args[3]);
+                int yLat = Int32.Parse(args[0]);
+                int xMins = Int32.Parse(args[4]);
+                int yMins = Int32.Parse(args[1]);
+                bool xEast = Insensitive.Equals(args[5], "E");
+                bool ySouth = Insensitive.Equals(args[2], "S");
+                //string DebugTestString_ShouldMatchInput = Format(xLong, yLat, xMins, yMins, xEast, ySouth);
+                px = Sextant.ReverseLookup(map, xLong, yLat, xMins, yMins, xEast, ySouth);
+
+                // reverse test to see if we got same values
+                int xLong_out = 0;
+                int yLat_out = 0;
+                int xMins_out = 0;
+                int yMins_out = 0;
+                bool xEast_out = false;
+                bool ySouth_out = false;
+                Format(px, map, ref xLong_out, ref yLat_out, ref xMins_out, ref yMins_out, ref xEast_out, ref ySouth_out);
+                return px;
+            }
+            catch
+            {
+                return px;
+            }
         }
     }
 }

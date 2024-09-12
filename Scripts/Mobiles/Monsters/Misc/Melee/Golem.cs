@@ -87,7 +87,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 if (!Summoned)
                 {
@@ -210,7 +210,7 @@ namespace Server.Mobiles
                 defender.Combatant = null;
         }
 
-        public override void OnDamage(int amount, Mobile from, bool willKill)
+        public override void OnDamage(int amount, Mobile from, bool willKill, object source_weapon)
         {
             if (Controlled || Summoned)
             {
@@ -229,12 +229,12 @@ namespace Server.Mobiles
                     {
                         amount -= master.Mana;
                         master.Mana = 0;
-                        master.Damage(amount);
+                        master.Damage(amount, source_weapon: source_weapon);
                     }
                 }
             }
 
-            base.OnDamage(amount, from, willKill);
+            base.OnDamage(amount, from, willKill, source_weapon: source_weapon);
         }
 
         public override Poison PoisonImmune { get { return Poison.Lethal; } }

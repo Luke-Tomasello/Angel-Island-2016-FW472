@@ -1886,7 +1886,7 @@ namespace Server.Multis
         {
             // this is our rectangle surrounding Angel Island
             // this check prevents people from placing boats anywhere in the AngelIsland region.
-            if ((Core.UOAI || Core.UOAR) && m_AIRect.Contains(p))
+            if ((Core.UOAI || Core.UOREN) && m_AIRect.Contains(p))
                 return false;
 
             Rectangle2D[] wrap = GetWrapFor(map);
@@ -2102,7 +2102,7 @@ namespace Server.Multis
             // If that point puts us within the Angel Island perimeter, cancel the movement.
             // Have tillerman tell us we've stopped.
             // Adam: have the tillerman tell us about Angel Island
-            if ((Core.UOAI || Core.UOAR) && m_AIRect.Contains(new Point2D(newX, newY)))
+            if ((Core.UOAI || Core.UOREN) && m_AIRect.Contains(new Point2D(newX, newY)))
             {
                 if (message && m_TillerMan != null)
                     m_TillerMan.Say(false, "Ar, I'll not go any nearer to that Angel Island.");

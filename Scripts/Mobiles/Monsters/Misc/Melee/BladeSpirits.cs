@@ -41,8 +41,8 @@ namespace Server.Mobiles
         public override bool DeleteCorpseOnDeath { get { return Core.AOS; } }
         public override bool IsHouseSummonable { get { return true; } }
 
-        public override double DispelDifficulty { get { return Core.UOAI || Core.UOAR ? 56.0 : 0; } }
-        public override double DispelFocus { get { return Core.UOAI || Core.UOAR ? 45.0 : 20.0; } }
+        public override double DispelDifficulty { get { return Core.UOAI || Core.UOREN ? 56.0 : 0; } }
+        public override double DispelFocus { get { return Core.UOAI || Core.UOREN ? 45.0 : 20.0; } }
 
         [Constructable]
         public BladeSpirits()

@@ -142,7 +142,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 // set this so we don't generate all that crazy champ loot
                 NoKillAwards = true;
@@ -193,9 +193,9 @@ namespace Server.Mobiles
         public override bool ShowFameTitle { get { return false; } }
         public override bool ClickTitle { get { return false; } }
 
-        public override void Damage(int amount, Mobile from)
+        public override void Damage(int amount, Mobile from, object source_weapon)
         {
-            base.Damage(amount, from);
+            base.Damage(amount, from, source_weapon: source_weapon);
 
             Mobile m = VerifyValidMobile(from, 9);
 

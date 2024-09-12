@@ -122,12 +122,12 @@ namespace Server
             set { m_ArmorIgnore = value; }
         }
 
-        public static int Damage(Mobile m, Mobile from, int damage, int phys, int fire, int cold, int pois, int nrgy)
+        public static int Damage(Mobile m, Mobile from, int damage, int phys, int fire, int cold, int pois, int nrgy, object source_weapon)
         {
-            return Damage(m, from, damage, phys, fire, cold, pois, nrgy, false);
+            return Damage(m, from, damage, phys, fire, cold, pois, nrgy, false, source_weapon: source_weapon);
         }
 
-        public static int Damage(Mobile m, Mobile from, int damage, int phys, int fire, int cold, int pois, int nrgy, bool keepAlive)
+        public static int Damage(Mobile m, Mobile from, int damage, int phys, int fire, int cold, int pois, int nrgy, bool keepAlive, object source_weapon)
         {
             if (m == null || m.Deleted || !m.Alive || damage <= 0)
                 return 0;
@@ -138,7 +138,7 @@ namespace Server
             // Adam: only valid return path
             //if ( !Core.AOS )
             {
-                m.Damage(damage, from);
+                m.Damage(damage, from, source_weapon: source_weapon);
                 return damage;
             }
             /*
@@ -210,9 +210,9 @@ namespace Server
 			*/
         }
 
-        public static int Damage(Mobile m, int damage, int phys, int fire, int cold, int pois, int nrgy)
+        public static int Damage(Mobile m, int damage, int phys, int fire, int cold, int pois, int nrgy, object source_weapon)
         {
-            return Damage(m, null, damage, phys, fire, cold, pois, nrgy);
+            return Damage(m, null, damage, phys, fire, cold, pois, nrgy, source_weapon: source_weapon);
         }
 
         public static void Fix(ref int val)

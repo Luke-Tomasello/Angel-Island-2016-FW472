@@ -73,7 +73,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackReg(6);
                 PackItem(new FertileDirt(Utility.RandomMinMax(5, 10)));

@@ -21,6 +21,8 @@
 
 /* Scripts\Engines\CronScheduler\CronTasks.cs
  * CHANGELOG:
+ *  9/8/2024, Adam
+ *      Obsolete messages: CBackupRunUO, CBackupWorldData
  *	7/31/11, Adam
  *		Check CoreAI.IsDynamicFeatureSet(CoreAI.FeatureBits.FreezeHouseDecay) before cleaningup houses!
  *		this account should not be deleted because house decay is frozen, accounts must remain!
@@ -128,7 +130,7 @@ namespace Server.Engines.CronScheduler
             Cron.QueueIdleTask(new CFreezeDryInit().FreezeDryInit);
 
             // Stable Charges - every 10 minutes
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
                 Cron.Register(new CStableCharge().StableCharge, "*/10 * * * *");
 
             // Auto add players to Fight Broker - every 10 minutes
@@ -175,7 +177,7 @@ namespace Server.Engines.CronScheduler
             Cron.Register(new CPlantGrowth().PlantGrowth, "? 6 * * *");                 // random minute of 6 o'clock hour
 
             // Overland Merchant CHANCE - every hour
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 Cron.Register(new COverlandSystem().OverlandSystem, "? * * * *");           // random minute of every hour
             }
@@ -239,12 +241,12 @@ namespace Server.Engines.CronScheduler
             Cron.Register(new CGuildFealty().GuildFealty, "? * * * *");                     // random minute of each hour
 
             // every hour run through PlayerQuestCleanup checks
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 Cron.Register(new CPlayerQuestCleanup().PlayerQuestCleanup, "? * * * *");       // random minute of each hour
             }
 
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 // every 5 minutes run through PlayerQuest announcements				// every 5 minutes
                 Cron.Register(new CPlayerQuestAnnounce().PlayerQuestAnnounce, "*/5 * * * *");
@@ -253,15 +255,17 @@ namespace Server.Engines.CronScheduler
             // every 24 hours rotate player command logs (6:? AM)
             Cron.Register(new CLogRotation().LogRotation, "? 6 * * 1");                     // random minute of the 6 o'clock hour on Monday
 
+#if OBSOLETE
             // at 2AM backup the complete RunUO directory (~8min)
             // (at 1:50 issue warning)
             Cron.Register(new CBackupRunUO().BackupRunUO, "50 1 * * *");            // 2AM
-
+            
             // at 4AM we backup only the world files (~4min)
             // (at 3:50 issue warning)
             Cron.Register(new CBackupWorldData().BackupWorldData, "50 3 * * *");    // 4AM
+#endif
 
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 // Township Charges - 9 AM daily
                 Cron.Register(new CTownshipCharges().TownshipCharges, "0 9 * * *");     //9 AM every day
@@ -275,7 +279,7 @@ namespace Server.Engines.CronScheduler
             // ConsumerPriceIndex - 3 AM daily
             Cron.Register(new CConsumerPriceIndex().ConsumerPriceIndex, "? 3 * * *");       // random minute of the 3AM hour
 
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 #region KIN_FACTIONS
 #if KIN_FACTIONS
@@ -288,7 +292,7 @@ namespace Server.Engines.CronScheduler
                 #endregion KIN_FACTIONS
             }
 
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 // http://www.infoplease.com/ce6/weather/A0844225.html
                 Cron.Register(new CSpringChamp().SpringChamp, "0 0 21 3 *");    // spring (vamp), about Mar. 21, (12:00 AM)
@@ -298,7 +302,7 @@ namespace Server.Engines.CronScheduler
             }
 
             // Check InmateManagement - every 15 minutes
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
                 Cron.Register(new CInmateManagement().InmateManagement, "*/15 * * * *");
         }
     }

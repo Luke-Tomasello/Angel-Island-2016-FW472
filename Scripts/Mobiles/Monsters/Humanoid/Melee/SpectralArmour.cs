@@ -90,7 +90,7 @@ namespace Server.Mobiles
             if (!base.OnBeforeDeath())
                 return false;
 
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 Scimitar weapon = new Scimitar();
                 weapon.DamageLevel = (WeaponDamageLevel)Utility.Random(0, 5);

@@ -450,7 +450,7 @@ namespace Server.Multis
             {
                 m_DecayMinutesStored = value;
 
-                if (Core.UOAI || Core.UOAR)
+                if (Core.UOAI || Core.UOREN)
                 {
                     if (m_DecayMinutesStored > ONE_DAY_IN_MINUTES && m_IDOC_Broadcast_TCE != null)
                     {
@@ -471,7 +471,7 @@ namespace Server.Multis
 
         public virtual void Refresh()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 m_DecayMinutesStored = HouseDecayDelay.TotalMinutes;
 
@@ -685,7 +685,7 @@ namespace Server.Multis
             {
                 //never announce tents
             }
-            else if (Utility.RandomDouble() < CoreAI.IDOCBroadcastChance && (Core.UOAI || Core.UOAR))
+            else if (Utility.RandomDouble() < CoreAI.IDOCBroadcastChance && (Core.UOAI || Core.UOREN))
             {
                 string[] lines = new string[1];
                 lines[0] = String.Format("Lord British has condemned the estate of {0} near {1}.", this.Owner.Name, DescribeLocation());

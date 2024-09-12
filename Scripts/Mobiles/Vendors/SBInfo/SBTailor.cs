@@ -66,7 +66,7 @@ namespace Server.Mobiles
                 Add(new GenericBuyInfo(typeof(Dyes), 8, 20, 0xFA9, 0));
                 Add(new GenericBuyInfo(typeof(DyeTub), 9, 20, 0xFAB, 0));
 
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                 {   // AI specials
                     Add(new GenericBuyInfo("embroidering", typeof(EmbroideryBook), 10625, 20, 0xFF4, 0));
                     Add(new GenericBuyInfo("leather embroidering", typeof(LeatherEmbroideryBook), 25000, 20, 0xFF4, 0));
@@ -75,7 +75,7 @@ namespace Server.Mobiles
                     Add(new GenericBuyInfo("color swatch", typeof(ColorSwatch), 250, 20, 0x175D, 0));
                 }
 
-                if (!Core.UOAI && !Core.UOAR)
+                if (!Core.UOAI && !Core.UOREN)
                 {
                     // erl : removed for new clothing wear system to involve tailors directly in clothing
                     Add(new GenericBuyInfo(typeof(FancyShirt), 55, 20, 0x1EFD, 0));
@@ -116,7 +116,7 @@ namespace Server.Mobiles
                 /* Shopkeeper NPCs do not sell any resources (Ingots, Cloth, etc.))
 				 * http://www.uoguide.com/Siege_Perilous
 				 */
-                if (!Core.UOSP && !Core.UOAI && !Core.UOAR)
+                if (!Core.UOSP && !Core.UOAI && !Core.UOREN)
                 {   // no selling these resources on AI
                     Add(new GenericBuyInfo(typeof(BoltOfCloth), 100, 20, 0xf95, Utility.RandomDyedHue()));
 
@@ -129,7 +129,7 @@ namespace Server.Mobiles
                     Add(new GenericBuyInfo(typeof(SpoolOfThread), 18, 20, 0xFA0, 0));
                 }
 
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                 {   // balanced buyback system
                     //Add( new GenericBuyInfo( typeof( Flax ) ) );
                     Add(new GenericBuyInfo(typeof(Cloth)));
@@ -145,7 +145,7 @@ namespace Server.Mobiles
         {
             public InternalSellInfo()
             {
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                 {   // balanced buyback system 
                     Add(typeof(Cloth));
                     Add(typeof(Leather));
@@ -163,7 +163,7 @@ namespace Server.Mobiles
                     Add(typeof(HornedHides));
                 }
 
-                if (!Core.UOAI && !Core.UOAR && !Core.UOSP && !Core.UOMO)
+                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
                 {   // cash buyback
                     Add(typeof(Scissors), 6);
                     Add(typeof(SewingKit), 1);

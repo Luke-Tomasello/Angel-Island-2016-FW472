@@ -95,9 +95,9 @@ namespace Server.Mobiles
         {
         }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 5 : 0; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 5 : 0; } }
         public override bool AlwaysMurderer { get { return true; } }
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOAR ? true : false; } }
+        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : false; } }
         public override bool ShowFameTitle { get { return false; } }
         public override bool ClickTitle { get { return true; } }
 
@@ -374,7 +374,7 @@ namespace Server.Mobiles
             PackItem(pillow);
         }
 
-        public override void Damage(int amount, Mobile from)
+        public override void Damage(int amount, Mobile from, object source_weapon)
         {
             Mobile combatant = this.Combatant;
 
@@ -397,7 +397,7 @@ namespace Server.Mobiles
                 }
             }
 
-            base.Damage(amount, from);
+            base.Damage(amount, from, source_weapon: source_weapon);
         }
 
         public override void GetContextMenuEntries(Mobile from, ArrayList list)

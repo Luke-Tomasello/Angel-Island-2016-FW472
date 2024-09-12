@@ -170,7 +170,7 @@ namespace Server.Mobiles
                     m.MovingParticles(this, 0x0001, 1, 0, false, true, 32, 0, 9535, 9536, 0, (EffectLayer)255, 0);
 
                     this.DoHarmful(m);
-                    this.Hits += AOS.Damage(m, this, damage, 100, 0, 0, 0, 0);
+                    this.Hits += AOS.Damage(m, this, damage, 100, 0, 0, 0, 0, source_weapon: this);
                 }
 
                 this.Say(true, "If I cannot cleanse thy soul, I will destroy it!");
@@ -209,7 +209,7 @@ namespace Server.Mobiles
 
                 this.PlaySound(0x209);
                 this.DoHarmful(combatant);
-                this.Hits += AOS.Damage(combatant, this, Utility.RandomMinMax(30, 40) - (Core.AOS ? 0 : 10), 100, 0, 0, 0, 0);
+                this.Hits += AOS.Damage(combatant, this, Utility.RandomMinMax(30, 40) - (Core.AOS ? 0 : 10), 100, 0, 0, 0, 0, source_weapon: this);
             }
         }
 

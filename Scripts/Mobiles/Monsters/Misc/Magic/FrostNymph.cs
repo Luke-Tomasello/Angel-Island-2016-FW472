@@ -63,7 +63,7 @@ namespace Server.Mobiles
             VirtualArmor = 50;
         }
 
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOAR ? true : false; } }
+        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : false; } }
 
         public FrostNymph(Serial serial)
             : base(serial)
@@ -72,7 +72,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 Body = 51;
                 PackGem();

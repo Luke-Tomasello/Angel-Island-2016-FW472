@@ -62,7 +62,7 @@ namespace Server.Mobiles
                 // In the vendor class we will trap OnActionCombat and switch to Melee AI
                 //	we do this switch so as not to rewrite additional complexities into either melee or vendor AIs
                 //	We will also trap OnActionWander in the vendor class to return the AI to standard vendor AI
-                if (!Core.UOAI && !Core.UOAR && !Core.UOMO)
+                if (!Core.UOAI && !Core.UOREN && !Core.UOMO)
                 {
                     m_Mobile.FocusMob = m_Mobile.Combatant;
                     Action = ActionType.Combat;

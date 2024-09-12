@@ -101,7 +101,7 @@ namespace Server.Mobiles
             protected override void OnTick()
             {
                 m_Mobile.PlaySound(0x4CF);
-                AOS.Damage(m_Mobile, m_From, Utility.RandomMinMax(1, 40), 90, 10, 0, 0, 0);
+                AOS.Damage(m_Mobile, m_From, Utility.RandomMinMax(1, 40), 90, 10, 0, 0, 0, source_weapon: this);
             }
         }
 
@@ -112,7 +112,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGold(60, 90);
                 PackItem(new Bone());

@@ -470,7 +470,7 @@ namespace Server
         private int GetRandomOldBonus()
         {
             int rnd = 0;
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
                 rnd = Utility.Random(m_MinIntensity, m_MaxIntensity - m_MinIntensity);
             else
                 rnd = Utility.RandomMinMax(m_MinIntensity, m_MaxIntensity);

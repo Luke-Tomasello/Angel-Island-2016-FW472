@@ -95,7 +95,7 @@ namespace Server.Mobiles
 
             Scimitar weapon = new Scimitar();
 
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 // 3% chance for Neira's sword to drop.
                 if (Utility.RandomDouble() <= 0.97)
@@ -120,7 +120,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 // Neira's sword can't drop unless it's movable
                 if (Weapon is Scimitar)
@@ -165,7 +165,7 @@ namespace Server.Mobiles
         public override bool AlwaysMurderer { get { return true; } }
         public override Poison PoisonImmune { get { return Poison.Deadly; } }
         // Auto-dispel is UOR - http://forums.uosecondage.com/viewtopic.php?f=8&t=6901
-        public override bool AutoDispel { get { return Core.UOAI || Core.UOAR ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
+        public override bool AutoDispel { get { return Core.UOAI || Core.UOREN ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
 
         public override bool ShowFameTitle { get { return false; } }
         public override bool ClickTitle { get { return false; } }
@@ -178,9 +178,9 @@ namespace Server.Mobiles
                 AddUnholyBone(defender, 0.25);
         }
 
-        public override void Damage(int amount, Mobile from)
+        public override void Damage(int amount, Mobile from, object source_weapon)
         {
-            base.Damage(amount, from);
+            base.Damage(amount, from, source_weapon: source_weapon);
 
             if (from != null && from is PlayerMobile && from.InRange(this, 10) || from != null && from is BaseCreature && ((BaseCreature)from).Controlled)
             {
@@ -228,7 +228,7 @@ namespace Server.Mobiles
                 if (m_Mobile.CanBeHarmful(m_Target))
                 {
                     m_Mobile.DoHarmful(m_Target);
-                    AOS.Damage(m_Target, m_Mobile, Utility.RandomMinMax(10, 20), 100, 0, 0, 0, 0);
+                    AOS.Damage(m_Target, m_Mobile, Utility.RandomMinMax(10, 20), 100, 0, 0, 0, 0, source_weapon: this);
                     new UnholyBone().MoveToWorld(m_Target.Location, m_Target.Map);
                 }
             }

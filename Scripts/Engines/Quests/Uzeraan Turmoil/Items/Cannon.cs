@@ -111,7 +111,7 @@ namespace Server.Engines.Quests.Haven
         {
             DoFireEffect(target);
 
-            target.Damage(Utility.RandomMinMax(50, 100), from);
+            target.Damage(Utility.RandomMinMax(50, 100), from, source_weapon: this);
         }
 
         public override bool HandlesOnMovement { get { return m_Canoneer != null && !m_Canoneer.Deleted && m_Canoneer.Active; } }

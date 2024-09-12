@@ -41,7 +41,7 @@ namespace Server.Factions
 
         public override void DoAttackEffect(Mobile m)
         {
-            m.Damage(Utility.Dice(6, 10, 40), m);
+            m.Damage(Utility.Dice(6, 10, 40), m, source_weapon: this);
         }
 
         [Constructable]

@@ -101,7 +101,7 @@ namespace Server.SkillHandlers
                 }
                 #endregion ghosts
 
-                if (Core.UOAI || Core.UOAR)
+                if (Core.UOAI || Core.UOREN)
                 {
                     #region summon healing
                     // summon healing
@@ -125,7 +125,7 @@ namespace Server.SkillHandlers
                     #endregion summon healing
                 }
 
-                if (Core.UOAI || Core.UOAR)
+                if (Core.UOAI || Core.UOREN)
                 {
                     #region slayer damage bonus
                     // slayer damage bonus

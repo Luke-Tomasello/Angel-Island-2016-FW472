@@ -67,7 +67,7 @@ namespace Server.Mobiles
             VirtualArmor = 27;
         }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 1 : 0; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 1 : 0; } }
 
         public Gibberling(Serial serial)
             : base(serial)

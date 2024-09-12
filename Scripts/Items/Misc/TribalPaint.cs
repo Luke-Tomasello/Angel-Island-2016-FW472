@@ -71,7 +71,7 @@ namespace Server.Items
                 }
                 else
                 {
-                    if (!Core.UOSP && !Core.UOMO && !Core.UOAI && !Core.UOAR)
+                    if (!Core.UOSP && !Core.UOMO && !Core.UOAI && !Core.UOREN)
                         from.BodyMod = (from.Female ? 184 : 183);
                     else
                         from.HueMod = 0;

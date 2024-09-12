@@ -58,7 +58,7 @@ namespace Server.Mobiles
             public InternalBuyInfo()
             {
 
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                 {
                     Add(new GenericBuyInfo("metal etching", typeof(EtchingBook), 10625, 20, 0xFF4, 0));
                     Add(new GenericBuyInfo("metal etching kit", typeof(EtchingKit), 250, 20, 0x1EB8, 0));
@@ -111,13 +111,13 @@ namespace Server.Mobiles
                 /* Shopkeeper NPCs do not sell any resources (Ingots, Cloth, etc.))
 				 * http://www.uoguide.com/Siege_Perilous
 				 */
-                if (!Core.UOSP && !Core.UOAI && !Core.UOAR && !Core.UOMO)
+                if (!Core.UOSP && !Core.UOAI && !Core.UOREN && !Core.UOMO)
                 {
                     Add(new GenericBuyInfo(typeof(Board), 3, 20, 0x1BD7, 0));
                     Add(new GenericBuyInfo(typeof(IronIngot), 5, 16, 0x1BF2, 0));
                 }
 
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                 {   // balanced buyback system
                     Add(new GenericBuyInfo(typeof(Board)));
                     Add(new GenericBuyInfo(typeof(IronIngot)));
@@ -137,7 +137,7 @@ namespace Server.Mobiles
         {
             public InternalSellInfo()
             {
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                 {
                     // balanced buyback system
                     Add(typeof(Board));
@@ -162,7 +162,7 @@ namespace Server.Mobiles
                     Add(typeof(ValoriteOre));
                 }
 
-                if (!Core.UOAI && !Core.UOAR && !Core.UOSP && !Core.UOMO)
+                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
                 {   // cash buyback
                     Add(typeof(Drums), 25);
                     Add(typeof(Tambourine), 30);

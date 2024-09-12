@@ -47,7 +47,7 @@ namespace Server.Items
 
             Effects.SendMovingParticles(new Entity(Serial.Zero, new Point3D(defender.X, defender.Y, defender.Z + 10), defender.Map), new Entity(Serial.Zero, new Point3D(defender.X, defender.Y, defender.Z + 20), defender.Map), 0x36FE, 1, 0, false, false, 1133, 3, 9501, 1, 0, EffectLayer.Waist, 0x100);
 
-            AOS.Damage(defender, attacker, Utility.RandomMinMax(10, 40), 100, 0, 0, 0, 0);
+            AOS.Damage(defender, attacker, Utility.RandomMinMax(10, 40), 100, 0, 0, 0, 0, source_weapon: this);
         }
     }
 }

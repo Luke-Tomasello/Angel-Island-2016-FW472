@@ -76,10 +76,10 @@ namespace Server.Mobiles
 
                 // Publish 13 - August 19, 2001
                 // Treasure map changes, tutorial/Haven changes, combat changes, with power hour changes and player owned barkeeps as later additions
-                if (Core.UOAI || Core.UOAR || Core.UOMO || (Core.UOSP && PublishInfo.Publish >= 13))
+                if (Core.UOAI || Core.UOREN || Core.UOMO || (Core.UOSP && PublishInfo.Publish >= 13))
                     Add(new GenericBuyInfo("a barkeep contract", typeof(BarkeepContract), 6250, 20, 0x14F0, 0));
 
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                 {
                     // Jade: Add new House Sitter deeds
                     Add(new GenericBuyInfo("a housesitter contract", typeof(HouseSitterDeed), 2500, 20, 0x14F0, 0));
@@ -92,7 +92,7 @@ namespace Server.Mobiles
         {
             public InternalSellInfo()
             {
-                if (!Core.UOAI && !Core.UOAR && !Core.UOSP && !Core.UOMO)
+                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
                 {   // cash buyback
                     Add(typeof(BeverageBottle), 3);
                     Add(typeof(Jug), 6);

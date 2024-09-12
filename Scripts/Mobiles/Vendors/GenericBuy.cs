@@ -259,7 +259,7 @@ namespace Server.Mobiles
 
                 // adjust for inflation (siege)
                 // Question(11) on the boards .. what's the formula?
-                if (!Core.UOAI && !Core.UOAR && !Core.UOMO && PublishInfo.Publish < 11)
+                if (!Core.UOAI && !Core.UOREN && !Core.UOMO && PublishInfo.Publish < 11)
                 {
                     double delta = (double)(m_RestockAmount - m_Amount);
                     double percent = ((delta / m_RestockAmount) * 100.00) / 100;

@@ -51,7 +51,7 @@ namespace Server.Gumps
             Mobile m = e.Mobile;
 
             // only on AI
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
                 // Adam: not during Server Wars
                 if (m.Player && m.AccessLevel == AccessLevel.Player && m.ShortTermMurders >= 5 && !Server.Misc.TestCenter.ServerWars())
                     if (!((PlayerMobile)m).Inmate)

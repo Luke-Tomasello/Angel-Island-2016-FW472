@@ -80,7 +80,7 @@ namespace Server.Items
             // if (!Core.AOS && Layer == Layer.TwoHanded && (attacker.Skills[SkillName.Anatomy].Value / 400.0) >= Utility.RandomDouble())
 
             // these publishes don't have random special moves
-            if (Core.UOAI || Core.UOAR || Core.UOMO || Core.AOS || PublishInfo.Publish >= 18)
+            if (Core.UOAI || Core.UOREN || Core.UOMO || Core.AOS || PublishInfo.Publish >= 18)
                 return;
 
             // humanoids can use the moves I guess, but only on players.

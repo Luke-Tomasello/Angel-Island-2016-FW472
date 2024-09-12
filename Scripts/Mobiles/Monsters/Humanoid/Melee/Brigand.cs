@@ -76,7 +76,7 @@ namespace Server.Mobiles
             IOBAlignment = IOBAlignment.Brigand;
             ControlSlots = 2;
 
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 SetStr(96, 115);
                 SetDex(86, 105);
@@ -119,10 +119,10 @@ namespace Server.Mobiles
 
         public override bool AlwaysMurderer { get { return true; } }
         public override bool ShowFameTitle { get { return false; } }
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOAR ? true : false; } }
+        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : false; } }
 
-        public override bool CanBandage { get { return Core.UOAI || Core.UOAR ? true : base.CanBandage; } }
-        public override TimeSpan BandageDelay { get { return Core.UOAI || Core.UOAR ? TimeSpan.FromSeconds(Utility.RandomMinMax(10, 13)) : base.BandageDelay; } }
+        public override bool CanBandage { get { return Core.UOAI || Core.UOREN ? true : base.CanBandage; } }
+        public override TimeSpan BandageDelay { get { return Core.UOAI || Core.UOREN ? TimeSpan.FromSeconds(Utility.RandomMinMax(10, 13)) : base.BandageDelay; } }
 
         public Brigand(Serial serial)
             : base(serial)
@@ -174,7 +174,7 @@ namespace Server.Mobiles
         }
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGold(100, 150);
 

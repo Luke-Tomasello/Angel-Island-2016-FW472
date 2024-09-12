@@ -180,7 +180,7 @@ namespace Server.SkillHandlers
             // Adam: 5/29/10 - triple tracking range.
             // Adam: 9/19/04 - Return tracking to it's original distance.
             // Pixie: 9/11/04 - increase tracking range (double it)
-            if (Core.UOAI || Core.UOAR || Core.UOMO)
+            if (Core.UOAI || Core.UOREN || Core.UOMO)
                 range *= 3;
 
             ArrayList list = new ArrayList();
@@ -342,7 +342,7 @@ namespace Server.SkillHandlers
 			else if (TransformationSpellHelper.UnderTransformation(m, typeof(WraithFormSpell)) && divisor <= 2000)
 				divisor += 200;*/
 
-            bool bug = !Core.UOMO && !Core.UOAI && !Core.UOAR && PublishInfo.Publish < 16.0 && from.Skills[SkillName.Tracking].Value >= 20.1;
+            bool bug = !Core.UOMO && !Core.UOAI && !Core.UOREN && PublishInfo.Publish < 16.0 && from.Skills[SkillName.Tracking].Value >= 20.1;
             int chance;
             if (bug)
             {
@@ -356,7 +356,7 @@ namespace Server.SkillHandlers
                     chance = 50 * (tracking + detectHidden + 10 * Utility.RandomMinMax(1, 20)) / divisor;
 
                 // add bonus for fonensics (10% at GM forensics)
-                if (Core.UOAI || Core.UOAR || Core.UOMO)
+                if (Core.UOAI || Core.UOREN || Core.UOMO)
                     chance += forensics / 10;
             }
             else
@@ -382,7 +382,7 @@ namespace Server.SkillHandlers
 
         private static bool IsPlayer(Mobile m)
         {
-            if (Core.UOAI || Core.UOAR || Core.UOMO || PublishInfo.Publish >= 13)
+            if (Core.UOAI || Core.UOREN || Core.UOMO || PublishInfo.Publish >= 13)
                 return m.Player;
             else
             {   // publish 13 bug

@@ -65,7 +65,7 @@ namespace Server.Mobiles
             VirtualArmor = 50;
         }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 3 : 0; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 3 : 0; } }
 
         public ElderGazer(Serial serial)
             : base(serial)
@@ -74,7 +74,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGold(250, 350);
 

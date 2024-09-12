@@ -76,7 +76,7 @@ namespace Server.Mobiles
         // Adam; we don't want out mobs to stop healing when the players leave the sector (a trick for killing monsters)
         public override bool PlayerRangeSensitive { get { return Hits == HitsMax; } }
 
-        public override void OnDamage(int amount, Mobile from, bool willKill)
+        public override void OnDamage(int amount, Mobile from, bool willKill, object source_weapon)
         {
             if (Aggressors.Count > m_threatLevel)
             {
@@ -131,7 +131,7 @@ namespace Server.Mobiles
                     }
                 }
             }
-            base.OnDamage(amount, from, willKill);
+            base.OnDamage(amount, from, willKill, source_weapon: source_weapon);
         }
 
         // Adam: manage the threat

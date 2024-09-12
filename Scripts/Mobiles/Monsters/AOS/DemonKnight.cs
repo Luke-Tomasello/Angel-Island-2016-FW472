@@ -221,16 +221,16 @@ namespace Server.Mobiles
         }
 
         public override Poison PoisonImmune { get { return Poison.Lethal; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 1 : 0; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 1 : 0; } }
 
         private static bool m_InHere;
 
-        public override void OnDamage(int amount, Mobile from, bool willKill)
+        public override void OnDamage(int amount, Mobile from, bool willKill, object source_weapon)
         {
             if (from != null && from != this && !m_InHere)
             {
                 m_InHere = true;
-                AOS.Damage(from, this, Utility.RandomMinMax(8, 20), 100, 0, 0, 0, 0);
+                AOS.Damage(from, this, Utility.RandomMinMax(8, 20), 100, 0, 0, 0, 0, source_weapon: source_weapon);
 
                 MovingEffect(from, 0xECA, 10, 0, false, false, 0, 0);
                 PlaySound(0x491);

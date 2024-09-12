@@ -200,12 +200,12 @@ namespace Server.Misc
 				 * Members of the Thieves Guild do not display professional titles on the paperdoll to anyone except themselves, regardless of skill level or fame.
 				 * http://www.uoguide.com/Publish_-_February_24,_1999#Stealing
 				 */
-                if ((beheld is PlayerMobile && beholder is PlayerMobile) && beholder != beheld && (beheld as PlayerMobile).NpcGuild == NpcGuild.ThievesGuild && !(Core.UOAI || Core.UOAR || Core.UOMO))
+                if ((beheld is PlayerMobile && beholder is PlayerMobile) && beholder != beheld && (beheld as PlayerMobile).NpcGuild == NpcGuild.ThievesGuild && !(Core.UOAI || Core.UOREN || Core.UOMO))
                 {   // no titles unless looking at self
                     showFameTitle = showSkillTitle = false;
                 }
 
-                if (beheld.Murderer && (Core.UOAI || Core.UOAR || Core.UOMO))
+                if (beheld.Murderer && (Core.UOAI || Core.UOREN || Core.UOMO))
                 {
                     title.AppendFormat(fame >= 10000 ?
                         "{3}{1} {0}, Murderer of {2}" :

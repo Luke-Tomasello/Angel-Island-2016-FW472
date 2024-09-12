@@ -181,7 +181,7 @@ namespace Server.Spells
         private static TravelValidator[] m_Validators;
         public static void Initialize()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
                 m_Rules = new bool[,]
                 {
 					  /* T2A(Fel)	Ilshenar	Wind(Tram)	Wind(Fel)	Dungeons(Fel)	Solen(Tram)	Solen(Fel)	CrystalCave(Malas)	Gauntlet(Malas),	Gauntlet(Ferry)	Stronghold(Fel)	Hedge Maze	Angel Island	Zoo */
@@ -1421,7 +1421,7 @@ namespace Server.Spells
             }
 
             if (delay == TimeSpan.Zero)
-                target.Damage((int)Moddamage, from);
+                target.Damage((int)Moddamage, from, source_weapon: from);
             else
                 new SpellDamageTimer(target, from, (int)Moddamage, delay).Start();
 
@@ -1466,7 +1466,7 @@ namespace Server.Spells
             if (delay == TimeSpan.Zero)
             {
                 WeightOverloading.DFA = dfa;
-                AOS.Damage(target, from, (int)Moddamage, phys, fire, cold, pois, nrgy);
+                AOS.Damage(target, from, (int)Moddamage, phys, fire, cold, pois, nrgy, source_weapon: from);
                 WeightOverloading.DFA = DFAlgorithm.Standard;
             }
             else
@@ -1495,7 +1495,7 @@ namespace Server.Spells
 
             protected override void OnTick()
             {
-                m_Target.Damage(m_Damage);
+                m_Target.Damage(m_Damage, source_weapon: m_From);
             }
         }
 
@@ -1525,7 +1525,7 @@ namespace Server.Spells
             protected override void OnTick()
             {
                 WeightOverloading.DFA = m_DFA;
-                AOS.Damage(m_Target, m_From, m_Damage, m_Phys, m_Fire, m_Cold, m_Pois, m_Nrgy);
+                AOS.Damage(m_Target, m_From, m_Damage, m_Phys, m_Fire, m_Cold, m_Pois, m_Nrgy, source_weapon: m_From);
                 WeightOverloading.DFA = DFAlgorithm.Standard;
 
                 if (m_Target is BaseCreature && m_From != null)

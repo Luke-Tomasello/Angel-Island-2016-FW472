@@ -121,7 +121,7 @@ namespace Server.Mobiles
 
         public override bool DisallowAllMoves { get { return true; } }
         // Auto-dispel is UOR - http://forums.uosecondage.com/viewtopic.php?f=8&t=6901
-        public override bool AutoDispel { get { return Core.UOAI || Core.UOAR ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
+        public override bool AutoDispel { get { return Core.UOAI || Core.UOREN ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
         public override Poison PoisonImmune { get { return Poison.Lethal; } }
 
         public override bool CanBandage { get { return true; } }
@@ -165,7 +165,7 @@ namespace Server.Mobiles
                 int toDrain = Utility.RandomMinMax(10, 40);
 
                 Hits += toDrain;
-                m.Damage(toDrain, this);
+                m.Damage(toDrain, this, source_weapon: this);
             }
         }
 
@@ -291,7 +291,7 @@ namespace Server.Mobiles
                         if (m_Owner != null)
                             m_Owner.Hits += 20;
 
-                        m.Damage(20, m_Owner);
+                        m.Damage(20, m_Owner, source_weapon: this);
                     }
 
                     m_ToDrain.Clear();
@@ -351,7 +351,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGold(28000, 32000);
                 PackItem(new Log(Utility.Random(2500, 3500)));

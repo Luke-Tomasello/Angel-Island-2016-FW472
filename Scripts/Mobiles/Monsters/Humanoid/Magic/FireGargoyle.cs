@@ -68,7 +68,7 @@ namespace Server.Mobiles
 
         public override bool HasBreath { get { return true; } } // fire breath enabled
         public override int Meat { get { return 1; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 2 : 1; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 2 : 1; } }
         public override AuraType MyAura { get { return AuraType.Fire; } }
 
         public FireGargoyle(Serial serial)
@@ -78,7 +78,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGem();
                 PackGold(200, 250);

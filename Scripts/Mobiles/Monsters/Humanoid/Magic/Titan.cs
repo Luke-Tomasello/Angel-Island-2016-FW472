@@ -68,7 +68,7 @@ namespace Server.Mobiles
         public override Poison PoisonImmune { get { return Poison.Regular; } }
         // http://web.archive.org/web/20080803024213/uo.stratics.com/database/view.php?db_content=hunters&id=352
         // this says level 5 map as does RunUO
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 3 : 5; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 3 : 5; } }
 
         public Titan(Serial serial)
             : base(serial)
@@ -77,7 +77,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 PackGold(300, 450);
                 PackMagicEquipment(1, 2, 0.20, 0.20);

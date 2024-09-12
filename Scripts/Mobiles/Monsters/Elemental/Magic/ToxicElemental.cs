@@ -70,7 +70,7 @@ namespace Server.Mobiles
         public override Poison HitPoison { get { return Poison.Lethal; } }
         public override double HitPoisonChance { get { return 0.6; } }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOAR ? 3 : 0; } }
+        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 3 : 0; } }
 
         public ToxicElemental(Serial serial)
             : base(serial)
@@ -79,7 +79,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
             {
                 Katana kat = new Katana();                  // Adam: why do we have an unmovable katana?
                 kat.Movable = false;

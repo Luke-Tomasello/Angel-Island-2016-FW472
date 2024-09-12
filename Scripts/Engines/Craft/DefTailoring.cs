@@ -170,7 +170,7 @@ namespace Server.Engines.Craft
             AddCraft(typeof(FullApron), 1015283, 1025437, 29.0, 54.0, typeof(Cloth), 1044286, 10, 1044287);
             AddCraft(typeof(OilCloth), 1015283, 1041498, 74.6, 75.9,/*74.6, 99.6,*/ typeof(Cloth), 1044286, 1, 1044287);
 
-            if (Core.UOAI || Core.UOAR)
+            if (Core.UOAI || Core.UOREN)
                 AddCraft(typeof(ClothGloves), 1015283, "cloth gloves", SkillName.Tailoring, 74.6, 75.6,/*74.6, 99.9,*/ typeof(Cloth), "Cloth", 3, 1044287);
 
             // Footwear

@@ -223,7 +223,7 @@ namespace Server.Misc
                     state.Send(new DeleteResult(DeleteResultType.CharBeingPlayed));
                     state.Send(new CharacterListUpdate(acct));
                 }
-                else if (RestrictDeletion && DateTime.UtcNow < (m.CreationTime + DeleteDelay))
+                else if (RestrictDeletion && DateTime.UtcNow < (m.Created + DeleteDelay))
                 {
                     state.Send(new DeleteResult(DeleteResultType.CharTooYoung));
                     state.Send(new CharacterListUpdate(acct));
@@ -542,7 +542,7 @@ namespace Server.Misc
             // from the old IP.  This effectively stops any more than 2 accounts having a single IP as their
             // last accessed.
             #region IPBinderEnabled
-            if (!Core.LoginServer && CoreAI.IsDynamicFeatureSet(CoreAI.FeatureBits.IPBinderEnabled))    //Adam: disable via IPBinderEnabled for now until we can better understand the logon problems people are having
+            if (!Core.RuleSets.LoginServerRules() && CoreAI.IsDynamicFeatureSet(CoreAI.FeatureBits.IPBinderEnabled))    //Adam: disable via IPBinderEnabled for now until we can better understand the logon problems people are having
             {
                 AccessLevel aal = AccessLevel.Player;
                 List<Account> acctList = new List<Account>();
@@ -604,7 +604,7 @@ namespace Server.Misc
             #endregion
 
             //if we have a valid account on a non-primary shard, create it (assuming AutoAccountCreation is on)
-            if (acct == null && !Core.LoginServer)
+            if (acct == null && !Core.RuleSets.LoginServerRules())
             {
                 // there are NO STAFF accounts with this username and either you have NO accounts, or you have a matching account name and password for another shard.
                 if (AutoAccountCreation && !Account.CheckAllStaff(null, un, false) && (!Account.CheckAllAccounts(un) || (Account.CheckAllAccounts(un) && Account.CheckAllPasswords(un, pw))))

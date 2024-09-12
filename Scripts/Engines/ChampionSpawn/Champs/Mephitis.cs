@@ -76,7 +76,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (!Core.UOAI && !Core.UOAR)
+            if (!Core.UOAI && !Core.UOREN)
             {
                 AddLoot(LootPack.UltraRich, 4);
             }
@@ -85,9 +85,9 @@ namespace Server.Mobiles
         public override Poison PoisonImmune { get { return Poison.Lethal; } }
         //public override Poison HitPoison{ get{ return Poison.Lethal; } }
 
-        public override void Damage(int amount, Mobile from)
+        public override void Damage(int amount, Mobile from, object source_weapon)
         {
-            base.Damage(amount, from);
+            base.Damage(amount, from, source_weapon: source_weapon);
 
             Mobile m = VerifyValidMobile(from, 9);
 

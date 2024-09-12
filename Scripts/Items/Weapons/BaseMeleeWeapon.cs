@@ -54,7 +54,7 @@ namespace Server.Items
                     defender.MeleeDamageAbsorb -= damage;
                     damage = 0;
 
-                    attacker.Damage(react, defender);
+                    attacker.Damage(react, defender, source_weapon: this);
 
                     attacker.PlaySound(0x1F1);
                     attacker.FixedEffect(0x374A, 10, 16);

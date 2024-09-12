@@ -68,7 +68,7 @@ namespace Server.Spells.Eighth
             if (CheckSequence())
             {
                 TimeSpan duration = TimeSpan.FromSeconds((2 * Caster.Skills.Magery.Fixed) / 5);
-                SpellHelper.Summon(new Daemon(Core.UOAI || Core.UOAR ? true : false), Caster, 0x216, duration, false, false);
+                SpellHelper.Summon(new Daemon(Core.UOAI || Core.UOREN ? true : false), Caster, 0x216, duration, false, false);
             }
 
             FinishSequence();

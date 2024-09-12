@@ -318,7 +318,40 @@ namespace Server.Misc
                     }
                 }
             }
+            private class BondPetTarget : Server.Targeting.Target
+            {
+                public BondPetTarget()
+                    : base(-1, false, Targeting.TargetFlags.None)
+                {
+                }
 
+                protected override void OnTarget(Mobile from, object targeted)
+                {
+                    Server.Mobiles.BaseCreature pet = targeted as Server.Mobiles.BaseCreature;
+
+                    if (pet == null || pet.ControlMaster != from)
+                    {
+                        from.SendMessage("That's not your pet!");
+                        return;
+                    }
+
+                    if (pet.IsBonded)
+                    {
+                        from.SendMessage("That pet has already bonded with you.");
+                        return;
+                    }
+
+                    if (!pet.Tamable || !pet.IsBondable)
+                    {
+                        from.SendMessage("You cannot bond with that.");
+                        return;
+                    }
+
+                    pet.IsBonded = true;
+                    pet.BondingBegin = DateTime.MinValue;
+                    from.SendLocalizedMessage(1049666); // Your pet has bonded with you!
+                }
+            }
             public static void EventSink_Speech(SpeechEventArgs args)
             {
                 if (!args.Handled && Insensitive.StartsWith(args.Speech, "tamepet"))
@@ -336,6 +369,45 @@ namespace Server.Misc
 
                         args.Handled = true;
                     }
+                }
+                else if (Insensitive.Equals(args.Speech, "bondpet"))
+                {
+                    args.Mobile.Target = new BondPetTarget();
+                    args.Mobile.SendMessage("Target your pet.");
+                    args.Handled = true;
+                }
+                else if (Insensitive.Equals(args.Speech, "toggle whiff"))
+                {
+                    if (Core.HITMISS > 0)
+                        Core.HITMISS = 0;
+                    else if (Core.HITMISS == 0)
+                        Core.HITMISS = 1;
+
+                    Core.HITMISS = (Core.HITMISS > 0 ? 0 : 1);
+                    args.Mobile.SendMessage("Weapon whiff tracking: {0}", (Core.HITMISS > 0) ? "on" : "off");
+                    args.Handled = true;
+                }
+                else if (Insensitive.Equals(args.Speech, "toggle damage"))
+                {
+                    if (Core.DAMAGE > 0)
+                        Core.DAMAGE = 0;
+                    else if (Core.DAMAGE == 0)
+                        Core.DAMAGE = 1;
+
+                    args.Mobile.SendMessage("Weapon damage tracking: {0}", (Core.DAMAGE > 0) ? "on" : "off");
+                    args.Handled = true;
+                }
+                else if (Insensitive.Equals(args.Speech, "reset whiff"))
+                {
+                    Core.HITMISS = 2; // reset flag
+                    args.Mobile.SendMessage("Weapon whiff tracking reset.");
+                    args.Handled = true;
+                }
+                else if (Insensitive.Equals(args.Speech, "reset damage"))
+                {
+                    Core.DAMAGE = 2; // reset flag
+                    args.Mobile.SendMessage("Weapon damage tracking reset.");
+                    args.Handled = true;
                 }
                 else if (!args.Handled && Insensitive.StartsWith(args.Speech, "set"))
                 {
