@@ -192,7 +192,7 @@ namespace Server.Engines.Quests.Collector
             {
                 BaseWeapon weapon = Loot.RandomWeapon();
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     BaseRunicTool.ApplyAttributesTo(weapon, 2, 20, 30);
                 }
@@ -209,7 +209,7 @@ namespace Server.Engines.Quests.Collector
             {
                 Item item;
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     item = Loot.RandomArmorOrShieldOrJewelry();
 

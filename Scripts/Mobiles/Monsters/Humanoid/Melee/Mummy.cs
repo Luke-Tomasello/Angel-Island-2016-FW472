@@ -80,7 +80,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGem();
                 PackPotion();
@@ -103,7 +103,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020213040515/uo.stratics.com/hunters/mummy.shtml
                     // 50 to 150 Gold, Potions, Gems, Scrolls (circle 4-7), Garlic, Bandages
                     if (Spawning)

@@ -116,7 +116,7 @@ namespace Server.Engines.BulkOrders
                 case BulkMaterialType.Barbed: mat = Mat.Barbed; break;
             }
 
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
             {
                 if (RequireExceptional)
                 {

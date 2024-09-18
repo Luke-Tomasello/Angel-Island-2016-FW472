@@ -23,7 +23,7 @@
  * ChangeLog:
  *	2/3/11, Adam
  *		Make ability to summon a Horde Minion based upon Core.AngelIsland
- *	7/16/10, adam
+ *	7/16/10, Adam
  *		Add HordeMinionFamiliar as a summonable creature
  *			o 3 control slots
  *			o requires SpiritSpeak to summon
@@ -92,7 +92,7 @@ namespace Server.Spells.Fifth
                 try
                 {
                     BaseCreature creature = null;
-                    if ((Core.UOAI || Core.UOREN) && Caster.Skills.SpiritSpeak.Value > 50 && (Caster.Skills.SpiritSpeak.Value / 100) >= Utility.RandomDouble())
+                    if ((Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules()) && Caster.Skills.SpiritSpeak.Value > 50 && (Caster.Skills.SpiritSpeak.Value / 100) >= Utility.RandomDouble())
                     {
                         creature = new HordeMinionFamiliar();
                         creature.ControlSlots = 3;
@@ -105,7 +105,7 @@ namespace Server.Spells.Fifth
 
                     TimeSpan duration;
 
-                    if (Core.AOS)
+                    if (Core.RuleSets.AOSRules())
                         duration = TimeSpan.FromSeconds((2 * Caster.Skills.Magery.Fixed) / 5);
                     else
                         duration = TimeSpan.FromSeconds(4.0 * Caster.Skills[SkillName.Magery].Value);
@@ -120,7 +120,7 @@ namespace Server.Spells.Fifth
 
         public override TimeSpan GetCastDelay()
         {
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
                 return TimeSpan.FromTicks(base.GetCastDelay().Ticks * 5);
 
             return base.GetCastDelay() + TimeSpan.FromSeconds(6.0);

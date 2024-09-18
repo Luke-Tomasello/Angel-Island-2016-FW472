@@ -21,15 +21,15 @@
 
 /* Scripts\Engines\AI\Creature\SpeedInfo.cs
  * ChangeLog
- *	8/7/10, adam
+ *	8/7/10, Adam
  *		Add TaxCollector to very fast table
- *	7/22/10, adam
+ *	7/22/10, Adam
  *		add VladDracula to the very fast table with the other champs
- *	7/19/10, adam
+ *	7/19/10, Adam
  *		Move the Vampire to the fast table from the very fast table
  *	5/12/10, Adam
  *		Add Vampire to the very fast table
- *	4/29/10, adam
+ *	4/29/10, Adam
  *		moved the Nightmare and WhiteWyrm to the Medium table from the Fast table.
  *		these high-level tames are too fast on a shard without mounts .. they now match Dragons
  */

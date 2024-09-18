@@ -263,28 +263,57 @@ namespace Server.Engines.Craft
 #endif
             }
         }
+        private Type[] DisplayNumToTypes(int nameNumber)
+        {
+            switch (nameNumber)
+            {
+                case 1049150:       //  "LEATHER / HIDES";
+                    return new Type[] {typeof(Leather), typeof(Hides) };
+                case 1049151:       //  "SPINED LEATHER / HIDES";
+                    return new Type[] { typeof(SpinedLeather), typeof(SpinedHides) };
+                case 1049152:       //  "HORNED LEATHER / HIDES";
+                    return new Type[] { typeof(HornedLeather), typeof(HornedHides) };
+                case 1049153:       //  "BARBED LEATHER / HIDES";
+                    return new Type[] { typeof(BarbedLeather), typeof(BarbedHides) };
+
+                case 1044022:       // "IRON";
+                    return new Type[] { typeof(IronIngot) };
+                case 1044023:       // "DULL COPPER";
+                    return new Type[] { typeof(DullCopperIngot) };
+                case 1044024:       // "SHADOW IRON";
+                    return new Type[] { typeof(ShadowIronIngot) };
+                case 1044025:       // "COPPER";
+                    return new Type[] { typeof(CopperIngot) };
+                case 1044026:       // "BRONZE";
+                    return new Type[] { typeof(BronzeIngot) };
+                case 1044027:       // "GOLD";
+                    return new Type[] { typeof(GoldIngot) };
+                case 1044028:       // "AGAPITE";
+                    return new Type[] { typeof(AgapiteIngot) };
+                case 1044029:       // "VERITE";
+                    return new Type[] { typeof(VeriteIngot) };
+                case 1044030:       // "VALORITE";
+                    return new Type[] { typeof(ValoriteIngot) };
+            }
+            return new Type[] { };
+        }
         private bool FormatNameString(Mobile from, int nameNumber, out string nameString)
         {
             if (Cliloc.Lookup.TryGetValue(nameNumber, out nameString) && from != null && from.Backpack != null)
-            {   // barbed leather / hides (10)
-                List<string> list = new List<string>(nameString.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries));
-                list = list.Select(item => item.Trim()).ToList();   // trim
-                list = list.Select(t => Regex.Replace(t, @"\s+", "")).ToList(); // remove white
+            {
                 int count = 0;
+                List<Type> list_types = new List<Type>(DisplayNumToTypes(nameNumber));
                 List<Item> list_items = new List<Item>(from.Backpack.GetDeepItems().Cast<Item>().ToList());
-                List<Type> list_types = new List<Type>();
-                foreach (string s in list)
-                    if (ScriptCompiler.FindTypeByName(s) != null)
-                        list_types.Add(ScriptCompiler.FindTypeByName(s));
                 // okay, now we have a list of types to search for
                 foreach (Type t in list_types)
                     foreach (Item item in list_items)
                         if (item.GetType() == t)
                             count += item.Amount;
-                
+
                 nameString = string.Format("{0} ({1})", nameString, count);
                 return true;
             }
+
             return false;
         }
         public void CreateMakeLastList()

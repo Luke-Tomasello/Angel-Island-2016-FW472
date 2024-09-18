@@ -21,7 +21,7 @@
 
 /* Scripts/Mobiles/Monsters/Elemental/Melee/EarthElemental.cs
  * ChangeLog
- *	7/16/10, adam
+ *	7/16/10, Adam
  *		o decrease average dex
  *		o decrease average int
  *		o increase average hp
@@ -94,7 +94,7 @@ namespace Server.Mobiles
             }
         }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 1 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 1 : 0; } }
 
         public EarthElemental(Serial serial)
             : base(serial)
@@ -103,7 +103,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGem();
                 // Jade: Add FertileDirt
@@ -114,7 +114,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020202092911/uo.stratics.com/hunters/earthelemental.shtml
                     // 200 - 350 Gold, Gems, Ore, Fertile Dirt reagent
 

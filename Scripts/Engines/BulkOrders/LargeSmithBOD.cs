@@ -409,28 +409,28 @@ namespace Server.Engines.BulkOrders
                 list.Add(new PowerScroll(SkillName.Blacksmith, 120));
 
             if (rDull)
-                list.Add(new RunicHammer(CraftResource.DullCopper, Core.AOS ? 50 : 50));
+                list.Add(new RunicHammer(CraftResource.DullCopper, Core.RuleSets.AOSRules() ? 50 : 50));
 
             if (rShadow)
-                list.Add(new RunicHammer(CraftResource.ShadowIron, Core.AOS ? 45 : 50));
+                list.Add(new RunicHammer(CraftResource.ShadowIron, Core.RuleSets.AOSRules() ? 45 : 50));
 
             if (rCopper)
-                list.Add(new RunicHammer(CraftResource.Copper, Core.AOS ? 40 : 50));
+                list.Add(new RunicHammer(CraftResource.Copper, Core.RuleSets.AOSRules() ? 40 : 50));
 
             if (rBronze)
-                list.Add(new RunicHammer(CraftResource.Bronze, Core.AOS ? 35 : 50));
+                list.Add(new RunicHammer(CraftResource.Bronze, Core.RuleSets.AOSRules() ? 35 : 50));
 
             if (rGold)
-                list.Add(new RunicHammer(CraftResource.Gold, Core.AOS ? 30 : 50));
+                list.Add(new RunicHammer(CraftResource.Gold, Core.RuleSets.AOSRules() ? 30 : 50));
 
             if (rAgapite)
-                list.Add(new RunicHammer(CraftResource.Agapite, Core.AOS ? 25 : 50));
+                list.Add(new RunicHammer(CraftResource.Agapite, Core.RuleSets.AOSRules() ? 25 : 50));
 
             if (rVerite)
-                list.Add(new RunicHammer(CraftResource.Verite, Core.AOS ? 20 : 50));
+                list.Add(new RunicHammer(CraftResource.Verite, Core.RuleSets.AOSRules() ? 20 : 50));
 
             if (rValorite)
-                list.Add(new RunicHammer(CraftResource.Valorite, Core.AOS ? 15 : 50));
+                list.Add(new RunicHammer(CraftResource.Valorite, Core.RuleSets.AOSRules() ? 15 : 50));
 
             if (a10)
                 list.Add(new AncientSmithyHammer(10));

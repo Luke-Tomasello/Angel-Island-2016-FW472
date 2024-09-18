@@ -80,7 +80,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 switch (Utility.Random(5))
                 {
@@ -108,7 +108,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20021014235748/uo.stratics.com/hunters/skeleton.shtml
                     // 0 to 50 Gold, Sometimes Bone Armor, Weapon Carried
                     if (Spawning)

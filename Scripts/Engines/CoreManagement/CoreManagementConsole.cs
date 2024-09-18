@@ -35,26 +35,26 @@
  *	8/8/10, Adam
  *		Add: OldFlee switch
  *			BaseAI seems to have a bug where they clear FocusMob in OnActionChanged().Flee
- *	7/23/10, adam
+ *	7/23/10, Adam
  *		Add SpiritSpeakUsageReport
  *		used to turing on/off SpiritSpeak UsageReports
- *	6/12/10, adam
+ *	6/12/10, Adam
  *		Add a switch for controling the algo used for calculating armor absorb (ArmorAbsorbClassic)
- *	5/14/10, adam
+ *	5/14/10, Adam
  *		Update the mindblast delay as per Az recomendations 12/30 to 1.55
- *	5/12/10, adam
+ *	5/12/10, Adam
  *		Add CoreAI.SlayerWeaponDropRate
- *	4/10/10, adam
+ *	4/10/10, Adam
  *		Add speed management MCi to tune dragon speeds.
- *	4/9/10, adam
+ *	4/9/10, Adam
  *		Add a SmartSpellMCi for managing the 8th level default spell behavior of high-level magical mobs
- *	4/4/10, adam
+ *	4/4/10, Adam
  *		Oops, make the min/max values as per Az recomendations 12/30
- *	3/19/10, adam
+ *	3/19/10, Adam
  *		Add MindBlastMCi
  *		Change Poison Resistance from Spells.SpellCircle.Third to Spells.SpellCircle.Sixth
  *		This change is based on testing Akarius Alexios, and Answer
- *	3/18/10, adam
+ *	3/18/10, Adam
  *		Add new stun management console prototype
  *		StunPunchMCi
  *	11/25/08, Adam

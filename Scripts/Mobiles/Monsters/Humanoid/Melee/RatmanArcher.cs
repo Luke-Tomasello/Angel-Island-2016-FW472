@@ -63,7 +63,7 @@ namespace Server.Mobiles
             SetHits(88, 108);
 
             // Adam: up the damage a bit. Was ( 4, 10 )
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                 SetDamage(15, 25);
             else
                 SetDamage(4, 10);
@@ -84,7 +84,7 @@ namespace Server.Mobiles
 
         }
 
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : true; } }
+        public override bool CanRummageCorpses { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? true : true; } }
         public override int Hides { get { return 8; } }
         public override HideType HideType { get { return HideType.Spined; } }
 
@@ -109,7 +109,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 // adam: 20-30 arrows seem about right
                 PackItem(new Arrow(Utility.RandomMinMax(20, 30)));
@@ -120,7 +120,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020214225651/uo.stratics.com/hunters/ratmanarcher.shtml
                     // ? (unknown) - use RunUO loot
 

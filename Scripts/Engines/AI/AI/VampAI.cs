@@ -21,7 +21,7 @@
 
 /* Scripts/Engines/AI/AI/VampAI.cs
  * ChangeLog:
- *	7/19/10, adam
+ *	7/19/10, Adam
  *		remove kits wild speedups and use normal UO speeds.
  * 		reason: vampires are anti tamer to encourage warriors and mages, but the flee speed was crazy
  * 			and no warrior could catch them.

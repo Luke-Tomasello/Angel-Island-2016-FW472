@@ -45,7 +45,7 @@ namespace Server.Items
         public OrderShield()
             : base(0x1BC4)
         {
-            if (!Core.AOS)
+            if (!Core.RuleSets.AOSRules())
                 LootType = LootType.Newbied;
 
             Weight = 7.0;
@@ -88,7 +88,7 @@ namespace Server.Items
 
         public bool Validate(Mobile m)
         {
-            if (Core.AOS || m == null || !m.Player || m.AccessLevel != AccessLevel.Player)
+            if (Core.RuleSets.AOSRules() || m == null || !m.Player || m.AccessLevel != AccessLevel.Player)
                 return true;
 
             Guild g = m.Guild as Guild;

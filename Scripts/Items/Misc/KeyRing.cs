@@ -374,7 +374,7 @@ namespace Server.Items
                             {
                                 LockableContainer cont = (LockableContainer)o;
 
-                                if (PublishInfo.Publish < 4 || Core.UOAI || Core.UOREN)
+                                if (PublishInfo.Publish < 4 || Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                                 {   // old-school traps (< publish 4)
                                     if (cont.TrapEnabled)
                                     {

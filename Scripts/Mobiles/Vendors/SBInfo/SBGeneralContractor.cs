@@ -46,7 +46,7 @@ namespace Server.Mobiles
         {
             public InternalBuyInfo()
             {
-                if (Core.UOAI || Core.UOREN || Core.UOMO)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
                 {
                     Add(new GenericBuyInfo(typeof(BookofUpgradeContracts), 100, 20, 0xFF0, 0));
                     Add(new GenericBuyInfo(typeof(ModestUpgradeContract), 82562, 20, 0x14F0, 0));
@@ -61,12 +61,12 @@ namespace Server.Mobiles
         {
             public InternalSellInfo()
             {
-                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
+                if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.SiegeRules() && !Core.RuleSets.MortalisRules())
                 {   // cash buyback
                     Add(typeof(InteriorDecorator), 5000);
                 }
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {   // cash buyback (AOS)
                     Add(typeof(HousePlacementTool), 301);
                 }

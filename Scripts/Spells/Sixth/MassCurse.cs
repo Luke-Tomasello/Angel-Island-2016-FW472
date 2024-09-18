@@ -70,7 +70,7 @@ namespace Server.Spells.Sixth
 
                     foreach (Mobile m in eable)
                     {
-                        if (Core.AOS && m == Caster)
+                        if (Core.RuleSets.AOSRules() && m == Caster)
                             continue;
 
                         if (SpellHelper.ValidIndirectTarget(Caster, m) && Caster.CanSee(m) && Caster.CanBeHarmful(m, false))

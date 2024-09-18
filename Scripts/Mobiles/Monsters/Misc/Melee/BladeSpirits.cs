@@ -38,11 +38,11 @@ namespace Server.Mobiles
     [CorpseName("a blade spirit corpse")]
     public class BladeSpirits : BaseCreature
     {
-        public override bool DeleteCorpseOnDeath { get { return Core.AOS; } }
+        public override bool DeleteCorpseOnDeath { get { return Core.RuleSets.AOSRules(); } }
         public override bool IsHouseSummonable { get { return true; } }
 
-        public override double DispelDifficulty { get { return Core.UOAI || Core.UOREN ? 56.0 : 0; } }
-        public override double DispelFocus { get { return Core.UOAI || Core.UOREN ? 45.0 : 20.0; } }
+        public override double DispelDifficulty { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 56.0 : 0; } }
+        public override double DispelFocus { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 45.0 : 20.0; } }
 
         [Constructable]
         public BladeSpirits()

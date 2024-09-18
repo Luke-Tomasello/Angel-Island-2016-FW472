@@ -94,9 +94,9 @@ namespace Server.Mobiles
             VirtualArmor = 50;
         }
 
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : true; } }
+        public override bool CanRummageCorpses { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? true : true; } }
         public override Poison PoisonImmune { get { return Poison.Lethal; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 3 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 3 : 0; } }
 
         public Lich(Serial serial)
             : base(serial)
@@ -105,7 +105,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGem();
                 PackReg(8, 12);
@@ -139,7 +139,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020207053311/uo.stratics.com/hunters/lich.shtml
                     // 200 to 250 Gold, Gems, Scrolls (circle 4-7), Reagents, Magic Wand or Staff, Magic items
 
@@ -167,7 +167,7 @@ namespace Server.Mobiles
                     if (Spawning)
                     {
                         PackItem(new GnarledStaff());
-                        if (Core.AOS)
+                        if (Core.RuleSets.AOSRules())
                             PackNecroReg(17, 24);
                     }
 

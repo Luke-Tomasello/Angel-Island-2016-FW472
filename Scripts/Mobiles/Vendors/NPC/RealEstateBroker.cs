@@ -213,14 +213,14 @@ namespace Server.Mobiles
 
             // don't allow repurchase (or sale) of customs on siege. Before we can buy them back, we need to markup the sale price and that's not been done 
             // on the player vendors in the special	housing area. (so they will make 300% profit!)
-            if (Core.UOSP && !Misc.Diagnostics.Assert(deed is StaticDeed == false, "deed is StaticDeed for sale on siege!"))
+            if (Core.RuleSets.SiegeRules() && !Misc.Diagnostics.Assert(deed is StaticDeed == false, "deed is StaticDeed for sale on siege!"))
                 price = 0;
 
             // Publish 11
             // o) NPC real estate brokers will now buy house deeds back at 20% below the base price of the deed, or the original
             //	price paid when the deed was purchased from a vendor (whichever is lower).
             // o) House deed prices when reselling to real estate agents raised to the correct level on Siege Perilous
-            if (!Core.UOAI && !Core.UOREN && !Core.UOMO && PublishInfo.Publish < 11)
+            if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.MortalisRules() && PublishInfo.Publish < 11)
                 return GenericBuyInfo.ComputeSiegeMarkup(price); // 100%
 
             return AOS.Scale(price, 80); // refunds 80% of the purchase price

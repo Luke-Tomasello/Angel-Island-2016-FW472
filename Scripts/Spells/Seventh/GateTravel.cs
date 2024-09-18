@@ -99,7 +99,7 @@ namespace Server.Spells.Seventh
 
         public void Effect(Point3D loc, Map map, bool checkMulti)
         {
-            if (map == null || (!Core.AOS && Caster.Map != map))
+            if (map == null || (!Core.RuleSets.AOSRules() && Caster.Map != map))
             {
                 Caster.SendLocalizedMessage(1005570); // You can not gate to another facet.
             }
@@ -154,7 +154,7 @@ namespace Server.Spells.Seventh
         [DispellableField]
         private class InternalItem : Moongate
         {
-            public override bool ShowFeluccaWarning { get { return Core.AOS; } }
+            public override bool ShowFeluccaWarning { get { return Core.RuleSets.AOSRules(); } }
 
             public InternalItem(Point3D target, Map map)
                 : base(target, map)

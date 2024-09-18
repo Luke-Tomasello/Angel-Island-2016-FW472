@@ -423,7 +423,7 @@ namespace Server.Items
             switch (GetType(resource))
             {
                 case CraftResourceType.Metal: list = m_MetalInfo; break;
-                case CraftResourceType.Leather: list = Core.AOS ? m_AOSLeatherInfo : m_LeatherInfo; break;
+                case CraftResourceType.Leather: list = Core.RuleSets.AOSRules() ? m_AOSLeatherInfo : m_LeatherInfo; break;
                 case CraftResourceType.Scales: list = m_ScaleInfo; break;
             }
 

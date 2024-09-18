@@ -37,7 +37,7 @@ namespace Server.Items
         {
             damage = base.AbsorbDamage(attacker, defender, damage);
 
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
                 return damage;
 
             int absorb = defender.MeleeDamageAbsorb;

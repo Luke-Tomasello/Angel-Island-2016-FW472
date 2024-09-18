@@ -63,7 +63,7 @@ namespace Server.Spells.First
 
                 double damage;
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     damage = GetNewAosDamage(Utility.RandomMinMax(10, 15), 1, 4);
                 }

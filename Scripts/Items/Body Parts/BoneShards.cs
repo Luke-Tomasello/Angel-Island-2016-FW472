@@ -21,7 +21,7 @@
 
 /* Scripts\Items\Body Parts\BoneShards.cs
  * ChangeLog
- *	12/28/10, adam
+ *	12/28/10, Adam
  *		first time checkin - updated from:
  *		http://www.google.com/codesearch/p?hl=en#biPgqLK3B_w/trunk/Scripts/Items/Body%20Parts/BoneShards.cs&q=BoneShards&exact_package=http://runuomondains.googlecode.com/svn&sa=N&cd=1&ct=rc&l=8
  */

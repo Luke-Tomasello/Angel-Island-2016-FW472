@@ -70,7 +70,7 @@ namespace Server.Mobiles
         public override Poison HitPoison { get { return Poison.Lethal; } }
         public override double HitPoisonChance { get { return 0.6; } }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 3 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 3 : 0; } }
 
         public ToxicElemental(Serial serial)
             : base(serial)
@@ -79,7 +79,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 Katana kat = new Katana();                  // Adam: why do we have an unmovable katana?
                 kat.Movable = false;
@@ -99,7 +99,7 @@ namespace Server.Mobiles
             else
             {   // http://web.archive.org/web/20021015004725/uo.stratics.com/hunters/acidelemental.shtml
                 //	250 - 650 Gold, Magic Items, Gems, Potions, Scrolls
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {
                     if (Spawning)
                     {

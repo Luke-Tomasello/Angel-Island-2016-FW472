@@ -69,14 +69,14 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackItem(new Nightshade(Utility.RandomMinMax(2, 3)));
                 PackGold(0, 25);
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // no larva circa 02 2002
                     if (Spawning)
                     {

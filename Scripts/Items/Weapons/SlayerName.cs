@@ -25,6 +25,8 @@
  *      Added utility class SlayerLabel for 'naming' the slayer enums.
  */
 
+using Server.Text;
+
 namespace Server.Items
 {
     public enum SlayerName
@@ -58,98 +60,48 @@ namespace Server.Items
         ElementalBan // Bane?
     }
 
-    public class SlayerLabel
+    public static class SlayerLabel
     {
-        public static string GetSlayerLabel(SlayerName name)
+        public static int GetNumber(SlayerName name)
+        {
+            return 1017383 + (int)name; // Silver | ...
+        }
+
+        public static string GetString(SlayerName name)
+        {
+            int number = GetNumber(name);
+
+            string str;
+
+            if (Cliloc.Lookup.TryGetValue(number, out str))
+                return str;
+
+            return null;
+        }
+
+        public static string GetSuffix(SlayerName name)
         {
             switch (name)
             {
-                case SlayerName.None:
-                    return "";
-                    break;
-                case SlayerName.Silver:
-                    return "Silver";
-                    break;
-                case SlayerName.OrcSlaying:
-                    return "Orc Slaying";
-                    break;
-                case SlayerName.TrollSlaughter:
-                    return "Troll Slaughter";
-                    break;
-                case SlayerName.OgreTrashing:
-                    return "Ogre Thrashing";
-                    break;
-                case SlayerName.Repond:
-                    return "Repond";
-                    break;
-                case SlayerName.DragonSlaying:
-                    return "Dragon Slaying";
-                    break;
-                case SlayerName.Terathan:
-                    return "Terathan";
-                    break;
-                case SlayerName.SnakesBane:
-                    return "Snakes Bane";
-                    break;
-                case SlayerName.LizardmanSlaughter:
-                    return "Lizardman Slaughter";
-                    break;
-                case SlayerName.ReptilianDeath:
-                    return "Reptillian Death";
-                    break;
-                case SlayerName.DaemonDismissal:
-                    return "Daemon Dismissal";
-                    break;
-                case SlayerName.GargoylesFoe:
-                    return "Gargoles' Foe";
-                    break;
-                case SlayerName.BalronDamnation:
-                    return "Balron Damnation";
-                    break;
-                case SlayerName.Exorcism:
-                    return "Exorcism";
-                    break;
+                // 6/25/23, Yoar: Added several special cases
                 case SlayerName.Ophidian:
-                    return "Ophidian";
-                    break;
-                case SlayerName.SpidersDeath:
-                    return "Spiders' Death";
-                    break;
-                case SlayerName.ScorpionsBane:
-                    return "Scorpions' Bane";
-                    break;
-                case SlayerName.ArachnidDoom:
-                    return "Arachnid Doom";
-                    break;
-                case SlayerName.FlameDousing:
-                    return "Flame Dousing";
-                    break;
-                case SlayerName.WaterDissipation:
-                    return "Water Dissipation";
-                    break;
-                case SlayerName.Vacuum:
-                    return "Vacuum";
-                    break;
-                case SlayerName.ElementalHealth:
-                    return "Elemental Health";
-                    break;
-                case SlayerName.EarthShatter:
-                    return "Earth Shatter";
-                    break;
-                case SlayerName.BloodDrinking:
-                    return "Blood Drinking";
-                    break;
-                case SlayerName.SummerWind:
-                    return "Summer Wind";
-                    break;
-                case SlayerName.ElementalBan:
-                    return "Elemental Bane";
-                    break;
+                    {
+                        return "ophidian slaying";
+                    }
+                case SlayerName.Terathan:
+                    {
+                        return "terathan slaying";
+                    }
                 default:
-                    return "unknown slaying";
-                    break;
-            }
+                    {
+                        string suffix = GetString(name);
 
+                        if (suffix != null)
+                            suffix = suffix.ToLower();
+
+                        return suffix;
+                    }
+            }
         }
     }
 }

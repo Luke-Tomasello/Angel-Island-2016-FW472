@@ -67,7 +67,7 @@ namespace Server.Mobiles
             VirtualArmor = 60;
         }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 5 : 5; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 5 : 5; } }
 
         public BloodElemental(Serial serial)
             : base(serial)
@@ -76,7 +76,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(500, 700);
                 PackMagicEquipment(1, 3, 0.50, 0.50);
@@ -91,7 +91,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20021015000826/uo.stratics.com/hunters/bloodelemental.shtml
                     // 1100 to 1400 Gold, Magic items, Gems, Scrolls, Vials of Blood reagent, Level 5 Treasure Maps
 

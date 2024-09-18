@@ -38,7 +38,7 @@ namespace Server.Mobiles
             SetSkill(SkillName.MagicResist, 80.0, 100.0);
         }
 
-        public override bool CanTeach { get { return Core.UOSP ? false : true; } }
+        public override bool CanTeach { get { return Core.RuleSets.SiegeRules() ? false : true; } }
         public override bool ClickTitle { get { return false; } } // Do not display 'the mage' when single-clicking
 
         public override void InitOutfit()

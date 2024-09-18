@@ -208,7 +208,7 @@ namespace Server.Spells.Sixth
 
                     double duration;
 
-                    if (Core.AOS)
+                    if (Core.RuleSets.AOSRules())
                     {
                         duration = (m_Caster.Skills[SkillName.EvalInt].Value - m.Skills[SkillName.MagicResist].Value) * 0.3;
 

@@ -27,7 +27,9 @@
  *		As you move through the project, please replace all constant strings with Lookup[meg_num]
  */
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Server.Text
 {
@@ -29044,5 +29046,10 @@ namespace Server.Text
 
         private static Dictionary<int, string> m_map = new Dictionary<int, string>();
         public static Dictionary<int, string> Lookup { get { return m_map; } }
+
+        public static int LookupID (string text) 
+        { 
+            return m_map.FirstOrDefault(x => x.Value.StartsWith(text, StringComparison.OrdinalIgnoreCase)).Key; 
+        }
     }
 }

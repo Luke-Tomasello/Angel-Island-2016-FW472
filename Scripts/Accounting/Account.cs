@@ -1513,7 +1513,7 @@ namespace Server.Accounting
             get
             {
                 // 1 character per account on Siege, Mortalis!
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {
                     return 1;
                 }

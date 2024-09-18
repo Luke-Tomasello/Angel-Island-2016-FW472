@@ -81,36 +81,258 @@ namespace Server
         }
         #endregion Error Log Shortcuts
 
-        private static bool m_AOS;
-        private static bool m_SE;
-        private static bool m_ML;
-        private static bool m_UOSP;                     // Siege
-        private static bool m_UOTC;                     // Test Center
-        private static bool m_UOAI;                     // Angel Island
-        private static bool m_UOREN;                    // Renaissance
-        private static bool m_UOMO;                     // Mortalis
-        private static bool m_UOEV;                     // Event Shard
+#if true
+        #region server configurations
+        private static bool m_UOTC_CFG;                     // Test Center
+        private static bool m_UOBETA_CFG;                   // BETA AI, allows most test center funcionality without the free loot
+        private static bool m_UOEV_CFG;                     // Event Shard
+        private static bool m_USERP_CFG = true;             // Use Resource Pool. Default to 'true'
+        private static bool m_SiegeII_CFG;                  // SiegeII developer switch
+        private static bool m_Tribute_CFG;                  // Special player tribute shard
+        #endregion server configurations
+#else
+        //private static bool m_AOS_SVR;
+        //private static bool m_SE_SVR;
+        //private static bool m_ML_SVR;
+        //private static bool m_UOSP_SVR;                     // Siege
+        private static bool m_UOTC_CFG;                     // Test Center
+        //private static bool m_UOAI_SVR;                     // Angel Island
+        //private static bool m_UOREN_SVR;                    // Renaissance
+        //private static bool m_UOMO_SVR;                     // Mortalis
+        private static bool m_UOEV_CFG;                     // Event Shard
+#endif
+
         private static int m_HITMISS;                   // special flag to allow test center players to view their hit/miss stats over time
         private static int m_DAMAGE;                    // special flag to allow test center players to view their damage dealt stats over time
         private static bool m_Building;                 // gives GMs access to certain world building commands during world construction
         private static bool m_Developer;                // developers machine, allows direct login to any server
 
+        #region Rule Sets
         public static class RuleSets
         {
+#if true
+            #region SERVERS
+            private static bool m_AOS_SVR;
+            private static bool m_SE_SVR;
+            private static bool m_ML_SVR;
+            private static bool m_UOSP_SVR;                 // Siege
+            private static bool m_UOAI_SVR;                 // Angel Island
+            private static bool m_UOMO_SVR;                 // Mortalis
+            private static bool m_UOREN_SVR;                // Renaissance
+            private static bool m_UOLS_SVR;                 // Login Server
+            #endregion SERVERS
+            #region SERVERS Variables
+            public static bool AllShards
+            {
+                get
+                {   // Some creatures/Systems should operate (if they exist) in the way they were
+                    //  designed. Example: If you have the Angel Island Prison system, those mobiles 
+                    //  must drop their scheduled loot in order for the prisoner to escape.
+                    return true;
+                }
+            }
+            public static bool LoginServer
+            {
+                get
+                {   // used only for dedicated a login server (no player account info)
+                    // not really right. In the AI 7, we have an explicit login server.
+                    //  Here, AI doubles as a shard and a login server.
+#if GMN         // defined in GMN Core 3.0.csproj.user
+                    // never a login server on game-master.net
+                    return false;
+#else
+                return Core.RuleSets.AngelIslandRules() && !Core.RuleSets.TestCenterRules(); 
+#endif
+                    //return UOLS_SVR;
+                }
+            }
+            public static bool DatabaseMaster
+            {
+                get
+                {   // used only for dedicated a database master 
+                    // since the *_CFG options can be applied to any *, we exclude this as
+                    // a valid database master.
+                    return Core.RuleSets.AngelIslandRules() && !UOEV_CFG && !UOTC_CFG;
+                    // Note: UOBETA_CFG is special since it can be applied to beta versions of the DatabaseMaster.
+                }
+            }
+            public static bool UOLS_SVR
+            {
+                get { return m_UOLS_SVR; }
+                set { m_UOLS_SVR = value; }
+            }
+            public static bool UOAI_SVR
+            {   // January 9, 2002: killing shopkeepers in Felucca will now give a murder count, etc.
+                // https://www.uoguide.com/Publish_15
+                // (before the destruction of UO)
+                get
+                { return m_UOAI_SVR; }
+                set
+                {
+                    PublishInfo.Publish = 15;
+                    m_UOAI_SVR = value;
+                }
+            }
+            public static bool UOSP_SVR
+            {   /* Publish 13.6 (Siege Perilous Shards Only) - October 25, 2001
+                 * Publish 13.5 - October 11, 2001
+                 * Commodity Deeds, Repair Contracts, Secure House Trades
+                 * https://www.uoguide.com/Publishes
+                 */
+                get
+                { return m_UOSP_SVR; }
+                set
+                {
+                    PublishInfo.Publish = 13.6;
+                    m_UOSP_SVR = value;
+                }
+            }
+            public static bool UOMO_SVR
+            {   /* Publish 13.6 (Siege Perilous Shards Only) - October 25, 2001
+                 * Publish 13.5 - October 11, 2001
+                 * Commodity Deeds, Repair Contracts, Secure House Trades
+                 * https://www.uoguide.com/Publishes
+                 */
+                get
+                { return m_UOMO_SVR; }
+                set
+                {
+                    PublishInfo.Publish = 13.6;
+                    m_UOMO_SVR = value;
+                }
+            }
+            public static bool UOREN_SVR
+            {   /* Publish 13.6 (Siege Perilous Shards Only) - October 25, 2001
+                 * Publish 13.5 - October 11, 2001
+                 * Commodity Deeds, Repair Contracts, Secure House Trades
+                 * https://www.uoguide.com/Publishes
+                 */
+                get { return m_UOREN_SVR; }
+                set
+                {
+                    PublishInfo.Publish = 13.5;
+                    m_UOREN_SVR = value;
+                }
+            }
+            public static bool AOS_SVR
+            {
+                get
+                {
+                    return m_AOS_SVR || m_SE_SVR;
+                }
+                set
+                {
+                    m_AOS_SVR = value;
+                }
+            }
+            public static bool SE_SVR
+            {
+                get
+                {
+                    return m_SE_SVR;
+                }
+                set
+                {
+                    m_SE_SVR = value;
+                }
+            }
+            public static bool ML_SVR
+            {
+                get
+                {
+                    return m_ML_SVR;
+                }
+                set
+                {
+                    m_ML_SVR = value;
+                }
+            }
+            #endregion SERVERS Variables
+            #region Server Enablement
+            public static bool AllServerRules()
+            {   // typically used to denote an Angel Island feature that should be available everywhere
+                return (m_AOS_SVR || m_SE_SVR || m_ML_SVR || m_UOSP_SVR || m_UOAI_SVR || m_UOMO_SVR || m_UOREN_SVR);
+            }
+            public static bool RenaissanceRules()
+            {
+                return (UOREN_SVR);
+            }
+            public static bool SERules()
+            {
+                return (SE_SVR);
+            }
+            public static bool MLRules()
+            {
+                return (ML_SVR);
+            }
+            public static bool LoginServerRules()
+            {
+                return (UOLS_SVR);
+            }
+            public static bool AOSRules()
+            {
+                return (AOS_SVR);
+            }
+            public static bool SiegeRules()
+            {
+                return (UOSP_SVR);
+            }
+            //public static bool SiegeIIRules()
+            //{
+            //    return SiegeRules() && SiegeII_CFG;
+            //}
+            public static bool SiegeStyleRules()
+            {
+                return (UOSP_SVR || MortalisRules());
+            }
+            public static bool AngelIslandRules()
+            {
+                return (UOAI_SVR);
+            }
+            public static bool TestCenterRules()
+            {
+                return UOTC_CFG;
+            }
+            public static bool EventShardRules()
+            {
+                return UOEV_CFG;
+            }
+            //public static bool PackUpStructureRules()
+            //{
+            //    return CoreAI.EnablePackUp;
+            //}
+            public static bool MortalisRules()
+            {
+                return (UOMO_SVR);
+            }
+            #endregion Server Enablement
 
+            #region Enabled Server Rules
+            public static bool TentAnnexation()
+            { return AngelIslandRules(); }
+            public static bool StandardShardRules()
+            {
+                return (SiegeRules() || MortalisRules() || RenaissanceRules());
+            }
+            public static bool AnyAIShardRules()
+            {
+                return (AngelIslandRules() || SiegeRules() || MortalisRules() || RenaissanceRules());
+            }
+            #endregion Enabled Server Rules
+#else
             #region Shards
             public static bool AngelIslandRules()
-            { return m_UOAI; }
+            { return m_UOAI_SVR; }
             public static bool TestCenterRules()
-            { return m_UOTC; }
+            { return m_UOTC_CFG; }
             public static bool MortalisRules()
-            { return m_UOMO; }
+            { return m_UOMO_SVR; }
             public static bool EventShardRules()
-            { return m_UOEV; }
+            { return m_UOEV_CFG; }
             public static bool SiegeRules()
-            { return m_UOSP; }
+            { return m_UOSP_SVR; }
             public static bool RenaissanceRules()
-            { return m_UOREN; }
+            { return m_UOREN_SVR; }
             public static bool LoginServerRules()
             {
                 // not really right. In the AI 7, we have an explicit login server.
@@ -119,7 +341,7 @@ namespace Server
                 // never a login server on game-master.net
                 return false;
 #else
-                return Core.UOAI && !Core.UOTC; 
+                return Core.RuleSets.AngelIslandRules() && !Core.RuleSets.TestCenterRules(); 
 #endif
             }
             public static bool StandardShardRules()
@@ -131,10 +353,51 @@ namespace Server
             #region Rules
             public static bool TentAnnexation()
             {
-                return (m_UOAI || m_UOSP) && CoreAI.TentAnnexation;
+                return (m_UOAI_SVR || m_UOSP_SVR) && CoreAI.TentAnnexation;
             }
             #endregion Rules
+#endif
         }
+        #endregion Rule Sets
+
+        #region SERVER CONFIGURATIONS
+        public static bool UOEV_CFG
+        {
+            get
+            {
+                return m_UOEV_CFG;
+            }
+        }
+
+        public static bool UOTC_CFG
+        {
+            get
+            {
+                return m_UOTC_CFG;
+            }
+        }
+        public static bool SiegeII_CFG
+        {
+            get
+            {
+                return m_SiegeII_CFG;
+            }
+        }
+        public static bool Tribute_CFG
+        {
+            get
+            {   // tribute shard is run under the EV port number
+                return m_Tribute_CFG && m_UOEV_CFG;
+            }
+        }
+        public static bool UOBETA_CFG
+        {
+            get
+            {
+                return m_UOBETA_CFG;
+            }
+        }
+        #endregion SERVER CONFIGURATIONS
 
         private static bool m_Profiling;
         private static DateTime m_ProfileStart;
@@ -400,7 +663,7 @@ namespace Server
         {
             get
             {   // add your Era Accurate shards here
-                return UOSP;
+                return Core.RuleSets.SiegeRules();
             }
         }
 
@@ -431,7 +694,7 @@ namespace Server
         {
             get
             {
-                return Core.UOSP && PublishInfo.Publish < 13.6;
+                return Core.RuleSets.SiegeRules() && PublishInfo.Publish < 13.6;
             }
         }
 
@@ -477,7 +740,7 @@ namespace Server
         {   // is T2A available to this shard?
             get
             {
-                return Core.UOSP;
+                return Core.RuleSets.SiegeRules();
             }
         }
 
@@ -485,7 +748,7 @@ namespace Server
         {
             get
             {
-                return PublishInfo.Publish < 4 || Core.UOAI || Core.UOREN;
+                return PublishInfo.Publish < 4 || Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules();
             }
         }
 
@@ -501,7 +764,7 @@ namespace Server
         {
             get
             {   // add your factions enabled servers here
-                return Core.UOSP && PublishInfo.Publish >= 8.0;
+                return Core.RuleSets.SiegeRules() && PublishInfo.Publish >= 8.0;
             }
         }
 
@@ -510,15 +773,15 @@ namespace Server
             get
             {
                 // Siege Perilous is a special ruleset shard that launched on July 15, 1999. 
-                return Core.UOSP && PublishInfo.PublishDate >= new DateTime(1999, 7, 15);
+                return Core.RuleSets.SiegeRules() && PublishInfo.PublishDate >= new DateTime(1999, 7, 15);
             }
         }
-
+#if false
         public static bool UOEV
         {
             get
             {
-                return m_UOEV;
+                return m_UOEV_CFG;
             }
         }
 
@@ -526,7 +789,7 @@ namespace Server
         {
             get
             {
-                return m_UOTC;
+                return m_UOTC_CFG;
             }
         }
 
@@ -534,7 +797,7 @@ namespace Server
         {
             get
             {
-                return m_UOAI;
+                return m_UOAI_SVR;
             }
         }
 
@@ -545,7 +808,7 @@ namespace Server
         {
             get
             {
-                return m_UOSP;
+                return m_UOSP_SVR;
             }
         }
 
@@ -553,7 +816,7 @@ namespace Server
         {
             get
             {
-                return m_UOREN;
+                return m_UOREN_SVR;
             }
         }
 
@@ -561,27 +824,20 @@ namespace Server
         {
             get
             {
-                return m_UOMO;
+                return m_UOMO_SVR;
             }
         }
 
-        public static bool Building
-        {
-            get
-            {
-                return m_Building;
-            }
-        }
-
+        
         public static bool AOS
         {
             get
             {
-                return m_AOS || m_SE;
+                return m_AOS_SVR || m_SE_SVR;
             }
             set
             {
-                m_AOS = value;
+                m_AOS_SVR = value;
             }
         }
 
@@ -589,11 +845,11 @@ namespace Server
         {
             get
             {
-                return m_SE;
+                return m_SE_SVR;
             }
             set
             {
-                m_SE = value;
+                m_SE_SVR = value;
             }
         }
 
@@ -601,11 +857,19 @@ namespace Server
         {
             get
             {
-                return m_ML;
+                return m_ML_SVR;
             }
             set
             {
-                m_ML = value;
+                m_ML_SVR = value;
+            }
+        }
+#endif
+        public static bool Building
+        {
+            get
+            {
+                return m_Building;
             }
         }
 
@@ -861,17 +1125,17 @@ namespace Server
                 else if (Insensitive.Equals(args[i], "-boatholdupgrade"))
                     m_BoatHoldUpgrade = true;
                 else if (Insensitive.Equals(args[i], "-uotc"))
-                    m_UOTC = true; //
+                    m_UOTC_CFG = true; //
                 else if (Insensitive.Equals(args[i], "-uosp"))
-                    m_UOSP = true;
+                    RuleSets.UOSP_SVR = true;
                 else if (Insensitive.Equals(args[i], "-uoren"))
-                    m_UOREN = true;
+                    RuleSets.UOREN_SVR = true;
                 else if (Insensitive.Equals(args[i], "-uomo"))
-                    m_UOMO = true;
+                    RuleSets.UOMO_SVR = true;
                 else if (Insensitive.Equals(args[i], "-uoai"))
-                    m_UOAI = true;
+                    RuleSets.UOAI_SVR = true;
                 else if (Insensitive.Equals(args[i], "-uoev"))
-                    m_UOEV = true;
+                    m_UOEV_CFG = true;
                 else if (Insensitive.Equals(args[i], "-build"))
                     m_Building = true;
                 else if (Insensitive.Equals(args[i], "-nopatch"))
@@ -879,22 +1143,26 @@ namespace Server
                 else if (Insensitive.Equals(args[i], "-developer"))
                     m_Developer = true;
                 else if (Insensitive.Equals(args[i], "-beta"))
+                {
+                    m_UOBETA_CFG = true;
                     m_releasePhase = ReleasePhase.Beta;
-                
+                }
+
                 Arguments += args[i] + " ";
             }
             #endregion
 
             #region VERIFY ARGS
             int server_count = 0;
-            if (m_UOAI == true) server_count++;
-            if (m_UOSP == true) server_count++;
-            if (m_UOREN == true) server_count++;
-            if (m_UOMO == true) server_count++;
+            if (RuleSets.UOAI_SVR == true) server_count++;
+            if (RuleSets.UOSP_SVR == true) server_count++;
+            if (RuleSets.UOMO_SVR == true) server_count++;
+            if (RuleSets.UOLS_SVR == true) server_count++;
+            if (RuleSets.UOREN_SVR == true) server_count++;
             if (server_count == 0)
             {
                 Console.WriteLine("Core: No server specified, defaulting to Angel Island");
-                m_UOAI = true;
+                RuleSets.UOAI_SVR = true;
             }
             if (server_count > 1)
             {
@@ -932,13 +1200,13 @@ namespace Server
                 Directory.SetCurrentDirectory(BaseDirectory);
 
             bool state = false;
-            
+
             #region Server Name
-            if (Core.UOSP)
+            if (Core.RuleSets.SiegeRules())
             {
                 m_Server = "Siege Perilous";
             }
-            else if (Core.UOMO)
+            else if (Core.RuleSets.MortalisRules())
             {
                 m_Server = "Mortalis";
             }
@@ -946,11 +1214,11 @@ namespace Server
             {
                 m_Server = "Login Server";
             }
-            else if (Core.UOREN)
+            else if (Core.RuleSets.RenaissanceRules())
             {
                 m_Server = "Renaissance";
             }
-            else if (Core.UOAI)
+            else if (Core.RuleSets.AngelIslandRules())
             {
                 m_Server = "Angel Island";
             }
@@ -973,7 +1241,7 @@ namespace Server
             //Utility.Monitor.WriteLine("[Shared Directory: {0}]", ConsoleColorInformational(), Utility.GetShortPath(SharedDirectory));
             Utility.Monitor.WriteLine("[Game Time Zone: {0}]", ConsoleColorInformational(), AdjustedDateTime.GameTimezone);
             Utility.Monitor.WriteLine("[Server Time Zone: {0}]", ConsoleColorInformational(), AdjustedDateTime.ServerTimezone);
-            
+
             #region ZLib
             bool zlib_loaded = false;
             try
@@ -1093,7 +1361,7 @@ namespace Server
             Utility.Monitor.WriteLine("[Shard configuration is {0}.]", ConsoleColorInformational(), m_Server);
             state = true;//RuleSets.ResourcePoolRules();
             Utility.Monitor.WriteLine("[Resource Pool is {0}.]", ConsoleColorEnabled(state), TextEnabled(state));
-            state = Core.m_UOTC;
+            state = Core.m_UOTC_CFG;
             Utility.Monitor.WriteLine("[Test Center functionality is {0}.]", ConsoleColorEnabled(state), TextEnabled(state));
             state = Core.RuleSets.LoginServerRules();
             Utility.Monitor.WriteLine("[Login Server functionality is {0}.]", ConsoleColorEnabled(state), TextEnabled(state));
@@ -1101,7 +1369,7 @@ namespace Server
             Utility.Monitor.WriteLine("[Beta functionality is {0}.]", ConsoleColorEnabled(state), TextEnabled(state));
             state = World.FreezeDryEnabled;
             Utility.Monitor.WriteLine("[Freeze dry system is {0}.]", ConsoleColorEnabled(state), TextEnabled(state));
-            state = Core.m_UOEV;
+            state = Core.m_UOEV_CFG;
             Utility.Monitor.WriteLine("[Event Shard functionality is {0}.]", ConsoleColorEnabled(state), TextEnabled(state));
             Utility.Monitor.WriteLine("[Publish {0} enabled ({1}).]", ConsoleColorInformational(), PublishInfo.Publish, PublishInfo.PublishDate);
             state = Core.Building;
@@ -1110,7 +1378,7 @@ namespace Server
             // Disabling developer mode for now (for custom house building)
             // state = Core.Developer;
             //Utility.ConsoleOut("[Developer mode is {0}.]", ConsoleColorEnabled(state), TextEnabled(state));
-            
+
             state = Core.Factions;
             Utility.Monitor.WriteLine("[Factions are {0}.]", ConsoleColorEnabled(state), TextEnabled(state));
             state = Core.T2A;

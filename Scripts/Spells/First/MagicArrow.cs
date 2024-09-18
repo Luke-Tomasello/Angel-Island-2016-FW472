@@ -91,7 +91,7 @@ namespace Server.Spells.First
 
                 double damage;
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     damage = GetNewAosDamage(10, 1, 4);
                 }

@@ -70,7 +70,7 @@ namespace Server.Mobiles
 
         public override Poison PoisonImmune { get { return Poison.Deadly; } }
         public override Poison HitPoison { get { return Poison.Deadly; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 3 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 3 : 0; } }
         public override int Meat { get { return 2; } }
 
         public TerathanAvenger(Serial serial)
@@ -80,7 +80,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(400, 500);
                 PackItem(new SpidersSilk(10));
@@ -93,7 +93,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020806192748/uo.stratics.com/hunters/teraveng.shtml
                     // 200 to 250 Gold, Magic Items, Gems, Scrolls
                     if (Spawning)

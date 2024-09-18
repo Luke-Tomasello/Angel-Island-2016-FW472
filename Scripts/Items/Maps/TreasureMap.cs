@@ -25,11 +25,11 @@
  *		Make extended map locations based upon Core.AngelIsland
  *	9/1/10, Adam
  *		Make treasure maps ReadOnly 
- *	8/27/10, adam
+ *	8/27/10, Adam
  *		Use Utility.BritWrap rects from boat nav to test for valid treasure map locations.
  *		Turns out that the rects defined in Utility.BritWrap are the two halves of the world excluding T2A and the dungeons
  *		which is what we want.
- *	8/12/10, adam
+ *	8/12/10, Adam
  *		Add tax collector spawn
  *	1/20/06, Adam
  *		Add new OnNPCBeginDig() function so that NPC's can dig treasure.
@@ -139,7 +139,7 @@ namespace Server.Items
             if (m_Locations == null)
                 LoadLocations();
 
-            if (Core.UOAI)
+            if (Core.RuleSets.AngelIslandRules())
             {
                 if (m_Locations.Length > 0)
                 {
@@ -194,7 +194,7 @@ namespace Server.Items
             }
 
             // now load up the spawner locations
-            if (Core.UOAI)
+            if (Core.RuleSets.AngelIslandRules())
             {
                 foreach (Spawner sx in SpawnerCache.Spawners)
                 {
@@ -659,7 +659,7 @@ namespace Server.Items
             else if (m_Decoder != null)
             {   // non tattered
                 // "an adeptly drawn treasure map";
-                if (Core.UOAI || Core.UOREN || Core.UOMO || (Core.UOSP && PublishInfo.Publish >= 13))
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules() || (Core.RuleSets.SiegeRules() && PublishInfo.Publish >= 13))
                     LabelTo(from, 1041516 + m_Level);
                 else
                     LabelTo(from, String.Format("a treasure map"));
@@ -667,7 +667,7 @@ namespace Server.Items
             else
             {   // tattered
                 // "a tattered, adeptly drawn treasure map"
-                if (Core.UOAI || Core.UOREN || Core.UOMO || (Core.UOSP && PublishInfo.Publish >= 13))
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules() || (Core.RuleSets.SiegeRules() && PublishInfo.Publish >= 13))
                 {
                     LabelTo(from, 1041510 + m_Level);
                     LabelTo(from, m_Map == Map.Felucca ? 1041502 : 1041503);

@@ -79,7 +79,7 @@ namespace Server.Mobiles
 */
         public static Item CreateRandomArtifact()
         {
-            if (!Core.AOS)
+            if (!Core.RuleSets.AOSRules())
                 return null;
 
             return null;
@@ -150,7 +150,7 @@ namespace Server.Mobiles
 
         public static int GetArtifactChance(Mobile boss)
         {
-            if (!Core.AOS)
+            if (!Core.RuleSets.AOSRules())
                 return 0;
 
             int luck = LootPack.GetLuckChanceForKiller(boss);
@@ -221,7 +221,7 @@ namespace Server.Mobiles
         }
 
         public override Poison PoisonImmune { get { return Poison.Lethal; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 1 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 1 : 0; } }
 
         private static bool m_InHere;
 

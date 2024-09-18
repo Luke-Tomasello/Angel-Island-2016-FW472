@@ -90,7 +90,7 @@ namespace Server.Items
             else
                 idstr += "the item is of an unknown origin";
 
-            if (!Core.AOS)
+            if (!Core.RuleSets.AOSRules())
                 itm.OnSingleClick(from);
 
             if (itm.RareData > 0)
@@ -137,7 +137,7 @@ namespace Server.Items
                     {
                         EItem.Identified = true;
 
-                        if (!Core.AOS)
+                        if (!Core.RuleSets.AOSRules())
                             ((Item)o).OnSingleClick(from);
                     }
                     else

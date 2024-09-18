@@ -62,9 +62,9 @@ namespace Server.Mobiles
             VirtualArmor = 38;
         }
 
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : true; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 1 : 0; } }
-        public override int Meat { get { return Core.UOAI || Core.UOREN ? 4 : 5; } }
+        public override bool CanRummageCorpses { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? true : true; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 1 : 0; } }
+        public override int Meat { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 4 : 5; } }
 
         public Ettin(Serial serial)
             : base(serial)
@@ -73,14 +73,14 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackPotion();
                 PackGold(100, 150);
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020414130245/uo.stratics.com/hunters/ettin.shtml
                     // 	50 to 150 Gold, Potions, Arrows, Gems, 5 Raw Ribs (carved)
                     if (Spawning)

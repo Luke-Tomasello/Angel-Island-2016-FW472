@@ -33,7 +33,7 @@
  *		FindHouseAy() - Put back the change I put in on 2/27/10 (see those comments.)
  *		Why was it reverted? 
  *		Anyway, since tents have mcl lists widths and heights of 0, you cannot use the traditional IsInside logic.
- *	2/15/11, adam
+ *	2/15/11, Adam
  *		Fixup AccountCode for version < 21
  *	2/14/11, Adam
  *		UOMO: Add Inheritance mechanism that allows a new character on an account to Inherit the house previously owned 
@@ -43,7 +43,7 @@
  *	2/28/10, Adam
  *		Prevent the owner from Demolishing or Transfering a house of the ManagedDemolishion flag is set on the house.
  *		The ManagedDemolishion flag is set on the house when this house annexed one of more tents. 
- *	2/27/10, adam
+ *	2/27/10, Adam
  *		WRT FindHouseAt(): the width and height of MultiComponentList Components for tents are all 0, so we can't use the IsInside() check
  *		when checking to see of the point (item or mobile) inside or outside the tent, we there PASS the test as TRUE.
  *		This change came about while modifying HousePlacement to allow houses to annex tents.
@@ -273,7 +273,7 @@ namespace Server.Multis
 {
     public abstract class BaseHouse : BaseMulti
     {
-        public static bool NewVendorSystem { get { return Core.AOS; } } // Is new player vendor system enabled?
+        public static bool NewVendorSystem { get { return Core.RuleSets.AOSRules(); } } // Is new player vendor system enabled?
 
         #region ImplFlags
         [Flags]
@@ -450,7 +450,7 @@ namespace Server.Multis
             {
                 m_DecayMinutesStored = value;
 
-                if (Core.UOAI || Core.UOREN)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                 {
                     if (m_DecayMinutesStored > ONE_DAY_IN_MINUTES && m_IDOC_Broadcast_TCE != null)
                     {
@@ -471,7 +471,7 @@ namespace Server.Multis
 
         public virtual void Refresh()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 m_DecayMinutesStored = HouseDecayDelay.TotalMinutes;
 
@@ -685,7 +685,7 @@ namespace Server.Multis
             {
                 //never announce tents
             }
-            else if (Utility.RandomDouble() < CoreAI.IDOCBroadcastChance && (Core.UOAI || Core.UOREN))
+            else if (Utility.RandomDouble() < CoreAI.IDOCBroadcastChance && (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules()))
             {
                 string[] lines = new string[1];
                 lines[0] = String.Format("Lord British has condemned the estate of {0} near {1}.", this.Owner.Name, DescribeLocation());
@@ -1098,7 +1098,7 @@ namespace Server.Multis
 
         private static Hashtable m_Table = new Hashtable();
 
-        public virtual bool IsAosRules { get { return Core.AOS; } }
+        public virtual bool IsAosRules { get { return Core.RuleSets.AOSRules(); } }
 
         public bool CanAddLockbox
         {

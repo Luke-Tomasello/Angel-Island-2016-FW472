@@ -59,7 +59,7 @@ namespace Server.Mobiles
                 /* Shopkeeper NPCs do not sell any resources (Ingots, Cloth, etc.))
 				 * http://www.uoguide.com/Siege_Perilous
 				 */
-                if (!Core.UOSP)
+                if (!Core.RuleSets.SiegeRules())
                 {
                     Add(new GenericBuyInfo(typeof(Board), 3, 20, 0x1BD7, 0));
                     Add(new GenericBuyInfo(typeof(IronIngot), 8, 20, 0x1BF2, 0));
@@ -79,7 +79,7 @@ namespace Server.Mobiles
         {
             public InternalSellInfo()
             {
-                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
+                if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.SiegeRules() && !Core.RuleSets.MortalisRules())
                 {   // cash buyback
                     Add(typeof(Amber), 45);
                     Add(typeof(Amethyst), 60);

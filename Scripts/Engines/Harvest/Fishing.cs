@@ -21,7 +21,7 @@
 
 /* Scripts/Engines/Harvest/Fishing.cs
  * ChangeLog
- *	9/26/10, adam
+ *	9/26/10, Adam
  *		Increase leveled sos loot drop to (level * 8) so that a level 1 sos is 8% chance at a rare and level 5 is a 40% chance
  *		Also increase weapon drop a bit
  *	9/23/10, Adam

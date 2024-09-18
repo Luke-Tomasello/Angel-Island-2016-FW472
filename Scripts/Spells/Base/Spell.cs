@@ -127,7 +127,7 @@ namespace Server.Spells
 
         public virtual bool RevealOnCast { get { return true; } }
         public virtual bool ClearHandsOnCast { get { return true; } }
-        public virtual bool EquipSpellbookOnCast { get { return !Core.UOAI && !Core.UOREN && !Core.UOMO && Core.CheckPublish(5) ? true : false; } }
+        public virtual bool EquipSpellbookOnCast { get { return !Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.MortalisRules() && Core.CheckPublish(5) ? true : false; } }
 
         public virtual bool DelayedDamage { get { return false; } }
 
@@ -372,7 +372,7 @@ namespace Server.Spells
             double targetRS = target.Skills[SkillName.MagicResist].Value;
             double scalar;
 
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
                 targetRS = 0;
 
             // CheckSkill call modified to lower max to 100.
@@ -386,7 +386,7 @@ namespace Server.Spells
             // magery damage bonus, -25% at 0 skill, +0% at 100 skill, +5% at 120 skill
             scalar += (m_Caster.Skills[CastSkill].Value - 100.0) / 400.0;
 
-            if (!target.Player && !target.Body.IsHuman && !Core.AOS)
+            if (!target.Player && !target.Body.IsHuman && !Core.RuleSets.AOSRules())
                 scalar *= 2.0; // Double magery damage to monsters/animals if not AOS
 
             if (target is BaseCreature)
@@ -406,7 +406,7 @@ namespace Server.Spells
 
             if (m_Caster.Player)
             {
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                     m_Caster.FixedParticles(0x3735, 1, 30, 9503, EffectLayer.Waist);
                 else
                     m_Caster.FixedEffect(0x3735, 6, 30);
@@ -438,7 +438,7 @@ namespace Server.Spells
 
             if (m_State == SpellState.Casting)
             {
-                if (!firstCircle && Circle == SpellCircle.First && !Core.AOS)
+                if (!firstCircle && Circle == SpellCircle.First && !Core.RuleSets.AOSRules())
                     return;
 
                 m_State = SpellState.None;
@@ -468,7 +468,7 @@ namespace Server.Spells
             }
             else if (m_State == SpellState.Sequencing)
             {
-                if (!firstCircle && Circle == SpellCircle.First && !Core.AOS)
+                if (!firstCircle && Circle == SpellCircle.First && !Core.RuleSets.AOSRules())
                     return;
 
                 m_State = SpellState.None;
@@ -519,7 +519,7 @@ namespace Server.Spells
         {
             m_StartCastTime = DateTime.UtcNow;
 
-            if (Core.AOS && m_Caster.Spell is Spell && ((Spell)m_Caster.Spell).State == SpellState.Sequencing)
+            if (Core.RuleSets.AOSRules() && m_Caster.Spell is Spell && ((Spell)m_Caster.Spell).State == SpellState.Sequencing)
                 ((Spell)m_Caster.Spell).Disturb(DisturbType.NewCast);
 
             if (!m_Caster.CheckAlive())
@@ -717,7 +717,7 @@ namespace Server.Spells
 
         public virtual TimeSpan GetDisturbRecovery()
         {
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
                 return TimeSpan.Zero;
 
             //double delay = 1.0 - Math.Sqrt( (DateTime.UtcNow - m_StartCastTime).TotalSeconds / GetCastDelay().TotalSeconds );
@@ -754,7 +754,7 @@ namespace Server.Spells
             if (m_Scroll is BaseWand)
                 return TimeSpan.Zero;
 
-            if (!Core.AOS)
+            if (!Core.RuleSets.AOSRules())
                 return TimeSpan.FromSeconds(0.5 + (0.25 * (int)Circle));
 
             int fc = AosAttributes.GetValue(m_Caster, AosAttribute.CastSpeed);
@@ -843,7 +843,7 @@ namespace Server.Spells
             {
                 m_Caster.LocalOverheadMessage(MessageType.Regular, 0x22, 502625); // Insufficient mana for this spell.
             }
-            else if (Core.AOS && (m_Caster.Frozen || m_Caster.Paralyzed))
+            else if (Core.RuleSets.AOSRules() && (m_Caster.Frozen || m_Caster.Paralyzed))
             {
                 m_Caster.SendLocalizedMessage(502646); // You cannot cast a spell while frozen.
                 DoFizzle();

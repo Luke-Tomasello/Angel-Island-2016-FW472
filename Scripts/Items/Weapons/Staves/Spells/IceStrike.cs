@@ -60,7 +60,7 @@ namespace Server.Spells.First
 
                 int damage;
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     //damage = GetNewAosDamage( 50, 1, 5 );
 

@@ -65,7 +65,7 @@ namespace Server.Mobiles
             VirtualArmor = 50;
         }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 3 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 3 : 0; } }
 
         public ElderGazer(Serial serial)
             : base(serial)
@@ -74,7 +74,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(250, 350);
 
@@ -86,7 +86,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020313114557/uo.stratics.com/hunters/eldergazer.shtml
                     // 1000 Gold, Magic Items, Gems
 

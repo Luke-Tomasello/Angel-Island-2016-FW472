@@ -73,7 +73,7 @@ namespace Server.Mobiles
         public override bool AlwaysMurderer { get { return true; } }
         public override Poison PoisonImmune { get { return Poison.Lethal; } }
         public override int Meat { get { return 1; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 5 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 5 : 0; } }
 
         public Betrayer(Serial serial)
             : base(serial)
@@ -82,7 +82,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGem();
 
@@ -102,7 +102,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // no LBR
                     //http://web.archive.org/web/20020403051743/uo.stratics.com/hunters/betrayer.shtml
                     // 200-300 Gold, Gem, Power Crystal, Level 5 Treasue Map, Blackthorne's "A welcome"

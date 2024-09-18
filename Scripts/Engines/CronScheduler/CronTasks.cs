@@ -21,6 +21,8 @@
 
 /* Scripts\Engines\CronScheduler\CronTasks.cs
  * CHANGELOG:
+ *  9/16/2024, Adam (CustomHousingVendorRestock)
+ *      Add a restock agent for custom housing vendors.
  *  9/8/2024, Adam
  *      Obsolete messages: CBackupRunUO, CBackupWorldData
  *	7/31/11, Adam
@@ -32,12 +34,12 @@
  *		Server Wars, Town Invasion, Ransom Chest, Crazy Map, and Donation reminder
  *	2/8/11, Adam
  *		remove auto fightbroker feature as it's just too damn harsh
- *  11/21/10, adam
+ *  11/21/10, Adam
  *      Condition jobs on Core.AngelIsland
- *	5/10/10, adam
+ *	5/10/10, Adam
  *		Add a new StableCharge task that charges players for stabled pets. 
  *		See Scripts\Mobiles\Vendors\NPC\AnimalTrainer.cs for a full description.
- *	3/20/10, adam
+ *	3/20/10, Adam
  *		1. change all jobs with a minute-offset designed to avoid collisions to the new '?' specification
  *		2. Add compiler so we can use the '?' specification.
  *		Remember we need to precompile any specification that uses the '?' since the specification is reinterpreted each pass
@@ -112,6 +114,7 @@ using Server.Guilds;
 using Server.Items;
 using Server.Misc;
 using Server.Mobiles;
+using Server.Multis.StaticHousing;
 using Server.Network;
 using Server.Regions;
 using Server.SMTP;
@@ -130,16 +133,19 @@ namespace Server.Engines.CronScheduler
             Cron.QueueIdleTask(new CFreezeDryInit().FreezeDryInit);
 
             // Stable Charges - every 10 minutes
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                 Cron.Register(new CStableCharge().StableCharge, "*/10 * * * *");
 
             // Auto add players to Fight Broker - every 10 minutes
             // remove auto fightbroker feature as it's just too damn harsh
-            if (Core.UOMO && false)
+            if (Core.RuleSets.MortalisRules() && false)
                 Cron.Register(new CAutoFightBroker().AutoFightBroker, "*/10 * * * *");
 
             // Vendor Restock - every 30 minutes
             Cron.Register(new CVendorRestock().VendorRestock, "*/30 * * * *");
+
+            // Custom Housing Vendor Restock - daily (8:? AM)
+            Cron.Register(new CCustomHousingVendorRestock().CustomHousingVendorRestock, "? 8 * * *");
 
             // Item Decay - every 30 minutes
             Cron.Register(new CItemDecay().ItemDecay, "*/30 * * * *");
@@ -177,7 +183,7 @@ namespace Server.Engines.CronScheduler
             Cron.Register(new CPlantGrowth().PlantGrowth, "? 6 * * *");                 // random minute of 6 o'clock hour
 
             // Overland Merchant CHANCE - every hour
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 Cron.Register(new COverlandSystem().OverlandSystem, "? * * * *");           // random minute of every hour
             }
@@ -200,7 +206,7 @@ namespace Server.Engines.CronScheduler
             // Server Wars - Automated Event System (12:00 noon on 5th Sunday)
             // Note: set 24 hour advance notice
             // Adam: turn off untill we have players :\
-            //if (Core.UOAI || Core.UOAR)
+            //if (Core.RuleSets.AngelIslandRules() || Core.UOAR)
             //Cron.Register(null, new CServerWarsAES().ServerWarsAES, "0 12 * * 6", true, new Cron.CronLimit(5, DayOfWeek.Saturday, Cron.CronLimit.isldom.must_not_be_ldom));
 
             // TEST: ** Crazy Map Day - Automated Event System (10:00 PM on 2nd Tuesday) **
@@ -209,13 +215,13 @@ namespace Server.Engines.CronScheduler
             // Town Invasion - Automated Event System (12:00 noon on 3rd Sunday)
             // Note: set 24 hour advance notice
             // Adam: turn off untill we have players :\
-            //if (Core.UOAI || Core.UOAR)
+            //if (Core.RuleSets.AngelIslandRules() || Core.UOAR)
             //Cron.Register(null, new CTownInvasionAES().TownInvasionAES, "0 12 * * 6", true, new Cron.CronLimit(3, DayOfWeek.Saturday, Cron.CronLimit.isldom.must_not_be_ldom));
 
             // Kin Ransom Quest - Automated Event System (12:00 noon on 4th Sunday)
             // Note: set 24 hour advance notice
             // Adam: turn off untill we have players :\
-            //if (Core.UOAI || Core.UOAR)
+            //if (Core.RuleSets.AngelIslandRules() || Core.UOAR)
             //Cron.Register(null, new CKinRansomAES().KinRansomAES, "0 12 * * 6", true, new Cron.CronLimit(4, DayOfWeek.Saturday, Cron.CronLimit.isldom.must_not_be_ldom));
 
             // Crazy Map Day - Automated Event System (12:00 noon on 5th Sunday)
@@ -241,12 +247,12 @@ namespace Server.Engines.CronScheduler
             Cron.Register(new CGuildFealty().GuildFealty, "? * * * *");                     // random minute of each hour
 
             // every hour run through PlayerQuestCleanup checks
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 Cron.Register(new CPlayerQuestCleanup().PlayerQuestCleanup, "? * * * *");       // random minute of each hour
             }
 
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 // every 5 minutes run through PlayerQuest announcements				// every 5 minutes
                 Cron.Register(new CPlayerQuestAnnounce().PlayerQuestAnnounce, "*/5 * * * *");
@@ -265,7 +271,7 @@ namespace Server.Engines.CronScheduler
             Cron.Register(new CBackupWorldData().BackupWorldData, "50 3 * * *");    // 4AM
 #endif
 
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 // Township Charges - 9 AM daily
                 Cron.Register(new CTownshipCharges().TownshipCharges, "0 9 * * *");     //9 AM every day
@@ -279,7 +285,7 @@ namespace Server.Engines.CronScheduler
             // ConsumerPriceIndex - 3 AM daily
             Cron.Register(new CConsumerPriceIndex().ConsumerPriceIndex, "? 3 * * *");       // random minute of the 3AM hour
 
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 #region KIN_FACTIONS
 #if KIN_FACTIONS
@@ -292,7 +298,7 @@ namespace Server.Engines.CronScheduler
                 #endregion KIN_FACTIONS
             }
 
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 // http://www.infoplease.com/ce6/weather/A0844225.html
                 Cron.Register(new CSpringChamp().SpringChamp, "0 0 21 3 *");    // spring (vamp), about Mar. 21, (12:00 AM)
@@ -302,7 +308,7 @@ namespace Server.Engines.CronScheduler
             }
 
             // Check InmateManagement - every 15 minutes
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                 Cron.Register(new CInmateManagement().InmateManagement, "*/15 * * * *");
         }
     }
@@ -493,6 +499,71 @@ namespace Server.Engines.CronScheduler
         }
     }
     #endregion VendorRestock
+
+    #region CustomHousingVendorRestock
+    // restock the vendors
+    class CCustomHousingVendorRestock
+    {
+        public void CustomHousingVendorRestock()
+        {
+            System.Console.WriteLine("Custom housing vendor restock check started ... ");
+            Utility.TimeCheck tc = new Utility.TimeCheck();
+            tc.Start();
+            int restocked;
+            int vendorsChecked = CustomHousingVendorRestockWorker(out restocked);
+            tc.End();
+            System.Console.WriteLine("checked {0} custom housing vendors, {1} restocked in {2}", vendorsChecked, restocked, tc.TimeTaken);
+        }
+
+        private int CustomHousingVendorRestockWorker(out int restocked)
+        {
+            int iChecked = 0;
+            restocked = 0;
+            int restockAmount = 25;
+            foreach (PlayerVendor pv in PlayerVendor.Instances)
+            {
+                if (pv.StaffOwned)
+                    if (pv.Region is HouseRegion)
+                        if ((pv.Region as HouseRegion).House is Multis.StaticHousing.StaticHouse)
+                        {
+                            string houseID = ((Server.Multis.StaticHousing.StaticHouse)(pv.Region as HouseRegion).House).HouseBlueprintID;
+                            System.Diagnostics.Debug.Assert(!string.IsNullOrEmpty(houseID));
+                            if (!string.IsNullOrEmpty(houseID))
+                            {
+                                System.Diagnostics.Debug.Assert(pv.Backpack != null);
+                                if (pv.Backpack != null && pv.Backpack.Items != null)
+                                {
+                                    if (pv.Backpack.Items.Count < restockAmount)
+                                        restocked++;
+
+                                    while (pv.Backpack.Items.Count < restockAmount)
+                                    {
+                                        StaticDeed deed = new StaticDeed(houseID);
+                                        System.Diagnostics.Debug.Assert(deed != null);
+                                        string description = Server.Multis.StaticHousing.StaticHouseHelper.GetDescription(houseID);
+                                        System.Diagnostics.Debug.Assert(description != null);
+
+                                        string article;
+                                        if (Utility.StartsWithVowel(deed.Name)) article = "an"; else article = "a";
+                                        deed.Name = "a deed to" + " " + article + " " + description;
+                                        
+                                        if (pv.OnDragDrop(World.GetSystemAcct(), deed) == false)
+                                        {
+                                            Utility.Monitor.WriteLine("Unable to restock {0}", ConsoleColor.Red, pv);
+                                            break;
+                                        }
+                                    }
+
+                                    iChecked++;
+                                }
+                            }
+                        }
+            }
+
+            return iChecked;
+        }
+    }
+    #endregion CustomHousingVendorRestock
 
     #region ItemDecay
     // decay items on the ground
@@ -1468,7 +1539,7 @@ namespace Server.Engines.CronScheduler
                 || item is TreasureMap || item is MessageInABottle
                 || item is BaseArmor || item is BaseWeapon
                 || item is BaseClothing
-                || (item is BaseJewel && Core.AOS))
+                || (item is BaseJewel && Core.RuleSets.AOSRules()))
                 return true;
 
             return false;

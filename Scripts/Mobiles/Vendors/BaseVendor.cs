@@ -21,7 +21,7 @@
 
 /* Scripts/Mobiles/Vendors/BaseVendor.cs 
  * Changelog
- *	3/12/11, adam
+ *	3/12/11, Adam
  *		Don't add loot to vendor backpack if server is siege
  *	05/25/09, plasma
  *		- Implemneted tax properly withouht floatinf point math
@@ -136,7 +136,7 @@ namespace Server.Mobiles
         private DateTime m_LastRestock;
 
         private bool m_Invulnerable = true;
-        public override bool CanTeach { get { return Core.UOSP ? false : true; } }
+        public override bool CanTeach { get { return Core.RuleSets.SiegeRules() ? false : true; } }
 
         public override bool PlayerRangeSensitive { get { return true; } }
 
@@ -156,7 +156,7 @@ namespace Server.Mobiles
                 // the (invulnerable) tag has been removed; invulnerable NPCs and players can now be identified by the yellow hue of their name
                 // Adam: June 2, 2001 probably means Publish 12 which was July 24, 2001
                 m_Invulnerable = value;
-                if (m_Invulnerable && !Core.AOS && (Core.UOAI || Core.UOREN || Core.UOMO || PublishInfo.Publish >= 12))
+                if (m_Invulnerable && !Core.RuleSets.AOSRules() && (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules() || PublishInfo.Publish >= 12))
                     NameHue = 0x35;
             }
         }
@@ -233,7 +233,7 @@ namespace Server.Mobiles
                     {
                         m_From.SendLocalizedMessage(1049038); // You can get an order now.
 
-                        if (Core.AOS)
+                        if (Core.RuleSets.AOSRules())
                         {
                             Item bulkOrder = m_Vendor.CreateBulkOrder(m_From, true);
 
@@ -260,7 +260,7 @@ namespace Server.Mobiles
 
             // Shopkeepers can fight (poorly) on Siege, make sure they have SOME skill
             //	we don't know what the correct skill here is...
-            if (Core.UOSP && this.Skills != null && this.Skills.Wrestling != null)
+            if (Core.RuleSets.SiegeRules() && this.Skills != null && this.Skills.Wrestling != null)
                 if (this.Skills.Wrestling.Value == 0)
                     SetSkill(SkillName.Wrestling, 36.0, 68.0);
 
@@ -269,7 +269,7 @@ namespace Server.Mobiles
             /* Publish 4
 			 * Any shopkeeper that is currently [invulnerable] will lose that status except for stablemasters.
 			 */
-            IsInvulnerable = (!Core.UOAI && !Core.UOREN && !Core.UOMO && PublishInfo.Publish < 8) ? false : true;
+            IsInvulnerable = (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.MortalisRules() && PublishInfo.Publish < 8) ? false : true;
 
             this.Title = title;
 
@@ -597,7 +597,7 @@ namespace Server.Mobiles
 			 * http://forums.uosecondage.com/viewtopic.php?f=8&t=22266
 			 * runuo.com/community/threads/evil-mage-hues.91540/
 			 */
-            int sandal_hue = (Core.UOAI || Core.UOREN || Core.UOMO || PublishInfo.Publish >= 4) ? GetShoeHue() : Utility.RandomBool() ? Utility.RandomRedHue() : Utility.RandomBlueHue();
+            int sandal_hue = (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules() || PublishInfo.Publish >= 4) ? GetShoeHue() : Utility.RandomBool() ? Utility.RandomRedHue() : Utility.RandomBlueHue();
 
             switch (ShoeType)
             {
@@ -664,7 +664,7 @@ namespace Server.Mobiles
                 }
             }
 
-            if (!Core.UOSP)
+            if (!Core.RuleSets.SiegeRules())
                 InitLoot();
         }
 
@@ -673,7 +673,7 @@ namespace Server.Mobiles
             // Publish 5
             // Shopkeepers may no longer be poisoned
             // http://www.uoguide.com/Publish_5
-            if (!Core.UOAI && !Core.UOREN && !Core.UOMO && PublishInfo.Publish >= 5)
+            if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.MortalisRules() && PublishInfo.Publish >= 5)
                 return true;
             else
                 return false;
@@ -1914,7 +1914,7 @@ namespace Server.Mobiles
 			 * If a shopkeeper is killed, a new shopkeeper will appear as soon as another player (other than the one that killed it) approaches.
 			 * http://www.uoguide.com/Publish_4
 			 */
-            if (!Core.UOAI && !Core.UOREN && !Core.UOMO && PublishInfo.Publish >= 4)
+            if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.MortalisRules() && PublishInfo.Publish >= 4)
             {
                 if (Spawner != null && !Spawner.Deleted && Spawner.Running)
                 {
@@ -1934,7 +1934,7 @@ namespace Server.Mobiles
 			 * NPC shopkeepers will give a murder count when they die unless they are criminal or evil. The issue with murder counts from NPCs not decaying (as reported on Siege Perilous) will also be addressed.
 			 * http://www.uoguide.com/Publish_4
 			 */
-            if (!Core.UOAI && !Core.UOREN && !Core.UOMO && PublishInfo.Publish >= 4)
+            if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.MortalisRules() && PublishInfo.Publish >= 4)
             {
                 foreach (AggressorInfo ai in this.Aggressors)
                 {

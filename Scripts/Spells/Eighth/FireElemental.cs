@@ -21,7 +21,7 @@
 
 /* Scripts\Spells\Eighth\FireElemental.cs
  * 	ChangeLog:
- *	7/16/10, adam
+ *	7/16/10, Adam
  *		o decrease duration by 50%
  * 	6/5/04, Pix
  * 		Merged in 1.0RC0 code.
@@ -70,7 +70,7 @@ namespace Server.Spells.Eighth
             if (CheckSequence())
             {
                 TimeSpan duration = TimeSpan.FromSeconds((2 * Caster.Skills.Magery.Fixed) / 10);
-                SpellHelper.Summon(new FireElemental(Core.UOAI || Core.UOREN ? true : false), Caster, 0x217, duration, false, false);
+                SpellHelper.Summon(new FireElemental(Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? true : false), Caster, 0x217, duration, false, false);
             }
 
             FinishSequence();

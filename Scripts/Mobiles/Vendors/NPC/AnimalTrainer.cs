@@ -21,7 +21,7 @@
 
 /* Scripts\Mobiles\Vendors\NPC\AnimalTrainer.cs
  * ChangeLog
- * 5/10/10, adam
+ * 5/10/10, Adam
  *		Stable Fees: Redesign stable fees as follows:
  *		(1) up basic stabling fee from 30 gold per week (.357 gold per UO day) to 84 gold per week (1 gold per UO day)
  *		(2) Actually charge the above amount once per UO day

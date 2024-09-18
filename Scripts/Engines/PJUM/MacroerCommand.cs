@@ -21,7 +21,7 @@
 
 /* Scripts/Engines/PJUM/MacroerCommand.cs
  * ChangeLog
- *	5/17/10, adam
+ *	5/17/10, Adam
  *		make the Town Crier message reflect whether or not there is an actual/reasonable bounty
  *			this includes the macroer's gold + LB bonus
  *	3/25/09, Adam

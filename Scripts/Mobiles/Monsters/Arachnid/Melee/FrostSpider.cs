@@ -77,14 +77,14 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackItem(new SpidersSilk(7));
                 PackGold(40, 75);
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // // http://web.archive.org/web/20020202091536/uo.stratics.com/hunters/frostspider.shtml
                     // 7 Spiders Silk
                     if (Spawning)

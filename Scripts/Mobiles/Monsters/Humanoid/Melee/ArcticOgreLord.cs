@@ -88,7 +88,7 @@ namespace Server.Mobiles
         public override Poison PoisonImmune { get { return Poison.Regular; } }
         public override AuraType MyAura { get { return AuraType.Ice; } }
         // Auto-dispel is UOR - http://forums.uosecondage.com/viewtopic.php?f=8&t=6901
-        public override bool AutoDispel { get { return Core.UOAI || Core.UOREN ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
+        public override bool AutoDispel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
 
         public ArcticOgreLord(Serial serial)
             : base(serial)
@@ -97,7 +97,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(2500, 3500);
                 PackItem(new Club());
@@ -129,7 +129,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020202092201/uo.stratics.com/hunters/arcticogrelord.shtml
                     // 500 - 700 Gold, Magic Items, a normal club and a gem
                     if (Spawning)

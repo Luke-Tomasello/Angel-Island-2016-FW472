@@ -81,7 +81,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (!Core.UOAI && !Core.UOREN)
+            if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules())
             {
                 AddLoot(LootPack.UltraRich, 4);
                 AddLoot(LootPack.FilthyRich);
@@ -98,7 +98,7 @@ namespace Server.Mobiles
         public override bool Unprovokable { get { return true; } }
         public override Poison PoisonImmune { get { return Poison.Lethal; } }
         // Auto-dispel is UOR - http://forums.uosecondage.com/viewtopic.php?f=8&t=6901
-        public override bool AutoDispel { get { return Core.UOAI || Core.UOREN ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
+        public override bool AutoDispel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
 
         public override void CheckReflect(Mobile caster, ref bool reflect)
         {

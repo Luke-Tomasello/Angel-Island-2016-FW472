@@ -21,7 +21,7 @@
 
 /* Scripts\Items\Weapons\Fists.cs
  * ChangeLog:
- *	6/8/10, adam
+ *	6/8/10, Adam
  *		make the class 'sealed' to prevent basing classes on this class since there is special cleanup logic
  *		associated with fists.
  *  1/06.06, Kit

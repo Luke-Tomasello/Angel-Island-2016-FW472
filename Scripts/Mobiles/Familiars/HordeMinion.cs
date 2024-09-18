@@ -21,7 +21,7 @@
 
 /* Scripts/Mobiles/Familiars/HordeMinion.cs
  * ChangeLog
- *	7/16/10, adam
+ *	7/16/10, Adam
  *		o Make summonable
  *			o add DispelDifficulty
  *		o add OnBeforeDispel so we can drop our loot

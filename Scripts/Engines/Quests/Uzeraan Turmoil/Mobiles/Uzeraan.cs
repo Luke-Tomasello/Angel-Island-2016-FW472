@@ -340,7 +340,7 @@ namespace Server.Engines.Quests.Haven
                                     default: weapon = new VikingSword(); break;
                                 }
                                 weapon.Slayer = SlayerName.Silver;
-                                if (Core.AOS)
+                                if (Core.RuleSets.AOSRules())
                                 {
                                     BaseRunicTool.ApplyAttributesTo(weapon, 3, 20, 40);
                                 }

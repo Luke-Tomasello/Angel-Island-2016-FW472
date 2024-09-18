@@ -21,7 +21,7 @@
 
 /* Scripts\Spells\Seventh\MassDispel.cs
  * ChangeLog:
- * 7/16/10, adam
+ * 7/16/10, Adam
  *		o call new OnBeforeDispel() to allow dispelled creatures to do something.
  *		Spirit Speak bonus:
  *			You gain up to 50pts extra dispel protection against npcs, however, it'll never exceed the 

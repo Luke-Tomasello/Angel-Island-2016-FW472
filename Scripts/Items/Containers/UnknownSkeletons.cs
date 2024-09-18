@@ -163,7 +163,7 @@ namespace Server.Items
 
             for (int i = 0; i < 3; i++)
             {
-                if (0.25 >= Utility.RandomDouble() && Core.AOS)
+                if (0.25 >= Utility.RandomDouble() && Core.RuleSets.AOSRules())
                     item = Loot.RandomScroll(0, Loot.NecromancyScrollTypes.Length, SpellbookType.Necromancer);
                 else
                     item = Loot.RandomScroll(0, Loot.RegularScrollTypes.Length, SpellbookType.Regular);

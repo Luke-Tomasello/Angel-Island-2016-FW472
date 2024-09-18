@@ -21,7 +21,7 @@
 
 /* Scripts/Mobiles/Guards/PatrolGuard.cs
  * Changelog
- * 6/21/10, adam
+ * 6/21/10, Adam
  *		rewrite such that PatrolGuard is now based upon on WarriorGuard
  * 04/19/05, Kit
  *		Added check to onmovement not to attack player initially if they are hidden.

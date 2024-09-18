@@ -351,12 +351,12 @@ namespace Server.Misc
                 }
             }
             
-            if (!Core.UOAI && !Core.UOAR && !Core.UOMO && !mounted)
+            if (!Core.RuleSets.AngelIslandRules() && !Core.UOAR && !Core.RuleSets.MortalisRules() && !mounted)
             {   // not mounted on siege
                 if (((from.Stam * 100) / Math.Max(from.StamMax, 1)) < 10)
                     --from.Stam;
             }
-            else if (Core.UOAI || Core.UOAR || Core.UOMO)
+            else if (Core.RuleSets.AngelIslandRules() || Core.UOAR || Core.RuleSets.MortalisRules())
             {   // mounted ot not on ai/mo
                 if ((e.Direction & Direction.Running) != 0) //if you're running
                 {
@@ -365,7 +365,7 @@ namespace Server.Misc
                 }
             }
 
-            if (!Core.UOAI && !Core.UOAR && !Core.UOMO && mounted)
+            if (!Core.RuleSets.AngelIslandRules() && !Core.UOAR && !Core.RuleSets.MortalisRules() && mounted)
             {   // mounted on siege
                 if (mount.Stam == 0)
                 {
@@ -377,7 +377,7 @@ namespace Server.Misc
 
             if (from.Stam == 0)
             {
-                if (mounted && (!Core.UOAI && !Core.UOAR && !Core.UOMO))
+                if (mounted && (!Core.RuleSets.AngelIslandRules() && !Core.UOAR && !Core.RuleSets.MortalisRules()))
                     from.SendLocalizedMessage(500108); // Your mount is too fatigued to move.
                 else
                     from.SendLocalizedMessage(500110); // You are too fatigued to move.
@@ -390,13 +390,13 @@ namespace Server.Misc
                 PlayerMobile pm = from as PlayerMobile;
                 ++pm.StepsTaken;
 
-                if (Core.UOAI || Core.UOAR || Core.UOMO || !mounted)
+                if (Core.RuleSets.AngelIslandRules() || Core.UOAR || Core.RuleSets.MortalisRules() || !mounted)
                 {   // ai, mo, or not mounted on siege
                     int amt = (from.Mounted ? 48 : 16);
                     if ((pm.StepsTaken % amt) == 0)
                         --from.Stam;
                 }
-                else if (!Core.UOAI && !Core.UOAR && !Core.UOMO && mounted)
+                else if (!Core.RuleSets.AngelIslandRules() && !Core.UOAR && !Core.RuleSets.MortalisRules() && mounted)
                 {   //mounted on siege
                     if (((pm.StepsTaken % 6) == 0) && ((e.Direction & Direction.Running) != 0))
                     {

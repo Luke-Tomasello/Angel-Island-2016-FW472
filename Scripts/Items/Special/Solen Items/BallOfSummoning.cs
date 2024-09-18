@@ -269,7 +269,7 @@ namespace Server.Items
 
 			AnimalFormContext animalContext = AnimalForm.GetContext( from );
 
-			if( Core.ML && animalContext != null )
+			if( Core.RuleSets.MLRules() && animalContext != null )
 			{
 				from.LocalOverheadMessage( MessageType.Regular, 0x3B2, 1080073 ); // You cannot use a Crystal Ball of Pet Summoning while in animal form.
 				return;
@@ -375,13 +375,13 @@ namespace Server.Items
 			{
 				from.Send( new AsciiMessage( this.Serial, this.ItemID, MessageType.Regular, 0x22, 3, "", "You cannot summon your pet to this location." ) );
 			}
-			else if ( Core.ML && from is PlayerMobile && DateTime.UtcNow < ((PlayerMobile)from).LastPetBallTime.AddSeconds( 15.0 ) )
+			else if ( Core.RuleSets.MLRules() && from is PlayerMobile && DateTime.UtcNow < ((PlayerMobile)from).LastPetBallTime.AddSeconds( 15.0 ) )
 			{
 				MessageHelper.SendLocalizedMessageTo( this, from, 1080072, 0x22 ); // You must wait a few seconds before you can summon your pet.
 			}
 			else
 			{
-				if( Core.ML )
+				if( Core.RuleSets.MLRules() )
 					new PetSummoningSpell( this, from ).Cast();
 				else
 					SummonPet( from );

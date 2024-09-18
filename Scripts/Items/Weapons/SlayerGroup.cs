@@ -21,7 +21,7 @@
 
 /* Scripts/Items/Weapons/SlayerGroup.cs
  * ChangeLog
- *	7/19/10, adam
+ *	7/19/10, Adam
  *		Add Vampires to undead slayer group
  *  6/21/06, Kit	
  *		Added BoneMagiLord/Bone Knight Lord to silver slayer grouping.

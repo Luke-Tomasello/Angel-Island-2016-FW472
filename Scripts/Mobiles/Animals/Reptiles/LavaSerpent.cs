@@ -76,7 +76,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(90, 130);
                 PackItem(new SulfurousAsh(3));
@@ -84,7 +84,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // TODO: need reference from 2002, best we can find is Sep 2008
                     // http://web.archive.org/web/20080804183706/uo.stratics.com/database/view.php?db_content=hunters&id=225
                     // 200 - 250 Gold. 3 Sulfurous Ash, Bones, Body Parts, Armor

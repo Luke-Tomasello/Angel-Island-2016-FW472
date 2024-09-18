@@ -70,7 +70,7 @@ namespace Server.Mobiles
         }
 
         public override int Meat { get { return 1; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 1 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 1 : 0; } }
 
         public OphidianWarrior(Serial serial)
             : base(serial)
@@ -79,7 +79,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(100, 140);
                 // Category 2 MID
@@ -87,7 +87,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020213035113/uo.stratics.com/hunters/ophwarr.shtml
                     // 50 to 150 Gold, Potions, Arrows, Gems, Weapons
                     // http://web.archive.org/web/20020414104242/uo.stratics.com/hunters/ophenfor.shtml

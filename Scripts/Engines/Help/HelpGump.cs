@@ -21,7 +21,7 @@
 
 /* Engines/Help/HelpGump.cs
  * Changelog:
- *	6/16/10, adam
+ *	6/16/10, Adam
  *		Add an additional check to TryMoveStuckPlayer() for housing regions. 
  *			We now check to make sure the player is actually inside the house and not for instance standing
  *			under the overhang of a tower.

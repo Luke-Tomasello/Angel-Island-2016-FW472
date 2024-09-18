@@ -108,7 +108,7 @@ namespace Server.Mobiles
         public override bool SupportsBulkOrders(Mobile from)
         {
             // The following line allows this NPC to support the BOD system under AOS only. 
-            //return ( from is PlayerMobile && Core.AOS && from.Skills[SkillName.Blacksmith].Base > 0 );
+            //return ( from is PlayerMobile && Core.RuleSets.AOSRules() && from.Skills[SkillName.Blacksmith].Base > 0 );
             // return false from this function to disable BOD support fully.
             return false;
         }

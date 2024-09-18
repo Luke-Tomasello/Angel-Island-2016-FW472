@@ -21,9 +21,9 @@
 
 /* Scripts\Spells\Third\Poison.cs
  * ChangeLog:
- *	5/27/10, adam
+ *	5/27/10, Adam
  *		Change the chance to poison from 10% chance to 18.21% per Akarius
- *	3/18/10, adam
+ *	3/18/10, Adam
  *		Added ability to adjust resistability via the PoisonStickMCi (console)
  *  2/12/07 Taran Kain
  *		Removed WW test and logging code.
@@ -94,7 +94,7 @@ namespace Server.Spells.Third
                 {
                     int level;
 
-                    if (Core.AOS)
+                    if (Core.RuleSets.AOSRules())
                     {
                         if (Caster.InRange(m, 2))
                         {
@@ -123,11 +123,11 @@ namespace Server.Spells.Third
                         if (dist >= 3.0)
                             total -= (dist - 3.0) * 10.0;
                         // adam: change from 10% to 18.21% per Akarius' recomendations
-                        if (total >= 200.0 && (Core.AOS || Utility.RandomChance(18.21)))
+                        if (total >= 200.0 && (Core.RuleSets.AOSRules() || Utility.RandomChance(18.21)))
                             level = 3;
-                        else if (total > (Core.AOS ? 170.1 : 170.0))
+                        else if (total > (Core.RuleSets.AOSRules() ? 170.1 : 170.0))
                             level = 2;
-                        else if (total > (Core.AOS ? 130.1 : 130.0))
+                        else if (total > (Core.RuleSets.AOSRules() ? 130.1 : 130.0))
                             level = 1;
                         else
                             level = 0;

@@ -21,9 +21,9 @@
 
 /* Scripts/Items/Containers/Container.cs
  * ChangeLog:
- *	7/11/10, adam
+ *	7/11/10, Adam
  *		replace local copy of memory system with the common implementation in Utility.Memory
- *	5/23/10, adam
+ *	5/23/10, Adam
  *		Add the notion of per-player lift memory.
  *		In Ransom chests, dungeon chests, and treasuremap chests we use this memory to halt/slow lift macros
  *	01/23/07, Pix

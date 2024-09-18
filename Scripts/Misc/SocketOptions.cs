@@ -117,7 +117,7 @@ namespace Server
         {
             m_ListenerEndPoints = new IPEndPoint[1];
             
-            if (Core.UOEV)
+            if (Core.RuleSets.EventShardRules())
             {
                 // Core EventShard can be turned on with all other server configurations and overrides the default port for that shard.
                 //  For example, one can turn on -uoev -uomo yielding an event shard with the Mortalis rule set, but a port number that
@@ -127,21 +127,21 @@ namespace Server
             }
             else
             {
-                // Core TestCenter can be turned on with Core.UOSP giving us a SP TC
+                // Core TestCenter can be turned on with Core.RuleSets.SiegeRules() giving us a SP TC
                 //  otherwise it is the usual AI TC
                 //  but whatever the test center mode, it always gets its own port
-                if (Core.UOTC)
+                if (Core.RuleSets.TestCenterRules())
                 {
                     m_ListenerEndPoints[0] = new IPEndPoint(IPAddress.Any, TestCenterPort);
                 }
                 else
                 {
-                    if (Core.UOSP)
+                    if (Core.RuleSets.SiegeRules())
                         m_ListenerEndPoints[0] = new IPEndPoint(IPAddress.Any, SiegePerilousPort);
-                    else if (Core.UOMO)
+                    else if (Core.RuleSets.MortalisRules())
                         m_ListenerEndPoints[0] = new IPEndPoint(IPAddress.Any, MortalisPort);
 //#if !GMN
-                    else if (Core.UOREN)
+                    else if (Core.RuleSets.RenaissanceRules())
                         m_ListenerEndPoints[0] = new IPEndPoint(IPAddress.Any, RenaissancePort);
 //#endif
                     else

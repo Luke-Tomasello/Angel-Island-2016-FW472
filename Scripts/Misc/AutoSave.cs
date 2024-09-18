@@ -25,7 +25,7 @@
  *      New Backup strategy. Now matches what we do in Core 6.
  *      Basically, all saves are saved to a time-stamped folder. 
  *      We will use an external daemon for cleaning up old versions.
- *	5/15/10, adam
+ *	5/15/10, Adam
  *		Automatically create a 1 backup each day of the form: Archive-17May10
  *	8/22/07, Adam
  *		We split the backup and save into separate catch blocks because we still want to save even if we cannot backup

@@ -53,7 +53,7 @@ namespace Server.Mobiles
                 Add(new GenericBuyInfo(typeof(ScribesPen), 8, 20, 0xFBF, 0));
                 Add(new GenericBuyInfo(typeof(BlankScroll), 5, 20, 0x0E34, 0));
 
-                if (Core.UOAI || Core.UOREN || Core.UOMO)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
                     // Jade: Add new House Sitter deeds
                     Add(new GenericBuyInfo("a housesitter contract", typeof(HouseSitterDeed), 2500, 20, 0x14F0, 0));
             }
@@ -63,7 +63,7 @@ namespace Server.Mobiles
         {
             public InternalSellInfo()
             {
-                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
+                if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.SiegeRules() && !Core.RuleSets.MortalisRules())
                 {   // cash buyback
                     Add(typeof(ScribesPen), 4);
                     Add(typeof(BlankScroll), 3);

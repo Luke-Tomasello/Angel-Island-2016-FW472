@@ -76,8 +76,8 @@ namespace Server.Items
             // Vile blade	Velgo Reyam	This power actually works on any weapon (including maces and bows). 
             // It gives the weapon a few charges of powerful (level 5 !!) poison . Once a weapon has been made vile, 
             //	it can never again be used by a hero . 
-            if (Core.UOSP)
-                if (!Core.AOS && Poison != null && PoisonCharges > 0)
+            if (Core.RuleSets.SiegeRules())
+                if (!Core.RuleSets.AOSRules() && Poison != null && PoisonCharges > 0)
                 {
                     --PoisonCharges;
 
@@ -103,10 +103,10 @@ namespace Server.Items
 			 */
 
             // old runuo test.. I don't think it's right.
-            // if (!Core.AOS && (attacker.Player || attacker.Body.IsHuman) && Layer == Layer.TwoHanded && (attacker.Skills[SkillName.Anatomy].Value / 400.0) >= Utility.RandomDouble())
+            // if (!Core.RuleSets.AOSRules() && (attacker.Player || attacker.Body.IsHuman) && Layer == Layer.TwoHanded && (attacker.Skills[SkillName.Anatomy].Value / 400.0) >= Utility.RandomDouble())
 
             // these publishes don't have random special moves
-            if (Core.UOAI || Core.UOREN || Core.UOMO || Core.AOS || PublishInfo.Publish >= 18)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules() || Core.RuleSets.AOSRules() || PublishInfo.Publish >= 18)
                 return damage;
 
             // humanoids can use the moves I guess, but only on players.

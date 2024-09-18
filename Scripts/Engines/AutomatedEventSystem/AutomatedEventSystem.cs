@@ -30,7 +30,7 @@
 
 /* Scripts/Engines/AutomatedEventSystem/AutomatedEventSystem.cs
  * CHANGELOG:
- *  3/29/10, adam
+ *  3/29/10, Adam
  *		create a new ransom chest to avoid exoloits (maybe having it open when it is filled?
  *	9/8/08, Adam
  *		Change Server Wars message from "Head to Dungeon Wrong for PvP." to "Head to West Britain Bank for PvP."

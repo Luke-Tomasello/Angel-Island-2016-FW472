@@ -92,7 +92,7 @@ namespace Server.Mobiles
                     Add(new GenericBuyInfo(types[i], 12 + ((i / 8) * 10), 20, itemID, 0));
                 }
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     Add(new GenericBuyInfo(typeof(BatWing), 3, 20, 0xF78, 0));
                     Add(new GenericBuyInfo(typeof(GraveDust), 3, 20, 0xF8F, 0));
@@ -114,7 +114,7 @@ namespace Server.Mobiles
         {
             public InternalSellInfo()
             {
-                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
+                if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.SiegeRules() && !Core.RuleSets.MortalisRules())
                 {   // cash buyback
                     Add(typeof(Bandage), 2);
 
@@ -148,7 +148,7 @@ namespace Server.Mobiles
                     Add(typeof(BlankScroll), 3);
                 }
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     Add(typeof(BatWing), 2);
                     Add(typeof(GraveDust), 2);
@@ -157,7 +157,7 @@ namespace Server.Mobiles
                     Add(typeof(PigIron), 3);
                 }
 
-                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
+                if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.SiegeRules() && !Core.RuleSets.MortalisRules())
                 {   // cash buyback
                     Type[] types = Loot.RegularScrollTypes;
 

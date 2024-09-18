@@ -21,7 +21,7 @@
 
 /* Scripts/Engines/AI/AI/HumanMageAI.cs
  * CHANGELOG
- *	7/11/10, adam
+ *	7/11/10, Adam
  *		o major reorganization of AI
  *			o push most smart-ai logic from the advanced magery classes down to baseAI so that we can use potions and bandages from 
  *				the new advanced melee class

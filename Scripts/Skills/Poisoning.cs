@@ -112,7 +112,7 @@ namespace Server.SkillHandlers
                     {
                         BaseWeapon weapon = (BaseWeapon)targeted;
 
-                        if (Core.AOS)
+                        if (Core.RuleSets.AOSRules())
                         {
                             startTimer = (weapon.PrimaryAbility == WeaponAbility.InfectiousStrike || weapon.SecondaryAbility == WeaponAbility.InfectiousStrike);
                         }
@@ -128,7 +128,7 @@ namespace Server.SkillHandlers
                             }
                         }
                     }
-                    else if (!Core.UOSP && targeted is Cloth)
+                    else if (!Core.RuleSets.SiegeRules() && targeted is Cloth)
                     {
                         // only a single piece of cloth may be poisoned
                         if (((Cloth)targeted).Amount > 1)
@@ -150,7 +150,7 @@ namespace Server.SkillHandlers
                     {
                         if (!(targeted is Cloth))
                         {
-                            if (Core.AOS)
+                            if (Core.RuleSets.AOSRules())
                                 from.SendLocalizedMessage(1060204); // You cannot poison that! You can only poison infectious weapons, food or drink.
                             else
                                 from.SendMessage("You cannot poison that! You can only poison bladed or piercing weapons, food, drink, or cloth.");
@@ -205,7 +205,7 @@ namespace Server.SkillHandlers
                                 ((BaseWeapon)m_Target).PoisonCharges = 18 - (m_Poison.Level * 2);
                                 DisplayName = ((BaseWeapon)m_Target).ItemData.Name;
                             }
-                            else if (!Core.UOSP && m_Target is Cloth)
+                            else if (!Core.RuleSets.SiegeRules() && m_Target is Cloth)
                             {
                                 // Only create the poison rag if the cloth is a single piece
                                 if (((Cloth)m_Target).Amount == 1)

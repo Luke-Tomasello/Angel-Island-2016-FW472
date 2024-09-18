@@ -26,7 +26,7 @@
  *  2010.06.09 - Pix
  *      Added 'timeout' to fight broker registration to eliminate possibility of opportunistic joining away 
  *      from the fightbroker.
- *	05/27/10, adam
+ *	05/27/10, Adam
  *		Make all fight broker actions free
  *	08/01/07, Pix
  *		Added consequences for blue-healers with the Fight Brokers.

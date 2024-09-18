@@ -82,14 +82,14 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackItem(new SulfurousAsh(5));
                 PackGold(100, 200);
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20021015001544/uo.stratics.com/hunters/hell_hound.shtml
                     // 0-150 gp, 5 Sulphurous Ash, 1 Raw Ribs (carved)
                     if (Spawning)

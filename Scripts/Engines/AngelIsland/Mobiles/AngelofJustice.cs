@@ -209,7 +209,7 @@ namespace Server.Mobiles
 
                 this.PlaySound(0x209);
                 this.DoHarmful(combatant);
-                this.Hits += AOS.Damage(combatant, this, Utility.RandomMinMax(30, 40) - (Core.AOS ? 0 : 10), 100, 0, 0, 0, 0, source_weapon: this);
+                this.Hits += AOS.Damage(combatant, this, Utility.RandomMinMax(30, 40) - (Core.RuleSets.AOSRules() ? 0 : 10), 100, 0, 0, 0, 0, source_weapon: this);
             }
         }
 

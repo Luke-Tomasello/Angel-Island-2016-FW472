@@ -24,7 +24,7 @@
  *	2/8/11, Adam
  *		Non AI shards get standard RunUO loot.
  *		Not sure this is exactly correct for Siege era, but it's got to be close.
- *	8/12/10, adam
+ *	8/12/10, Adam
  *		Because chest spawn randomly around the map, and because there is a chance of a rare under the chest,
  *		we now require that the chest be emptied before removal.
  *	5/23/10, Adam
@@ -243,7 +243,7 @@ namespace Server.Items
         {
             cont.Movable = false;
 
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
 
                 // the speial Overland Treasure Hunter NPC 'unlocks' the chest for you!
@@ -355,7 +355,7 @@ namespace Server.Items
                     {
                         Item item;
 
-                        if (Core.AOS)
+                        if (Core.RuleSets.AOSRules())
                             item = Loot.RandomArmorOrShieldOrWeaponOrJewelry();
                         else
                             item = Loot.RandomArmorOrShieldOrWeapon();
@@ -364,7 +364,7 @@ namespace Server.Items
                         {
                             BaseWeapon weapon = (BaseWeapon)item;
 
-                            if (Core.AOS)
+                            if (Core.RuleSets.AOSRules())
                             {
                                 int attributeCount;
                                 int min, max;
@@ -386,7 +386,7 @@ namespace Server.Items
                         {
                             BaseArmor armor = (BaseArmor)item;
 
-                            if (Core.AOS)
+                            if (Core.RuleSets.AOSRules())
                             {
                                 int attributeCount;
                                 int min, max;
@@ -407,7 +407,7 @@ namespace Server.Items
                         {
                             BaseHat hat = (BaseHat)item;
 
-                            if (Core.AOS)
+                            if (Core.RuleSets.AOSRules())
                             {
                                 int attributeCount;
                                 int min, max;
@@ -460,7 +460,7 @@ namespace Server.Items
                 }
 
                 // Adam: we can add this if we ever decide to enable AOS (lol)
-                //if (level == 6 && Core.AOS)
+                //if (level == 6 && Core.RuleSets.AOSRules())
                 //cont.DropItem((Item)Activator.CreateInstance(m_Artifacts[Utility.Random(m_Artifacts.Length)]));
             }
         }

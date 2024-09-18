@@ -97,7 +97,7 @@ namespace Server.Items
                 SkillName.SpiritSpeak
             };
 
-        public static SkillName[] Skills { get { return (Core.AOS ? m_AOSSkills : m_Skills); } }
+        public static SkillName[] Skills { get { return (Core.RuleSets.AOSRules() ? m_AOSSkills : m_Skills); } }
 
         public static PowerScroll CreateRandom(int min, int max)
         {

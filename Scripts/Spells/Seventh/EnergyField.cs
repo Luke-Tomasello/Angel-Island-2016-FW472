@@ -103,7 +103,7 @@ namespace Server.Spells.Seventh
 
                 TimeSpan duration;
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                     duration = TimeSpan.FromSeconds((15 + (Caster.Skills.Magery.Fixed / 5)) / 7);
                 else
                     duration = TimeSpan.FromSeconds(Caster.Skills[SkillName.Magery].Value * 0.28 + 2.0); // (28% of magery) + 2.0 seconds

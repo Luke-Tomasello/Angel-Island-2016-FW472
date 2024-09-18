@@ -50,7 +50,7 @@ namespace Server.Multis
         public SmallOldHouse(Mobile owner, int id)
             : base(id, owner, 270, 2, 2)
         {
-            if (Core.UOSP)
+            if (Core.RuleSets.SiegeRules())
             {
                 this.MaxLockDowns = 425;
                 this.MaxSecures = 3;
@@ -112,7 +112,7 @@ namespace Server.Multis
         public GuildHouse(Mobile owner)
             : base(0x74, owner, 600, 4, 2)
         {
-            if (Core.UOSP)
+            if (Core.RuleSets.SiegeRules())
             {
                 this.MaxLockDowns = 1100;
                 this.MaxSecures = 8;
@@ -161,7 +161,7 @@ namespace Server.Multis
         public TwoStoryHouse(Mobile owner, int id)
             : base(id, owner, 750, 5, 3)
         {
-            if (Core.UOSP)
+            if (Core.RuleSets.SiegeRules())
             {
                 this.MaxLockDowns = 1370;
                 this.MaxSecures = 10;
@@ -221,7 +221,7 @@ namespace Server.Multis
         public Tower(Mobile owner)
             : base(0x7A, owner, 1150, 8, 4)
         {
-            if (Core.UOSP)
+            if (Core.RuleSets.SiegeRules())
             {
                 this.MaxLockDowns = 2119;
                 this.MaxSecures = 15;
@@ -271,7 +271,7 @@ namespace Server.Multis
         public Keep(Mobile owner)
             : base(0x7C, owner, 1300, 9, 5)
         {
-            if (Core.UOSP)
+            if (Core.RuleSets.SiegeRules())
             {
                 this.MaxLockDowns = 2625;
                 this.MaxSecures = 18;
@@ -317,7 +317,7 @@ namespace Server.Multis
         public Castle(Mobile owner)
             : base(0x7E, owner, 1950, 14, 7)
         {
-            if (Core.UOSP)
+            if (Core.RuleSets.SiegeRules())
             {
                 this.MaxLockDowns = 4076;
                 this.MaxSecures = 28;
@@ -370,7 +370,7 @@ namespace Server.Multis
         public LargePatioHouse(Mobile owner)
             : base(0x8C, owner, 600, 4, 2)
         {
-            if (Core.UOSP)
+            if (Core.RuleSets.SiegeRules())
             {
                 this.MaxLockDowns = 1100;
                 this.MaxSecures = 8;
@@ -423,7 +423,7 @@ namespace Server.Multis
         public LargeMarbleHouse(Mobile owner)
             : base(0x96, owner, 750, 5, 3)
         {
-            if (Core.UOSP)
+            if (Core.RuleSets.SiegeRules())
             {
                 this.MaxLockDowns = 1370;
                 this.MaxSecures = 10;
@@ -471,7 +471,7 @@ namespace Server.Multis
         public SmallTower(Mobile owner)
             : base(0x98, owner, 300, 2, 2)
         {
-            if (Core.UOSP)
+            if (Core.RuleSets.SiegeRules())
             {
                 this.MaxLockDowns = 580;
                 this.MaxSecures = 4;
@@ -519,7 +519,7 @@ namespace Server.Multis
         public LogCabin(Mobile owner)
             : base(0x9A, owner, 600, 4, 2)
         {
-            if (Core.UOSP)
+            if (Core.RuleSets.SiegeRules())
             {
                 this.MaxLockDowns = 1100;
                 this.MaxSecures = 8;
@@ -570,7 +570,7 @@ namespace Server.Multis
         public SandStonePatio(Mobile owner)
             : base(0x9C, owner, 450, 3, 2)
         {
-            if (Core.UOSP)
+            if (Core.RuleSets.SiegeRules())
             {
                 this.MaxLockDowns = 850;
                 this.MaxSecures = 6;
@@ -618,7 +618,7 @@ namespace Server.Multis
         public TwoStoryVilla(Mobile owner)
             : base(0x9E, owner, 600, 4, 2)
         {
-            if (Core.UOSP)
+            if (Core.RuleSets.SiegeRules())
             {
                 this.MaxLockDowns = 1100;
                 this.MaxSecures = 8;
@@ -670,7 +670,7 @@ namespace Server.Multis
         public SmallShop(Mobile owner, int id)
             : base(id, owner, 275, 2, 2)
         {
-            if (Core.UOSP)
+            if (Core.RuleSets.SiegeRules())
             {
                 this.MaxLockDowns = 425;
                 this.MaxSecures = 3;

@@ -66,7 +66,7 @@ namespace Server.Mobiles
         }
 
         public override Poison PoisonImmune { get { return Poison.Greater; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 4 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 4 : 0; } }
         public override int Meat { get { return 2; } }
 
         public OphidianMatriarch(Serial serial)
@@ -76,7 +76,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(300, 400);
                 PackPotion();
@@ -88,7 +88,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020414130610/uo.stratics.com/hunters/ophmat.shtml
                     // 200 to 250 Gold, Potions, Arrows, Gems, Scrolls (circles 3 to 7)
                     if (Spawning)

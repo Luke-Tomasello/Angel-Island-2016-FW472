@@ -21,7 +21,7 @@
 
 /* Scripts/Mobiles/Monsters/Elemental/Magic/AirElemental.cs
  * ChangeLog
- *	7/16/10, adam
+ *	7/16/10, Adam
  *		o decrease average int
  *		o decrease average hp
  *		o decrease average damage
@@ -100,7 +100,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(100, 150);
                 PackMagicEquipment(1, 1, 0.10, 0.10);
@@ -111,7 +111,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20021015004827/uo.stratics.com/hunters/airelemental.shtml
                     // 200 to 300 Gold, Scrolls, Potions
 

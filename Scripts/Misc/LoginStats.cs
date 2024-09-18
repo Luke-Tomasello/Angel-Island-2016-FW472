@@ -27,9 +27,9 @@
  *		Add back stats printing on login for UOSP if you are staff
  *	11/11/10, pix
  *      Removed stats printing on login for UOSP.
- *	7/11/10, adam
+ *	7/11/10, Adam
  *		replace local copy of memory system with the common implementation in Utility.Memory
- *	6/21/10, adam
+ *	6/21/10, Adam
  *		remove item and mobile counts from stats delivered to accesslevel.player
  *	6/15/10, Adam
  *		Turn on online counts on login and display number of adventurers and pvpers currently active.
@@ -57,12 +57,12 @@ namespace Server.Misc
         {
             Mobile m = args.Mobile;
 
-            if (Core.UOTC && m.AccessLevel == AccessLevel.Player)
+            if (Core.RuleSets.TestCenterRules() && m.AccessLevel == AccessLevel.Player)
             {   // if we're on a test center server, send a detailed message to the player telling what flavor of test center they are on
-                //m.SendMessage(String.Format("Welcome to {0} Test Center{1}", Core.Server, Core.UOEV ? " Event Shard." : "."));
-                m.SendMessage(String.Format("Welcome to {0}{1}{2}.", Core.Server, Core.UOTC ? " Test Center" : "", Core.UOEV ? " Event Shard" : ""));
+                //m.SendMessage(String.Format("Welcome to {0} Test Center{1}", Core.Server, Core.RuleSets.EventShardRules() ? " Event Shard." : "."));
+                m.SendMessage(String.Format("Welcome to {0}{1}{2}.", Core.Server, Core.RuleSets.TestCenterRules() ? " Test Center" : "", Core.RuleSets.EventShardRules() ? " Event Shard" : ""));
             }
-            else if (Core.UOSP && m.AccessLevel == AccessLevel.Player)
+            else if (Core.RuleSets.SiegeRules() && m.AccessLevel == AccessLevel.Player)
             {   // regular player on siege
                 m.SendMessage("Welcome, {0}!", args.Mobile.Name);
             }

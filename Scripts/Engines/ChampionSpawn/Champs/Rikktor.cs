@@ -77,7 +77,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (!Core.UOAI && !Core.UOREN)
+            if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules())
             {
                 AddLoot(LootPack.UltraRich, 4);
             }
@@ -85,7 +85,7 @@ namespace Server.Mobiles
 
         public override Poison PoisonImmune { get { return Poison.Lethal; } }
         public override ScaleType ScaleType { get { return ScaleType.All; } }
-        public override int Scales { get { return (Core.UOAI || Core.UOREN || PublishInfo.PublishDate < Core.PlagueOfDespair) ? 0 : 20; } }
+        public override int Scales { get { return (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || PublishInfo.PublishDate < Core.PlagueOfDespair) ? 0 : 20; } }
 
         public override void Damage(int amount, Mobile from, object source_weapon)
         {

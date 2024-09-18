@@ -206,7 +206,7 @@ namespace Server.Guilds
             return (BaseGuild)(new Guild(args.Id));
         }
 
-        public static bool NewGuildSystem { get { return Core.SE; } }
+        public static bool NewGuildSystem { get { return Core.RuleSets.SERules(); } }
 
         private Mobile m_Leader;
 

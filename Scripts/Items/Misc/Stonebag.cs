@@ -21,7 +21,7 @@
 
 /* Items/Misc/Stonebag.cs
  * ChangeLog:
- * 4/2/10, adam
+ * 4/2/10, Adam
  *     Initial Version
  */
 

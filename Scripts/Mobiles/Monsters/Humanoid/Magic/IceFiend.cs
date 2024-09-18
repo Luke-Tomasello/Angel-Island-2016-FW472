@@ -68,7 +68,7 @@ namespace Server.Mobiles
             VirtualArmor = 60;
         }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 4 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 4 : 0; } }
         public override int Meat { get { return 1; } }
 
         public IceFiend(Serial serial)
@@ -78,7 +78,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(300, 400);
                 PackScroll(2, 6);
@@ -92,7 +92,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020202091622/uo.stratics.com/hunters/icefiend.shtml
                     // 500 to 800 Gold, Scrolls (circles 4-6), Magic items
                     if (Spawning)

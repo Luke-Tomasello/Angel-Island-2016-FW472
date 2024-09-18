@@ -74,7 +74,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackReg(3);
                 PackGold(60, 90);
@@ -83,7 +83,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020223144930/uo.stratics.com/hunters/swamptentacles.shtml
                     // 50 to 150 Gold, 3 Garlic
                     if (Spawning)

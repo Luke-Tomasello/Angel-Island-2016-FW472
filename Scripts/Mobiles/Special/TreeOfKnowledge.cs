@@ -121,7 +121,7 @@ namespace Server.Mobiles
 
         public override bool DisallowAllMoves { get { return true; } }
         // Auto-dispel is UOR - http://forums.uosecondage.com/viewtopic.php?f=8&t=6901
-        public override bool AutoDispel { get { return Core.UOAI || Core.UOREN ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
+        public override bool AutoDispel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
         public override Poison PoisonImmune { get { return Poison.Lethal; } }
 
         public override bool CanBandage { get { return true; } }
@@ -351,7 +351,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(28000, 32000);
                 PackItem(new Log(Utility.Random(2500, 3500)));
@@ -364,7 +364,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // ai special
                     if (Spawning)
                     {

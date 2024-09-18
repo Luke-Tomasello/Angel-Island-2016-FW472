@@ -39,7 +39,7 @@ namespace Server.Mobiles
             get
             {
                 //on siege, there is no age requirement to join the thieves guild
-                if (Core.UOSP) { return TimeSpan.FromDays(0.0); }
+                if (Core.RuleSets.SiegeRules()) { return TimeSpan.FromDays(0.0); }
 
                 return TimeSpan.FromHours(40.0);
             }
@@ -73,7 +73,7 @@ namespace Server.Mobiles
         public override bool CheckCustomReqs(PlayerMobile pm)
         {
             //no requirements on siege to join the theives guild
-            if (Core.UOSP) return true;
+            if (Core.RuleSets.SiegeRules()) return true;
 
             if (pm.LongTermMurders > 0)
             {

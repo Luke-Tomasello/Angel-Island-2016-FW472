@@ -90,7 +90,7 @@ namespace Server.Spells.Sixth
 
                 double damage;
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     damage = GetNewAosDamage(38, 1, 5);
                 }

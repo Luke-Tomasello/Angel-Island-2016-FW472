@@ -21,7 +21,7 @@
 
 /* Scripts\Engines\CTFSystem\Items\CTFFlag.cs
  * CHANGELOG:
- * 4/10/10, adam
+ * 4/10/10, Adam
  *		initial framework.
  */
 

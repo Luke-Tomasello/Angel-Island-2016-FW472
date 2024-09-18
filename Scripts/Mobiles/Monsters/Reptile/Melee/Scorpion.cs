@@ -81,7 +81,7 @@ namespace Server.Mobiles
         {
             get
             {
-                if (Core.UOAI || Core.UOREN)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                 {
                     if (Skills[SkillName.Poisoning].Base == 100.0)
                         return (0.8 >= Utility.RandomDouble() ? Poison.Greater : Poison.Deadly);
@@ -103,14 +103,14 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(25, 50);
                 PackItem(new LesserPoisonPotion());
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020207054347/uo.stratics.com/hunters/giantscorpion.shtml
                     // loot: None
                     if (Spawning)

@@ -29,7 +29,7 @@
  *		Reverse changes of 2/8/08
  *		Turn IPException code back on. This is because the IPException logic is per IP whereas the MaxAccountsPerIP
  *			functionality is global.
- *	12/15/10, adam
+ *	12/15/10, Adam
  *		Add a new LoginServer variable to the core used in determining when we are a login server and when we are not.
  *		This saves us from trying to explicitly name all the servers we may be running (see AccountHandler.cs)
  *		History: I was getting complaints that auto creation on Test Center wasn't working. This was because we were incorrectly
@@ -137,7 +137,7 @@ namespace Server.Misc
             if (PasswordCommandEnabled)
                 Server.CommandSystem.Register("Password", AccessLevel.Player, new CommandEventHandler(Password_OnCommand));
 
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
             {
                 CityInfo haven = new CityInfo("Haven", "Uzeraan's Mansion", 3618, 2591, 0);
                 StartingCities[StartingCities.Length - 1] = haven;
@@ -145,7 +145,7 @@ namespace Server.Misc
 
             /* When we enter ALPHA we will lock the server down, but for now we want players to log in and help us identify
 			 * those odd bits we need to fix.
-			if (Core.UOSP) //Until Siege gets out of the closed phase, keep AutoAccountCreation false
+			if (Core.RuleSets.SiegeRules()) //Until Siege gets out of the closed phase, keep AutoAccountCreation false
 			{
 				AutoAccountCreation = false;
 			}*/
@@ -391,7 +391,7 @@ namespace Server.Misc
                 e.Accepted = false;
                 e.RejectReason = ALRReason.InUse;
 
-                Console.WriteLine("Login: {0}: Past IP limit threshold", e.State);
+                Utility.Monitor.WriteLine("Login: {0}: Past IP limit threshold", ConsoleColor.Red, e.State);
 
                 using (StreamWriter op = new StreamWriter("ipLimits.log", true))
                     op.WriteLine("{0}\tPast IP limit threshold\t{1}", e.State, DateTime.UtcNow);
@@ -511,7 +511,7 @@ namespace Server.Misc
             {
                 e.Accepted = false;
 
-                Console.WriteLine("Login: {0}: Past IP limit threshold", e.State);
+                Utility.Monitor.WriteLine("Login: {0}: Past IP limit threshold", ConsoleColor.Red, e.State);
 
                 using (StreamWriter op = new StreamWriter("ipLimits.log", true))
                     op.WriteLine("{0}\tPast IP limit threshold\t{1}", e.State, DateTime.UtcNow);
@@ -558,7 +558,7 @@ namespace Server.Misc
                 else
                 {
                     //Here then we're in the case where it's either a new account
-                    // or the accout has a different last-game-login-ip, so make sure that
+                    // or the account has a different last-game-login-ip, so make sure that
                     // that IP doesn't already have 2+ accounts
                     if (countIP >= 2 && aal <= AccessLevel.Player)
                     {
@@ -571,7 +571,7 @@ namespace Server.Misc
                     else if (countIP >= 3)
                     {
                         //allow unlimited for Admins or greater
-                        Console.WriteLine("Allowing unlimited IP access for {0} from {1}", e.Username, e.State);
+                        Utility.Monitor.WriteLine("Allowing unlimited IP access for {0} from {1}", ConsoleColor.Yellow, e.Username, e.State);
                     }
                 }
 
@@ -585,7 +585,7 @@ namespace Server.Misc
                         strAccts += ("[" + a1.Username + "]");
                     }
 
-                    Console.WriteLine("Login: {0}({1}): Past OFFLINE IP limit threshold.  Accts: {2} ", e.Username, e.State, strAccts);
+                    Utility.Monitor.WriteLine("Login: {0}({1}): Past OFFLINE IP limit threshold.  Accts: {2} ", ConsoleColor.Red, e.Username, e.State, strAccts);
                     using (StreamWriter sw1 = new StreamWriter("offlineIPLimits.log", true))
                     {
                         sw1.WriteLine("{0}:{1}\tPast OFFLINE IP limit threshold\t{2}\tAccounts:{3}", e.Username, e.State, DateTime.UtcNow, strAccts);

@@ -46,7 +46,7 @@ namespace Server.Spells.Fifth
                 "Mind Blast", "Por Corp Wis",
                 SpellCircle.Fifth,
                 218,
-                Core.AOS ? 9002 : 9032,
+                Core.RuleSets.AOSRules() ? 9002 : 9032,
                 Reagent.BlackPearl,
                 Reagent.MandrakeRoot,
                 Reagent.Nightshade,
@@ -56,7 +56,7 @@ namespace Server.Spells.Fifth
         public MindBlastSpell(Mobile caster, Item scroll)
             : base(caster, scroll, m_Info)
         {
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
                 m_Info.LeftHandEffect = m_Info.RightHandEffect = 9002;
         }
 
@@ -86,7 +86,7 @@ namespace Server.Spells.Fifth
         double DamageRangeHigh { get { return Server.Items.Consoles.MindBlastMCi.DamageRangeHigh; } }
         double DamageDelay { get { return Server.Items.Consoles.MindBlastMCi.DamageDelay; } }
 
-        //		public override bool DelayedDamage{ get{ return !Core.AOS; } }
+        //		public override bool DelayedDamage{ get{ return !Core.RuleSets.AOSRules(); } }
         // DamageDelay was above ^ Commented out by smerX
 
         public void Target(Mobile m)
@@ -95,7 +95,7 @@ namespace Server.Spells.Fifth
             {
                 Caster.SendLocalizedMessage(500237); // Target can not be seen.
             }
-            else if (Core.AOS)
+            else if (Core.RuleSets.AOSRules())
             {
                 if (Caster.CanBeHarmful(m) && CheckSequence())
                 {

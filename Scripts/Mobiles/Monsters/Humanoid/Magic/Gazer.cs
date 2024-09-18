@@ -66,7 +66,7 @@ namespace Server.Mobiles
             VirtualArmor = 36;
         }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 1 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 1 : 0; } }
         public override int Meat { get { return 1; } }
 
         public Gazer(Serial serial)
@@ -76,7 +76,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackItem(new Nightshade(4));
                 PackGold(50, 100);
@@ -86,7 +86,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20011217230049/uo.stratics.com/hunters/gazer.shtml
                     // 50 to 150 Gold, Potions, Arrows, Scrolls, Nightshade, Magic Items, 1 Raw Ribs (carved)
                     if (Spawning)

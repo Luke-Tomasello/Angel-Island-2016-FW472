@@ -99,7 +99,7 @@ namespace Server.Engines.BulkOrders
         public override int LabelNumber { get { return 1045151; } } // a bulk order deed
 
         public LargeBOD(int hue, int amountMax, bool requireExeptional, BulkMaterialType material, LargeBulkEntry[] entries)
-            : base(Core.AOS ? 0x2258 : 0x14EF)
+            : base(Core.RuleSets.AOSRules() ? 0x2258 : 0x14EF)
         {
             Weight = 1.0;
             Hue = hue; // Blacksmith: 0x44E; Tailoring: 0x483
@@ -112,7 +112,7 @@ namespace Server.Engines.BulkOrders
         }
 
         public LargeBOD()
-            : base(Core.AOS ? 0x2258 : 0x14EF)
+            : base(Core.RuleSets.AOSRules() ? 0x2258 : 0x14EF)
         {
             Weight = 1.0;
             LootType = LootType.Blessed;
@@ -267,7 +267,7 @@ namespace Server.Engines.BulkOrders
             if (Weight == 0.0)
                 Weight = 1.0;
 
-            if (Core.AOS && ItemID == 0x14EF)
+            if (Core.RuleSets.AOSRules() && ItemID == 0x14EF)
                 ItemID = 0x2258;
 
             if (Parent == null && Map == Map.Internal && Location == Point3D.Zero)

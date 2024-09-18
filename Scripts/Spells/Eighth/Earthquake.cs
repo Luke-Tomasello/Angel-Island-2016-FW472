@@ -51,7 +51,7 @@ namespace Server.Spells.Eighth
         {
         }
 
-        public override bool DelayedDamage { get { return !Core.AOS; } }
+        public override bool DelayedDamage { get { return !Core.RuleSets.AOSRules(); } }
 
         public override void OnCast()
         {
@@ -66,7 +66,7 @@ namespace Server.Spells.Eighth
                     IPooledEnumerable eable = Caster.GetMobilesInRange(1 + (int)(Caster.Skills[SkillName.Magery].Value / 15.0));
                     foreach (Mobile m in eable)
                     {
-                        if (Caster != m && SpellHelper.ValidIndirectTarget(Caster, m) && Caster.CanBeHarmful(m, false) && (!Core.AOS || Caster.InLOS(m)))
+                        if (Caster != m && SpellHelper.ValidIndirectTarget(Caster, m) && Caster.CanBeHarmful(m, false) && (!Core.RuleSets.AOSRules() || Caster.InLOS(m)))
                             targets.Add(m);
                     }
                     eable.Free();
@@ -80,7 +80,7 @@ namespace Server.Spells.Eighth
 
                     int damage;
 
-                    if (Core.AOS)
+                    if (Core.RuleSets.AOSRules())
                     {
                         damage = m.Hits / 2;
 

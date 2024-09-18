@@ -21,6 +21,8 @@
 
 /* Items/Wands/BaseWand.cs
  * CHANGE LOG
+ *  9/16/2024, Adam (OnSingleClick)
+ *      More robust OnSingleClick processing
  *  6/5/04, Pix
  *		Merged in 1.0RC0 code.
  * 05/11/2004 - Pulse
@@ -190,160 +192,89 @@ namespace Server.Items
                 case WandEffect.ManaDraining: list.Add(1017339, m_Charges.ToString()); break; // mana drain charges: ~1_val~
             }
         }
-
-        public override void OnSingleClick(Mobile from)
+        public int GetEffectLabel()
         {
-            ArrayList attrs = new ArrayList();
-
-            if (DisplayLootType)
+            switch (m_WandEffect)
             {
-                if (LootType == LootType.Blessed)
-                    attrs.Add(new EquipInfoAttribute(1038021)); // blessed
-                else if (LootType == LootType.Cursed)
-                    attrs.Add(new EquipInfoAttribute(1049643)); // cursed
-            }
-
-            if (Name != null || OldName == null) // only use the new ([X/Y/Z]) method on things we don't have OldNames for
-            {
-                if (!Identified)
-                {
-                    attrs.Add(new EquipInfoAttribute(1038000)); // Unidentified
-                }
-                else
-                {
-                    int num = 0;
-
-                    switch (m_WandEffect)
-                    {
-                        case WandEffect.Clumsiness: num = 3002011; break;
-                        case WandEffect.Identification: num = 1044063; break;
-                        case WandEffect.Healing: num = 3002014; break;
-                        case WandEffect.Feeblemindedness: num = 3002013; break;
-                        case WandEffect.Weakness: num = 3002018; break;
-                        case WandEffect.MagicArrow: num = 3002015; break;
-                        case WandEffect.Harming: num = 3002022; break;
-                        case WandEffect.Fireball: num = 3002028; break;
-                        case WandEffect.GreaterHealing: num = 3002039; break;
-                        case WandEffect.Lightning: num = 3002040; break;
-                        case WandEffect.ManaDraining: num = 3002041; break;
-                    }
-
-                    if (num > 0)
-                        attrs.Add(new EquipInfoAttribute(num, m_Charges));
-                }
-            }
-
-            int number;
-
-            if (Name == null)
-            {
-                if (OldName == null)
-                {
-                    number = LabelNumber;
-                }
-                else
-                {
-                    // display old style
-
-                    string oldname = OldName;
-                    string article = OldArticle;
-
-                    // TBD
-                    OldOnSingleClick(from);
-                    return;
-
-                    //finally, add the article
-                    oldname = article + " " + oldname;
-
-                    this.LabelTo(from, oldname);
-                    number = 1041000;
-                }
-            }
-            else
-            {
-                this.LabelTo(from, Name);
-                number = 1041000;
-            }
-
-            if (attrs.Count == 0 && Crafter == null && Name != null)
-                return;
-
-            if (Name != null || OldName == null)
-            {
-                EquipmentInfo eqInfo = new EquipmentInfo(number, Crafter, false, (EquipInfoAttribute[])attrs.ToArray(typeof(EquipInfoAttribute)));
-                from.Send(new DisplayEquipmentInfo(this, eqInfo));
-            }
-            else
-            {
-                if (attrs.Count > 0)
-                {
-                    EquipmentInfo eqInfo = new EquipmentInfo(number, null, false, (EquipInfoAttribute[])attrs.ToArray(typeof(EquipInfoAttribute)));
-                    from.Send(new DisplayEquipmentInfo(this, eqInfo));
-                }
+                case WandEffect.Clumsiness: return 1017326;         // clumsiness charges: ~1_val~
+                default:
+                case WandEffect.Identification: return 1017350;     // identification charges: ~1_val~
+                case WandEffect.Healing: return 1017329;            // healing charges: ~1_val~
+                case WandEffect.Feeblemindedness: return 1017327;   // feeblemind charges: ~1_val~
+                case WandEffect.Weakness: return 1017328;           // weakness charges: ~1_val~
+                case WandEffect.MagicArrow: return 1060492;         // magic arrow charges: ~1_val~
+                case WandEffect.Harming: return 1017334;            // harm charges: ~1_val~
+                case WandEffect.Fireball: return 1060487;           // fireball charges: ~1_val~
+                case WandEffect.GreaterHealing: return 1017330;     // greater healing charges: ~1_val~
+                case WandEffect.Lightning: return 1060491;          // lightning charges: ~1_val~
+                case WandEffect.ManaDraining: return 1017339;       // mana drain charges: ~1_val~
             }
         }
 
-        #region OLD OnSingleClick
-        // FOR TEST - comment-out WHEN DONE
-        public void OldOnSingleClick(Mobile from)
+        public override string GetOldSuffix()
         {
-            ArrayList attrs = new ArrayList();
+            string suffix = "";
 
-            if (DisplayLootType)
+            if (Identified)
             {
-                if (LootType == LootType.Blessed)
-                    attrs.Add(new EquipInfoAttribute(1038021)); // blessed
-                else if (LootType == LootType.Cursed)
-                    attrs.Add(new EquipInfoAttribute(1049643)); // cursed
-            }
-
-            if (!Identified)
-            {
-                attrs.Add(new EquipInfoAttribute(1038000)); // Unidentified
-            }
-            else
-            {
-                int num = 0;
-
-                switch (m_WandEffect)
+                if (!HideAttributes && DamageLevel != WeaponDamageLevel.Regular)
                 {
-                    case WandEffect.Clumsiness: num = 3002011; break;
-                    case WandEffect.Identification: num = 1044063; break;
-                    case WandEffect.Healing: num = 3002014; break;
-                    case WandEffect.Feeblemindedness: num = 3002013; break;
-                    case WandEffect.Weakness: num = 3002018; break;
-                    case WandEffect.MagicArrow: num = 3002015; break;
-                    case WandEffect.Harming: num = 3002022; break;
-                    case WandEffect.Fireball: num = 3002028; break;
-                    case WandEffect.GreaterHealing: num = 3002039; break;
-                    case WandEffect.Lightning: num = 3002040; break;
-                    case WandEffect.ManaDraining: num = 3002041; break;
+                    if (suffix.Length == 0)
+                        suffix += " of ";
+                    else
+                        suffix += " and ";
+
+                    suffix += DamageLevel.ToString().ToLower();
                 }
 
-                if (num > 0)
-                    attrs.Add(new EquipInfoAttribute(num, m_Charges));
+                if (!HideAttributes && Slayer != SlayerName.None && Slayer != SlayerName.Silver)
+                {
+                    if (suffix.Length == 0)
+                        suffix += " of ";
+                    else
+                        suffix += " and ";
+
+                    suffix += SlayerLabel.GetSuffix(Slayer).ToLower();
+                }
+
+                if (!HideAttributes && Charges > 0)
+                {
+                    if (suffix.Length == 0)
+                        suffix += " of ";
+                    else
+                        suffix += " and ";
+
+                    suffix += FormatOldSuffix(m_WandEffect, Charges);
+                }
             }
 
-            int number;
+            if (Crafter != null)
+                suffix += " crafted by " + Crafter.Name;
 
-            if (Name == null)
-            {
-                number = 1017085;
-            }
-            else
-            {
-                this.LabelTo(from, Name);
-                number = 1041000;
-            }
+            if (Poison != null && PoisonCharges > 0)
+                suffix += string.Format(" (poison charges: {0})", PoisonCharges);
 
-            if (attrs.Count == 0 && Crafter == null && Name != null)
-                return;
-
-            EquipmentInfo eqInfo = new EquipmentInfo(number, Crafter, false, (EquipInfoAttribute[])attrs.ToArray(typeof(EquipInfoAttribute)));
-
-            from.Send(new DisplayEquipmentInfo(this, eqInfo));
+            return suffix;
         }
-        #endregion
+
+        public string FormatOldSuffix(WandEffect effect, int charges)
+        {
+            //MagicEffect e = GetEffect(effect);
+
+            //if (e == null)
+            //    return string.Empty;
+
+            //string name = e.OldName;
+            string name = null;
+
+            if (name == null && !Server.Text.Cliloc.Lookup.TryGetValue(GetEffectLabel(), out name))
+                return string.Empty;
+
+            if (name != null)
+                name = name.Replace(" charges: ~1_val~", "");
+
+            return string.Format("{0} (charges: {1})", name.ToLower(), charges);
+        }
 
         public void Cast(Spell spell)
         {

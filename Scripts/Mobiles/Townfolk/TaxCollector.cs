@@ -23,7 +23,7 @@
  * ChangeLog
  *	8/26/10, Adam
  *		Check for needed gold before reporting the treasure hunters
- *	8/18/10, adam
+ *	8/18/10, Adam
  *		Add an OnEvent handler so that the AI can notify us when we recall away
  *	8/7/10, Adam
  *		initial creation

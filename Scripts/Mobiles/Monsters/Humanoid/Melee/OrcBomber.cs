@@ -91,7 +91,7 @@ namespace Server.Mobiles
             VirtualArmor = 30;
         }
 
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : true; } }
+        public override bool CanRummageCorpses { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? true : true; } }
 
         public override OppositionGroup OppositionGroup
         {
@@ -100,7 +100,7 @@ namespace Server.Mobiles
 
         public override bool IsEnemy(Mobile m, RelationshipFilter filter)
         {
-            if (!Core.UOAI && !Core.UOREN)
+            if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules())
                 if (m.Player && m.FindItemOnLayer(Layer.Helm) is OrcishKinMask)
                     return false;
 
@@ -111,7 +111,7 @@ namespace Server.Mobiles
         {
             base.AggressiveAction(aggressor, criminal);
 
-            if (!Core.UOAI && !Core.UOREN)
+            if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules())
             {
                 Item item = aggressor.FindItemOnLayer(Layer.Helm);
 
@@ -183,7 +183,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackItem(new SulfurousAsh(Utility.RandomMinMax(6, 10)));
                 PackItem(new MandrakeRoot(Utility.RandomMinMax(6, 10)));
@@ -214,7 +214,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020405080756/uo.stratics.com/hunters/orcbomber.shtml
                     // 	200 Gold, reagents, purple potions, ingots, bola ball
                     if (Spawning)

@@ -113,7 +113,7 @@ namespace Server.Mobiles
         }
 
         // Auto-dispel is UOR - http://forums.uosecondage.com/viewtopic.php?f=8&t=6901
-        public override bool AutoDispel { get { return Core.UOAI || Core.UOREN ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
+        public override bool AutoDispel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
         public override bool Unprovokable { get { return true; } }
         public override Poison PoisonImmune { get { return Poison.Lethal; } }
 
@@ -161,7 +161,7 @@ namespace Server.Mobiles
 
         public override void Damage(int amount, Mobile from, object source_weapon)
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 CheckGuardians();
 
@@ -174,7 +174,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(1200, 1600);
                 PackScroll(6, 8);
@@ -230,7 +230,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20011218043901/uo.stratics.com/hunters/ancientlich.shtml
                     // 1500 Gold, Reagents, Magic Items, Bone Armor
                     if (Spawning)
@@ -259,7 +259,7 @@ namespace Server.Mobiles
                 {
                     if (Spawning)
                     {
-                        if (Core.AOS)
+                        if (Core.RuleSets.AOSRules())
                             PackNecroReg(30, 275);
 
                         PackItem(new GnarledStaff());

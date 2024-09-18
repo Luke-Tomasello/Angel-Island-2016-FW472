@@ -21,6 +21,8 @@
 
 /* Scripts/Commands/LogHelper.cs
  * ChangeLog
+ *  9/15/2024, Adam
+ *      Use AdjustedDateTime.GameTime instead of UtcNow. We need to be able to easily correlate what happened to game time.
  *	6/18/10, Adam
  *		o Added a cleanup procedure to the Cheater function to prevent players comments from growing out of control
  *		o Add the region ID to the output
@@ -28,7 +30,7 @@
  *		o Add new Format() command that takes no additional text data
  *			Format(LogType logtype, object data)
  *		o Don't output time stamp on intermediate results created with Format()
- *	3/22/10, adam
+ *	3/22/10, Adam
  *		separate the formatting the logging so we can format our own strings before write
  *	07/23/08, weaver
  *		Automated IPooledEnumerable optimizations. 1 loops updated.
@@ -300,7 +302,7 @@ namespace Server.Commands
         // Record start time and init counter + list
         private void Start()
         {
-            m_StartTime = DateTime.UtcNow;
+            m_StartTime = AdjustedDateTime.GameTime;
             m_Count = 0;
             m_Finished = false;
             m_LogFile = new ArrayList();
@@ -317,7 +319,7 @@ namespace Server.Commands
             if (!m_Finished)
             {
                 m_Finished = true;
-                TimeSpan ts = DateTime.UtcNow - m_StartTime;
+                TimeSpan ts = AdjustedDateTime.GameTime - m_StartTime;
 
                 if (!m_SingleLine)
                     m_LogFile.Add(string.Format("Completed in {0} seconds, {1} entr{2} logged", ts.TotalSeconds, m_Count, m_Count == 1 ? "y" : "ies"));

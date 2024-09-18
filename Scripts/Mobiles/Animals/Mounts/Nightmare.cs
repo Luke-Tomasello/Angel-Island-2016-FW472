@@ -21,7 +21,7 @@
 
 /* Scripts/Mobiles/Animals/Mounts/Nightmare.cs
  * ChangeLog
- *	4/10/10, adam
+ *	4/10/10, Adam
  *		Add speed management MCi to tune dragon speeds.
  *	7/26/05, erlein
  *		Automated removal of AoS resistance related function calls. 8 lines removed.
@@ -120,7 +120,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGem();
                 PackGold(250, 350);
@@ -133,7 +133,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // note we had to go all the way to june 2002 to get the loot
                     // http://web.archive.org/web/20020607065005/uo.stratics.com/hunters/nightmare.shtml
                     //	250-350 gold, 3-5 Sulphurous Ash, Gems, Scroll, Potion, Arrows

@@ -21,7 +21,7 @@
 
 /* Scripts/Mobiles/Monsters/Humanoid/Magic/Pirate.cs	
  * ChangeLog:
- *	7/9/10, adam
+ *	7/9/10, Adam
  *		o Merge pirate class hierarchy (all pirates are now derived from class Pirate)
  *		o moderate bump in magery to allow the reveal skill on about 50% of pirates (chest guardians)
  *		o Pirate now uses AI_Hybrid
@@ -82,9 +82,9 @@ namespace Server.Mobiles
         protected TimeSpan SpeechDelay { get { return m_SpeechDelay; } }
         private DateTime m_NextSpeechTime;
         protected DateTime NextSpeechTime { get { return m_NextSpeechTime; } set { m_NextSpeechTime = value; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 4 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 4 : 0; } }
         public override bool AlwaysMurderer { get { return true; } }
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : false; } }
+        public override bool CanRummageCorpses { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? true : false; } }
         public override bool ShowFameTitle { get { return false; } }
         public override bool ClickTitle { get { return true; } }
         private int m_Version;
@@ -258,7 +258,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGem();
                 PackMagicEquipment(1, 3);
@@ -289,7 +289,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // ai special
                     if (Spawning)
                     {

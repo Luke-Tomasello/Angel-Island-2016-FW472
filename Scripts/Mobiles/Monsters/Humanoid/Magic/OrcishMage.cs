@@ -86,8 +86,8 @@ namespace Server.Mobiles
             VirtualArmor = 30;
         }
 
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : true; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 1 : 0; } }
+        public override bool CanRummageCorpses { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? true : true; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 1 : 0; } }
         public override int Meat { get { return 1; } }
 
         public OrcishMage(Serial serial)
@@ -97,7 +97,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackReg(3);
                 PackReg(3);
@@ -122,7 +122,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20011217100121/uo.stratics.com/hunters/orcmage.shtml
                     // 50 to 150 Gold, Potions, Arrows, Gems, Scrolls (circle 1-4), Reagents, Mask of Orcish Kin, 1 Raw Ribs (carved)
 

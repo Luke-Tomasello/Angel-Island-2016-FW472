@@ -137,7 +137,7 @@ namespace Server.Items
 
         [Constructable]
         public Runebook(int maxCharges)
-            : base(Core.AOS ? 0x22C5 : 0xEFA)
+            : base(Core.RuleSets.AOSRules() ? 0x22C5 : 0xEFA)
         {
             Weight = 3.0;
             LootType = LootType.Blessed;
@@ -465,7 +465,7 @@ namespace Server.Items
             if (charges > 10)
                 charges = 10;
 
-            MaxCharges = (Core.SE ? charges * 2 : charges);
+            MaxCharges = (Core.RuleSets.SERules() ? charges * 2 : charges);
 
             if (makersMark)
                 Crafter = from;

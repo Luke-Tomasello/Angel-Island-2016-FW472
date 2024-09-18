@@ -21,7 +21,7 @@
 
 /* Scripts/Items/Misc/InteriorDecorator.cs
  * ChangeLog
- *	9/15/10, adam
+ *	9/15/10, Adam
  *		Add the ability the move AddonComponents where AddonComponent.Deco flag is true
  *  10/15/06, Rhiannon
  *		Made BaseHouseDoors turnable.

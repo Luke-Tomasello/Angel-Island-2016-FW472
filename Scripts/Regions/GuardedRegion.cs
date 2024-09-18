@@ -29,7 +29,7 @@
  *		Update IsGuardCandidate to allow for reds in town (UOSP)
  *	6/27/10, Adam
  *		Add the notion of Smart Guards to defend against in-town griefing (exp pots, and melee attacks)
- *	6/21/10, adam
+ *	6/21/10, Adam
  *		In CheckGuardCandidate() we now check to see if the mobile 'remembers' the criminal.
  *		The old code used to simply enumerate the nearby mobiles to see if one was in range. If one was in range, it is assumed they were seen.
  *		The new code checks to see if the mobile actiually saw the player .. this allows guard whacks at WBB for players letting loose spells 
@@ -209,6 +209,9 @@ namespace Server.Regions
 
         public override void MakeGuard(Mobile focus)
         {
+            if (focus == null || focus.Deleted || !focus.Alive)
+                return;
+
             BaseGuard useGuard = null;
 
             IPooledEnumerable eable = focus.GetMobilesInRange(8);
@@ -381,7 +384,7 @@ namespace Server.Regions
                     m_GuardCandidates.Remove(m);
 
                     // add your 'reds in town' shards here:
-                    bool reds_in_town = Core.UOSP || Core.UOMO;
+                    bool reds_in_town = Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules();
 
                     if (reds_in_town || m.LongTermMurders < 5)
                         m.SendLocalizedMessage(502276); // Guards can no longer be called on you.
@@ -410,7 +413,7 @@ namespace Server.Regions
             eable.Free();
 
             // add your 'reds in town' shards here:
-            bool reds_in_town = Core.UOSP || Core.UOMO;
+            bool reds_in_town = Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules();
 
             return (reds_in_town ? false : m.Murderer) || m.Criminal;
         }

@@ -466,7 +466,7 @@ namespace Server.Misc
             }
             #endregion
 
-            if (Core.AOS && (target.Blessed || (target is BaseVendor && ((BaseVendor)target).IsInvulnerable) || target is PlayerVendor || target is TownCrier))
+            if (Core.RuleSets.AOSRules() && (target.Blessed || (target is BaseVendor && ((BaseVendor)target).IsInvulnerable) || target is PlayerVendor || target is TownCrier))
                 return Notoriety.Invulnerable;
 
             if (target.AccessLevel > AccessLevel.Player && target.AccessLevel != AccessLevel.System)

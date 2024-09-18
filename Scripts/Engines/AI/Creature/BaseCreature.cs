@@ -21,11 +21,11 @@
 
 /* Scripts/Engines/AI/Creature/BaseCreature.cs
  * ChangeLog
- *	3/4/11, adam
+ *	3/4/11, Adam
  *		Add leather as a FoodPreference (lol, no kidding, goats eat leather.)
  *	2/3/11, Adam
  *		Bonding is now based upon publish.
- *			I.e., IsBondable { get { return (BondingEnabled && (PublishInfo.Publish >= 16.0 || Core.UOAI || Core.UOAR) &&...
+ *			I.e., IsBondable { get { return (BondingEnabled && (PublishInfo.Publish >= 16.0 || Core.RuleSets.AngelIslandRules() || Core.UOAR) &&...
  *		Since our Siege is publish 15, there will be no bonding
  *	2/14/11, Adam
  *		Add Mortalis to the servers where reds receive 1/3 loot off creatures
@@ -36,42 +36,42 @@
  *		Make summon bonus based upon UOAI
  *	1/28/11, Adam
  *		Add back OppositionGroup for !Core.AngelIsland
- *	12/26/10, adam
+ *	12/26/10, Adam
  *		Add the missing fish steak to the carve system
  *  11/14/10, Adam
  *      Have m_IOBAlignment contingent upon Core.AngelIsland
- *	7/16/10, adam
+ *	7/16/10, Adam
  *		o add new OnBeforeDispel() to allow dispelled creatures to do something.
  *		o apply Spirit Speak bonus during spawn
- *	6/30/10, adam
+ *	6/30/10, Adam
  *		Add AI_Guard support
- *	6/21/10, adam
+ *	6/21/10, Adam
  *		New function bool Remembers(object o)
  *		Vendors and other townspeople now LookAround() as part of their wandering AI. I.e:
  *		remember the mobiles around me so that if they are then hidden and release a spell while hidden, I can reasonably call guards.
  *		If a crime is committed around me, the guards may ask me if i've seen anyone and if I have, then they will go into action.
  *	6/18/10, Adam
  *		Update region logic to reflect shift from static to new dynamic regions
- *	5/12/10, adam
+ *	5/12/10, Adam
  *		1. update AttackOrderHack to account for ScaredOfScaryThings
  *		2. Add new PackSlayerWeapon() function. Called from Vampire
  *	5/10/10, Adam
  *		Add a baby rare factory.
  *		Most creatures (in a dungeon with str > 50) now have a small chance to drop something cool!
- *	5/8/10, adam
+ *	5/8/10, Adam
  *		Replace the whold notion of GetMaxStabled with GetMaxPremiumStabled and GetMaxEconomyStabled
  *		pets stored > GetMaxEconomyStabled < GetMaxPremiumStabled are charged a premimum
  *		pets stored <= GetMaxEconomyStabled are charged the OSI rate (which OSI doesn't actually charge but we do.)
- *	5/2/10, adam
+ *	5/2/10, Adam
  *		Angel Island herding bonus for max stable slots
  *		max += (int)from.Skills[SkillName.Herding].Value / 20;
- *	4/29/10, adam
+ *	4/29/10, Adam
  *		Add back the SpeedInfo table to correct inappropriate speeds.
  *		(moved the Nightmare and WhiteWyrm to the Medium table from the Fast table.
  *		these high-level tames are too fast on a shard without mounts .. they now match Dragons)
- *	4/2/10, adam
+ *	4/2/10, Adam
  *		Add notion of SuppressNormalLoot so that we can replace normal loot (not add to it) with one of our lootpacks.
- *	3/10/10, adam
+ *	3/10/10, Adam
  *		Add m_AI.Activate() to OnDamage to make sure the creature will heal and agress if attacked with delayed damage
  *		as tyhe player exits the sector whereby deactivating the sector.
  *	05/25/09, plasma
@@ -980,7 +980,7 @@ namespace Server.Mobiles
         #region Bonding
         public const bool BondingEnabled = true;
 
-        public virtual bool IsBondable { get { return (BondingEnabled && (PublishInfo.Publish >= 16.0 || Core.UOAI || Core.UOREN) && !Summoned); } }
+        public virtual bool IsBondable { get { return (BondingEnabled && (PublishInfo.Publish >= 16.0 || Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules()) && !Summoned); } }
         public virtual TimeSpan BondingDelay { get { return TimeSpan.FromDays(7.0); } }
         public virtual TimeSpan BondingAbandonDelay { get { return TimeSpan.FromDays(1.0); } }
 
@@ -1030,7 +1030,7 @@ namespace Server.Mobiles
             }
             set
             {   // world respawn required to reset all creatures to 'none'
-                m_IOBAlignment = Core.UOAI || Core.UOREN ? value : IOBAlignment.None;
+                m_IOBAlignment = Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? value : IOBAlignment.None;
             }
         }
 
@@ -1255,7 +1255,7 @@ namespace Server.Mobiles
         public virtual bool HasBreath { get { return false; } }
 
         // Base damage given is: CurrentHitPoints * BreathDamageScalar
-        public virtual double BreathDamageScalar { get { return (Core.AOS ? 0.16 : 0.05); } }
+        public virtual double BreathDamageScalar { get { return (Core.RuleSets.AOSRules() ? 0.16 : 0.05); } }
 
         // Min/max seconds until next breath
         // genes?
@@ -1564,7 +1564,7 @@ namespace Server.Mobiles
         public virtual bool IsFriend(Mobile m, RelationshipFilter filter)
         {
             // all other shards check OppositionGroup
-            if (!Core.UOAI && !Core.UOREN)
+            if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules())
             {
                 OppositionGroup g = this.OppositionGroup;
 
@@ -1660,7 +1660,7 @@ namespace Server.Mobiles
         public virtual bool IsEnemy(Mobile m, RelationshipFilter filter)
         {
             // all other shards check OppositionGroup
-            if (!Core.UOAI && !Core.UOREN)
+            if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules())
             {
                 OppositionGroup g = this.OppositionGroup;
 
@@ -1852,7 +1852,7 @@ namespace Server.Mobiles
         {
             get
             {
-                return !Core.AOS && m_bSummoned;
+                return !Core.RuleSets.AOSRules() && m_bSummoned;
             }
         }
 
@@ -2254,7 +2254,7 @@ namespace Server.Mobiles
                 speechType.OnConstruct(this);
 
             // our siege shard has 'at spawn' loot
-            if (!Core.UOAI && !Core.UOREN)
+            if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules())
                 GenerateLoot(true);     // 'at spawn' loot
 
             //new creature, give it a lifespan
@@ -4062,7 +4062,7 @@ namespace Server.Mobiles
             if (skill == SkillName.RemoveTrap && (from.Skills[SkillName.Lockpicking].Base < 50.0 || from.Skills[SkillName.DetectHidden].Base < 50.0))
                 return false;
 
-            if (!Core.AOS && (skill == SkillName.Focus || skill == SkillName.Chivalry || skill == SkillName.Necromancy))
+            if (!Core.RuleSets.AOSRules() && (skill == SkillName.Focus || skill == SkillName.Chivalry || skill == SkillName.Necromancy))
                 return false;
 
             return true;
@@ -4901,7 +4901,7 @@ namespace Server.Mobiles
 
         public void SetHits(int val, bool translate)
         {
-            if (val < 1000 && !Core.AOS && translate)
+            if (val < 1000 && !Core.RuleSets.AOSRules() && translate)
                 val = (val * 100) / 60;
 
             m_HitsMax = val;
@@ -4915,7 +4915,7 @@ namespace Server.Mobiles
 
         public void SetHits(int min, int max, bool translate)
         {
-            if (min < 1000 && !Core.AOS && translate)
+            if (min < 1000 && !Core.RuleSets.AOSRules() && translate)
             {
                 min = (min * 100) / 60;
                 max = (max * 100) / 60;
@@ -5046,7 +5046,7 @@ namespace Server.Mobiles
 
         public void PackNecroScroll(int index)
         {
-            if (!Core.AOS || 0.05 <= Utility.RandomDouble())
+            if (!Core.RuleSets.AOSRules() || 0.05 <= Utility.RandomDouble())
                 return;
 
             PackItem(Loot.Construct(Loot.NecromancyScrollTypes, index));
@@ -5150,7 +5150,7 @@ namespace Server.Mobiles
             if (!spawning)
                 m_KillersLuck = LootPack.GetLuckChanceForKiller(this);
 
-            if (spawning == true && (Core.UOAI || Core.UOREN))
+            if (spawning == true && (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules()))
                 throw new ApplicationException("You cannot call GenerateLoot() at spawn time for Angel Island.");
 
             GenerateLoot();
@@ -5308,7 +5308,7 @@ namespace Server.Mobiles
 
             /*
 			 * Old Code, commented by mith in favor of the new Magic Item system
-			 * if ( Core.AOS )
+			 * if ( Core.RuleSets.AOSRules() )
 			 * {
 			 * 		Item item = Loot.RandomArmorOrShieldOrJewelry();
 			 *
@@ -5450,7 +5450,7 @@ namespace Server.Mobiles
                     PackItem(instrument);
                 }
             }
-            else if (!Core.AOS)
+            else if (!Core.RuleSets.AOSRules())
             {
                 BaseWeapon weapon = Loot.RandomWeapon();
 
@@ -5513,7 +5513,7 @@ namespace Server.Mobiles
             Cap(ref minLevel, 0, 3);
             Cap(ref maxLevel, 0, 3);
 
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
             {
                 Item item = Loot.RandomWeaponOrJewelry();
 
@@ -5628,7 +5628,7 @@ namespace Server.Mobiles
 
         public void PackNecroReg()
         {
-            if (!Core.AOS)
+            if (!Core.RuleSets.AOSRules())
                 return;
 
             PackItem(Loot.RandomNecromancyReagent());
@@ -5661,7 +5661,7 @@ namespace Server.Mobiles
 
         public void PackItem(Item item)
         {   // adam: default is to try to pack an enchanted scroll
-            PackItem(item, Core.UOAI || Core.UOREN ? true : false);
+            PackItem(item, Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? true : false);
         }
 
         public void PackItem(Type type, double chance)
@@ -5677,7 +5677,7 @@ namespace Server.Mobiles
             for (int yx = 0; yx < amount; yx++)
             {
                 Item item = Loot.Construct(type);
-                PackItem(item, Core.UOAI || Core.UOREN ? true : false);
+                PackItem(item, Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? true : false);
             }
         }
 
@@ -5875,7 +5875,7 @@ namespace Server.Mobiles
             #region Dungeon rares (Angel Island only)
             // most dungeon creatures with Str > 50 now have a chance to drop something rare
             //	1 in 2000 chance (good luck!)
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 Item rare = Loot.RareFactoryItem(0.0005);
                 if (!Summoned && !NoKillAwards && !IsBonded && rare != null && this.Str > 50 && (SpellHelper.IsFeluccaDungeon(this.Map, this.Location) || SpellHelper.IsFeluccaWind(this.Map, this.Location)))
@@ -5912,7 +5912,7 @@ namespace Server.Mobiles
 
                 #region Paragon (Angel Island Only)
                 // give a little boost in loot for paragon creatures
-                if (Core.UOAI || Core.UOREN)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                 {
                     if (Paragon == true)
                     {
@@ -5924,7 +5924,7 @@ namespace Server.Mobiles
                 #endregion
 
                 /*#region KIN SYSTEM (Angel Island Only)
-				if (Core.UOAI || Core.UOAR)
+				if (Core.RuleSets.AngelIslandRules() || Core.UOAR)
 				{
 					// Is kin silver enabled?
 					if (Engines.IOBSystem.KinSystemSettings.KinAwards == true)
@@ -5943,7 +5943,7 @@ namespace Server.Mobiles
                 //	which they have killed will be one-third. For example, if a player would normally receive 600 gold off a monster, 
                 //	if that player is instead red, he will receive 200 gold.
                 // http://www.uoguide.com/Publish_13.6_(Siege_Perilous_Shards_Only)
-                if ((Core.UOSP && PublishInfo.Publish >= 13.6) || Core.UOMO)
+                if ((Core.RuleSets.SiegeRules() && PublishInfo.Publish >= 13.6) || Core.RuleSets.MortalisRules())
                 {   // calc new award amount if the damager is red
 
                     //creature must not be controlled 
@@ -6666,7 +6666,7 @@ namespace Server.Mobiles
                 }
             }
 
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 // apply Spirit Speak bonus
                 creature.SetHits((int)(creature.Hits + creature.Hits * (caster.Skills.SpiritSpeak.Value / 200)), false);

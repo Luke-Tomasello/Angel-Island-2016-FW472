@@ -52,7 +52,7 @@ namespace Server.Multis
         {
             Weight = 1.0;
 
-            //			if ( !Core.AOS )
+            //			if ( !Core.RuleSets.AOSRules() )
             //				LootType = LootType.Newbied;
 
             m_MultiID = id & 0x3FFF;

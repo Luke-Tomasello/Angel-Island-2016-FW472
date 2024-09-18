@@ -55,7 +55,7 @@
  *		IsEnemy() and AggressiveAction() code added to support Brethren property of BloodDrenchedBandana.
  *	7/13/04 smerX
  *		Changed AIType to AIType.AI_Council (formerly AIType.AI_Mage)
- *	7/13/04, adam
+ *	7/13/04, Adam
  *		1. reduce chance to drop robes and sandies from 7% to 5%// adam: reduce chance to 5% from 7% drop
  *	7/13/04 smerX
  *		Upgraded AI
@@ -158,9 +158,9 @@ namespace Server.Mobiles
         }
 
         public override bool AlwaysMurderer { get { return true; } }
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : false; } }
+        public override bool CanRummageCorpses { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? true : false; } }
         public override Poison PoisonImmune { get { return Poison.Lethal; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 5 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 5 : 0; } }
 
         public override bool Uncalmable
         {
@@ -180,7 +180,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackItem(new GnarledStaff());
                 PackGold(600, 800);
@@ -220,7 +220,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // ai special
                     if (Spawning)
                     {

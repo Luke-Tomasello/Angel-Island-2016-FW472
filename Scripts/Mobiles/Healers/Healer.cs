@@ -29,7 +29,7 @@ namespace Server.Mobiles
 {
     public class Healer : BaseHealer
     {
-        public override bool CanTeach { get { return Core.UOSP ? false : true; } }
+        public override bool CanTeach { get { return Core.RuleSets.SiegeRules() ? false : true; } }
 
         public override bool CheckTeach(SkillName skill, Mobile from)
         {

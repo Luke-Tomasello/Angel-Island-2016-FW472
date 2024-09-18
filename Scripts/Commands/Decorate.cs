@@ -21,7 +21,7 @@
 
 /* Scripts/Commands/Decorate.cs
  * CHANGELOG
- *	2/23/11, adam
+ *	2/23/11, Adam
  *		redesigned based on RunUO 2.0
  *		o) Make a 'wipe' pass first so as to clear any incorrect items. For instance, AI used LibraryBookcases instead of FullBookcases.
  *		o) now deletes N items from a destination as pervious Decorate commands would just shove the new item there on top of the old item

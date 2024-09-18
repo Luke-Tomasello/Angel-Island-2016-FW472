@@ -21,7 +21,7 @@
 
 /* Scripts/Regions/HouseRegion.cs
  * ChangeLog
- *	8/11/10, adam
+ *	8/11/10, Adam
  *		return baseRegion.IsHouseRules true
  *  5/1`0/07, Adam
  *      - Remove AOS 'enter' and 'ban' rules 
@@ -265,7 +265,7 @@ namespace Server.Regions
                     from.SendLocalizedMessage(502094); // You must be in your house to do this.
                 }
             }
-            else if (e.Speech.ToLower() == "i wish to make this decorative" && (Core.UOAI || Core.UOREN)) // i wish to make this decorative
+            else if (e.Speech.ToLower() == "i wish to make this decorative" && (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())) // i wish to make this decorative
             {
                 if (!isFriend)
                 {
@@ -277,7 +277,7 @@ namespace Server.Regions
                     from.Target = new HouseDecoTarget(true, m_House);
                 }
             }
-            else if (e.Speech.ToLower() == "i wish to make this functional" && (Core.UOAI || Core.UOREN)) // i wish to make this functional
+            else if (e.Speech.ToLower() == "i wish to make this functional" && (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())) // i wish to make this functional
             {
                 if (!isFriend)
                 {

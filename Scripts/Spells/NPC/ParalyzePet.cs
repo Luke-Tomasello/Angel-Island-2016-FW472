@@ -57,7 +57,7 @@ namespace Server.Spells.Fifth
             {
                 Caster.SendLocalizedMessage(500237); // Target can not be seen.
             }
-            else if (Core.AOS && (m.Frozen || m.Paralyzed || (m.Spell != null && m.Spell.IsCasting)))
+            else if (Core.RuleSets.AOSRules() && (m.Frozen || m.Paralyzed || (m.Spell != null && m.Spell.IsCasting)))
             {
                 Caster.SendLocalizedMessage(1061923); // The target is already frozen.
             }
@@ -69,7 +69,7 @@ namespace Server.Spells.Fifth
 
                 double duration;
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     int secs = 2 + (GetDamageFixed(Caster) / 100) - (GetResistFixed(m) / 100);
 

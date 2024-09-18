@@ -1585,7 +1585,7 @@ namespace Server.Engines.Craft
 
                     // not sure what era we want to attach this tow, but I know it's not appropriate for AI
                     // offer the mark option at this point
-                    if (!Core.Localized && !Core.UOAI)
+                    if (!Core.Localized && !Core.RuleSets.AngelIslandRules())
                     {   // old-school makers mark gump
                         if (quality == 2 && from.Skills[craftSystem.MainSkill].Base >= 100.0 && this.IsMarkable(item.GetType()))
                             from.SendGump(new OldSchoolMakersMarkGump(from, item));

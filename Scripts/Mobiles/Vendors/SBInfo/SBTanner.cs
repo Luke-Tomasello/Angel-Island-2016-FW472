@@ -60,12 +60,12 @@ namespace Server.Mobiles
                 /* Shopkeeper NPCs do not sell any resources (Ingots, Cloth, etc.))
 				 * http://www.uoguide.com/Siege_Perilous
 				 */
-                if (!Core.UOSP && !Core.UOAI && !Core.UOREN && !Core.UOMO)
+                if (!Core.RuleSets.SiegeRules() && !Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.MortalisRules())
                 {
                     Add(new GenericBuyInfo(typeof(Leather), 6, 20, 0x1081, 0));
                 }
 
-                if (Core.UOAI || Core.UOREN || Core.UOMO)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
                 {   // balanced buyback
                     Add(new GenericBuyInfo(typeof(Leather)));
                     Add(new GenericBuyInfo(typeof(SpinedLeather)));
@@ -73,9 +73,9 @@ namespace Server.Mobiles
                     Add(new GenericBuyInfo(typeof(BarbedLeather)));
                 }
 
-                if (Core.UOAI || Core.UOREN || Core.UOMO)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
                     Add(new GenericBuyInfo("1041279", typeof(TaxidermyKit), 30000, 20, 0x1EBA, 0));//changed price of taxidermykit from 100k to 30k Lego eater.
-                else if (Core.UOSP && PublishInfo.Publish >= 11)
+                else if (Core.RuleSets.SiegeRules() && PublishInfo.Publish >= 11)
                     Add(new GenericBuyInfo("1041279", typeof(TaxidermyKit), 90000, 20, 0x1EBA, 0));
 
                 Add(new GenericBuyInfo(typeof(SkinningKnife), 26, 20, 0xEC4, 0));
@@ -105,7 +105,7 @@ namespace Server.Mobiles
         {
             public InternalSellInfo()
             {
-                if (Core.UOAI || Core.UOREN || Core.UOMO)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
                 {   // balanced buyback system
                     Add(typeof(Leather));
                     Add(typeof(Hides));
@@ -117,7 +117,7 @@ namespace Server.Mobiles
                     Add(typeof(HornedHides));
                 }
 
-                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
+                if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.SiegeRules() && !Core.RuleSets.MortalisRules())
                 {   // cash buyback
                     Add(typeof(LeatherArms), 40);
                     Add(typeof(LeatherChest), 52);

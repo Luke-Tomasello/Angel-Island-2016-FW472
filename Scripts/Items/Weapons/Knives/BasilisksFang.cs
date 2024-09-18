@@ -77,7 +77,7 @@ namespace Server.Items
         {
             base.OnHit(attacker, defender);
 
-            if (!Core.AOS && Poison != null && PoisonCharges > 0)
+            if (!Core.RuleSets.AOSRules() && Poison != null && PoisonCharges > 0)
             {
                 if (Utility.RandomDouble() >= 0.5) // 50% chance to poison
                     defender.ApplyPoison(attacker, Poison);

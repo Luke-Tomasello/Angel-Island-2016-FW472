@@ -99,7 +99,7 @@ namespace Server.Gumps
             AddHtmlLocalized(0, 20, 400, 35, 1011022, false, false); // <center>Resurrection</center>
 
             #region UOAI
-            if (Core.UOAI || Core.UOREN || Core.UOMO)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
             {
                 /* It is possible for you to be resurrected here by this healer. Do you wish to try?<br>
 				 * CONTINUE - You chose to try to come back to life now.<br>
@@ -303,7 +303,7 @@ namespace Server.Gumps
                 PlayerMobile pm = from as PlayerMobile;
                 // If the player is an inmate of AI, we don't want them taking stat-loss
                 // Adam: we now have gumps that don't invoke stat loss (m_Statloss)
-                if (!Core.AOS && StatLossCandidate(from) && m_Statloss == true)
+                if (!Core.RuleSets.AOSRules() && StatLossCandidate(from) && m_Statloss == true)
                 {
                     double loss = (100.0 - (4.0 + (from.ShortTermMurders / 5.0))) / 100.0;//5 to 15% loss
                     if (loss < 0.85)
@@ -339,7 +339,7 @@ namespace Server.Gumps
 
         private bool StatLossCandidate(Mobile owner)
         {
-            if (Core.UOSP)
+            if (Core.RuleSets.SiegeRules())
             {
                 return false;
             }
@@ -350,7 +350,7 @@ namespace Server.Gumps
 
         private bool StatLossReprieve(Mobile owner)
         {
-            if (Core.UOSP)
+            if (Core.RuleSets.SiegeRules())
             {
                 return false;
             }

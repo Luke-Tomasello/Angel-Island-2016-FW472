@@ -87,7 +87,7 @@ namespace Server.Spells.Third
 
                 double damage;
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     damage = GetNewAosDamage(19, 1, 5);
                 }
@@ -106,7 +106,7 @@ namespace Server.Spells.Third
                 }
 
                 source.MovingParticles(m, 0x36D4, 7, 0, false, true, 9502, 4019, 0x160);
-                source.PlaySound(Core.AOS ? 0x15E : 0x44B);
+                source.PlaySound(Core.RuleSets.AOSRules() ? 0x15E : 0x44B);
 
                 //Pixie: 7/4/04: added caster to this so corpse wouldn't stay blue to this caster
                 SpellHelper.Damage(TimeSpan.FromSeconds(0.65), m, Caster, damage, 0, 100, 0, 0, 0);

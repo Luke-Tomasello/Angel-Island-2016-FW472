@@ -107,7 +107,7 @@ namespace Server.Spells.Sixth
             private int Min, Max;
 
             public InternalTimer(Spell spell, Mobile attacker, Mobile defender, Mobile target, int MinDamage, int MaxDamage)
-                : base(TimeSpan.FromSeconds(Core.AOS ? 3.0 : 2.5))
+                : base(TimeSpan.FromSeconds(Core.RuleSets.AOSRules() ? 3.0 : 2.5))
             {
                 m_Spell = spell;
                 m_Attacker = attacker;
@@ -123,7 +123,7 @@ namespace Server.Spells.Sixth
             {
                 double damage;
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     damage = m_Spell.GetNewAosDamage(38, 1, 5);
                 }

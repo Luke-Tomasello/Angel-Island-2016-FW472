@@ -21,17 +21,19 @@
 
 /* Scripts/Items/Weapons/BaseWeapon.cs
  * ChangeLog:
+ *  9/16/2024, Adam (OnSingleClick)
+ *      More robust OnSingleClick processing
  *	3/2/11, Adam
- *		packInstinctBonus is now based upon the following calculation: if (PublishInfo.Publish >= 16 || Core.UOAI || Core.UOAR || Core.UOMO)
+ *		packInstinctBonus is now based upon the following calculation: if (PublishInfo.Publish >= 16 || Core.RuleSets.AngelIslandRules() || Core.UOAR || Core.RuleSets.MortalisRules())
  *		Since Siege is Publish 15, Siege on't have a packInstinctBonus
  *	11/15/10, Adam
  *		Add comment explaining that there is no need to condition the SlayerBonus for SP shards since it will
  *		never get set in SpiritSpeak
  * 11/11/10, Pix
  *      For UOSP, revert back to 50% hit rate GM skill vs GM skill
- *	7/23/10, adam
+ *	7/23/10, Adam
  *		reduce blood timer in Slayer Damage system to 15 minutes from 24 hours.
- *	7/20/10, adam
+ *	7/20/10, Adam
  *		Add slayer damage bonus
  *		You have a 10 second window to pump up to ((m.Skills.SpiritSpeak.Value + (m.Dex * 2.0) + (m.Skills.Tactics.Value * 2.0)) / 5.0)
  *			bonus points of damage into the DamageAccumulator before it is transfered into the DamageCache
@@ -50,7 +52,7 @@
  *		o add cloak damage (at the same time we are damaging robes)
  * 2010.05.22 - Pix
  *      weapon labels now use SlayerLabel.GetSlayerLabel()
- *	4/30/10, adam
+ *	4/30/10, Adam
  *		fix Pack Instincts, 
  *		o Fix the damage = AOS.Scale() logic (based it on Run 2.0) - our old code always returned a 0 bonus.
  *		o in GetPackInstinctBonus add chance based on pet loyality
@@ -400,84 +402,84 @@ namespace Server.Items
         [CommandProperty(AccessLevel.GameMaster)]
         public int MaxRange
         {
-            get { return (m_MaxRange == -1 ? Core.AOS ? AosMaxRange : OldMaxRange : m_MaxRange); }
+            get { return (m_MaxRange == -1 ? Core.RuleSets.AOSRules() ? AosMaxRange : OldMaxRange : m_MaxRange); }
             set { m_MaxRange = value; InvalidateProperties(); }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public WeaponAnimation Animation
         {
-            get { return (m_Animation == (WeaponAnimation)(-1) ? Core.AOS ? AosAnimation : OldAnimation : m_Animation); }
+            get { return (m_Animation == (WeaponAnimation)(-1) ? Core.RuleSets.AOSRules() ? AosAnimation : OldAnimation : m_Animation); }
             set { m_Animation = value; }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public WeaponType Type
         {
-            get { return (m_Type == (WeaponType)(-1) ? Core.AOS ? AosType : OldType : m_Type); }
+            get { return (m_Type == (WeaponType)(-1) ? Core.RuleSets.AOSRules() ? AosType : OldType : m_Type); }
             set { m_Type = value; }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public SkillName Skill
         {
-            get { return (m_Skill == (SkillName)(-1) ? Core.AOS ? AosSkill : OldSkill : m_Skill); }
+            get { return (m_Skill == (SkillName)(-1) ? Core.RuleSets.AOSRules() ? AosSkill : OldSkill : m_Skill); }
             set { m_Skill = value; InvalidateProperties(); }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public int HitSound
         {
-            get { return (m_HitSound == -1 ? Core.AOS ? AosHitSound : OldHitSound : m_HitSound); }
+            get { return (m_HitSound == -1 ? Core.RuleSets.AOSRules() ? AosHitSound : OldHitSound : m_HitSound); }
             set { m_HitSound = value; }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public int MissSound
         {
-            get { return (m_MissSound == -1 ? Core.AOS ? AosMissSound : OldMissSound : m_MissSound); }
+            get { return (m_MissSound == -1 ? Core.RuleSets.AOSRules() ? AosMissSound : OldMissSound : m_MissSound); }
             set { m_MissSound = value; }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public int MinDamage
         {
-            get { return (m_MinDamage == -1 ? Core.AOS ? AosMinDamage : OldMinDamage : m_MinDamage); }
+            get { return (m_MinDamage == -1 ? Core.RuleSets.AOSRules() ? AosMinDamage : OldMinDamage : m_MinDamage); }
             set { m_MinDamage = value; InvalidateProperties(); }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public int MaxDamage
         {
-            get { return (m_MaxDamage == -1 ? Core.AOS ? AosMaxDamage : OldMaxDamage : m_MaxDamage); }
+            get { return (m_MaxDamage == -1 ? Core.RuleSets.AOSRules() ? AosMaxDamage : OldMaxDamage : m_MaxDamage); }
             set { m_MaxDamage = value; InvalidateProperties(); }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public int Speed
         {
-            get { return (m_Speed == -1 ? Core.AOS ? AosSpeed : OldSpeed : m_Speed); }
+            get { return (m_Speed == -1 ? Core.RuleSets.AOSRules() ? AosSpeed : OldSpeed : m_Speed); }
             set { m_Speed = value; InvalidateProperties(); }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public int StrRequirement
         {
-            get { return (m_StrReq == -1 ? Core.AOS ? AosStrengthReq : OldStrengthReq : m_StrReq); }
+            get { return (m_StrReq == -1 ? Core.RuleSets.AOSRules() ? AosStrengthReq : OldStrengthReq : m_StrReq); }
             set { m_StrReq = value; InvalidateProperties(); }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public int DexRequirement
         {
-            get { return (m_DexReq == -1 ? Core.AOS ? AosDexterityReq : OldDexterityReq : m_DexReq); }
+            get { return (m_DexReq == -1 ? Core.RuleSets.AOSRules() ? AosDexterityReq : OldDexterityReq : m_DexReq); }
             set { m_DexReq = value; }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public int IntRequirement
         {
-            get { return (m_IntReq == -1 ? Core.AOS ? AosIntelligenceReq : OldIntelligenceReq : m_IntReq); }
+            get { return (m_IntReq == -1 ? Core.RuleSets.AOSRules() ? AosIntelligenceReq : OldIntelligenceReq : m_IntReq); }
             set { m_IntReq = value; }
         }
 
@@ -554,7 +556,7 @@ namespace Server.Items
             }
 
             /*
-			if ( Core.AOS )
+			if ( Core.RuleSets.AOSRules() )
 			{
 				bonus += m_AosWeaponAttributes.DurabilityBonus;
 
@@ -574,7 +576,7 @@ namespace Server.Items
 
         public int GetLowerStatReq()
         {
-            if (!Core.AOS)
+            if (!Core.RuleSets.AOSRules())
                 return 0;
             return 0;
             /*
@@ -670,7 +672,7 @@ namespace Server.Items
             }
         }
 
-        public virtual bool UseSkillMod { get { return !Core.AOS; } }
+        public virtual bool UseSkillMod { get { return !Core.RuleSets.AOSRules(); } }
 
         public override bool OnEquip(Mobile from)
         {
@@ -711,7 +713,7 @@ namespace Server.Items
                 }
 
                 /*
-				if (Core.AOS && m_AosWeaponAttributes.MageWeapon != 0)
+				if (Core.RuleSets.AOSRules() && m_AosWeaponAttributes.MageWeapon != 0)
 				{
 					if (m_MageMod != null)
 						m_MageMod.Remove();
@@ -844,7 +846,7 @@ namespace Server.Items
 
             int bonus = GetHitChanceBonus();
 
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
             {
                 if (atkValue <= -20.0)
                     atkValue = -19.9;
@@ -886,7 +888,7 @@ namespace Server.Items
             }
 
             double chance;
-            if (Core.UOSP || Core.UOMO)
+            if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
             {
                 chance = ourValue / (theirValue * 2.0);
             }
@@ -897,7 +899,7 @@ namespace Server.Items
 
             chance *= 1.0 + ((double)bonus / 100);
 
-            if (Core.AOS && chance < 0.02)
+            if (Core.RuleSets.AOSRules() && chance < 0.02)
                 chance = 0.02;
 
             WeaponAbility ability = WeaponAbility.GetCurrentAbility(attacker);
@@ -919,7 +921,7 @@ namespace Server.Items
 
             double delayInSeconds;
 
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
             {
                 int v = (m.Stam + 100) * speed;
 
@@ -957,7 +959,7 @@ namespace Server.Items
         {
             bool canSwing = true;
 
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
             {
                 canSwing = (!attacker.Paralyzed && !attacker.Frozen);
 
@@ -1105,7 +1107,7 @@ namespace Server.Items
             // we will save this value and report the delta to the attacker for damage adsorbed tracking.
             int old_damage = damage;
 
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
                 return AbsorbDamageAOS(attacker, defender, damage);
 
             double chance = Utility.RandomDouble();
@@ -1389,7 +1391,7 @@ namespace Server.Items
             #endregion
 
             int packInstinctBonus = 0;
-            if (PublishInfo.Publish >= 16 || Core.UOAI || Core.UOREN || Core.UOMO)
+            if (PublishInfo.Publish >= 16 || Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
                 packInstinctBonus = GetPackInstinctBonus(attacker, defender);
 
             // adam: limit to PvM only (for now)
@@ -1473,7 +1475,7 @@ namespace Server.Items
                 a.OnHit(attacker, defender, damage);
 
             #region AI Style Special Move
-            if (Core.UOAI || Core.UOREN || Core.UOMO)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
             {
                 TimeSpan AbilityDelay = TimeSpan.FromSeconds(20.0);
 
@@ -1922,7 +1924,7 @@ namespace Server.Items
 
         public virtual int GetHitChanceBonus()
         {
-            if (!Core.AOS)
+            if (!Core.RuleSets.AOSRules())
                 return 0;
 
             int bonus = 0;
@@ -1967,7 +1969,7 @@ namespace Server.Items
 
             GetBaseDamageRange(from, out baseMin, out baseMax);
 
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
             {
                 min = (int)ScaleDamageAOS(from, baseMin, false, false);
                 max = (int)ScaleDamageAOS(from, baseMax, false, false);
@@ -2074,7 +2076,7 @@ namespace Server.Items
 
             if (Type == WeaponType.Axe)
             {
-                if (Core.UOAI || Core.UOREN || Core.UOMO)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
                 {   // AI style bonus 
                     // The bonus is 20% of the lumberjack skill
                     /* Compute lumberjacking bonus
@@ -2176,7 +2178,7 @@ namespace Server.Items
 
         public virtual int ComputeDamage(Mobile attacker, Mobile defender)
         {
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
                 return ComputeDamageAOS(attacker, defender);
 
             int damage =  (int)ScaleDamageOld(attacker, GetBaseDamage(attacker, defender), true, true);
@@ -2607,7 +2609,7 @@ namespace Server.Items
                             ((Mobile)Parent).AddSkillMod(m_SkillMod);
                         }
 
-                        /*if ( Core.AOS && m_AosWeaponAttributes.MageWeapon != 0 && Parent is Mobile )
+                        /*if ( Core.RuleSets.AOSRules() && m_AosWeaponAttributes.MageWeapon != 0 && Parent is Mobile )
 						{
 							m_MageMod = new DefaultSkillMod( SkillName.Magery, true, -m_AosWeaponAttributes.MageWeapon );
 							((Mobile)Parent).AddSkillMod( m_MageMod );
@@ -3086,7 +3088,7 @@ namespace Server.Items
 
         public override void OnSingleClick(Mobile from)
         {
-            if (this.HideAttributes == true)
+            if (this.HideAttributes == true || (Name == null && UseOldNames))
             {
                 base.OnSingleClick(from);
                 return;
@@ -3107,142 +3109,41 @@ namespace Server.Items
                 attrs.Add(new EquipInfoAttribute(1041350)); // faction item
             #endregion
 
-            if (Name != null || OldName == null) // only use the new ([X/Y/Z]) method on things we don't have OldNames for
+            //Ethics.EthicBless.AddEquipmentInfoAttribute(this, attrs);
+
+            if (m_Quality == WeaponQuality.Exceptional)
+                attrs.Add(new EquipInfoAttribute(1018305 - (int)m_Quality));
+
+            if (m_Identified)
             {
-                if (m_Quality == WeaponQuality.Exceptional)
-                    attrs.Add(new EquipInfoAttribute(1018305 - (int)m_Quality));
+                if (m_Slayer != SlayerName.None)
+                    attrs.Add(new EquipInfoAttribute(1017383 + (int)m_Slayer));
 
-                if (m_Identified)
-                {
-                    if (m_Slayer != SlayerName.None)
-                        attrs.Add(new EquipInfoAttribute(1017383 + (int)m_Slayer));
+                if (m_DurabilityLevel != WeaponDurabilityLevel.Regular)
+                    attrs.Add(new EquipInfoAttribute(1038000 + (int)m_DurabilityLevel));
 
-                    if (m_DurabilityLevel != WeaponDurabilityLevel.Regular)
-                        attrs.Add(new EquipInfoAttribute(1038000 + (int)m_DurabilityLevel));
+                if (m_DamageLevel != WeaponDamageLevel.Regular)
+                    attrs.Add(new EquipInfoAttribute(1038015 + (int)m_DamageLevel));
 
-                    if (m_DamageLevel != WeaponDamageLevel.Regular)
-                        attrs.Add(new EquipInfoAttribute(1038015 + (int)m_DamageLevel));
+                if (m_AccuracyLevel != WeaponAccuracyLevel.Regular)
+                    attrs.Add(new EquipInfoAttribute(1038010 + (int)m_AccuracyLevel));
 
-                    if (m_AccuracyLevel != WeaponAccuracyLevel.Regular)
-                        attrs.Add(new EquipInfoAttribute(1038010 + (int)m_AccuracyLevel));
-                }
-                else if (m_Slayer != SlayerName.None || m_DurabilityLevel != WeaponDurabilityLevel.Regular || m_DamageLevel != WeaponDamageLevel.Regular || m_AccuracyLevel != WeaponAccuracyLevel.Regular)
-                {
-                    attrs.Add(new EquipInfoAttribute(1038000)); // Unidentified
-                }
+                //if (m_MagicEffect != MagicItemEffect.None)
+                //    attrs.Add(new EquipInfoAttribute(MagicItems.GetLabel(m_MagicEffect), m_MagicCharges));
+            }
+            else if (m_Slayer != SlayerName.None || m_DurabilityLevel != WeaponDurabilityLevel.Regular || m_DamageLevel != WeaponDamageLevel.Regular || m_AccuracyLevel != WeaponAccuracyLevel.Regular /*|| m_MagicEffect != MagicItemEffect.None*/)
+            {
+                attrs.Add(new EquipInfoAttribute(1038000)); // Unidentified
             }
 
-            if (Name != null || OldName == null)
-            {
-                if (m_Poison != null && m_PoisonCharges > 0)
-                    attrs.Add(new EquipInfoAttribute(1017383, m_PoisonCharges));
-            }
+            if (m_Poison != null && m_PoisonCharges > 0)
+                attrs.Add(new EquipInfoAttribute(1017383, m_PoisonCharges));
 
             int number;
 
             if (Name == null)
             {
-                if (OldName == null)
-                {
-                    number = LabelNumber;
-                }
-                else
-                {
-                    string oldname = OldName;
-                    string article = OldArticle;
-                    //yay!  Show us the old way!
-                    if (m_Quality == WeaponQuality.Exceptional)
-                    {
-                        oldname = "exceptional " + oldname;
-                        article = "an";
-                    }
-
-                    if (m_Identified)
-                    {
-                        //if (m_Slayer != SlayerName.None)
-                        if (m_Slayer == SlayerName.Silver)
-                        {
-                            oldname = "silver " + oldname;
-                            article = "a";
-                        }
-
-                        if (m_AccuracyLevel != WeaponAccuracyLevel.Regular)
-                        {
-                            if (m_AccuracyLevel == WeaponAccuracyLevel.Accurate)
-                            {
-                                oldname = "accurate " + oldname;
-                                article = "an";
-                            }
-                            else
-                            {
-                                oldname = m_AccuracyLevel.ToString().ToLower() + " accurate " + oldname;
-                                if (m_AccuracyLevel == WeaponAccuracyLevel.Eminently || m_AccuracyLevel == WeaponAccuracyLevel.Exceedingly)
-                                {
-                                    article = "an";
-                                }
-                                else
-                                {
-                                    article = "a";
-                                }
-                            }
-                        }
-
-                        if (m_DurabilityLevel != WeaponDurabilityLevel.Regular)
-                        {
-                            oldname = m_DurabilityLevel.ToString().ToLower() + " " + oldname;
-                            if (m_DurabilityLevel == WeaponDurabilityLevel.Indestructible)
-                            {
-                                article = "an";
-                            }
-                            else
-                            {
-                                article = "a";
-                            }
-                        }
-
-                        if (m_DamageLevel != WeaponDamageLevel.Regular)
-                        {
-                            oldname = oldname + " of " + m_DamageLevel.ToString().ToLower();
-                        }
-
-                        //Pix 2010.05.20 - display the slayer name (unless it's silver) after
-                        // (I'm told that slayer weapons never have magic mods, so you'll never get
-                        //  the "X of power of daemon slaying"
-                        if (m_Slayer != SlayerName.None && m_Slayer != SlayerName.Silver)
-                        {
-                            //oldname = oldname + " of " + m_Slayer.ToString().ToLower();
-                            oldname = oldname + " of " + SlayerLabel.GetSlayerLabel(m_Slayer).ToLower();
-                        }
-
-                    }
-                    else if (m_Slayer != SlayerName.None
-                             || m_DurabilityLevel != WeaponDurabilityLevel.Regular
-                             || m_DamageLevel != WeaponDamageLevel.Regular
-                             || m_AccuracyLevel != WeaponAccuracyLevel.Regular)
-                    {
-                        oldname = "magic " + oldname;
-                        article = "a";
-                    }
-
-                    //crafted-by goes at the end
-                    if (m_Crafter != null)
-                    {
-                        oldname += " crafted by " + m_Crafter.Name;
-                    }
-
-                    if (m_Poison != null && m_PoisonCharges > 0)
-                    {
-                        oldname = "poisoned " + oldname;
-                        oldname = (oldname + ", charges: " + m_PoisonCharges);
-                        article = "a";
-                    }
-
-                    //finally, add the article
-                    oldname = article + " " + oldname;
-
-                    this.LabelTo(from, oldname);
-                    number = 1041000;
-                }
+                number = LabelNumber;
             }
             else
             {
@@ -3253,80 +3154,143 @@ namespace Server.Items
             if (attrs.Count == 0 && Crafter == null && Name != null)
                 return;
 
-            if (Name != null || OldName == null)
-            {
-                EquipmentInfo eqInfo = new EquipmentInfo(number, m_Crafter, false, (EquipInfoAttribute[])attrs.ToArray(typeof(EquipInfoAttribute)));
-                from.Send(new DisplayEquipmentInfo(this, eqInfo));
-            }
-            else
-            {
-                if (attrs.Count > 0)
-                {
-                    EquipmentInfo eqInfo = new EquipmentInfo(number, null, false, (EquipInfoAttribute[])attrs.ToArray(typeof(EquipInfoAttribute)));
-                    from.Send(new DisplayEquipmentInfo(this, eqInfo));
-                }
-            }
+            EquipmentInfo eqInfo = new EquipmentInfo(number, m_Crafter, false, (EquipInfoAttribute[])attrs.ToArray(typeof(EquipInfoAttribute)));
+            from.Send(new DisplayEquipmentInfo(this, eqInfo));
         }
 
-        #region Obsolete OnSingleClick
-        /*
-		public override void OnSingleClick(Mobile from)
-		{
-			ArrayList attrs = new ArrayList();
+        public override string GetOldPrefix(ref Article article)
+        {
+            string prefix = "";
 
-			if (DisplayLootType)
-			{
-				if (LootType == LootType.Blessed)
-					attrs.Add(new EquipInfoAttribute(1038021)); // blessed
-				else if (LootType == LootType.Cursed)
-					attrs.Add(new EquipInfoAttribute(1049643)); // cursed
-			}
+            if (m_Poison != null && m_PoisonCharges > 0)
+            {
+                if ((article == Article.A || article == Article.An) && prefix.Length == 0)
+                    article = Article.A;
 
-			if (m_Quality == WeaponQuality.Exceptional)
-				attrs.Add(new EquipInfoAttribute(1018305 - (int)m_Quality));
+                prefix += "poisoned ";
+            }
 
-			if (m_Identified)
-			{
-				if (m_Slayer != SlayerName.None)
-					attrs.Add(new EquipInfoAttribute(1017383 + (int)m_Slayer));
+            if (!HideAttributes && m_Quality == WeaponQuality.Exceptional)
+            {
+                if ((article == Article.A || article == Article.An) && prefix.Length == 0)
+                    article = Article.An;
 
-				if (m_DurabilityLevel != WeaponDurabilityLevel.Regular)
-					attrs.Add(new EquipInfoAttribute(1038000 + (int)m_DurabilityLevel));
+                prefix += "exceptional ";
+            }
 
-				if (m_DamageLevel != WeaponDamageLevel.Regular)
-					attrs.Add(new EquipInfoAttribute(1038015 + (int)m_DamageLevel));
+            if (m_Identified)
+            {
+                if (!HideAttributes && m_Slayer == SlayerName.Silver)
+                {
+                    if ((article == Article.A || article == Article.An) && prefix.Length == 0)
+                        article = Article.A;
 
-				if (m_AccuracyLevel != WeaponAccuracyLevel.Regular)
-					attrs.Add(new EquipInfoAttribute(1038010 + (int)m_AccuracyLevel));
-			}
-			else if (m_Slayer != SlayerName.None || m_DurabilityLevel != WeaponDurabilityLevel.Regular || m_DamageLevel != WeaponDamageLevel.Regular || m_AccuracyLevel != WeaponAccuracyLevel.Regular)
-			{
-				attrs.Add(new EquipInfoAttribute(1038000)); // Unidentified
-			}
+                    prefix += "silver ";
+                }
 
-			if (m_Poison != null && m_PoisonCharges > 0)
-				attrs.Add(new EquipInfoAttribute(1017383, m_PoisonCharges));
+                if (!HideAttributes && m_AccuracyLevel != WeaponAccuracyLevel.Regular)
+                {
+                    if ((article == Article.A || article == Article.An) && prefix.Length == 0)
+                    {
+                        if (m_AccuracyLevel == WeaponAccuracyLevel.Accurate || m_AccuracyLevel == WeaponAccuracyLevel.Eminently || m_AccuracyLevel == WeaponAccuracyLevel.Exceedingly)
+                            article = Article.An;
+                        else
+                            article = Article.A;
+                    }
 
-			int number;
+                    if (m_AccuracyLevel == WeaponAccuracyLevel.Accurate)
+                        prefix += m_AccuracyLevel.ToString().ToLower() + " ";
+                    else
+                        prefix += m_AccuracyLevel.ToString().ToLower() + " accurate ";
+                }
 
-			if (Name == null)
-			{
-				number = LabelNumber;
-			}
-			else
-			{
-				this.LabelTo(from, Name);
-				number = 1041000;
-			}
+                if (!HideAttributes && m_DurabilityLevel != WeaponDurabilityLevel.Regular)
+                {
+                    if ((article == Article.A || article == Article.An) && prefix.Length == 0)
+                    {
+                        if (m_DurabilityLevel == WeaponDurabilityLevel.Indestructible)
+                            article = Article.An;
+                        else
+                            article = Article.A;
+                    }
 
-			if (attrs.Count == 0 && Crafter == null && Name != null)
-				return;
+                    prefix += m_DurabilityLevel.ToString().ToLower() + " ";
+                }
+            }
+            else if (!HideAttributes && (m_Slayer != SlayerName.None
+                || m_DurabilityLevel != WeaponDurabilityLevel.Regular
+                || m_DamageLevel != WeaponDamageLevel.Regular
+                || m_AccuracyLevel != WeaponAccuracyLevel.Regular
+                /*|| m_MagicEffect != MagicItemEffect.None*/))
+            {
+                if ((article == Article.A || article == Article.An) && prefix.Length == 0)
+                    article = Article.A;
 
-			EquipmentInfo eqInfo = new EquipmentInfo(number, m_Crafter, false, (EquipInfoAttribute[])attrs.ToArray(typeof(EquipInfoAttribute)));
+                prefix += "magic ";
+            }
 
-			from.Send(new DisplayEquipmentInfo(this, eqInfo));
-		}*/
-        #endregion
+            /*if (EventResourceSystem.Find(m_Resource) != null)
+            {
+                CraftResourceInfo info = CraftResources.GetInfo(m_Resource);
+
+                if (info != null)
+                {
+                    if ((article == Article.A || article == Article.An) && prefix.Length == 0)
+                        article = info.Article;
+
+                    prefix += string.Concat(info.Name.ToLower(), " ");
+                }
+            }*/
+
+            return prefix;
+        }
+
+        public override string GetOldSuffix()
+        {
+            string suffix = "";
+
+            if (m_Identified)
+            {
+                if (!HideAttributes && m_DamageLevel != WeaponDamageLevel.Regular)
+                {
+                    if (suffix.Length == 0)
+                        suffix += " of ";
+                    else
+                        suffix += " and ";
+
+                    suffix += m_DamageLevel.ToString().ToLower();
+                }
+
+                if (!HideAttributes && m_Slayer != SlayerName.None && m_Slayer != SlayerName.Silver)
+                {
+                    if (suffix.Length == 0)
+                        suffix += " of ";
+                    else
+                        suffix += " and ";
+
+                    suffix += SlayerLabel.GetSuffix(m_Slayer).ToLower();
+                }
+
+                /*if (!HideAttributes && m_MagicEffect != MagicItemEffect.None)
+                {
+                    if (suffix.Length == 0)
+                        suffix += " of ";
+                    else
+                        suffix += " and ";
+
+                    suffix += MagicItems.GetOldSuffix(m_MagicEffect, m_MagicCharges);
+                }*/
+            }
+
+            if (m_Crafter != null)
+                suffix += " crafted by " + m_Crafter.Name;
+
+            if (m_Poison != null && m_PoisonCharges > 0)
+                suffix += string.Format(" (poison charges: {0})", m_PoisonCharges);
+
+            return suffix;
+        }
+
 
         private static BaseWeapon m_Fists; // This value holds the default--fist--weapon
 
@@ -3610,7 +3574,7 @@ namespace Server.Items
             if (resourceType == null)
                 resourceType = craftItem.Ressources.GetAt(0).ItemType;
 
-            /*if (Core.AOS)
+            /*if (Core.RuleSets.AOSRules())
 			{
 				Resource = CraftResources.GetFromType(resourceType);
 
@@ -3629,7 +3593,7 @@ namespace Server.Items
 					else
 						Attributes.WeaponDamage = 15;
 
-					if (Core.ML)
+					if (Core.RuleSets.MLRules())
 					{
 						Attributes.WeaponDamage += (int)(from.Skills.ArmsLore.Value / 20);
 						from.CheckSkill(SkillName.ArmsLore, 0, 100);
@@ -3735,7 +3699,7 @@ namespace Server.Items
 						// erl: 10 Nov 05: that day is today!
 						// weapon.SaveHue = true;
 
-						/*if ( Core.AOS )
+						/*if ( Core.RuleSets.AOSRules() )
 						{
 							Type resourceType = typeRes;
 

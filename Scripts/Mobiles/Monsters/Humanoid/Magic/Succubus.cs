@@ -72,7 +72,7 @@ namespace Server.Mobiles
         }
 
         public override int Meat { get { return 1; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 4 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 4 : 0; } }
 
         public override AuraType MyAura { get { return AuraType.Hate; } }
         public override int AuraRange { get { return 5; } }
@@ -137,7 +137,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(450, 700);
                 PackScroll(1, 7);
@@ -151,7 +151,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020220114204/uo.stratics.com/hunters/succubus.shtml
                     // 1200-2000 Gold, gems, scrolls, magic items
                     if (Spawning)

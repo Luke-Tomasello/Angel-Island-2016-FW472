@@ -21,7 +21,7 @@
 
 /* Scripts/Commands/FindSkill.cs
  * ChangeLog
- *	8/29/10, adam
+ *	8/29/10, Adam
  *		Close the log :(
  *	11/25/05, erlein
  *		Converted to single line log format.

@@ -21,7 +21,7 @@
 
 /* Scripts/Misc/TestCenter.cs
  * CHANGELOG
- *	4/10/10, adam
+ *	4/10/10, Adam
  *		Add tamepet command
  *	5/12/08, Adam
  *		Switch from Convert.ToDouble() to double.TryParse()so that we could handle the error
@@ -66,7 +66,7 @@ namespace Server.Misc
 
         public static void Configure()
         {
-            if (Core.UOTC == true)
+            if (Core.RuleSets.TestCenterRules() == true)
             {
                 m_Enabled = true;
             }

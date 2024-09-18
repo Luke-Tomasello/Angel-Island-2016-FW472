@@ -196,7 +196,7 @@ namespace Server.SkillHandlers
                                 ArrayList mods = new ArrayList();
                                 double scalar;
 
-                                if (Core.AOS)
+                                if (Core.RuleSets.AOSRules())
                                 {
                                     double discord = from.Skills[SkillName.Discordance].Value;
                                     int effect;

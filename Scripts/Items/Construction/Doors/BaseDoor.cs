@@ -579,7 +579,7 @@ namespace Server.Items
         public virtual void Use(Mobile from)
         {
             //Pix: 2010.11.21 - not sure if this is a great place for this, but on UOSP, when a friend uses a house door, the house is refreshed
-            if (Core.UOSP)
+            if (Core.RuleSets.SiegeRules())
             {
                 try
                 {

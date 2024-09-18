@@ -66,7 +66,7 @@ namespace Server.Mobiles
             VirtualArmor = 30;
         }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 1 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 1 : 0; } }
         public override int Meat { get { return 4; } }
 
         public TerathanWarrior(Serial serial)
@@ -76,7 +76,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(60, 90);
                 // Category 2 MID
@@ -84,7 +84,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   //http://web.archive.org/web/20020213035914/uo.stratics.com/hunters/terwarr.shtml
                     // 50 to 150 Gold, Potions, Arrows, Magic Items
                     if (Spawning)

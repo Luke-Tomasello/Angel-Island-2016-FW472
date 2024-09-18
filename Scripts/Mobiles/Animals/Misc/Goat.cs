@@ -21,7 +21,7 @@
 
 /* Scripts/Mobiles/Animals/Misc/Goat.cs
  *	ChangeLog :
- *	3/4/11, adam
+ *	3/4/11, Adam
  *		goats eat leather
  *		http://vboards.stratics.com/uo-tamer/38862-amazing-pet-colour-charts.html
  *		http://update.uo.com/design_411.html

@@ -21,7 +21,7 @@
 
 /* Scripts\Spells\UnsummonTimer.cs
  * ChangeLog
- *	7/16/10, adam
+ *	7/16/10, Adam
  *		call the new virtual function OnBeforeDispel() to allow the summon to cleanup
  */
 

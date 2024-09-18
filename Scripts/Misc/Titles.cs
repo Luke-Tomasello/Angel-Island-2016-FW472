@@ -21,7 +21,7 @@
 
 /* Scripts\Misc\Titles.cs
  * ChangeLog
- *	7/22/10, adam
+ *	7/22/10, Adam
  *		Add new titles for the Spirit Speaker: Medium, Slayer, and Summoner
  *	3/8/10, Adam
  *		New braggy titles for murderers
@@ -38,7 +38,7 @@
  * 12/20/04, Pix
  *		Incorporated IOB Rank Titles.
  *	8/9/04, mith
- *		GetHighestSkill(), commented Core.AOS check, allowing players to choose which skill is displayed based on how skill locks are set.
+ *		GetHighestSkill(), commented Core.RuleSets.AOSRules() check, allowing players to choose which skill is displayed based on how skill locks are set.
  *  6/5/04, Pix
  *		Merged in 1.0RC0 code.
  */
@@ -200,12 +200,12 @@ namespace Server.Misc
 				 * Members of the Thieves Guild do not display professional titles on the paperdoll to anyone except themselves, regardless of skill level or fame.
 				 * http://www.uoguide.com/Publish_-_February_24,_1999#Stealing
 				 */
-                if ((beheld is PlayerMobile && beholder is PlayerMobile) && beholder != beheld && (beheld as PlayerMobile).NpcGuild == NpcGuild.ThievesGuild && !(Core.UOAI || Core.UOREN || Core.UOMO))
+                if ((beheld is PlayerMobile && beholder is PlayerMobile) && beholder != beheld && (beheld as PlayerMobile).NpcGuild == NpcGuild.ThievesGuild && !(Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules()))
                 {   // no titles unless looking at self
                     showFameTitle = showSkillTitle = false;
                 }
 
-                if (beheld.Murderer && (Core.UOAI || Core.UOREN || Core.UOMO))
+                if (beheld.Murderer && (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules()))
                 {
                     title.AppendFormat(fame >= 10000 ?
                         "{3}{1} {0}, Murderer of {2}" :
@@ -408,7 +408,7 @@ namespace Server.Misc
             // okay, do normal skills processing
             Skills skills = m.Skills;
 
-            //if ( !Core.AOS )
+            //if ( !Core.RuleSets.AOSRules() )
             //return skills.Highest;
 
             Skill highest = null;

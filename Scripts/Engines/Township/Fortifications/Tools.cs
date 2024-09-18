@@ -28,7 +28,7 @@
  *      Changed the check for wall placement only to count houses that are actually in the township.  Now
  *      if there's a house right up to the township border, you can place the wall.  Note that the 1-tile
  *      restriction around the house does still apply.
- * 4/23/10, adam
+ * 4/23/10, Adam
  *		Add a DemolitionAx and Sledgehammer for knocking down walls
  *		(currently not craftable, and sold on carpenters.)
  *		Consideration: cost and durability should be factored into the ease-of-wall-destruction equation.
@@ -83,11 +83,11 @@ namespace Server.Township
             }
         }
 
-        public override string OldArticle
+        public override Article OldArticle
         {
             get
             {
-                return "a";
+                return Article.A;
             }
         }
 
@@ -130,11 +130,11 @@ namespace Server.Township
             }
         }
 
-        public override string OldArticle
+        public override Article OldArticle
         {
             get
             {
-                return "a";
+                return Article.A;
             }
         }
 

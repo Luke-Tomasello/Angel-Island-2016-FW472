@@ -87,7 +87,7 @@ namespace Server.Spells.Fifth
 
         public override void OnCast()
         {
-            /*if ( Core.AOS )
+            /*if ( Core.RuleSets.AOSRules() )
             {
                  //* The magic reflection spell decreases the caster's physical resistance, while increasing the caster's elemental resistances.
                  //* Physical decrease = 25 - (Inscription/20).

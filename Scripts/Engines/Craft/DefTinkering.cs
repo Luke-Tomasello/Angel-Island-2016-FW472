@@ -227,7 +227,7 @@ namespace Server.Engines.Craft
             AddCraft(typeof(Lockpick), 1044046, 1025371, 45.0, 95.0, typeof(IronIngot), 1044036, 1, 1044037);
             AddCraft(typeof(Skillet), 1044046, 1044567, 30.0, 80.0, typeof(IronIngot), 1044036, 4, 1044037);
             AddCraft(typeof(FlourSifter), 1044046, 1024158, 50.0, 100.0, typeof(IronIngot), 1044036, 3, 1044037);
-            if (Core.UOSP || Core.UOMO)
+            if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
             {
                 AddCraft(typeof(FletcherTools), 1044046, 1044166, 35.0, 85.0, typeof(IronIngot), 1044036, 3, 1044037);
             }
@@ -269,7 +269,7 @@ namespace Server.Engines.Craft
             AddCraft(typeof(Key), 1044050, "iron key", 20.0, 70.0, typeof(IronIngot), "Ingots", 3, 1044037);
 
             int index = 0;
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 // wea: added siege tent
                 index = AddCraft(typeof(TentPole), 1044050, "tent pole", 75.0, 101.32, typeof(Board), "Board", 15, 1044351);
@@ -357,22 +357,22 @@ namespace Server.Engines.Craft
             if (Core.Factions)
             {
                 // Faction Gas Trap
-                index = AddCraft(typeof(FactionGasTrapDeed), 1044052, 1044598, 65.0, 115.0, typeof(Silver), 1044572, Core.AOS ? 250 : 1000, 1044253);
+                index = AddCraft(typeof(FactionGasTrapDeed), 1044052, 1044598, 65.0, 115.0, typeof(Silver), 1044572, Core.RuleSets.AOSRules() ? 250 : 1000, 1044253);
                 AddRes(index, typeof(IronIngot), 1044036, 10, 1044037);
                 AddRes(index, typeof(BasePoisonPotion), 1044571, 1, 1044253);
 
                 // Faction explosion Trap
-                index = AddCraft(typeof(FactionExplosionTrapDeed), 1044052, 1044599, 65.0, 115.0, typeof(Silver), 1044572, Core.AOS ? 250 : 1000, 1044253);
+                index = AddCraft(typeof(FactionExplosionTrapDeed), 1044052, 1044599, 65.0, 115.0, typeof(Silver), 1044572, Core.RuleSets.AOSRules() ? 250 : 1000, 1044253);
                 AddRes(index, typeof(IronIngot), 1044036, 10, 1044037);
                 AddRes(index, typeof(BaseExplosionPotion), 1044569, 1, 1044253);
 
                 // Faction Saw Trap
-                index = AddCraft(typeof(FactionSawTrapDeed), 1044052, 1044600, 65.0, 115.0, typeof(Silver), 1044572, Core.AOS ? 250 : 1000, 1044253);
+                index = AddCraft(typeof(FactionSawTrapDeed), 1044052, 1044600, 65.0, 115.0, typeof(Silver), 1044572, Core.RuleSets.AOSRules() ? 250 : 1000, 1044253);
                 AddRes(index, typeof(IronIngot), 1044036, 10, 1044037);
                 AddRes(index, typeof(Gears), 1044254, 1, 1044253);
 
                 // Faction Spike Trap			
-                index = AddCraft(typeof(FactionSpikeTrapDeed), 1044052, 1044601, 65.0, 115.0, typeof(Silver), 1044572, Core.AOS ? 250 : 1000, 1044253);
+                index = AddCraft(typeof(FactionSpikeTrapDeed), 1044052, 1044601, 65.0, 115.0, typeof(Silver), 1044572, Core.RuleSets.AOSRules() ? 250 : 1000, 1044253);
                 AddRes(index, typeof(IronIngot), 1044036, 10, 1044037);
                 AddRes(index, typeof(Springs), 1044171, 1, 1044253);
 

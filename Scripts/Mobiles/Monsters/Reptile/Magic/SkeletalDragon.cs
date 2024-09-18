@@ -86,7 +86,7 @@ namespace Server.Mobiles
         }
 
         // Auto-dispel is UOR - http://forums.uosecondage.com/viewtopic.php?f=8&t=6901
-        public override bool AutoDispel { get { return Core.UOAI || Core.UOREN ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
+        public override bool AutoDispel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
         public override bool HasBreath { get { return true; } } // fire breath enabled
         public override int BreathFireDamage { get { return 0; } }
         public override int BreathColdDamage { get { return 100; } }
@@ -104,7 +104,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 for (int i = 0; i < 5; ++i)
                     PackGem();
@@ -137,7 +137,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020214230303/uo.stratics.com/hunters/skeletaldragon.shtml
                     // 2000 - 3000 Gold, gems, scrolls, magic items
                     if (Spawning)

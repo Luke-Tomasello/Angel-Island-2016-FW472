@@ -77,14 +77,14 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(25, 50);
                 PackItem(new BlackPearl(4));
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020221204551/uo.stratics.com/hunters/eagle.shtml
                     // 1 Raw bird (carved), 36 Feathers (carved)
 

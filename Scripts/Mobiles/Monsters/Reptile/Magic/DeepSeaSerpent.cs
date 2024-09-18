@@ -78,12 +78,12 @@ namespace Server.Mobiles
             CantWalk = true;
         }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 1 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 1 : 0; } }
         public override bool HasBreath { get { return true; } }
         public override int Hides { get { return 10; } }
         public override HideType HideType { get { return HideType.Horned; } }
         public override int Meat { get { return 10; } }
-        public override int Scales { get { return (Core.UOAI || Core.UOREN || PublishInfo.PublishDate < Core.PlagueOfDespair) ? 0 : 8; } }
+        public override int Scales { get { return (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || PublishInfo.PublishDate < Core.PlagueOfDespair) ? 0 : 8; } }
         public override ScaleType ScaleType { get { return ScaleType.Blue; } }
 
         public DeepSeaSerpent(Serial serial)
@@ -93,7 +93,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(150, 200);
                 PackItem(new SulfurousAsh(4));
@@ -101,7 +101,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20011213223007/uo.stratics.com/hunters/deepseaserpent.shtml
                     // 	Special Fishing Net, 1 Fish Steak (carved)
 

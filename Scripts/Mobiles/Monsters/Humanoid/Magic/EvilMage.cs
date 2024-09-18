@@ -69,7 +69,7 @@ namespace Server.Mobiles
         // Blackthorn's Revenge is when we got the Todd McFarlane (crap) bodies
         //	Blackthorn's Revenge was release 2/12/2002 according to UOGuide.
         // Since Publish 15 was 1/9/2002, we can safely exclude Todd McFarlane bodies pre Publish 15
-        private bool Blackthorns_Revenge = (PublishInfo.Publish > 15 && (Core.UOAI || Core.UOREN || Core.UOMO) == false);
+        private bool Blackthorns_Revenge = (PublishInfo.Publish > 15 && (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules()) == false);
 
         [Constructable]
         public EvilMage()
@@ -105,7 +105,7 @@ namespace Server.Mobiles
             VirtualArmor = 16;
         }
 
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : true; } }
+        public override bool CanRummageCorpses { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? true : true; } }
         public override bool AlwaysMurderer { get { return true; } }
         public override int Meat { get { return 1; } }
 
@@ -128,7 +128,7 @@ namespace Server.Mobiles
         {
             WipeLayers();
 
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 AddItem(new Sandals());
 
@@ -175,7 +175,7 @@ namespace Server.Mobiles
                     // http://web.archive.org/web/20020207054748/uo.stratics.com/hunters/evilmage.shtml
                     // 	Red Robe: 0 to 50 Gold, Scrolls (circles 1-7), Reagents
                     /*Sandals shoes = new Sandals();
-					if (Core.UOSP || Core.UOMO)
+					if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
 						shoes.LootType = LootType.Newbied;
 					AddItem(shoes);*/
 
@@ -251,7 +251,7 @@ namespace Server.Mobiles
         }
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackReg(6);
                 PackScroll(2, 7);
@@ -278,7 +278,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020207054748/uo.stratics.com/hunters/evilmage.shtml
                     // 	Red Robe: 0 to 50 Gold, Scrolls (circles 1-7), Reagents
 

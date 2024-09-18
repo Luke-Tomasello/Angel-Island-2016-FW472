@@ -84,7 +84,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(60, 90);
                 PackScroll(1, 5);
@@ -106,7 +106,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20021014235656/uo.stratics.com/hunters/skeletalmage.shtml
                     // 50 to 200 Gold, Magic items, Gems, Scrolls, Bone
                     if (Spawning)
@@ -128,7 +128,7 @@ namespace Server.Mobiles
                     if (Spawning)
                     {
                         PackReg(3);
-                        if (Core.AOS)
+                        if (Core.RuleSets.AOSRules())
                             PackNecroReg(3, 10);
                         PackItem(new Bone());
                     }

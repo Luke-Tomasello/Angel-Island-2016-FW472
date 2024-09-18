@@ -33,7 +33,7 @@
  *	8/8/10, Adam
  *		Add: OldFlee switch
  *			BaseAI seems to have a bug where they clear FocusMob in OnActionChanged().Flee
- *	6/12/10, adam
+ *	6/12/10, Adam
  *		Add a switch for controling the algo used for calculating armor absorb	(ArmorAbsorbClassic)
  *	3/13/10, Adam
  *		Add PetNeedsLOS

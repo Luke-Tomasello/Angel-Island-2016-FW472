@@ -78,7 +78,7 @@ namespace Server.Mobiles
                 Add(new GenericBuyInfo(typeof(SpidersSilk), 3, 20, 0xF8D, 0));
                 Add(new GenericBuyInfo(typeof(SulfurousAsh), 3, 20, 0xF8C, 0));
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     Add(new GenericBuyInfo(typeof(BatWing), 3, 20, 0xF78, 0));
                     Add(new GenericBuyInfo(typeof(GraveDust), 3, 20, 0xF8F, 0));
@@ -96,7 +96,7 @@ namespace Server.Mobiles
 
                 Add(new GenericBuyInfo(typeof(RecallRune), 15, 10, 0x1F14, 0));
 
-                if (Core.UOAI || Core.UOREN || Core.UOMO)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
                 {
                     // the text "An Unmarked Moonstone" does not show. Figure out how Taran did the BBS Types (see GetBunchType in BaseVendor.cs)
                     Add(new GenericBuyInfo("An Unmarked Moonstone", typeof(Moonstone), 10, 100, 0xF8B, 0));
@@ -115,7 +115,7 @@ namespace Server.Mobiles
         {
             public InternalSellInfo()
             {
-                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
+                if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.SiegeRules() && !Core.RuleSets.MortalisRules())
                 {   // cash buyback
                     Add(typeof(Runebook), 1250);
                     Add(typeof(BlackPearl), 3);
@@ -131,7 +131,7 @@ namespace Server.Mobiles
                     Add(typeof(BlankScroll), 3);
                 }
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {   // cash buyback
                     Add(typeof(BatWing), 2);
                     Add(typeof(GraveDust), 2);
@@ -140,7 +140,7 @@ namespace Server.Mobiles
                     Add(typeof(PigIron), 3);
                 }
 
-                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
+                if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.SiegeRules() && !Core.RuleSets.MortalisRules())
                 {   // cash buyback
                     Type[] types = Loot.RegularScrollTypes;
 

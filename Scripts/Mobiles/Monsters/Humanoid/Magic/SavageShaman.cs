@@ -124,7 +124,7 @@ namespace Server.Mobiles
             AddItem(new BoneArms());
             AddItem(new BoneLegs());
 
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 AddItem(new DeerMask(), 1);         // always newbied on AI
             }
@@ -139,7 +139,7 @@ namespace Server.Mobiles
 
         public override bool IsEnemy(Mobile m, RelationshipFilter filter)
         {
-            if (!Core.UOAI && !Core.UOREN)
+            if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules())
                 // Ai uses HUE value and not the BodyMod as there is no sitting graphic
                 if ((m.BodyMod == 183 || m.BodyMod == 184) || m.HueMod == 0)
                     return false;
@@ -151,7 +151,7 @@ namespace Server.Mobiles
         {
             base.AggressiveAction(aggressor, criminal);
 
-            if (!Core.UOAI && !Core.UOREN)
+            if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules())
             {   // Ai uses HUE value and not the BodyMod as there is no sitting graphic
                 if ((aggressor.BodyMod == 183 || aggressor.BodyMod == 184) || aggressor.HueMod == 0)
                 {
@@ -170,7 +170,7 @@ namespace Server.Mobiles
 
         public override void AlterMeleeDamageTo(Mobile to, ref int damage)
         {
-            if (!Core.UOAI && !Core.UOREN)
+            if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules())
                 if (to is Dragon || to is WhiteWyrm || to is SwampDragon || to is Drake || to is Nightmare || to is Daemon)
                     damage *= 3;
         }
@@ -275,7 +275,7 @@ namespace Server.Mobiles
 
                                 double damage;
 
-                                if (Core.AOS)
+                                if (Core.RuleSets.AOSRules())
                                 {
                                     int baseDamage = 6 + (int)(Skills[SkillName.EvalInt].Value / 5.0);
 
@@ -349,7 +349,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(200, 250);
                 PackReg(10, 15);
@@ -379,7 +379,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020213040553/uo.stratics.com/hunters/savage_shaman.shtml
                     // 20-40 Gold, bone arms, bone legs, deer mask, pouch of reagents (1-5 of each)
                     if (Spawning)

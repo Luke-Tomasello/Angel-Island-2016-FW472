@@ -21,7 +21,7 @@
 
 /* Scripts/Items/Containers/TrapableContainer.cs
  * CHANGELOG:
- *	3/28/10, adam
+ *	3/28/10, Adam
  *		Added an auto-reset mechanism to LocableContainers for resetting the trap and lock after a timeout period.
  *		Note: because of the way trapped containers are untrapped via RemoveTrap (power and traptype are cleared)
  *			the autoreset doesn't kick in until the Locked value is set to false.

@@ -21,11 +21,14 @@
 
 /* Server\Item.cs
  * ChangeLog:
+ *  9/16/2024, Adam (OnSingleClick)
+ *      More robust OnSingleClick processing
  *  9/3/2024, Adam (SendMessageTo)
  *      Add SendMessageTo(). This allows items to communicate with the player.
  *      BaseHouse uses this for "(secured)" messages etc.
  */
 
+using Server.Commands;
 using Server.Items;
 using Server.Network;
 using System;
@@ -484,7 +487,13 @@ namespace Server
         CheckDropBackpack,
         CheckDropBank,
     }
-
+    public enum Article
+    {
+        None,
+        A,
+        An,
+        The,
+    }
     public class BounceInfo
     {
         public Map m_Map;
@@ -1692,7 +1701,7 @@ namespace Server
 
         public void InvalidateProperties()
         {
-            if (!Core.AOS)
+            if (!Core.RuleSets.AOSRules())
                 return;
 
             if (m_Map != null && m_Map != Map.Internal && !World.Loading)
@@ -4507,80 +4516,7 @@ namespace Server
                 from.Send(new MessageLocalized(m_Serial, m_ItemID, MessageType.Label, 0x3B2, 3, opl.Header, m_Name, opl.HeaderArgs));
         }
 
-        // if the thing has an override for LabelNumber, use it instead of oldName. 
-        //	This will be true for things like deeds which should show what kind of deed it is
-        public virtual bool UseLabel
-        {
-            get
-            {
-                try
-                {
-                    // look to see if THIS item has a label override, if so use it.
-                    // For instance, HairDye has the LabelNumber override
-                    Type t = this.GetType();
-
-                    if (t.GetProperty("LabelNumber") != null)
-                        if (t.GetProperty("LabelNumber").DeclaringType == this.GetType())   // does the declaring type of this property match this item?
-                            if (Text.Cliloc.Lookup.ContainsKey(LabelNumber))                //	i.e., it's an override?
-                                return true;
-
-                    // Now we will go down one level to see if the item on which we are based has the LabelNumber override
-                    // We will stop short of including the base Item in the search (because we know it defines a LabelNumber override)
-
-                    // look to see if this item's base has a label override, if so use it.
-                    // For instance ironingot is based upon BaseIngot and it's BaseIngot which has the LabelNumber override
-                    t = this.GetType().BaseType;
-
-                    if (t.GetProperty("LabelNumber") != null)
-                        if (t.GetProperty("LabelNumber").DeclaringType == this.GetType().BaseType)  // does the declaring type of this property match this item?
-                            if (this.GetType().BaseType != typeof(Item))                            //	i.e., it's an override AND we're not back up at the base item?
-                                if (Text.Cliloc.Lookup.ContainsKey(LabelNumber))
-                                    return true;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                    return false;
-                }
-
-                return false;
-            }
-        }
-
-        public virtual string OldName
-        {
-            get
-            {   // if the thing has an override for LabelNumber, use it instead of oldName. 
-                if (UseLabel == true)
-                {   // even though the client has this label, we will supply it to avoid the 'bright white' labeling that happens when we let the client label
-                    if (Text.Cliloc.Lookup.ContainsKey(LabelNumber))
-                        return Text.Cliloc.Lookup[LabelNumber];
-                    else
-                    {   // we don't seem to have any usable text - we will simply pass the label back to the client for processing
-                        return null;
-                    }
-                }
-                else
-                {   // use item data
-                    string name = this.ItemData.Name;
-                    if (name != null)
-                        name = name.Trim();
-                    return name;
-                }
-            }
-        }
-        public virtual string OldArticle
-        {
-            get
-            {
-                if ((this.ItemData.Flags & TileFlag.ArticleA) != 0)
-                    return "a";
-                else if ((this.ItemData.Flags & TileFlag.ArticleAn) != 0)
-                    return "an";
-                else
-                    return null;
-            }
-        }
+        public static bool UseOldNames { get { return Core.RuleSets.AnyAIShardRules(); } }
 
         public virtual void OnSingleClick(Mobile from)
         {
@@ -4589,135 +4525,278 @@ namespace Server
                 if (Deleted || !from.CanSee(this))
                     return;
 
+                // blessed / cursed, etc.
                 if (DisplayLootType)
                     LabelLootTypeTo(from);
 
                 NetState ns = from.NetState;
 
-                // Move away from the RunUO and probablky new-school 'label' mechanism for labeling stuff.
+                // Move away from the RunUO and probably new-school 'label' mechanism for labeling stuff.
                 //	as it turns out, labels are less 'era accurate' than using the this.ItemData.Name.
                 //	We like this.ItemData.Name because it gives us plural where LabelNumber does not.
                 // For instance, the label for a board is 1027127. This maps to "board" IF we have plural, 
                 //	we need to handle this ourself. If we use this.ItemData.Name it's done for us.
                 if (ns != null)
                 {   // give all shards old-school naming
-                    if (Core.UOSP || true)
+                    if (UseOldNames)
                     {
-                        // if the thing has an override for LabelNumber, use it. 
-                        //	This will be true for things like deeds which should show what kind of deed it is
-                        bool useLabel = UseLabel;
-
-                        // okay, add the article to the name.
-                        // if you have more than 1, don't add 'a' or 'an'
-                        string name;
-                        if (m_Amount == 1 && (this.ItemData.Flags & TileFlag.ArticleA) != 0)
-                        {
-                            if (useLabel && Text.Cliloc.Lookup[LabelNumber].StartsWith("a "))
-                                name = Text.Cliloc.Lookup[LabelNumber];             // already have an article - I.e., "a message in a bottle"
-                            else if (useLabel)
-                                name = "a " + Text.Cliloc.Lookup[LabelNumber];      // add the article to the local cliloc
-                            else
-                                name = "a " + this.ItemData.Name;                   // add the article to the item data
-                        }
-                        else if (m_Amount == 1 && (this.ItemData.Flags & TileFlag.ArticleAn) != 0)
-                        {
-                            if (useLabel && Text.Cliloc.Lookup[LabelNumber].StartsWith("an "))
-                                name = Text.Cliloc.Lookup[LabelNumber];             // already have an article
-                            else if (useLabel)
-                                name = "an " + Text.Cliloc.Lookup[LabelNumber];     // add the article to the local cliloc
-                            else
-                                name = "an " + this.ItemData.Name;                  // add the article to the item data
-                        }
-                        else if (m_Amount == 1)
-                        {
-                            if (useLabel)
-                            {   // RunUO always picks the plural version of the label, for instance "iron ingots", to handle this case where we only have 1 item
-                                //	we look to see if this.ItemData.Name defines the plural replacement string "%s", if so we strip the 's' from the label
-                                if (Text.Cliloc.Lookup[LabelNumber].EndsWith("s") && this.ItemData.Name.EndsWith("%s"))
-                                    name = Text.Cliloc.Lookup[LabelNumber].Substring(0, Text.Cliloc.Lookup[LabelNumber].Length - 1);
-                                else
-                                    name = Text.Cliloc.Lookup[LabelNumber];
-                            }
-                            else
-                                name = this.ItemData.Name;
-                        }
-                        else
-                        {
-                            if (useLabel)
-                                name = Text.Cliloc.Lookup[LabelNumber];
-                            else
-                                name = this.ItemData.Name;
-                        }
-
-                        // okay, manage plurals 
-                        name = (m_Name == null) ? name : m_Name;
-
-                        if (name.Contains("%s"))
-                        {
-                            if (m_Amount > 1)                       // some names contain "%s%" and others contain "%s" this is why we test twice
-                            {                                       // (and in this order)
-                                name = name.Replace("%s%", "s");
-                                name = name.Replace("%s", "s");
-                            }
-                            else
-                            {
-                                name = name.Replace("%s%", "");
-                                name = name.Replace("%s", "");
-                            }
-                        }
-                        else if (name.Contains("%ves"))
-                        {   // example "a bread loa%ves/f%"
-                            string[] tokens = name.Split(new Char[] { '%', '/' }, StringSplitOptions.RemoveEmptyEntries);
-                            if (tokens.Length == 3)
-                            {
-                                if (m_Amount > 1)
-                                    name = tokens[0] + tokens[1];   // loaves
-                                else
-                                    name = tokens[0] + tokens[2];   // loaf
-                            }
-                            // else unknown format
-                        }
-                        else if (name.Contains("%ies"))
-                        {   // example "rub%ies/y%"
-                            string[] tokens = name.Split(new Char[] { '%', '/' }, StringSplitOptions.RemoveEmptyEntries);
-                            if (tokens.Length == 3)
-                            {
-                                if (m_Amount > 1)
-                                    name = tokens[0] + tokens[1];   // rubies
-                                else
-                                    name = tokens[0] + tokens[2];   // ruby
-                            }
-                            // else unknown format
-                        }
-                        else if (useLabel && LabelNumber >= 7981 && LabelNumber <= 8044)
-                        {   // it's one of our custom labels - we will supply special processing here
-                            if (m_Amount > 1)
-                                name += "s";
-                        }
-
-                        ns.Send(new UnicodeMessage(m_Serial, m_ItemID, MessageType.Label, 0x3B2, 3, "ENU", "", (m_Amount > 1 ? m_Amount.ToString() + " " : "") + name));
+                        ns.Send(new UnicodeMessage(m_Serial, m_ItemID, MessageType.Label, 0x3B2, 3, "ENU", "", OldSchoolName()));
                     }
                     else
                     {
-                        if (m_Name == null)
+                        string name = this.Name;
+
+                        if (name == null)
                         {
                             if (m_Amount <= 1)
                                 ns.Send(new MessageLocalized(m_Serial, m_ItemID, MessageType.Label, 0x3B2, 3, LabelNumber, "", ""));
                             else
-                                ns.Send(new MessageLocalizedAffix(m_Serial, m_ItemID, MessageType.Label, 0x3B2, 3, LabelNumber, "", AffixType.Append, String.Format(" : {0}", m_Amount), ""));
+                                ns.Send(new MessageLocalizedAffix(m_Serial, m_ItemID, MessageType.Label, 0x3B2, 3, LabelNumber, "", AffixType.Append, string.Format(" : {0}", m_Amount), ""));
                         }
                         else
                         {
-                            ns.Send(new UnicodeMessage(m_Serial, m_ItemID, MessageType.Label, 0x3B2, 3, "ENU", "", m_Name + (m_Amount > 1 ? " : " + m_Amount : "")));
+                            ns.Send(new UnicodeMessage(m_Serial, m_ItemID, MessageType.Label, 0x3B2, 3, "ENU", "", name + (m_Amount > 1 ? " : " + m_Amount : "")));
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                LogHelper.LogException(ex);
             }
         }
+
+        #region Old-School Naming
+
+        public virtual string OldSchoolName()
+        {
+            Article article;
+            string baseName = GetBaseOldName(out article);
+
+            string prefix = GetOldPrefix(ref article);
+            string suffix = GetOldSuffix();
+
+            string articleStr;
+
+            if (this.Amount != 1)
+                articleStr = this.Amount.ToString() + " ";
+            else if (article == Article.A)
+                articleStr = "a ";
+            else if (article == Article.An)
+                articleStr = "an ";
+            else if (article == Article.The)
+                articleStr = "the ";
+            else
+                articleStr = null;
+
+            return string.Concat(articleStr, prefix, baseName, suffix);
+        }
+
+        /// <summary>
+        /// Add prefixes such as "accurate", "magic", ...
+        /// </summary>
+        /// <param name="article"></param>
+        /// <returns></returns>
+        public virtual string GetOldPrefix(ref Article article)
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Add suffixes such as "vanquishing", "ghoul's touch", ...
+        /// </summary>
+        /// <returns></returns>
+        public virtual string GetOldSuffix()
+        {
+            return null;
+        }
+
+        public string GetBaseOldName()
+        {
+            Article article;
+
+            return GetBaseOldName(out article);
+        }
+
+        /// <summary>
+        /// Old name without any prefixes/suffixes.
+        /// </summary>
+        /// <param name="article"></param>
+        /// <returns></returns>
+        public string GetBaseOldName(out Article article)
+        {
+            string oldName = this.OldName;
+
+            if (oldName != null)
+            {
+                article = this.OldArticle;
+
+                return SetPlural(oldName, this.Amount != 1);
+            }
+
+            string name = string.IsNullOrEmpty(this.Name) ? null : this.Name;
+
+            if (name != null)
+                return PopArticle(name, out article);
+
+            int labelNumber = this.LabelNumber;
+
+            if (labelNumber != Utility.GetDefaultLabel(this.ItemID))
+            {
+                string labelAsString;
+                Server.Text.Cliloc.Lookup.TryGetValue(labelNumber, out labelAsString);
+
+                if (!string.IsNullOrEmpty(labelAsString))
+                    return PopArticle(labelAsString, out article);
+            }
+
+            ItemData id = this.ItemData;
+
+            string itemName = id.Name;
+
+            if (itemName != null)
+                itemName = itemName.Trim();
+
+            if (id.Flags.HasFlag(TileFlag.ArticleA) && id.Flags.HasFlag(TileFlag.ArticleAn))
+                article = Article.The;
+            else if (id.Flags.HasFlag(TileFlag.ArticleA))
+                article = Article.A;
+            else if (id.Flags.HasFlag(TileFlag.ArticleAn))
+                article = Article.An;
+            else
+                article = Article.None;
+
+            return SetPlural(itemName, this.Amount != 1);
+        }
+
+        public static string PopArticle(string str, out Article article)
+        {
+            if (Insensitive.StartsWith(str, "a "))
+            {
+                article = Article.A;
+
+                if (str.Length == 2)
+                    return string.Empty;
+
+                return str.Substring(2);
+            }
+
+            if (Insensitive.StartsWith(str, "an "))
+            {
+                article = Article.An;
+
+                if (str.Length == 3)
+                    return string.Empty;
+
+                return str.Substring(3);
+            }
+
+            if (Insensitive.StartsWith(str, "the "))
+            {
+                article = Article.The;
+
+                if (str.Length == 4)
+                    return string.Empty;
+
+                return str.Substring(4);
+            }
+
+            article = Article.None;
+            return str;
+        }
+
+        /// <summary>
+        /// Parse UO's singular/plural format. Examples:
+        /// - bread loa%ves/f%
+        /// - pile%s% of wool
+        /// - raw bird%s
+        /// First tag denotes plural form.
+        /// Second tag (if specified) denotes singular form.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="plural"></param>
+        /// <returns></returns>
+        public static string SetPlural(string str, bool plural)
+        {
+            int start = str.IndexOf('%');
+
+            if (start == -1 || start + 1 >= str.Length)
+                return str;
+
+            int end = str.IndexOf('%', start + 1);
+
+            if (end == -1)
+                end = str.Length;
+
+            int split = str.IndexOf('/', start + 1);
+
+            string result = str.Substring(0, start);
+
+            if (split == -1)
+            {
+                if (plural)
+                    result += str.Substring(start + 1, end - (start + 1));
+            }
+            else
+            {
+                if (plural)
+                    result += str.Substring(start + 1, split - (start + 1));
+                else
+                    result += str.Substring(split + 1, end - (split + 1));
+            }
+
+            if (end + 1 < str.Length)
+                result += str.Substring(end + 1, str.Length - (end + 1));
+
+            return result;
+        }
+
+        /// <summary>
+        /// Raw old item name. Should not depend on the item's properties.
+        /// </summary>
+        /// <returns></returns>
+        public string GetRawOldName()
+        {
+            string oldName = this.OldName;
+
+            if (oldName != null)
+                return oldName;
+
+            int labelNumber = this.LabelNumber;
+
+            if (labelNumber != Utility.GetDefaultLabel(this.ItemID))
+            {
+                string labelAsString;
+                Server.Text.Cliloc.Lookup.TryGetValue(labelNumber, out labelAsString);
+
+                return labelAsString;
+            }
+
+            string itemName = this.ItemData.Name;
+
+            if (itemName != null)
+                itemName = itemName.Trim();
+
+            return itemName;
+        }
+
+        /// <summary>
+        /// In case we need to add a custom old name to an item.
+        /// </summary>
+        public virtual string OldName
+        {
+            get { return null; }
+        }
+
+        /// <summary>
+        /// In case we need to add a custom old name to an item.
+        /// </summary>
+        public virtual Article OldArticle
+        {
+            get { return Article.None; }
+        }
+
+        #endregion
 
         private static bool m_ScissorCopyLootType;
 

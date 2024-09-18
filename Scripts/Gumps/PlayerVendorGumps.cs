@@ -20,7 +20,7 @@
  ***************************************************************************/
 
 /* Changelog Scripts/Gumps/PlayerVendorGumps.cs
- *	4/21/10, adam
+ *	4/21/10, Adam
  *		Only charge commissions on comission vendors
  *	1/17/08, Adam
  *		- Remove double call to m_Vendor.ChargeCommission()

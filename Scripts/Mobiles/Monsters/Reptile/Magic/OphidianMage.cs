@@ -72,7 +72,7 @@ namespace Server.Mobiles
         }
 
         public override int Meat { get { return 1; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 2 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 2 : 0; } }
 
         public OphidianMage(Serial serial)
             : base(serial)
@@ -81,7 +81,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(60, 90);
                 PackScroll(1, 3);
@@ -92,7 +92,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020220114118/uo.stratics.com/hunters/ophappmage.shtml
                     // http://web.archive.org/web/20020414130837/uo.stratics.com/hunters/ophshaman.shtml
                     // (same creature)

@@ -87,7 +87,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 if (!Summoned)
                 {
@@ -108,7 +108,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020806222514/uo.stratics.com/hunters/irongolem.shtml
                     // 11-25 Ingots, Arcane Gems, Gems, Gears, Power Crystals, Clockwork Assembly
                     if (Spawning)

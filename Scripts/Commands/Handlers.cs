@@ -29,7 +29,7 @@
  *		See Also: [Host
  * 11/11/10, pix
  *      Removed stats command functionality for UOSP.
- *	6/16/10, adam
+ *	6/16/10, Adam
  *		enhhance [where to show the location of the region controller
  *	6/15/10, Adam
  *		Give players access to the [stats command again.
@@ -1745,7 +1745,7 @@ namespace Server.Commands
         [Description("View some stats about the server.")]
         public static void Stats_OnCommand(CommandEventArgs e)
         {
-            if (Core.UOSP && e.Mobile.AccessLevel <= AccessLevel.Player)
+            if (Core.RuleSets.SiegeRules() && e.Mobile.AccessLevel <= AccessLevel.Player)
             {
                 //do nothing if we're UOSP and not staff
                 return;
@@ -1793,10 +1793,10 @@ namespace Server.Commands
         }
 
         [Usage("Shard")]
-        [Description("Reminds of the current shard configuraton.")]
+        [Description("Reminds of the current shard configuration.")]
         public static void Shard_OnCommand(CommandEventArgs e)
         {
-            e.Mobile.SendMessage(String.Format("You are on {0}{1}{2}.", Core.Server, Core.UOTC ? " Test Center" : "", Core.UOEV ? " Event Shard" : ""));
+            e.Mobile.SendMessage(string.Format("You are on {0}{1}{2} ({3}).", Core.Server, Core.RuleSets.TestCenterRules() ? " Test Center" : "", Core.RuleSets.EventShardRules() ? " Event Shard" : "", Environment.MachineName));
         }
     }
 }

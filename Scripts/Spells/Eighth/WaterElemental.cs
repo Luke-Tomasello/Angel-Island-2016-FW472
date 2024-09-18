@@ -21,7 +21,7 @@
 
 /* Scripts\Spells\Eighth\WaterElemental.cs
  * 	ChangeLog:
- *	7/16/10, adam
+ *	7/16/10, Adam
  *		o increase duration by 30%
  * 	6/5/04, Pix
  * 		Merged in 1.0RC0 code.
@@ -69,7 +69,7 @@ namespace Server.Spells.Eighth
             if (CheckSequence())
             {
                 TimeSpan duration = TimeSpan.FromSeconds((2.0 * (double)Caster.Skills.Magery.Fixed) / 3.33);
-                SpellHelper.Summon(new WaterElemental(Core.UOAI || Core.UOREN ? true : false), Caster, 0x217, duration, false, false);
+                SpellHelper.Summon(new WaterElemental(Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? true : false), Caster, 0x217, duration, false, false);
             }
 
             FinishSequence();

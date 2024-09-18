@@ -30,7 +30,7 @@
  *			but leave the the messages and even add some.
  *		o guard ai is smart about when to use sowrds vs magic .. could probably be smarter even, see PreferMagic in this file
  *			and in the GuardAI.
- *	6/21/10, adam
+ *	6/21/10, Adam
  *		o Have guards use the detect hidden skill to reveal hidden players that they believe are there.
  *		o move PatrolGuard code here, then base PatrolGuard on WarriorGuard
  *	04/19/05, Kit
@@ -331,7 +331,7 @@ namespace Server.Mobiles
                 {
                     Stop();
                 }
-                else if (Core.UOSP || Core.UOMO)
+                else if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {// <instakill>
                     TeleportTo(target);
                     target.BoltEffect(0);

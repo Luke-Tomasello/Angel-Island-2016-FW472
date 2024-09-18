@@ -21,6 +21,8 @@
 
 /* Scripts/Commands/Nuke.cs
  * CHANGELOG:
+ *  9/12/2024, Adam
+ *      Add MazeGenerator for the teleport maze in Hyloth
  *	8/5/2024, Adam
  *		Initial Version
  */
@@ -72,8 +74,30 @@ namespace Server.Commands
                         PrepWorldForDistribution(e);
                         break;
 
+                    #region Build Player
+                    case "makemurderer":
+                        MakeMurderer(e);
+                        break;
+
                     case "buildwarrior":
                         BuildWarrior(e);
+                        break;
+
+                    case "buildmage":
+                        BuildMage(e);
+                        break;
+
+                    case "buildadam":
+                        BuildAdam(e);
+                        break;
+
+                    //case "buildmobile":
+                    //    BuildMobile(e);
+                    //    break;
+                    #endregion Build Player
+
+                    case "buildmaze":
+                        BuildMaze(e);
                         break;
                 }
             }
@@ -82,6 +106,131 @@ namespace Server.Commands
                 LogHelper.LogException(ex);
             }
         }
+        #region Maze Builder
+
+        private static void BuildMaze(CommandEventArgs e)
+        {
+            e.Mobile.SendMessage("Target the item you would like to dupe for maze construction...");
+            e.Mobile.Target = new MazeTarget(e.Mobile.Location, width: 41, height: 7);
+        }
+        public class MazeTarget : Target
+        {
+            private Point3D m_Origin;
+            private int m_Width, m_Height;
+            public MazeTarget(Point3D px, int width, int height)
+                : base(17, true, TargetFlags.None)
+            {
+                m_Origin = px;
+                m_Width = width;
+                m_Height = height;
+            }
+
+            protected override void OnTarget(Mobile from, object target)
+            {
+                int id = 0;
+                string name = string.Empty;
+                if (target is Item item)
+                {
+                    MazeGenerator maze = new MazeGenerator(m_Width, m_Height);
+                    maze.DisplayMaze(item, m_Origin);
+                }
+                else
+                {
+                    from.SendMessage("That is not an item.");
+                    return;
+                }
+            }
+        }
+        class MazeGenerator
+        {
+            private int width, height;
+            private int[,] maze;
+            private Random rand = new Random();
+
+            // Directions for movement: Up, Down, Left, Right
+            private int[] dx = { 0, 0, -1, 1 };
+            private int[] dy = { -1, 1, 0, 0 };
+
+            public MazeGenerator(int width, int height)
+            {
+                this.width = width;
+                this.height = height;
+                maze = new int[height, width];
+                GenerateMaze(0, 0);
+            }
+
+            private void GenerateMaze(int x, int y)
+            {
+                maze[y, x] = 1; // Mark the cell as part of the maze (visited)
+
+                // Create a randomized direction order
+                int[] directions = { 0, 1, 2, 3 };
+                Shuffle(directions);
+
+                // Iterate over all possible directions in a random order
+                foreach (int direction in directions)
+                {
+                    int nx = x + dx[direction] * 2; // Calculate the new x position
+                    int ny = y + dy[direction] * 2; // Calculate the new y position
+
+                    // Check if the new position is within bounds and not visited
+                    if (nx >= 0 && ny >= 0 && nx < width && ny < height && maze[ny, nx] == 0)
+                    {
+                        maze[y + dy[direction], x + dx[direction]] = 1; // Carve the wall between
+                        GenerateMaze(nx, ny); // Recursively carve the next cell
+                    }
+                }
+            }
+
+            // Shuffle an array (Fisher-Yates shuffle)
+            private void Shuffle(int[] array)
+            {
+                for (int i = array.Length - 1; i > 0; i--)
+                {
+                    int j = rand.Next(i + 1);
+                    int temp = array[i];
+                    array[i] = array[j];
+                    array[j] = temp;
+                }
+            }
+
+            // Display the maze in the console
+            public void DisplayMaze(Item item, Point3D origin)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    for (int x = 0; x < width; x++)
+                    {
+                        Console.Write(maze[y, x] == 1 ? "  " : "██"); // Empty space or wall
+                        if (maze[y, x] != 1)
+                        {
+                            Item dest = (Item)Activator.CreateInstance(item.GetType());
+                            Container parent = SaveParent(item);
+                            Spawner.CopyProperties(dest, item);
+                            RestoreParent(item, parent);
+                            Point3D point = new Point3D(origin.X+x, origin.Y+y, origin.Z);
+                            dest.MoveToWorld(point, item.Map);
+                        }
+                    }
+                    Console.WriteLine();
+                }
+            }
+            private Container SaveParent(Item item)
+            {
+                if (item.Parent is Container cont)
+                {
+                    cont.RemoveItem(item);
+                    return cont;
+                }
+                return null;
+            }
+            private void RestoreParent(Item item, Container cont)
+            {
+                if (cont != null)
+                    cont.AddItem(item);
+            }
+        }
+        #endregion Maze Builder
         #region Build Player
         private static void BuildAdam(CommandEventArgs e)
         {
@@ -238,6 +387,45 @@ namespace Server.Commands
                 }
             }
         }
+        #region Make Murderer / Innocent
+        private static void MakeMurderer(CommandEventArgs e)
+        {
+
+            e.Mobile.SendMessage("Target player to make/unmake a murderer...");
+            e.Mobile.Target = new MakeMurdererTarget(); // Call our target
+        }
+        public class MakeMurdererTarget : Target
+        {
+            public MakeMurdererTarget()
+                : base(17, true, TargetFlags.None)
+            {
+            }
+
+            protected override void OnTarget(Mobile from, object target)
+            {
+                if (target is PlayerMobile player)
+                {
+                    if (player.ShortTermMurders + player.LongTermMurders >= 5)
+                    {
+                        player.ShortTermMurders = player.LongTermMurders = 0;
+                        from.SendMessage("Murder counts cleared.");
+                    }
+                    else
+                    {
+                        player.ShortTermMurders = player.LongTermMurders = 5;
+                        from.SendMessage("Murder counts set.");
+                    }
+
+                    from.SendMessage("Done.");
+                }
+                else
+                {
+                    from.SendMessage("That is not a PlayerMobile.");
+                    return;
+                }
+            }
+        }
+        #endregion Make Murderer / Innocent
         #endregion Build Player
         #region Prep World For Distribution
         private static void PrepWorldForDistribution(CommandEventArgs e)

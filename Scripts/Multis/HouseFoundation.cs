@@ -1601,7 +1601,7 @@ namespace Server.Multis
             //  search for 'CoreSEOverride' in one other location in this file;
             bool CoreSEOverride = true;
 
-            if (context != null && (CoreSEOverride || Core.SE || from.AccessLevel >= AccessLevel.GameMaster))
+            if (context != null && (CoreSEOverride || Core.RuleSets.SERules() || from.AccessLevel >= AccessLevel.GameMaster))
             {
                 // Read data detailing component graphic and location
                 int itemID = pvSrc.ReadInt32();

@@ -69,7 +69,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(130, 170);
                 // Category 2 MID
@@ -77,7 +77,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // LBR: we'll not need to worry about this guys loot unless we decide to add LBR
                     // http://web.archive.org/web/20020414105125/uo.stratics.com/hunters/chaosdaemon.shtml
                     // unknown

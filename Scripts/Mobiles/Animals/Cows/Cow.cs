@@ -66,7 +66,7 @@ namespace Server.Mobiles
             ControlSlots = 1;
             MinTameSkill = 11.1;
 
-            if (Core.AOS && Utility.Random(1000) == 0) // 0.1% chance to have mad cows
+            if (Core.RuleSets.AOSRules() && Utility.Random(1000) == 0) // 0.1% chance to have mad cows
                 FightMode = FightMode.All | FightMode.Closest;
         }
 

@@ -21,7 +21,7 @@
 
 /* Scripts/Multis/Boats/Strandedness.cs
  * CHANGELOG 
- *	4/20/10, adam
+ *	4/20/10, Adam
  *		Add ProcessStranded changes to allow ProcessStranded calls across maps, i.e., booting players from other maps like CTF
  *		1. Added a ProcessStranded call that takes and explicit map
  *		2. Have ProcessStranded MoveToWorld if the mobiles current map is not the internal map 

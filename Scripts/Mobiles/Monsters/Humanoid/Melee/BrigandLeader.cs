@@ -86,7 +86,7 @@ namespace Server.Mobiles
 
         public override bool AlwaysMurderer { get { return true; } }
         public override bool ShowFameTitle { get { return false; } }
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : false; } }
+        public override bool CanRummageCorpses { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? true : false; } }
         public override bool ClickTitle { get { return true; } }
 
         public override bool CanBandage { get { return true; } }
@@ -134,7 +134,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(300, 450);
 
@@ -156,7 +156,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // ai special
                     if (Spawning)
                     {

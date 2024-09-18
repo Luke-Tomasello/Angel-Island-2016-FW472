@@ -75,7 +75,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackItem(new SpidersSilk(5));
                 PackGold(60, 90);
@@ -86,7 +86,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20021015000846/uo.stratics.com/hunters/blackwidow.shtml
                     // 5 Spider Silk, 2 Poison Potions
 

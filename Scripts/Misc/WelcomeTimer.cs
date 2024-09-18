@@ -83,8 +83,8 @@ namespace Server.Misc
                 m_Messages = new string[]
                 {	// Test Center
 					String.Format("Welcome to {0} Test Center{1}",
-                        Core.UOAI || Core.UOREN ? "Angel Island" : Core.UOSP ? "Siege Perilous" : Core.UOMO ? "Mortalis" : "Unknown Configuration",
-                        Core.UOEV ? " Event Shard." : "."),
+                        Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? "Angel Island" : Core.RuleSets.SiegeRules() ? "Siege Perilous" : Core.RuleSets.MortalisRules() ? "Mortalis" : "Unknown Configuration",
+                        Core.RuleSets.EventShardRules() ? " Event Shard." : "."),
                     "GMN core version 3.0, online since March 2004.",
                     "You are able to customize your character's stats and skills at anytime to anything you wish.  To see the commands to do this just say 'help'.",
                     "You will find bank checks worth nearly 1.5 million gold in your bank!",
@@ -99,35 +99,35 @@ namespace Server.Misc
             }
             else
             {
-                if (Core.UOAI || Core.UOREN)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                     m_Messages = new string[]
                     {	// Angel Island
-						String.Format("Welcome to Angel Island{0}", Core.UOEV ? " Event Shard." : "."),
+						String.Format("Welcome to Angel Island{0}", Core.RuleSets.EventShardRules() ? " Event Shard." : "."),
                         "GMN core version 3.0, online since March 2004.",
                         "Please see www.game-master.net for game-play information."
                     };
-                else if (Core.UOSP)
+                else if (Core.RuleSets.SiegeRules())
                     m_Messages = new string[]
                     {	// Siege Perilous
-						String.Format("Welcome to Siege Perilous{0}", Core.UOEV ? " Event Shard." : "."),
+						String.Format("Welcome to Siege Perilous{0}", Core.RuleSets.EventShardRules() ? " Event Shard." : "."),
                         "Version: PRE ALPHA",
                         "This Server will be wiped.",
                         "GMN core version 3.0, online since March 2004.",
                         "Please see www.game-master.net for game-play information."
                     };
-                else if (Core.UOMO)
+                else if (Core.RuleSets.MortalisRules())
                     m_Messages = new string[]
                     {	// Mortalis
-						String.Format("Welcome to Mortalis{0}", Core.UOEV ? " Event Shard." : "."),
+						String.Format("Welcome to Mortalis{0}", Core.RuleSets.EventShardRules() ? " Event Shard." : "."),
                         "You are mortal here, and if you die you will need to reenter this world anew.",
                         "There is no resurrection, there are no second chances.",
                         "You have been warned.",
                         "Life is only as sweet as death is painful."
                     };
-                else if (Core.UOREN)
+                else if (Core.RuleSets.RenaissanceRules())
                     m_Messages = new string[]
                     {	// AI Resurrection
-						String.Format("Welcome to AI Resurrection{0}", Core.UOEV ? " Event Shard." : "."),
+						String.Format("Welcome to AI Resurrection{0}", Core.RuleSets.EventShardRules() ? " Event Shard." : "."),
                         "GMN core version 3.0, online since March 2004.",
                         "This shard is a resurrection of the AI 1.0 world dated Feburary 23, 2009.",
                         "Please see www.game-master.net for game-play information."

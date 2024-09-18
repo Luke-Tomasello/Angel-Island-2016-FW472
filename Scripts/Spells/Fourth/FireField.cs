@@ -107,7 +107,7 @@ namespace Server.Spells.Fourth
 
                 TimeSpan duration;
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                     duration = TimeSpan.FromSeconds((15 + (Caster.Skills.Magery.Fixed / 5)) / 4);
                 else
                     duration = TimeSpan.FromSeconds(4.0 + (Caster.Skills[SkillName.Magery].Value * 0.5));
@@ -208,7 +208,7 @@ namespace Server.Spells.Fourth
 
                     int damage = 2;
 
-                    if (!Core.AOS && m.CheckSkill(SkillName.MagicResist, 0.0, 30.0))
+                    if (!Core.RuleSets.AOSRules() && m.CheckSkill(SkillName.MagicResist, 0.0, 30.0))
                     {
                         damage = 1;
 
@@ -293,7 +293,7 @@ namespace Server.Spells.Fourth
 
                                 int damage = 2;
 
-                                if (!Core.AOS && m.CheckSkill(SkillName.MagicResist, 0.0, 30.0))
+                                if (!Core.RuleSets.AOSRules() && m.CheckSkill(SkillName.MagicResist, 0.0, 30.0))
                                 {
                                     damage = 1;
 

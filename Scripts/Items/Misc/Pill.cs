@@ -84,7 +84,7 @@ namespace Server.Items
 
         private void Execute(Mobile from, string command)
         {
-            if (Core.Debug || Core.UOTC || from.AccessLevel >= AccessLevel.Administrator)
+            if (Core.Debug || Core.RuleSets.TestCenterRules() || from.AccessLevel >= AccessLevel.Administrator)
             {   // we need a dummy mobile with elevated access to execute the commands.
                 Mobile m = new Mobile();
                 m.AccessLevel = AccessLevel.Administrator;

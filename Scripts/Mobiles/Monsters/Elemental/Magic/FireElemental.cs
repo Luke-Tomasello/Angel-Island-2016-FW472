@@ -21,7 +21,7 @@
 
 /* Scripts/Mobiles/Monsters/Elemental/Magic/FireElemental.cs
  * ChangeLog
- *	7/16/10, adam
+ *	7/16/10, Adam
  *		o decrease average dex
  *		o increase average int 
  *		o increase average hp
@@ -100,7 +100,7 @@ namespace Server.Mobiles
             }
         }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 2 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 2 : 0; } }
 
         public FireElemental(Serial serial)
             : base(serial)
@@ -109,7 +109,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGem();
 
@@ -121,7 +121,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020202091822/uo.stratics.com/hunters/fireelemental.shtml
                     // 150 to 300 Gold, Gems, Sulphurous Ash
 

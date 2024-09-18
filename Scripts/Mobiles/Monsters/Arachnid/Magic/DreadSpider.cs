@@ -69,7 +69,7 @@ namespace Server.Mobiles
 
         public override Poison PoisonImmune { get { return Poison.Lethal; } }
         public override Poison HitPoison { get { return Poison.Lethal; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 3 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 3 : 0; } }
 
         public DreadSpider(Serial serial)
             : base(serial)
@@ -78,7 +78,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackMagicEquipment(1, 2, 0.20, 0.20);
                 PackGold(180, 200);
@@ -91,7 +91,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20011205081312/uo.stratics.com/hunters/dreadspider.shtml
                     // 	200 to 250 Gold, Potions, Arrows, 8 spider silk
                     if (Spawning)

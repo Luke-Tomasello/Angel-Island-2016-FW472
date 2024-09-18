@@ -21,10 +21,10 @@
 
 /* Scripts/Mobiles/Townfolk/Gypsy.cs
  * ChangeLog
- *	2/16/11, adam
+ *	2/16/11, Adam
  *		don't allow profitable farming of blue townsfolk from a region which is usually guarded.
  *		Note: murders already only get 1/3 of creatures loot, so this is a double whammy for them
- *	4/2/10, adam
+ *	4/2/10, Adam
  *		Move instrument to GenerateLoot() so that it can be suppressed in BaseCreature.SuppressNormalLoot
  *  07/02/06, Kit
  *		InitOutFit/Body overrides
@@ -88,13 +88,13 @@ namespace Server.Mobiles
                 case 3: AddItem(new KrisnaHair(Utility.RandomHairHue())); break;
             }
 
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                 PackGold(26);
         }
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 switch (Utility.Random(4))
                 {
@@ -106,12 +106,12 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // no stratics loot page for this mob
                     // go with nothing for SP since RUNUO gives so much
                     if (Spawning)
                     {
-                        if (Core.UOMO)
+                        if (Core.RuleSets.MortalisRules())
                             PackGold(250, 300);
                     }
                     else
@@ -134,7 +134,7 @@ namespace Server.Mobiles
 
             // don't allow profitable farming of blue townsfolk from a region which is usually guarded.
             //	Note: murders already only get 1/3 of creatures loot, so this is a double whammy for them
-            if (obd && Core.UOMO)
+            if (obd && Core.RuleSets.MortalisRules())
                 if (!(this.Spawner != null && Region.Find(this.Spawner.Location, this.Spawner.Map) as Regions.GuardedRegion != null && Region.Find(this.Spawner.Location, this.Spawner.Map).IsGuarded))
                 {
                     // first find out how much gold this creature is dropping

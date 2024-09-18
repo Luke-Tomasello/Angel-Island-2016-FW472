@@ -65,7 +65,7 @@ namespace Server.Spells.Second
                 SpellHelper.Turn(Caster, item);
 
                 item.TrapType = TrapType.MagicTrap;
-                item.TrapPower = Core.AOS ? Utility.RandomMinMax(10, 50) : 1;
+                item.TrapPower = Core.RuleSets.AOSRules() ? Utility.RandomMinMax(10, 50) : 1;
                 item.TrapLevel = 0;
 
                 Point3D loc = item.GetWorldLocation();

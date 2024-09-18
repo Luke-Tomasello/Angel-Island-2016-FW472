@@ -69,11 +69,11 @@ namespace Server.Mobiles
         }
 
         public override bool HasBreath { get { return true; } } // fire breath enabled
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 2 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 2 : 0; } }
         public override int Meat { get { return 10; } }
         public override int Hides { get { return 20; } }
         public override HideType HideType { get { return HideType.Horned; } }
-        public override int Scales { get { return (Core.UOAI || Core.UOREN || PublishInfo.PublishDate < Core.PlagueOfDespair) ? 0 : 2; } }
+        public override int Scales { get { return (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || PublishInfo.PublishDate < Core.PlagueOfDespair) ? 0 : 2; } }
         public override ScaleType ScaleType { get { return (Body == 60 ? ScaleType.Yellow : ScaleType.Red); } }
         public override FoodType FavoriteFood { get { return FoodType.Meat | FoodType.Fish; } }
 
@@ -84,7 +84,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGem();
                 PackGem();
@@ -100,7 +100,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020214223637/uo.stratics.com/hunters/drake.shtml
                     // 100 to 250 Gold, Gems, Garlic, Scrolls, Magic Weapons, 10 Raw Ribs (carved), 20 Hides (carved)
 

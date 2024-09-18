@@ -76,7 +76,7 @@ namespace Server.Spells.Seventh
                 int toDrain = 0;
                 bool reverse = false;
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     toDrain = (int)(GetDamageSkill(Caster) - GetResistSkill(m));
 
@@ -130,7 +130,7 @@ namespace Server.Spells.Seventh
                 targ.Mana -= toDrain;
                 cast.Mana += toDrain;
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     m.FixedParticles(0x374A, 1, 15, 5054, 23, 7, EffectLayer.Head);
                     m.PlaySound(0x1F9);

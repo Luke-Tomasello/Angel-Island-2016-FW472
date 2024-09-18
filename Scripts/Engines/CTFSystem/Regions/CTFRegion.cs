@@ -28,7 +28,7 @@
  *		OnAfterDeath
  *			We want to freeze the ghost after death so they can't ghost spy etc.
  *			We can't use OnDeath() because the frozen flag is cleared after we get called.
- * 4/10/10, adam
+ * 4/10/10, Adam
  *		initial framework.
  */
 

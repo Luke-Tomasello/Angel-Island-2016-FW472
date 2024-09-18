@@ -51,7 +51,7 @@ namespace Server.Spells.Second
                 "Harm", "An Mani",
                 SpellCircle.Second,
                 212,
-                Core.AOS ? 9001 : 9041,
+                Core.RuleSets.AOSRules() ? 9001 : 9041,
                 Reagent.Nightshade,
                 Reagent.SpidersSilk
             );
@@ -82,7 +82,7 @@ namespace Server.Spells.Second
 
                 double damage;
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     damage = GetNewAosDamage(17, 1, 5);
                 }
@@ -109,7 +109,7 @@ namespace Server.Spells.Second
                 if (Server.Items.Consoles.HarmMCi.UseNewScale == true)
                     damage = Utility.RescaleNumber(damage, 1, 15, Server.Items.Consoles.HarmMCi.DamageRangeLow, Server.Items.Consoles.HarmMCi.DamageRangeHigh);
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     m.FixedParticles(0x374A, 10, 30, 5013, 1153, 2, EffectLayer.Waist);
                     m.PlaySound(0x0FC);

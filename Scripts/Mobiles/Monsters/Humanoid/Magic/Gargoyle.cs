@@ -66,7 +66,7 @@ namespace Server.Mobiles
             VirtualArmor = 32;
         }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 1 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 1 : 0; } }
         public override int Meat { get { return 1; } }
 
         public Gargoyle(Serial serial)
@@ -76,7 +76,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGem();
                 PackGem();
@@ -93,7 +93,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20011205084450/uo.stratics.com/hunters/gargoyle.shtml
                     // 50 to 150 Gold, Potions, Arrows, Scrolls, Gems, "a gargoyle's pickaxe"
 

@@ -21,7 +21,7 @@
 
 /* Scripts/Mobiles/Townfolk/BaseEscortable.cs
  * ChangeLog
- *	2/16/11, adam
+ *	2/16/11, Adam
  *		don't allow profitable farming of blue townsfolk from a region which is usually guarded.
  *		Note: murders already only get 1/3 of creatures loot, so this is a double whammy for them
  *  2/27/06, Adam
@@ -71,7 +71,7 @@
  *		Merged in 1.0RC0 code.
  *	4/24/04, mith
  *		Commented Compassion gain on escort complete, since virtues are now disabled.
- *	4/24/04, adam
+ *	4/24/04, Adam
  *		Commented out "bool gainedPath = false;"
  */
 
@@ -185,7 +185,7 @@ namespace Server.Mobiles
 
             // don't allow profitable farming of blue townsfolk from a region which is usually guarded.
             //	Note: murders already only get 1/3 of creatures loot, so this is a double whammy for them
-            if (obd && Core.UOMO)
+            if (obd && Core.RuleSets.MortalisRules())
                 if (!(this.Spawner != null && Region.Find(this.Spawner.Location, this.Spawner.Map) as Regions.GuardedRegion != null && Region.Find(this.Spawner.Location, this.Spawner.Map).IsGuarded))
                 {
                     // first find out how much gold this creature is dropping

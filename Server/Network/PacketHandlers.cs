@@ -27,7 +27,7 @@
  *		In IsValidAuthID, test for !LoginServer as opposed to testing for all possible shard combos
  * 11/13/10, Adam
  *  If we're on the non-primary shard (non-AngelIsland), then we need to assume we've got a valid
- *      id since it passed that shard's login. i.e., if (Core.UOSP || Core.TestCenter)
+ *      id since it passed that shard's login. i.e., if (Core.RuleSets.SiegeRules() || Core.TestCenter)
  */
 
 using Server.Accounting;
@@ -1811,7 +1811,7 @@ namespace Server.Network
             IEntity target = World.FindEntity(pvSrc.ReadInt32());
 
             // publish 14 introduced context menus
-            if (!Core.UOAI && !Core.UOREN && !Core.UOMO && PublishInfo.Publish < 14)
+            if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.MortalisRules() && PublishInfo.Publish < 14)
                 return;
 
             if (from != null && target != null && from.Map == target.Map && from.CanSee(target))
@@ -2263,7 +2263,7 @@ namespace Server.Network
                 state.CityInfo = e.CityInfo;
                 state.CompressionEnabled = true;
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                     state.Send(SupportedFeatures.Instantiate(state.Account));
 
                 state.Send(new CharacterList(state.Account, state.CityInfo));

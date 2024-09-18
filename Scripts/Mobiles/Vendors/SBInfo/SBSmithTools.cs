@@ -53,13 +53,13 @@ namespace Server.Mobiles
                 /* Shopkeeper NPCs do not sell any resources (Ingots, Cloth, etc.))
 				 * http://www.uoguide.com/Siege_Perilous
 				 */
-                if (!Core.UOSP)
+                if (!Core.RuleSets.SiegeRules())
                     Add(new GenericBuyInfo(typeof(IronIngot), 5, 16, 0x1BF2, 0));
 
                 Add(new GenericBuyInfo(typeof(Tongs), 13, 14, 0xFBB, 0));
                 Add(new GenericBuyInfo(typeof(SmithHammer), 4, 16, 0x13E3, 0));
 
-                if (Core.UOAI || Core.UOREN || Core.UOMO)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
                 {   // balanced buyback system
                     Add(new GenericBuyInfo(typeof(IronIngot)));
                     Add(new GenericBuyInfo(typeof(DullCopperIngot)));
@@ -78,7 +78,7 @@ namespace Server.Mobiles
         {
             public InternalSellInfo()
             {
-                if (Core.UOAI || Core.UOREN || Core.UOMO)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
                 {   // balanced buyback system
                     Add(typeof(IronIngot));
                     Add(typeof(DullCopperIngot));
@@ -100,7 +100,7 @@ namespace Server.Mobiles
                     Add(typeof(ValoriteOre));
                 }
 
-                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
+                if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.SiegeRules() && !Core.RuleSets.MortalisRules())
                 {   // cash buyback
                     Add(typeof(Tongs), 7);
                     Add(typeof(IronIngot), 4);

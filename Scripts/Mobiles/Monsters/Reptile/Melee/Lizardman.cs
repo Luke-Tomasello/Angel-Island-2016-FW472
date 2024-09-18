@@ -61,7 +61,7 @@ namespace Server.Mobiles
             VirtualArmor = 28;
         }
 
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : true; } }
+        public override bool CanRummageCorpses { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? true : true; } }
         public override int Meat { get { return 1; } }
         public override int Hides { get { return 12; } }
         public override HideType HideType { get { return HideType.Spined; } }
@@ -73,11 +73,11 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                 PackGold(25, 50);
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020213041111/uo.stratics.com/hunters/lizardman.shtml
                     // 0 to 50 Gold, Weapon Carried, 1 Raw Ribs (carved), 12 Hides (carved)
 

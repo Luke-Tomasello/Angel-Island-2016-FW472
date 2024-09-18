@@ -85,8 +85,8 @@ namespace Server.Mobiles
             return 918;
         }
 
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : true; } }
-        public override int Meat { get { return Core.UOAI || Core.UOREN ? 4 : 2; } }
+        public override bool CanRummageCorpses { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? true : true; } }
+        public override int Meat { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 4 : 2; } }
         public override MeatType MeatType { get { return MeatType.Bird; } }
         public override int Feathers { get { return 50; } }
 
@@ -97,11 +97,11 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                 PackGold(50, 100);
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020403074327/uo.stratics.com/hunters/harpy.shtml
                     // 50 to 150 Gold, 2 raw bird (carved), 50 Feathers (carved)
 

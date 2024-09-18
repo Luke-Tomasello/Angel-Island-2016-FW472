@@ -65,8 +65,8 @@ namespace Server.Mobiles
             VirtualArmor = 48;
         }
 
-        public override int Meat { get { return Core.UOAI || Core.UOREN ? 2 : 4; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 3 : 0; } }
+        public override int Meat { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 2 : 4; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 3 : 0; } }
 
         public Cyclops(Serial serial)
             : base(serial)
@@ -75,7 +75,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(200, 250);
                 PackMagicEquipment(1, 2, 0.15, 0.15);
@@ -84,7 +84,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020202091348/uo.stratics.com/hunters/cyclops.shtml
                     // 450 to 650 Gold, Potions, Arrows, Gems, Magic Items
                     if (Spawning)

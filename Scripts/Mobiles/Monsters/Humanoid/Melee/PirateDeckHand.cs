@@ -21,7 +21,7 @@
 
 /* Scripts/Mobiles/Monsters/Humanoid/Melee/PirateDeckHand.cs	
  * ChangeLog:
- *	7/9/10, adam
+ *	7/9/10, Adam
  *		o Merge pirate class hierarchy (all pirates are now derived from class Pirate)
  *		o Remove old RunUO Heal-with-bandages model and use new style which uses real bandages
  *		o Replace AI with new AI_HumanMelee AI .. allows healing with bandages, potions and potion buffs
@@ -47,7 +47,7 @@ namespace Server.Mobiles
     [CorpseName("corpse of a salty seadog")]
     public class PirateDeckHand : Pirate
     {
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 2 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 2 : 0; } }
 
         [Constructable]
         public PirateDeckHand()
@@ -95,7 +95,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGem();
                 PackMagicEquipment(1, 3);
@@ -119,7 +119,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // ai special
                     if (Spawning)
                     {

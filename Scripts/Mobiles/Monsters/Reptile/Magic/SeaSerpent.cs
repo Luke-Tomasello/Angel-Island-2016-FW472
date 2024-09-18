@@ -21,7 +21,7 @@
 
 /* Scripts/Mobiles/Monsters/Reptile/Magic/SeaSerpent.cs
  * ChangeLog
- *	12/26/10, adam
+ *	12/26/10, Adam
  *		Add the missing fish steak
  *  8/16/06, Rhiannon
  *		Changed speed settings to match SpeedInfo table.
@@ -72,11 +72,11 @@ namespace Server.Mobiles
         }
 
         public override bool HasBreath { get { return true; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 2 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 2 : 0; } }
 
         public override int Hides { get { return 10; } }
         public override HideType HideType { get { return HideType.Horned; } }
-        public override int Scales { get { return (Core.UOAI || Core.UOREN || PublishInfo.PublishDate < Core.PlagueOfDespair) ? 0 : 8; } }
+        public override int Scales { get { return (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || PublishInfo.PublishDate < Core.PlagueOfDespair) ? 0 : 8; } }
         public override ScaleType ScaleType { get { return ScaleType.Blue; } }
         public override int FishSteaks { get { return 1; } }
 
@@ -87,14 +87,14 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 //PackItem( new SpecialFishingNet() );
                 PackGold(25, 50);
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20021015003503/uo.stratics.com/hunters/seaserpent.shtml
                     // Special Fishing Net, 8 blue scales (carved), 1 Fish Steak (carved), 10 Horned Hides (carved)
                     if (Spawning)

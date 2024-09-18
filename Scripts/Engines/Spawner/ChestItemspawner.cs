@@ -24,9 +24,9 @@
  *	3/1/11, Adam
  *		Add a ChanceToSpawn. This powerful fearure allows us to randomly spawn over time.
  *		Example: chanceToSpawn=0.1 and a spawn time of every hour will result in roughly one item spawned every 10 hours. Perfect!
- *	5/13/10, adam
+ *	5/13/10, Adam
  *		Change LogType.Mobile to LogType.Item when logging lootpacks (was causing blank lines in the output log)
- *	3/22/10, adam
+ *	3/22/10, Adam
  *		1) Restore the ability to spawn one random item from list. Keep the defalut that all items are spawned (needed for AI prison chests)
  *		2) Add the ability for spawn from a LootPack object
  *		3) add new ChestLootPackSpawner for spawning raw items usually constructed by staff (Differs from normal spawners that spawn TYPE items.)

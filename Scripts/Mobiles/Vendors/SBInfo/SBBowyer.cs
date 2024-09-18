@@ -45,7 +45,7 @@ namespace Server.Mobiles
         {
             public InternalBuyInfo()
             {
-                if (Core.UOAI || Core.UOREN || Core.UOMO)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
                 {   // balanced buyback
                     Add(new GenericBuyInfo(typeof(Arrow)));
                     Add(new GenericBuyInfo(typeof(Bolt)));
@@ -53,7 +53,7 @@ namespace Server.Mobiles
                     Add(new GenericBuyInfo(typeof(Feather)));
                 }
 
-                if (!Core.UOAI && !Core.UOREN && !Core.UOMO)
+                if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.MortalisRules())
                 {
                     Add(new GenericBuyInfo(typeof(FletcherTools), 20, 20, 0x1022, 0));
                 }
@@ -64,7 +64,7 @@ namespace Server.Mobiles
         {
             public InternalSellInfo()
             {
-                if (Core.UOAI || Core.UOREN || Core.UOMO)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
                 {   // balanced buyback system
                     Add(typeof(Arrow));
                     Add(typeof(Bolt));
@@ -72,7 +72,7 @@ namespace Server.Mobiles
                     Add(typeof(Feather));
                 }
 
-                if (!Core.UOSP && !Core.UOAI && !Core.UOREN && !Core.UOMO)
+                if (!Core.RuleSets.SiegeRules() && !Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.MortalisRules())
                 {   // cash buyback
                     Add(typeof(FletcherTools), 1);
                 }

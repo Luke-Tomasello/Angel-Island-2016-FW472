@@ -23,7 +23,7 @@
  * ChangeLog
  *	1/28/11, Adam
  *		Fix a bug in Deserialize
- *	12/28/10, adam
+ *	12/28/10, Adam
  *		updated from:
  *		http://code.google.com/p/runuomondains/source/browse/trunk/Scripts/Items/Containers/UnknownSkeletons.cs?spec=svn121&r=121
  *  8/16/06, Rhiannon
@@ -101,7 +101,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGem(2);
                 PackItem(new Bone());
@@ -122,7 +122,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20021013185154/uo.stratics.com/hunters/antlion.shtml
                     // 100-150 Gold, Gems, 1-10 Large Colored Ore (Dull Copper to Bronze), 1-5 Fertile Dirt, Bones, An Unknown Adventurer's Skeleton
                     if (Spawning)

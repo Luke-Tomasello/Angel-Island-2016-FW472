@@ -21,7 +21,7 @@
 
 /* Engined/AngelIsland/ChestItemSpawnerGump.cs, last modified 2/28/05 by erlein.
  * CHANGELOG
- *	3/22/10, adam
+ *	3/22/10, Adam
  *		1) Restore the ability to spawn one random item from list. Keep the defalut that all itels are spawned (needed for AI prison chests)
  *		2) Add the ability for spawn from a LootPack object
  *	2/28/04 erlein

@@ -36,7 +36,7 @@
  *  9/26/04, Jade
  *      Added SurveyTool to the vendor inventory.
  *	4/29/04, mith
- *		removed Core.AOS check so that Architects will sell house placement tools even if AOS is disabled.
+ *		removed Core.RuleSets.AOSRules() check so that Architects will sell house placement tools even if AOS is disabled.
  */
 
 using Server.Items;
@@ -60,13 +60,13 @@ namespace Server.Mobiles
         {
             public InternalBuyInfo()
             {
-                if ((Core.UOAI || Core.UOREN || Core.UOMO) || (Core.UOSP && PublishInfo.Publish >= 11))
+                if ((Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules()) || (Core.RuleSets.SiegeRules() && PublishInfo.Publish >= 11))
                     Add(new GenericBuyInfo("1041280", typeof(InteriorDecorator), 10000, 20, 0xFC1, 0));
 
                 // I'm guessing this was in all publishes of Siege?
                 Add(new GenericBuyInfo("Survey Tool", typeof(SurveyTool), 5000, 20, 0x14F6, 0));
 
-                if (Core.UOAI || Core.UOREN || Core.UOMO)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
                 {
                     Add(new GenericBuyInfo(typeof(MetalHouseDoorDeed), 25000, 20, 0x14F0, 0));
                     Add(new GenericBuyInfo(typeof(DarkWoodHouseDoorDeed), 25000, 20, 0x14F0, 0));
@@ -87,7 +87,7 @@ namespace Server.Mobiles
                     Add(new GenericBuyInfo("A building permit: Lockbox", typeof(LockboxBuildingPermit), 15000, 20, 0x14F0, 0));
                 }
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                     Add(new GenericBuyInfo("1060651", typeof(HousePlacementTool), 601, 20, 0x14F6, 0));
             }
         }
@@ -96,12 +96,12 @@ namespace Server.Mobiles
         {
             public InternalSellInfo()
             {
-                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
+                if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.SiegeRules() && !Core.RuleSets.MortalisRules())
                 {   // cash buyback
                     Add(typeof(InteriorDecorator), 5000);
                 }
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {   // cash buyback
                     Add(typeof(HousePlacementTool), 301);
                 }

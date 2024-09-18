@@ -21,21 +21,21 @@
 
 /* Server/Utility.cs
  * ChangeLog:
- *	7/20/10, adam
+ *	7/20/10, Adam
  *		Add a 'Release' callback for the Memory system.
  *		Note: The Memory system is passive, that is it doesn't use any timers for cleaning up old objects, it
  *			simply cleans them up the next time it's called before processing the request. The one exception
  *			to this rule is when you specify a 'Release' callback to be notified when an object expires.
  *			In this case a timer is created to insure your callback is timely.
- *	7/11/10, adam
+ *	7/11/10, Adam
  *		Update our memoy system to support the notion of a memory context, i.e., what you remember about the thing
  *		For instance, if you are remembering the Mobile 'adam', you may want to remember the last know location in the context.
- *	6/21/10, adam
+ *	6/21/10, Adam
  *		Add a simple memory system for timed remembering of items and mobiles.
  *		See BaseAI.cs & Container.cs for an example.
- *	5/27/10, adam
+ *	5/27/10, Adam
  *		Refactor RandomChance() to take a double insead of an int so you can pass facrtions like 10.4 would be a 10.4% chance
- * 3/21/10, adam
+ * 3/21/10, Adam
  *		Add function RescaleNumber to scale a number from an Old range to a new range. 
  *	5/11/08, Adam
  *		Added Profiler class
@@ -78,6 +78,48 @@ namespace Server
 {
     public class Utility
     {
+        public static void WipeLayers(Mobile m)
+        {
+            try
+            {
+                Item[] items = new Item[21];
+                items[0] = m.FindItemOnLayer(Layer.Shoes);
+                items[1] = m.FindItemOnLayer(Layer.Pants);
+                items[2] = m.FindItemOnLayer(Layer.Shirt);
+                items[3] = m.FindItemOnLayer(Layer.Helm);
+                items[4] = m.FindItemOnLayer(Layer.Gloves);
+                items[5] = m.FindItemOnLayer(Layer.Neck);
+                items[6] = m.FindItemOnLayer(Layer.Waist);
+                items[7] = m.FindItemOnLayer(Layer.InnerTorso);
+                items[8] = m.FindItemOnLayer(Layer.MiddleTorso);
+                items[9] = m.FindItemOnLayer(Layer.Arms);
+                items[10] = m.FindItemOnLayer(Layer.Cloak);
+                items[11] = m.FindItemOnLayer(Layer.OuterTorso);
+                items[12] = m.FindItemOnLayer(Layer.OuterLegs);
+                items[13] = m.FindItemOnLayer(Layer.InnerLegs);
+                items[14] = m.FindItemOnLayer(Layer.Bracelet);
+                items[15] = m.FindItemOnLayer(Layer.Ring);
+                items[16] = m.FindItemOnLayer(Layer.Earrings);
+                items[17] = m.FindItemOnLayer(Layer.OneHanded);
+                items[18] = m.FindItemOnLayer(Layer.TwoHanded);
+                items[19] = m.FindItemOnLayer(Layer.Hair);
+                items[20] = m.FindItemOnLayer(Layer.FacialHair);
+                for (int i = 0; i < items.Length; i++)
+                {
+                    if (items[i] != null)
+                    {
+                        m.RemoveItem(items[i]);
+                        items[i].Delete();
+                    }
+                }
+            }
+            catch (Exception exc)
+            {
+                System.Console.WriteLine("Send to Zen please: ");
+                System.Console.WriteLine("Exception caught in Mobile.WipeLayers: " + exc.Message);
+                System.Console.WriteLine(exc.StackTrace);
+            }
+        }
         public static int[] IntParser(string value)
         {
             List<int> list = new List<int>();
@@ -1306,7 +1348,33 @@ namespace Server
         {
             return m_Random.Next(count);
         }
+        public static int RandomSpeechHue()
+        {
+            // we used to call RandomDyedHue() for NPC speech which often lead to nearly unreadable text:
+            //  lights yellows, pinks and other very light colors were virtually unreadable in one's journal. 
+            //  I've picked this color table because they have a nice contrast and are easily readable.
+            //  We can certainly add to this list as we wish.
+            return RandomSpecialHue();
+        }
+        public static int GetRandomHue()
+        {
+            switch (Utility.Random(5))
+            {
+                default:
+                case 0: return Utility.RandomBlueHue();
+                case 1: return Utility.RandomGreenHue();
+                case 2: return Utility.RandomRedHue();
+                case 3: return Utility.RandomYellowHue();
+                case 4: return Utility.RandomNeutralHue();
+            }
+        }
+        public static int RandomBrightHue()
+        {
+            if (0.1 > Utility.RandomDouble())
+                return Utility.RandomList(0x62, 0x71);
 
+            return Utility.RandomList(0x03, 0x0D, 0x13, 0x1C, 0x21, 0x30, 0x37, 0x3A, 0x44, 0x59);
+        }
         public static int RandomNondyedHue()
         {
             switch (Random(6))
@@ -1575,7 +1643,7 @@ namespace Server
 
         public static SkillName RandomSkill()
         {
-            return m_AllSkills[Utility.Random(m_AllSkills.Length - (Core.SE ? 0 : Core.AOS ? 2 : 5))];
+            return m_AllSkills[Utility.Random(m_AllSkills.Length - (Core.RuleSets.SERules() ? 0 : Core.RuleSets.AOSRules() ? 2 : 5))];
         }
 
         public static SkillName RandomCombatSkill()
@@ -1796,6 +1864,16 @@ namespace Server
 
             if (randomHue)
                 m.FacialHairHue = RandomHairHue();
+        }
+
+        public static int GetDefaultLabel(int itemID)
+        {
+            if (itemID < 0x4000)
+                return 1020000 + itemID;
+            else if (itemID < 0x8000)
+                return 1078872 + itemID;
+            else
+                return 1084024 + itemID;
         }
     }
 

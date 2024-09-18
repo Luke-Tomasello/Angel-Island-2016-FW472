@@ -27,7 +27,7 @@
  *      We use this to cleanup all ITownshipItems when the stone is Deleted().
  * 7/13/10, Pix
  *      Change so all allies can access stone - instead of allies who are friends of the house that the stone is in.
- * 5/8/10, adam
+ * 5/8/10, Adam
  *		Add TownshipMember(Mobile m) to determine if some random mobile is a township member
  * 2010-05-02, SMD
  *      ensure lightlevel is set to -1 - this makes the township follow normal lightcycle rules

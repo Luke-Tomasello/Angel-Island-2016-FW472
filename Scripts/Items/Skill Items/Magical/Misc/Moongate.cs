@@ -708,12 +708,12 @@ namespace Server.Items
         private Moongate m_Gate;
 
         public MoongateConfirmGump(Mobile from, Moongate gate)
-            : base(Core.AOS ? 110 : 20, Core.AOS ? 100 : 30)
+            : base(Core.RuleSets.AOSRules() ? 110 : 20, Core.RuleSets.AOSRules() ? 100 : 30)
         {
             m_From = from;
             m_Gate = gate;
 
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
             {
                 Closable = false;
 

@@ -69,7 +69,7 @@ namespace Server.Mobiles
 
         public override Poison PoisonImmune { get { return Poison.Deadly; } }
         public override Poison HitPoison { get { return Poison.Deadly; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 2 : 2; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 2 : 2; } }
 
         public override int Meat { get { return 10; } }
         public override int Hides { get { return 20; } }
@@ -107,7 +107,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackItem(new LesserPoisonPotion());
 
@@ -119,7 +119,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // 02 2002 docs won't load
                     // http://web.archive.org/web/20020806212404/uo.stratics.com/hunters/wyvern.shtml
                     // 100 to 250 Gold, Potions, Scrolls (circles 4-7), Treasure Maps

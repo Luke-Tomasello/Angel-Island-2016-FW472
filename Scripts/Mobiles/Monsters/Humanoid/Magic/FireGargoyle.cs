@@ -68,7 +68,7 @@ namespace Server.Mobiles
 
         public override bool HasBreath { get { return true; } } // fire breath enabled
         public override int Meat { get { return 1; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 2 : 1; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 2 : 1; } }
         public override AuraType MyAura { get { return AuraType.Fire; } }
 
         public FireGargoyle(Serial serial)
@@ -78,7 +78,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGem();
                 PackGold(200, 250);
@@ -88,7 +88,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020220114113/uo.stratics.com/hunters/firegargoyle.shtml
                     // 200-300 Gold, Magic Items, Gems, Lvl one Treasure Maps
 

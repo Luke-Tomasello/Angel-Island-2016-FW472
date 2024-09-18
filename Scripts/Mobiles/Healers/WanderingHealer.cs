@@ -33,7 +33,7 @@ namespace Server.Mobiles
 {
     public class WanderingHealer : BaseHealer
     {
-        public override bool CanTeach { get { return Core.UOSP ? false : true; } }
+        public override bool CanTeach { get { return Core.RuleSets.SiegeRules() ? false : true; } }
 
         public override bool CheckTeach(SkillName skill, Mobile from)
         {
@@ -50,7 +50,7 @@ namespace Server.Mobiles
         [Constructable]
         public WanderingHealer()
         {
-            AI = (Core.UOAI || Core.UOREN) ? AIType.AI_HumanMage : AIType.AI_Mage;
+            AI = (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules()) ? AIType.AI_HumanMage : AIType.AI_Mage;
             ActiveSpeed = 0.2;
             PassiveSpeed = 0.8;
             RangePerception = BaseCreature.DefaultRangePerception;

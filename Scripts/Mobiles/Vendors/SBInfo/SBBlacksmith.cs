@@ -51,7 +51,7 @@ namespace Server.Mobiles
                 /* Shopkeeper NPCs do not sell any resources (Ingots, Cloth, etc.))
 				 * http://www.uoguide.com/Siege_Perilous
 				 */
-                if (!Core.UOSP)
+                if (!Core.RuleSets.SiegeRules())
                     Add(new GenericBuyInfo(typeof(IronIngot), 5, 16, 0x1BF2, 0));
 
                 Add(new GenericBuyInfo(typeof(Tongs), 13, 14, 0xFBB, 0));
@@ -118,7 +118,7 @@ namespace Server.Mobiles
                 Add(new GenericBuyInfo(typeof(LargeBattleAxe), 33, 20, 0x13FB, 0));
                 Add(new GenericBuyInfo(typeof(WarAxe), 29, 20, 0x13B0, 0));
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     Add(new GenericBuyInfo(typeof(BoneHarvester), 35, 20, 0x26BB, 0));
                     Add(new GenericBuyInfo(typeof(CrescentBlade), 37, 20, 0x26C1, 0));
@@ -143,7 +143,7 @@ namespace Server.Mobiles
                 Add(new GenericBuyInfo(typeof(WarHammer), 25, 20, 0x1439, 0));
                 Add(new GenericBuyInfo(typeof(WarMace), 31, 20, 0x1407, 0));
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     Add(new GenericBuyInfo(typeof(Scepter), 39, 20, 0x26BC, 0));
                     Add(new GenericBuyInfo(typeof(BladedStaff), 40, 20, 0x26BD, 0));
@@ -155,7 +155,7 @@ namespace Server.Mobiles
         {
             public InternalSellInfo()
             {
-                if (Core.UOAI || Core.UOREN || Core.UOMO)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
                 {
                     // balanced buyback system
                     Add(typeof(Board));
@@ -180,7 +180,7 @@ namespace Server.Mobiles
                     Add(typeof(ValoriteOre));
                 }
 
-                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
+                if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.SiegeRules() && !Core.RuleSets.MortalisRules())
                 {   // cash buyback
                     Add(typeof(Tongs), 7);
                     Add(typeof(IronIngot), 4);
@@ -251,7 +251,7 @@ namespace Server.Mobiles
                     Add(typeof(Bow), 17);
                     Add(typeof(Crossbow), 23);
 
-                    if (Core.AOS)
+                    if (Core.RuleSets.AOSRules())
                     {
                         Add(typeof(CompositeBow), 25);
                         Add(typeof(RepeatingCrossbow), 28);

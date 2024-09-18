@@ -21,14 +21,14 @@
 
 /* Scripts\Engines\CTFSystem\CTFUtility.cs
  * CHANGELOG:
- * 67/1/10, adam
+ * 67/1/10, Adam
  *		remove misplaced simicolon
- * 5/25/10, adam
+ * 5/25/10, Adam
  *		update book.Version = 1.1 - add RespawnWithMana rule
- * 5/23/10, adam
+ * 5/23/10, Adam
  *		o check New RespawnWithMana player rule option to see if we should regen mana after death-respawn
  *		o New function RefreshPlayers() called from NewRound() to refresh all player stats (between rounds)
- * 4/10/10, adam
+ * 4/10/10, Adam
  *		initial framework.
  */
 

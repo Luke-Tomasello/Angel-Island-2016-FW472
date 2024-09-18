@@ -73,7 +73,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackItem(new IronOre(3));
                 PackItem(new BlackPearl(3));
@@ -85,7 +85,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020213041409/uo.stratics.com/hunters/snowelemental.shtml
                     // 200 to 250 Gold, Ore, Black Pearl
                     if (Spawning)

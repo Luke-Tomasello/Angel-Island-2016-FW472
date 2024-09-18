@@ -24,7 +24,7 @@
  *	ChangeLog
  * 7/9/10, Pix
  *      Fixed special case where tracker's skill is < 20 and trackee's hiding is >= 80
- *	5/29/10, adam
+ *	5/29/10, Adam
  *		triple tracking range.
  *	07/23/08, weaver
  *		Automated IPooledEnumerable optimizations. 1 loops updated.
@@ -180,7 +180,7 @@ namespace Server.SkillHandlers
             // Adam: 5/29/10 - triple tracking range.
             // Adam: 9/19/04 - Return tracking to it's original distance.
             // Pixie: 9/11/04 - increase tracking range (double it)
-            if (Core.UOAI || Core.UOREN || Core.UOMO)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
                 range *= 3;
 
             ArrayList list = new ArrayList();
@@ -189,11 +189,11 @@ namespace Server.SkillHandlers
             foreach (Mobile m in eable)
             {
 
-                if (Core.UOSP)
+                if (Core.RuleSets.SiegeRules())
                 {
                     #region NEW SIEGE CODE
                     // Ghosts can no longer be tracked 
-                    if (m != from && (!Core.AOS || m.Alive) && (!m.Hidden || m.AccessLevel == AccessLevel.Player || from.AccessLevel > m.AccessLevel) && check(m) && CheckDifficulty(from, m))
+                    if (m != from && (!Core.RuleSets.AOSRules() || m.Alive) && (!m.Hidden || m.AccessLevel == AccessLevel.Player || from.AccessLevel > m.AccessLevel) && check(m) && CheckDifficulty(from, m))
                         list.Add(m);
                     #endregion
                 }
@@ -327,7 +327,7 @@ namespace Server.SkillHandlers
             int detectHidden = from.Skills[SkillName.DetectHidden].Fixed;
             int forensics = (int)from.Skills[SkillName.Forensics].Value;        // AI and MO only
 
-            //if (Core.ML && m.Race == Race.Elf)
+            //if (Core.RuleSets.MLRules() && m.Race == Race.Elf)
             //tracking /= 2; //The 'Guide' says that it requires twice as Much tracking SKILL to track an elf.  Not the total difficulty to track.
 
             int hiding = m.Skills[SkillName.Hiding].Fixed;
@@ -342,7 +342,7 @@ namespace Server.SkillHandlers
 			else if (TransformationSpellHelper.UnderTransformation(m, typeof(WraithFormSpell)) && divisor <= 2000)
 				divisor += 200;*/
 
-            bool bug = !Core.UOMO && !Core.UOAI && !Core.UOREN && PublishInfo.Publish < 16.0 && from.Skills[SkillName.Tracking].Value >= 20.1;
+            bool bug = !Core.RuleSets.MortalisRules() && !Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && PublishInfo.Publish < 16.0 && from.Skills[SkillName.Tracking].Value >= 20.1;
             int chance;
             if (bug)
             {
@@ -350,13 +350,13 @@ namespace Server.SkillHandlers
             }
             else if (divisor > 0)
             {
-                if (Core.SE)
+                if (Core.RuleSets.SERules())
                     chance = 50 * (tracking * 2 + detectHidden) / divisor;
                 else
                     chance = 50 * (tracking + detectHidden + 10 * Utility.RandomMinMax(1, 20)) / divisor;
 
                 // add bonus for fonensics (10% at GM forensics)
-                if (Core.UOAI || Core.UOREN || Core.UOMO)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
                     chance += forensics / 10;
             }
             else
@@ -382,7 +382,7 @@ namespace Server.SkillHandlers
 
         private static bool IsPlayer(Mobile m)
         {
-            if (Core.UOAI || Core.UOREN || Core.UOMO || PublishInfo.Publish >= 13)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules() || PublishInfo.Publish >= 13)
                 return m.Player;
             else
             {   // publish 13 bug

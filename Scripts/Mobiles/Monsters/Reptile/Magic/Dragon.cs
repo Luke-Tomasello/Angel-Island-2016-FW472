@@ -21,9 +21,9 @@
 
 /* Scripts/Mobiles/Monsters/Reptile/Magic/Dragon.cs
  * ChangeLog
- *	5/12/10, adam
+ *	5/12/10, Adam
  *		update AttackOrderHack to account for ScaredOfScaryThings
- *	4/10/10, adam
+ *	4/10/10, Adam
  *		Add speed management MCi to tune dragon speeds.
  *	9/1/07, Adam
  *		move helper code to the end of the file
@@ -652,9 +652,9 @@ namespace Server.Mobiles
 
         public override bool HasBreath { get { return true; } } // fire breath enabled
                                                                 // Auto-dispel is UOR - http://forums.uosecondage.com/viewtopic.php?f=8&t=6901
-        public override bool AutoDispel { get { return Core.UOAI || Core.UOREN ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 4 : 0; } }
-        public override int Scales { get { return (Core.UOAI || Core.UOREN || PublishInfo.PublishDate < Core.PlagueOfDespair) ? 0 : 7; } }
+        public override bool AutoDispel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 4 : 0; } }
+        public override int Scales { get { return (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || PublishInfo.PublishDate < Core.PlagueOfDespair) ? 0 : 7; } }
         public override ScaleType ScaleType { get { return (Body == 12 ? ScaleType.Yellow : ScaleType.Red); } }
         public override FoodType FavoriteFood { get { return FoodType.Meat; } }
 
@@ -697,7 +697,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 if (m_LastGrowth != DateTime.MinValue)
                     return;
@@ -716,7 +716,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020213035855/uo.stratics.com/hunters/dragon.shtml
                     // 1200 to 1400 Gold, Gems, Magic items, 19 Raw Ribs (carved), 20 Hides (carved)
 

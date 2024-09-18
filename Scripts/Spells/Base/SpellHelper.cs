@@ -24,7 +24,7 @@
  *	2/10/11, Adam
  *		Add the travel valadators and associated rules to and Initialize() function so that we can modify them based on the server we are launching,
  *			i.e., Angel Island, Siege Perilous, Mortalis, etc.
- *	12/28/10, adam
+ *	12/28/10, Adam
  *		Add FindValidSpawnLocation
  *		// http://www.google.com/codesearch/p?hl=en#biPgqLK3B_w/trunk/Scripts/Spells/Base/SpellHelper.cs&q=FindValidSpawnLocation&exact_package=http://runuomondains.googlecode.com/svn&sa=N&cd=1&ct=rc&l=502
  * 11/06/10, Pix
@@ -32,7 +32,7 @@
  *	6/18/10, Adam
  *		o Update region logic to reflect shift from static to new dynamic regions
  *		o Remove IsDungeonRules as BaseRegion now has that logic
- *	6/16/10, adam
+ *	6/16/10, Adam
  *		format source code
  *	6/10/10, Adam
  *		Add new IsDungeonRules() function.
@@ -181,7 +181,7 @@ namespace Server.Spells
         private static TravelValidator[] m_Validators;
         public static void Initialize()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                 m_Rules = new bool[,]
                 {
 					  /* T2A(Fel)	Ilshenar	Wind(Tram)	Wind(Fel)	Dungeons(Fel)	Solen(Tram)	Solen(Fel)	CrystalCave(Malas)	Gauntlet(Malas),	Gauntlet(Ferry)	Stronghold(Fel)	Hedge Maze	Angel Island	Zoo */
@@ -235,7 +235,7 @@ namespace Server.Spells
             if (!sp.DelayedDamage)
                 return TimeSpan.Zero;
 
-            return (Core.AOS ? AosDamageDelay : OldDamageDelay);
+            return (Core.RuleSets.AOSRules() ? AosDamageDelay : OldDamageDelay);
         }
 
         public static bool CheckMulti(Point3D p, Map map)
@@ -416,7 +416,7 @@ namespace Server.Spells
 
         public static TimeSpan GetDuration(Mobile caster, Mobile target)
         {
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
                 return TimeSpan.FromSeconds(((6 * caster.Skills.EvalInt.Fixed) / 50) + 1);
 
             return TimeSpan.FromSeconds(caster.Skills[SkillName.Magery].Value * 1.2);
@@ -432,7 +432,7 @@ namespace Server.Spells
 
         public static int GetOffset(Mobile caster, Mobile target, StatType type, bool curse)
         {
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
             {
                 if (!m_DisableSkillCheck)
                 {
@@ -705,7 +705,7 @@ namespace Server.Spells
 
             //double-check safety - if checking recall on siege, return false.
             if ((type == TravelCheckType.RecallFrom || type == TravelCheckType.RecallTo)
-                && Core.UOSP)
+                && Core.RuleSets.SiegeRules())
             {
                 return false;
             }

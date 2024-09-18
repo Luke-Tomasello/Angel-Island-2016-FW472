@@ -439,7 +439,7 @@ namespace Server.Items
             if (to.NetState == null)
                 return;
 
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
             {
                 if (to.NetState.Version != null && to.NetState.Version >= Version_400a)
                 {
@@ -486,7 +486,7 @@ namespace Server.Items
             base.OnSingleClick(from);
 
             // we would rather have a date here
-            if (!Core.UOSP)
+            if (!Core.RuleSets.SiegeRules())
                 this.LabelTo(from, 1042886, m_Count.ToString());
         }
 

@@ -90,7 +90,7 @@ namespace Server.Mobiles
             if (!base.OnBeforeDeath())
                 return false;
 
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 Scimitar weapon = new Scimitar();
                 weapon.DamageLevel = (WeaponDamageLevel)Utility.Random(0, 5);
@@ -102,7 +102,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {
                     Scimitar weapon = new Scimitar();
                     weapon.DamageLevel = (WeaponDamageLevel)Utility.Random(0, 5);

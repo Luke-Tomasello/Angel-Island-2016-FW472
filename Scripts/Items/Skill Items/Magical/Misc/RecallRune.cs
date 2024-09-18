@@ -219,7 +219,7 @@ namespace Server.Items
             // log non frineds marking in a house
             LogMark(m);
 
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
             {
                 m_House = BaseHouse.FindHouseAt(m);
 

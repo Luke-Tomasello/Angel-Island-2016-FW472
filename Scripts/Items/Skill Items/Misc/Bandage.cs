@@ -174,7 +174,7 @@ namespace Server.Items
             {
                 from.SendLocalizedMessage(1042001); //This must be in your backpack
             }
-            else if (from.InRange(GetWorldLocation(), Core.AOS ? 2 : 1))
+            else if (from.InRange(GetWorldLocation(), Core.RuleSets.AOSRules() ? 2 : 1))
             {
                 from.RevealingAction();
 
@@ -212,11 +212,11 @@ namespace Server.Items
                 {
                     Mobile m = targeted as Mobile;
 
-                    if (Bandage.ProximityCheck(from, m, Core.AOS ? 2 : 1) == false)
+                    if (Bandage.ProximityCheck(from, m, Core.RuleSets.AOSRules() ? 2 : 1) == false)
                     {
                         from.SendLocalizedMessage(501043); // Target is not close enough.
                     }
-                    else if (from.InRange(m_Bandage.GetWorldLocation(), Core.AOS ? 2 : 1))
+                    else if (from.InRange(m_Bandage.GetWorldLocation(), Core.RuleSets.AOSRules() ? 2 : 1))
                     {
                         if (BandageContext.BeginHeal(from, (Mobile)targeted) != null)
                             m_Bandage.Consume();
@@ -325,7 +325,7 @@ namespace Server.Items
                 patientNumber = -1;
                 playSound = false;
             }
-            else if (Bandage.ProximityCheck(m_Healer, m_Patient, Core.AOS ? 2 : 1) == false)
+            else if (Bandage.ProximityCheck(m_Healer, m_Patient, Core.RuleSets.AOSRules() ? 2 : 1) == false)
             {
                 healerNumber = 500963; // You did not stay close enough to heal your target.
                 patientNumber = -1;
@@ -442,7 +442,7 @@ namespace Server.Items
 
                     double min, max;
 
-                    if (Core.AOS)
+                    if (Core.RuleSets.AOSRules())
                     {
                         min = (anatomy / 8.0) + (healing / 5.0) + 4.0;
                         max = (anatomy / 6.0) + (healing / 2.5) + 4.0;
@@ -458,7 +458,7 @@ namespace Server.Items
                     if (m_Patient.Body.IsMonster || m_Patient.Body.IsAnimal)
                         toHeal += m_Patient.HitsMax / 100;
 
-                    if (Core.AOS)
+                    if (Core.RuleSets.AOSRules())
                         toHeal -= toHeal * m_Slips * 0.35; // TODO: Verify algorithm
                     else
                         toHeal -= m_Slips * 4;
@@ -543,14 +543,14 @@ namespace Server.Items
 
                 if (onSelf)
                 {
-                    if (Core.AOS)
+                    if (Core.RuleSets.AOSRules())
                         seconds = 5.0 + (0.5 * ((double)(120 - dex) / 10)); // TODO: Verify algorithm
                     else
                         seconds = 9.4 + (0.6 * ((double)(120 - dex) / 10));
                 }
                 else
                 {
-                    if (Core.AOS && GetPrimarySkill(patient) == SkillName.Veterinary)
+                    if (Core.RuleSets.AOSRules() && GetPrimarySkill(patient) == SkillName.Veterinary)
                     {
                         if (dex >= 40)
                             seconds = 2.0;

@@ -721,7 +721,7 @@ namespace Server.Engines.OldSchoolCraft
                 SkillName skill = m_craftSystem.MainSkill;
                 int toWeaken = 0;
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     toWeaken = 1;
                 }
@@ -782,7 +782,7 @@ namespace Server.Engines.OldSchoolCraft
                 SkillName skill = m_craftSystem.MainSkill;
                 int toWeaken = 0;
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     toWeaken = 1;
                 }
@@ -951,7 +951,7 @@ namespace Server.Engines.OldSchoolCraft
 				 * Items purchased from an NPC will yield only one ingot when smelted.
 				 * http://www.uoguide.com/Publish_-_September_22,_1999
 				 */
-                if (Core.UOSP)
+                if (Core.RuleSets.SiegeRules())
                 {
                     double amount = (double)ingot.Amount;
 

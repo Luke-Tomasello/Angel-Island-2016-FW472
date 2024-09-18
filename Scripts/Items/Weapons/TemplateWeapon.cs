@@ -21,7 +21,7 @@
 
 /*	Scripts\Items\Weapons\TemplateWeapon.cs
  *	ChangeLog:
- *	8/6/10, adam
+ *	8/6/10, Adam
  *		initial creation
  *		used for the dynamic creation of generic non-flippable weapons
  */

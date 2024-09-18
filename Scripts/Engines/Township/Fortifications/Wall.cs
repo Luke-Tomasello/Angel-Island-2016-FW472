@@ -28,7 +28,7 @@
  * 2010.05.24 - Pix
  *      Code cleanup (renaming functions/classes to make sense, reorganizing for easier reading)
  *      Moves Stone and Spear walls to separate files.
- * 4/23/10, adam
+ * 4/23/10, Adam
  *		1. Add CanDamageWall & DamageWeapon to insure the player has the right tool for the job
  *		2. adam hack until pixie reviews
  * 			The problem is twofold. Firstly a GM carpenter can do 20+25=42 HP damage per 120 seconds to a wall with only 127 HP

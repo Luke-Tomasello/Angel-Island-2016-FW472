@@ -88,7 +88,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(350, 500);
                 PackMagicEquipment(1, 3, 0.30, 0.30);
@@ -111,7 +111,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20021015001310/uo.stratics.com/hunters/rottingcorpse.shtml
                     // 300 - 600 Gold, Magic Items
 

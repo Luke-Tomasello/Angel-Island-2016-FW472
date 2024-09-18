@@ -21,20 +21,27 @@
 
 /* Mobiles/Guards/BaseGuard.cs
  * CHANGELOG:
+ *  9/13/2024, Adam (auto ignition)
+ *      In order to stop griefers from dragging dangerous creatures into a guard zone
+ *          and allowing it to kill all the macroers, we auto-ignite guards.
+ *      In AcquireFocusMob(), we simply remember monsters attacking players in a guarded region for 5 seconds.
+ *      When a guard detects a creature, we check to see if it is a 'remembered' baddy. If so, kill it.
+ *      Note: There still needs to be a nearby guard to detect this creature for believability.
+ *      Finally: It's unrealistic that a guard would 'see' a bone knight near players, and do nothing about it
  *	2/14/11, Adam
  *		Add in SetDamage() call for non UOAI shards.
- *	7/21/10, adam
+ *	7/21/10, Adam
  *		1% chance to drop hally since we really want players farming vampires for slayers
- *	6/30/10, adam
+ *	6/30/10, Adam
  *		o Guards now use a new form of Hybrid AI called GuardAI.
  *		o Guards now do some basic heals and will cast the new NPC spell "InvisibleShield", "Kal Sanct Grav" 
  *			on suicide bombers. (Kal (summon), Sanct (Protection), Grav (field))
- *	6/23/10, adam
+ *	6/23/10, Adam
  *		make the karma positive
- *	6/21/10, adam
+ *	6/21/10, Adam
  *		o lower detect hidded to 88-92 to give a reasonable chance at avoiding detection on the first try
  *		o format code
- *	5/17/10, adam
+ *	5/17/10, Adam
  *		New message when a head is turned in, yet the bounty has already been collected:
  *		"My thanks for slaying this vile person, but the bounty has already been collected."
  *	7/8/07, Adam
@@ -73,7 +80,9 @@
 using Server.BountySystem;
 using Server.Commands;
 using Server.Items;
+using Server.Regions;
 using System;
+using System.Collections.Generic;
 
 namespace Server.Mobiles
 {
@@ -81,6 +90,7 @@ namespace Server.Mobiles
     {
         private TimeSpan m_SpeechDelay = TimeSpan.FromSeconds(300.0); // time between speech
         public DateTime m_NextSpeechTime;
+
         public static void Spawn(Mobile caller, Mobile target)
         {
             Spawn(caller, target, 1, false);
@@ -142,7 +152,7 @@ namespace Server.Mobiles
 
             InitStats(250, 250, 250);
 
-            if (!Core.UOAI && !Core.UOREN)
+            if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules())
                 SetDamage(20, 25);
 
             Title = "the guard";
@@ -188,7 +198,7 @@ namespace Server.Mobiles
                 AddItem(new PlateArms());
                 AddItem(new PlateLegs());
 
-                if (Core.UOAI || Core.UOREN)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                     AddItem(new PlateGorget());
 
                 switch (Utility.Random(3))
@@ -223,7 +233,7 @@ namespace Server.Mobiles
             weapon.Movable = false;
             weapon.Quality = WeaponQuality.Exceptional;
 
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 weapon.Crafter = null;
                 weapon.Slayer = SlayerName.Silver;
@@ -246,7 +256,7 @@ namespace Server.Mobiles
             SetSkill(SkillName.MagicResist, 115, 120.0);
             SetSkill(SkillName.DetectHidden, 88, 92);
 
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 SetSkill(SkillName.EvalInt, 115, 120.0);
                 SetSkill(SkillName.Magery, 115, 120.0);
@@ -275,7 +285,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 // 1% chance to drop hally since we really want players farming vampires for slayers
                 if (Utility.RandomChance(1))
@@ -287,7 +297,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP)
+                if (Core.RuleSets.SiegeRules())
                 {
                     if (Spawning)
                     {   // no loot
@@ -307,7 +317,7 @@ namespace Server.Mobiles
         public override bool OnBeforeDeath()
         {
 
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {   // we need loot generation
                 return base.OnBeforeDeath();
             }
@@ -366,6 +376,38 @@ namespace Server.Mobiles
         {
             if (Combatant != null && Combatant != Focus)
                 Focus = Combatant;
+            else
+            {
+                // 9/13/2024, Adam: In order to stop griefers from dragging dangerous creatures into a guard zone
+                //      and allowing it to kill all the macroers, we auto-ignite guards.
+                //  In AcquireFocusMob(), we simply remember monsters attacking players in a guarded region for 5 seconds.
+                //  When a guard detects a creature, we check to see if it is a 'remembered' baddy. If so, kill it.
+                //  Note: There still needs to be a nearby guard to detect this baddy for believability.
+                //  Finally: It's unrealistic that a guard would 'see' a bone knight near players, and do nothing about it
+
+                List<Mobile> list = new List<Mobile>();
+                IPooledEnumerable eable = this.Map.GetMobilesInRange(this.Location, this.RangePerception);
+                foreach (Mobile m in eable)
+                    if (!m.Player && this.CanSee(m))
+                        list.Add(m);
+                eable.Free();
+                
+                foreach (Mobile m in list)
+                    if (BaseAI.FocusMobAcquired.Recall(m) != false)
+                        if (this.Region is GuardedRegion && (this.Region as GuardedRegion).IsGuarded)
+                        {
+                            LogHelper logger = new LogHelper("AggressiveCreatureInTown.log", overwrite: false);
+                            Mobile target = null;
+                            Memory.ObjectMemory om = BaseAI.FocusMobAcquired.Recall(m as object);
+                            if (om != null && om.Context is Mobile)
+                                target = om.Context as Mobile;
+                            logger.Log(LogType.Mobile, m, string.Format("targeting {0}", target != null ? target.ToString() : "???"));
+                            logger.Finish();
+                            (this.Region as GuardedRegion).MakeGuard(m);
+                            BaseAI.FocusMobAcquired.Forget(m);
+                            break;
+                        }
+            }
 
             // check to see if any groundskeepers need to be spawned
             try
@@ -379,11 +421,9 @@ namespace Server.Mobiles
 
             base.OnThink();
         }
-
+        //private HandleAggressiveCreatureInTown
         public override void OnMovement(Mobile m, Point3D oldLocation)
         {
-
-
             if (m.Player && m.AccessLevel == AccessLevel.Player && ((PlayerMobile)m).NpcGuild == NpcGuild.ThievesGuild && ((Mobile)m).Hidden == false && m.InRange(this, 3) && DateTime.UtcNow >= m_NextSpeechTime)
             {
                 if (Utility.RandomDouble() < 0.03)

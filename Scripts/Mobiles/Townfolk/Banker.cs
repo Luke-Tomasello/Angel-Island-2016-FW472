@@ -20,6 +20,8 @@
  ***************************************************************************/
 
 /* ChangeLog 
+ *  9/13/2024, Adam (GetBalance())
+ *      Use GetBalance() instead of BankBox.TotalGold as GetBalance includes checks
  *	01/03/07, plasma
  *		Remove all duel challenge system code
  *  10/15/07, Pix
@@ -356,7 +358,8 @@ namespace Server.Mobiles
 
                                 if (box != null)
                                 {
-                                    this.Say(1042759, box.TotalGold.ToString()); // Thy current bank balance is ~1_AMOUNT~ gold.
+                                    //this.Say(1042759, box.TotalGold.ToString()); // Thy current bank balance is ~1_AMOUNT~ gold.
+                                    this.Say(1042759, GetBalance(e.Mobile).ToString()); // Thy current bank balance is ~1_AMOUNT~ gold.
                                 }
 
                                 break;

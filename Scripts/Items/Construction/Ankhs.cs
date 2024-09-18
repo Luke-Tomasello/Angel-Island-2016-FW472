@@ -314,17 +314,17 @@ namespace Server.Items
         {
             base.OnSpeech(e);
 
-            if (e.Speech.ToLower() == "i choose a life of mortality" && (Core.UOAI || Core.UOREN) && !e.Handled && Utility.InRange(Location, e.Mobile.Location, Ankhs.ShrineRange))
+            if (e.Speech.ToLower() == "i choose a life of mortality" && (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules()) && !e.Handled && Utility.InRange(Location, e.Mobile.Location, Ankhs.ShrineRange))
             {
                 Ankhs.Permadeath(e.Mobile as PlayerMobile, this);
                 return;
             }
-            else if (e.Speech.ToLower() == "me nub follow human rules" && (Core.UOAI || Core.UOREN) && !e.Handled && Utility.InRange(Location, e.Mobile.Location, Ankhs.ShrineRange))//New command for rejecting law of this land to set Long Term Counts to 5.
+            else if (e.Speech.ToLower() == "me nub follow human rules" && (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules()) && !e.Handled && Utility.InRange(Location, e.Mobile.Location, Ankhs.ShrineRange))//New command for rejecting law of this land to set Long Term Counts to 5.
             {
                 Ankhs.RejectLaw(e.Mobile as PlayerMobile, this);
                 return;
             }
-            else if (e.Speech.ToLower() == "i reject the law of this land" && (Core.UOAI || Core.UOREN) && !e.Handled && Utility.InRange(Location, e.Mobile.Location, Ankhs.ShrineRange))//New command for rejecting law of this land to set Long Term Counts to 5.
+            else if (e.Speech.ToLower() == "i reject the law of this land" && (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules()) && !e.Handled && Utility.InRange(Location, e.Mobile.Location, Ankhs.ShrineRange))//New command for rejecting law of this land to set Long Term Counts to 5.
             {
                 Ankhs.RejectLaw(e.Mobile as PlayerMobile, this);
                 return;
@@ -502,17 +502,17 @@ namespace Server.Items
         {
             base.OnSpeech(e);
 
-            if (e.Speech.ToLower() == "i choose a life of mortality" && (Core.UOAI || Core.UOREN) && !e.Handled && Utility.InRange(Location, e.Mobile.Location, Ankhs.ShrineRange))
+            if (e.Speech.ToLower() == "i choose a life of mortality" && (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules()) && !e.Handled && Utility.InRange(Location, e.Mobile.Location, Ankhs.ShrineRange))
             {
                 Ankhs.Permadeath(e.Mobile as PlayerMobile, this);
                 return;
             }
-            else if (e.Speech.ToLower() == "me nub follow human rules" && (Core.UOAI || Core.UOREN) && !e.Handled && Utility.InRange(Location, e.Mobile.Location, Ankhs.ShrineRange))//New command for rejecting law of this land to set Long Term Counts to 5.
+            else if (e.Speech.ToLower() == "me nub follow human rules" && (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules()) && !e.Handled && Utility.InRange(Location, e.Mobile.Location, Ankhs.ShrineRange))//New command for rejecting law of this land to set Long Term Counts to 5.
             {
                 Ankhs.RejectLaw(e.Mobile as PlayerMobile, this);
                 return;
             }
-            else if (e.Speech.ToLower() == "i reject the law of this land" && (Core.UOAI || Core.UOREN) && !e.Handled && Utility.InRange(Location, e.Mobile.Location, Ankhs.ShrineRange))//New command for rejecting law of this land to set Long Term Counts to 5.
+            else if (e.Speech.ToLower() == "i reject the law of this land" && (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules()) && !e.Handled && Utility.InRange(Location, e.Mobile.Location, Ankhs.ShrineRange))//New command for rejecting law of this land to set Long Term Counts to 5.
             {
                 Ankhs.RejectLaw(e.Mobile as PlayerMobile, this);
                 return;

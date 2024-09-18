@@ -65,7 +65,7 @@ namespace Server.Mobiles
             return 1218;
         }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 1 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 1 : 0; } }
 
         public GoreFiend(Serial serial)
             : base(serial)

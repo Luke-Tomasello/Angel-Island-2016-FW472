@@ -23,9 +23,9 @@
  * ChangeLog:
  *	11/20/04, Adam
  *		Add L0TreasureChest trainers (for building initial lockpick skill)
- *	6/27/04, adam
+ *	6/27/04, Adam
  *		Add L2TreasureChest, L3TreasureChest, L4TreasureChest, and L5TreasureChest
- *	6/25/04, adam
+ *	6/25/04, Adam
  *		Add L1TreasureChest
  */
 

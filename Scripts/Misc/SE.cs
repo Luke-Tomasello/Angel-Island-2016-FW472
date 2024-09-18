@@ -33,7 +33,7 @@ namespace Server
 
         public static void Configure()
         {
-            Core.SE = Enabled;
+            Core.RuleSets.SE_SVR = Enabled;
         }
     }
 }

@@ -83,7 +83,7 @@ namespace Server.Factions
         {
             get
             {
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                     return TimeSpan.FromDays(1.0);
 
                 return TimeSpan.MaxValue; // no decay
@@ -140,7 +140,7 @@ namespace Server.Factions
             if (m == null)
                 return 502956; // You cannot place a trap on that.
 
-            if (Core.ML)
+            if (Core.RuleSets.MLRules())
             {
                 foreach (Item item in m.GetItemsInRange(p, 0))
                 {

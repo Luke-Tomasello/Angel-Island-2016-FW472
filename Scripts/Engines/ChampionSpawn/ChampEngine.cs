@@ -21,9 +21,9 @@
 
 /* Scripts/Engines/ChampionSpawn/ChampEngine.cs
  * ChangeLog:
- *	8/12/10, adam
+ *	8/12/10, Adam
  *		Replace GetSpawnLocation() implementation with a shared version if Spawner.cs
- *	6/23/10, adam
+ *	6/23/10, Adam
  *		return LongTermMurders to Kills .. got changed in a global search and replace
  *	04/27/09, plasma
  *		Virtualised GetSpawnLocation, made IsNearPlayer protected.

@@ -21,7 +21,7 @@
 
 /* Multis/Boats/Hold.cs
  * ChangeLog:
- *	5/29/10, adam
+ *	5/29/10, Adam
  *		Make holds lockable by replaccing the base class BaseContainer with LockableContainer
  *		To accomplish this, see OneTimeBoatUpgrade() below and the comments in main.c for startup switch -BoatHoldUpgrade
  *  05/01/06 Taran Kain

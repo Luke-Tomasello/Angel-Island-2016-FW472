@@ -21,7 +21,7 @@
 
 /* Scripts/Mobiles/Monsters/Reptile/Magic/WhiteWyrm.cs
  * ChangeLog
- *	4/10/10, adam
+ *	4/10/10, Adam
  *		Add speed management MCi to tune dragon speeds.
  *	7/26/05, erlein
  *		Automated removal of AoS resistance related function calls. 7 lines removed.
@@ -86,7 +86,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 int gems = Utility.RandomMinMax(1, 5);
 
@@ -104,7 +104,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020607002613/uo.stratics.com/hunters/whitewyrm.shtml
                     // 1800 to 2100 Gold, Gems, Level 4 Treasure Map, Magic Weapons and Armor, 7 or 10 White Scales, 19 Raw Meat, 20 Hides
                     if (Spawning)
@@ -126,11 +126,11 @@ namespace Server.Mobiles
             }
         }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 4 : 4; } }
-        public override int Meat { get { return Core.UOAI || Core.UOREN ? 20 : 19; } }
-        public override int Hides { get { return Core.UOAI || Core.UOREN ? 40 : 20; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 4 : 4; } }
+        public override int Meat { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 20 : 19; } }
+        public override int Hides { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 40 : 20; } }
         public override HideType HideType { get { return HideType.Barbed; } }
-        public override int Scales { get { return (Core.UOAI || Core.UOREN || PublishInfo.PublishDate < Core.PlagueOfDespair) ? 0 : Utility.RandomBool() ? 7 : 10; } }
+        public override int Scales { get { return (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || PublishInfo.PublishDate < Core.PlagueOfDespair) ? 0 : Utility.RandomBool() ? 7 : 10; } }
         public override ScaleType ScaleType { get { return ScaleType.White; } }
         public override FoodType FavoriteFood { get { return FoodType.Meat | FoodType.Gold; } }
 

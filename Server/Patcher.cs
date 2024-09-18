@@ -21,6 +21,11 @@
 
 /* Server\Patcher.cs
  * CHANGELOG:
+ *  9/12/2024, Adam
+ *      Keys on the Ocean patch.
+ *      Keyrings were not properly storing their keys and they were ending up on the ocean.
+ *          Return them to internal map storage where they belong.
+ *  9/11/2024, Adam
  *	    First time checkin
  *	    Runs patches on shard launch
  */

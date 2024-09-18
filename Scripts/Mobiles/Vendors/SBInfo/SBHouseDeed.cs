@@ -21,7 +21,7 @@
 
 /* Scripts/Mobiles/Vendors/SBInfo/SBHouseDeed.cs
  * CHANGELOG:
- *  6/12/07, adam
+ *  6/12/07, Adam
  *      add check for TestCenter.Enabled == true before adding Static houses for sale.
  *      We don't want this on until we have checked in a valid StaticHousing*.xml
  *	6/11/07 - Pix
@@ -77,7 +77,7 @@ namespace Server.Mobiles
                 Add(new GenericBuyInfo("deed to a small stone keep", typeof(KeepDeed), KeepDeed.m_price, 20, 0x14F0, 0));
                 Add(new GenericBuyInfo("deed to a castle", typeof(CastleDeed), CastleDeed.m_price, 20, 0x14F0, 0));
 
-                if (Core.UOAI || Core.UOREN || Core.UOMO)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
                 {
                     System.Collections.Generic.List<Server.Multis.StaticHousing.StaticHouseDescription> shList = Server.Multis.StaticHousing.StaticHouseHelper.GetAllStaticHouseDescriptions();
                     foreach (Server.Multis.StaticHousing.StaticHouseDescription shd in shList)
@@ -103,7 +103,7 @@ namespace Server.Mobiles
         {
             public InternalSellInfo()
             {
-                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
+                if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.SiegeRules() && !Core.RuleSets.MortalisRules())
                 {   // cash buyback
                     Add(typeof(StonePlasterHouseDeed), StonePlasterHouseDeed.m_price);
                     Add(typeof(FieldStoneHouseDeed), FieldStoneHouseDeed.m_price);

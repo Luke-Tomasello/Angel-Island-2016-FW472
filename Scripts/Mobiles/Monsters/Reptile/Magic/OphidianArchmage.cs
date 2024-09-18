@@ -79,7 +79,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(190, 220);
                 PackScroll(1, 6);
@@ -90,7 +90,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020214224334/uo.stratics.com/hunters/ophzealot.shtml
                     // http://web.archive.org/web/20020202091744/uo.stratics.com/hunters/ophjust.shtml
                     // (same creature)
@@ -111,7 +111,7 @@ namespace Server.Mobiles
                     {
                         PackReg(5, 15);
 
-                        if (Core.AOS)
+                        if (Core.RuleSets.AOSRules())
                             PackNecroReg(5, 15);
                     }
 

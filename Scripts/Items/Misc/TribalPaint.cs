@@ -71,7 +71,7 @@ namespace Server.Items
                 }
                 else
                 {
-                    if (!Core.UOSP && !Core.UOMO && !Core.UOAI && !Core.UOREN)
+                    if (!Core.RuleSets.SiegeRules() && !Core.RuleSets.MortalisRules() && !Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules())
                         from.BodyMod = (from.Female ? 184 : 183);
                     else
                         from.HueMod = 0;

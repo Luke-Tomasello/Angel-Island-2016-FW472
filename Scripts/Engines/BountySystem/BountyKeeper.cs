@@ -24,7 +24,7 @@
  *  7/05/10, Pix
  *      Remove UpdateTownCrier, call PJUM.UpdateAnnouncements instead.
  *      Added allied-guilds cannot collect head.
- *	5/17/10, adam
+ *	5/17/10, Adam
  *		o Cap CurrentLBBonusAmount with a a new const MaxLBBonusAmount currently set to 300 gp.
  *			Without thie set, a player gould get 100s of K in bonus gold.
  *		o Reward the bounty collector even if the bountied player had no gold but lord brit did have a bonus. 
@@ -34,9 +34,9 @@
  *				As you can see the exploit is extreemly expensive in player jail time; so we're not worried about it.
  *		o after a bounty has been collected, remove the old message from the town crier	and replace it with the "enemy of the kingdom" message
  * 			(UpdateTownCrier())
- *	5/16/10, adam
+ *	5/16/10, Adam
  *		Add null checks to CanCollectReward
- *	3/22/10, adam
+ *	3/22/10, Adam
  *		disallow placing a bounty on someone while in prison
  *	3/1/10, Adam
  *		1. Put a divide by zero safety check in CurrentLBBonusAmount

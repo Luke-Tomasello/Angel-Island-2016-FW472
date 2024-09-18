@@ -76,7 +76,7 @@ namespace Server.Mobiles
         public override HideType HideType { get { return HideType.Spined; } }
         public override Poison PoisonImmune { get { return Poison.Lethal; } }
         public override Poison HitPoison { get { return Poison.Lethal; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 3 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 3 : 0; } }
 
         public OphidianKnight(Serial serial)
             : base(serial)
@@ -85,7 +85,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(400, 500);
                 PackItem(new DeadlyPoisonPotion());
@@ -97,7 +97,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020403074442/uo.stratics.com/hunters/ophaveng.shtml
                     // 200 to 300 Gold, Potions, Arrows, Gems, Scrolls, Magic items
                     // http://web.archive.org/web/20020301014712/uo.stratics.com/hunters/ophknight.shtml

@@ -76,7 +76,7 @@ namespace Server.Spells.Seventh
 
                 double damage;
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                     damage = GetNewAosDamage(48, 1, 5);
                 else
                     damage = Utility.Random(27, 22);
@@ -91,7 +91,7 @@ namespace Server.Spells.Seventh
 
                     foreach (Mobile m in eable)
                     {
-                        if (Core.AOS && m == Caster)
+                        if (Core.RuleSets.AOSRules() && m == Caster)
                             continue;
 
                         if (SpellHelper.ValidIndirectTarget(Caster, m) && Caster.CanBeHarmful(m, false))
@@ -103,9 +103,9 @@ namespace Server.Spells.Seventh
 
                 if (targets.Count > 0)
                 {
-                    if (Core.AOS && targets.Count > 1)
+                    if (Core.RuleSets.AOSRules() && targets.Count > 1)
                         damage = (damage * 2) / targets.Count;
-                    else if (!Core.AOS)
+                    else if (!Core.RuleSets.AOSRules())
                         damage /= targets.Count;
 
                     for (int i = 0; i < targets.Count; ++i)
@@ -114,7 +114,7 @@ namespace Server.Spells.Seventh
 
                         double toDeal = damage;
 
-                        if (!Core.AOS && CheckResisted(m))
+                        if (!Core.RuleSets.AOSRules() && CheckResisted(m))
                         {
                             toDeal *= 0.5;
 

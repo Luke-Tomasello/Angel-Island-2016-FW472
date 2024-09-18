@@ -154,7 +154,7 @@ namespace Server.Engines.Quests.Necro
 
                                 weapon.Slayer = SlayerName.OrcSlaying;
 
-                                if (Core.AOS)
+                                if (Core.RuleSets.AOSRules())
                                 {
                                     BaseRunicTool.ApplyAttributesTo(weapon, 3, 20, 40);
                                 }

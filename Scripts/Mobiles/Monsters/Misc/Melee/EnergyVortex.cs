@@ -21,7 +21,7 @@
 
 /* Scripts/Mobiles/Monsters/Misc/Melee/Energyvortex.cs
  * ChangeLog
- *	2/9/11, adam
+ *	2/9/11, Adam
  *		Add Llama vortices
  *  8/16/06, Rhiannon
  *		Changed speed settings to match SpeedInfo table.
@@ -47,8 +47,8 @@ namespace Server.Mobiles
         public override bool DeleteCorpseOnDeath { get { return Summoned; } }
         public override bool AlwaysMurderer { get { return true; } } // Or Llama vortices will appear gray.
 
-        public override double DispelDifficulty { get { return Core.UOAI || Core.UOREN ? 56.0 : 80.0; } }
-        public override double DispelFocus { get { return Core.UOAI || Core.UOREN ? 45.0 : 20; } }
+        public override double DispelDifficulty { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 56.0 : 80.0; } }
+        public override double DispelFocus { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 45.0 : 20; } }
 
 
         [Constructable]
@@ -75,7 +75,7 @@ namespace Server.Mobiles
             SetStam(250);
             SetMana(0);
 
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                 SetDamage(25, 30);
             else
                 SetDamage(14, 17);

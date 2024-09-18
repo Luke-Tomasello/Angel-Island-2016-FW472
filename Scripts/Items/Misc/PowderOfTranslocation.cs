@@ -100,7 +100,7 @@ namespace Server.Items
                     else if (!SpellHelper.CheckTravel(from, TravelCheckType.Mark))
                     {
                     }
-                    else if (SpellHelper.CheckMulti(from.Location, from.Map, !Core.AOS))
+                    else if (SpellHelper.CheckMulti(from.Location, from.Map, !Core.RuleSets.AOSRules()))
                     {
                         from.SendLocalizedMessage(501942); // That location is blocked.
                     }

@@ -67,7 +67,7 @@ namespace Server.Mobiles
 
         public override bool AlwaysAttackable { get { return true; } }
         public override bool ShowFameTitle { get { return false; } }
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : false; } }
+        public override bool CanRummageCorpses { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? true : false; } }
         public override bool ClickTitle { get { return false; } }
         public override bool CanBandage { get { return true; } }
         public override TimeSpan BandageDelay { get { return TimeSpan.FromSeconds(Utility.RandomMinMax(13, 16)); } }
@@ -138,7 +138,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 if (this.Female == true)
                     PackGold(60, 80);       // women have no weapons
@@ -154,7 +154,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // ai special
                     if (Spawning)
                     {

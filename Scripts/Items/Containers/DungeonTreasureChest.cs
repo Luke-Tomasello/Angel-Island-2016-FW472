@@ -21,11 +21,11 @@
 
 /* Items/Containers/DungeonTreasureChest.cs
  * ChangeLog:
- *	7/14/10, adam
+ *	7/14/10, Adam
  *		o revert multi-piles of gold until we can balance the lift-risk
  *		o soften the pirates magic ability (based on level) so that he's got less of a chance at casting reveal
  *		o soften the pirates detect hidden skill (based on level)
- *	7/11/10, adam
+ *	7/11/10, Adam
  *		o swap out local copy of 'lift memory' and replace it with the shared version in Utilities
  *		o Split gold into level*2 piles to increase the chance of getting revealed
  *	5/23/10, Adam
@@ -124,10 +124,10 @@
  *		2. give a 2.5% chance to reveal the looter (per item removed)
  *		3. Add the "You have been revealed!" message
  *		4. Only show the message if the looter is hidden
- *	6/27/04, adam
+ *	6/27/04, Adam
  *		Massive cleanup: remove weapons and armor, Add tmaps, monster statues
  *			and magic jewelry, and magic clothing, ...
- *	6/25/04, adam
+ *	6/25/04, Adam
  *		Copy from TreasureMapChest and update to be correct levels for dungeons
  *		(should be a subclass)
  *  6/5/04, Pix

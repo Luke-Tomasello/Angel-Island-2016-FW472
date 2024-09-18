@@ -67,7 +67,7 @@ namespace Server.Spells.Fourth
             );
 
         public ArchCureSpell(Mobile caster, Item scroll)
-            : base(caster, scroll, Core.UOSP ? m_InfoIS : m_Info)
+            : base(caster, scroll, Core.RuleSets.SiegeRules() ? m_InfoIS : m_Info)
         {
         }
 
@@ -186,10 +186,10 @@ namespace Server.Spells.Fourth
                         //
                         //                        if (map.Rules == MapRules.FeluccaRules)
                         //                        {
-                        //                            if (Caster.CanBeBeneficial(m, false) && (!Core.AOS || !IsAggressor(m) && !IsAggressed(m) && ((IsInnocentTo(Caster, m) && IsInnocentTo(m, Caster)) || (IsAllyTo(Caster, m))) && m != m_directtarget && m is PlayerMobile || m == Caster && m != m_directtarget))
+                        //                            if (Caster.CanBeBeneficial(m, false) && (!Core.RuleSets.AOSRules() || !IsAggressor(m) && !IsAggressed(m) && ((IsInnocentTo(Caster, m) && IsInnocentTo(m, Caster)) || (IsAllyTo(Caster, m))) && m != m_directtarget && m is PlayerMobile || m == Caster && m != m_directtarget))
                         //                                targets.Add(m);
                         //                        }
-                        //                        else if (Caster.CanBeBeneficial(m, false) && (!Core.AOS || !IsAggressor(m) && !IsAggressed(m) && ((IsInnocentTo(Caster, m) && IsInnocentTo(m, Caster)) || (IsAllyTo(Caster, m))) && m != m_directtarget || m == Caster && m != m_directtarget))
+                        //                        else if (Caster.CanBeBeneficial(m, false) && (!Core.RuleSets.AOSRules() || !IsAggressor(m) && !IsAggressed(m) && ((IsInnocentTo(Caster, m) && IsInnocentTo(m, Caster)) || (IsAllyTo(Caster, m))) && m != m_directtarget || m == Caster && m != m_directtarget))
                         //                            targets.Add(m);
 
                         if (Caster.CanBeBeneficial(m, false))
@@ -250,7 +250,7 @@ namespace Server.Spells.Fourth
 
             protected override void OnTarget(Mobile from, object o)
             {
-                if (Core.UOSP) //switch targetting for Siege
+                if (Core.RuleSets.SiegeRules()) //switch targetting for Siege
                 {
                     IPoint3D p = o as IPoint3D;
                     if (p != null)

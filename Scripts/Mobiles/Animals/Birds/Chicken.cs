@@ -21,7 +21,7 @@
 
 /* Scripts/Mobiles/Animals/Birds/Chicken.cs
  *	ChangeLog :
- *	5/12/10, adam
+ *	5/12/10, Adam
  *		update AttackOrderHack to account for ScaredOfScaryThings
  *	06/18/07 Taran Kain
  *		Fixed proxy aggression with new abstraction

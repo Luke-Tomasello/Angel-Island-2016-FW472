@@ -96,7 +96,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(175, 225);
                 PackScroll(1, 3);
@@ -106,7 +106,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20011205233902/uo.stratics.com/hunters/unicorn.shtml
                     // 200 - 400 Gold, scrolls, potions, gems, magic item (rarely)
                     if (Spawning)

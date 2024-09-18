@@ -107,7 +107,7 @@ namespace Server.Items
 
                 if (25 > Utility.Random(100)) // 25% chance to lower durability
                 {
-                    if (Core.AOS /*&& ArmorAttributes.SelfRepair > Utility.Random(10)*/)
+                    if (Core.RuleSets.AOSRules() /*&& ArmorAttributes.SelfRepair > Utility.Random(10)*/)
                     {
                         HitPoints += 2;
                     }

@@ -64,7 +64,7 @@ namespace Server.Mobiles
             Karma = -10000;
         }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 4 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 4 : 0; } }
 
         public TerathanMatriarch(Serial serial)
             : base(serial)
@@ -73,7 +73,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(300, 400);
                 PackItem(new SpidersSilk(10));
@@ -87,7 +87,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020806192318/uo.stratics.com/hunters/termat.shtml
                     // 150 to 300 Gold, Magic Items, Gems, Scrolls, 5 Spiders Silk
                     if (Spawning)
@@ -114,7 +114,7 @@ namespace Server.Mobiles
                     {
                         PackItem(new SpidersSilk(5));
 
-                        if (Core.AOS)
+                        if (Core.RuleSets.AOSRules())
                             PackNecroReg(Utility.RandomMinMax(4, 10));
                     }
 

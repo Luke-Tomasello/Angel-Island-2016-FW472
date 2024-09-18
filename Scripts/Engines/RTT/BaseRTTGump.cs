@@ -24,9 +24,9 @@
  *  2010.06.10 - Pix
  *      Added this.Closable = false; to constuctor
  *      Close AFK gump on timeout.
- *	3/22/10, adam
+ *	3/22/10, Adam
  *		uncomment the lines and instead turn it off via CoreAI.FeatureBits.RTTNotifyEnabled
- *	3/18/10, adam
+ *	3/18/10, Adam
  *		Remove the spam to the staff about success and failures and only broadcast when someone passes in less than 
  *		1 second. (probably cheating)
  *	3/22/09, Adam

@@ -21,6 +21,10 @@
 
 /* Scripts/Multis/StaticHousing/StaticHouseHelper.cs
  *  Changelog:
+ *  9/16/2024, Adam
+ *      Since we're not building houses on TC ATM, lets allow players to play with prod houses
+ *  9/15/2024, Adam (GetDescription)
+ *      Add GetDescription()
  *	12/28/07 Taran Kain
  *		Added Doubled list and flag for doubled-up tiles
  *		Added FixerAddon object to add them back into a house after being filtered out
@@ -652,8 +656,10 @@ namespace Server.Multis.StaticHousing
             get
             {
                 // we cannot rely on TestCenter.Enabled being set during Configure() 
-                if (Core.UOTC == true)
-                    return "data\\StaticHousingTC.xml";
+                if (Core.RuleSets.TestCenterRules() == true)
+                    //return "data\\StaticHousingTC.xml";
+                    // since we're not building houses on TC ATM, lets allow players to play with prod houses
+                    return "data\\StaticHousingProd.xml";
                 else
                     return "data\\StaticHousingProd.xml";
             }
@@ -1003,6 +1009,20 @@ namespace Server.Multis.StaticHousing
                 return (int)Error.PriceError;
             else
                 return house.Price;
+        }
+
+        public static string GetDescription(string houseID)
+        {
+
+            if (!IsBlueprintLoaded(houseID))
+                if (!LoadBlueprint(houseID))
+                    return null;
+
+            HouseBlueprint house = m_BlueprintList[houseID] as HouseBlueprint;
+            if (house == null)
+                return null;
+            else
+                return house.Description;
         }
 
         public static bool GetFoundationSize(int MultiID, out int width, out int height)

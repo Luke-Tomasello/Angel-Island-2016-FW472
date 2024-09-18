@@ -247,7 +247,7 @@ namespace Server.Engines.Craft
             AddSkill(index, SkillName.Magery, 50.0, 55.0);
             AddRes(index, typeof(IronIngot), 1044036, 40, 1044037);
 
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
             {
                 AddCraft(typeof(PlayerBBEast), 1044290, 1062420, 85.0, 110.0, typeof(Log), 1044041, 50, 1044351);
                 AddCraft(typeof(PlayerBBSouth), 1044290, 1062421, 85.0, 110.0, typeof(Log), 1044041, 50, 1044351);
@@ -317,7 +317,7 @@ namespace Server.Engines.Craft
             AddCraft(typeof(WaterTroughEastDeed), 1044299, 1044349, 94.7, 119.7, typeof(Log), 1044041, 150, 1044351);
             AddCraft(typeof(WaterTroughSouthDeed), 1044299, 1044350, 94.7, 119.7, typeof(Log), 1044041, 150, 1044351);
 
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 // Materials // changed by sam for woodworking
                 AddCraft(typeof(Kindling), 1044457, 1023553, 0.0, 00.0, typeof(Log), 1044041, 1, 1044351); // changed by sam for woodworking
@@ -341,7 +341,7 @@ namespace Server.Engines.Craft
             }
 
             //sealed ranged:
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 index = AddCraft(typeof(SealedBow), "Ranged Weapons", "sealed bow", 30.0, 70.0, typeof(Log), "log or board", 7, 1044351);
                 AddRes(index, typeof(Beeswax), "beeswax", 1);
@@ -353,7 +353,7 @@ namespace Server.Engines.Craft
 
 
             MarkOption = true;
-            Repair = Core.AOS;
+            Repair = Core.RuleSets.AOSRules();
         }
     }
 }

@@ -99,7 +99,7 @@ namespace Server.Mobiles
 
             new SavageRidgeback().Rider = this;
 
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                 PackItem(new Bandage(Utility.RandomMinMax(1, 15)));
         }
 
@@ -107,8 +107,8 @@ namespace Server.Mobiles
         public override bool AlwaysMurderer { get { return true; } }
         public override bool ShowFameTitle { get { return false; } }
 
-        public override bool CanBandage { get { return Core.UOAI || Core.UOREN ? true : base.CanBandage; } }
-        public override TimeSpan BandageDelay { get { return Core.UOAI || Core.UOREN ? TimeSpan.FromSeconds(Utility.RandomMinMax(10, 13)) : base.BandageDelay; } }
+        public override bool CanBandage { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? true : base.CanBandage; } }
+        public override TimeSpan BandageDelay { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? TimeSpan.FromSeconds(Utility.RandomMinMax(10, 13)) : base.BandageDelay; } }
 
         public override void InitBody()
         {
@@ -123,7 +123,7 @@ namespace Server.Mobiles
         {
             WipeLayers();
 
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 AddItem(new BoneArms());
                 AddItem(new BoneLegs());
@@ -140,7 +140,7 @@ namespace Server.Mobiles
         }
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(125, 175);
 
@@ -168,7 +168,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020606081839/uo.stratics.com/hunters/savage_rider.shtml
                     // 20-40 Gold, bandages, bone arms, bone legs, bear mask, bola balls, tribal spear.
                     if (Spawning)
@@ -237,7 +237,7 @@ namespace Server.Mobiles
 
         public override bool IsEnemy(Mobile m, RelationshipFilter filter)
         {
-            if (!Core.UOAI && !Core.UOREN)
+            if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules())
             {
                 // Ai uses HUE value and not the BodyMod as there is no sitting graphic
                 if ((m.BodyMod == 183 || m.BodyMod == 184) || m.HueMod == 0)
@@ -251,7 +251,7 @@ namespace Server.Mobiles
         {
             base.AggressiveAction(aggressor, criminal);
 
-            if (!Core.UOAI && !Core.UOREN)
+            if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules())
             {   // Ai uses HUE value and not the BodyMod as there is no sitting graphic
                 if ((aggressor.BodyMod == 183 || aggressor.BodyMod == 184) || aggressor.HueMod == 0)
                 {
@@ -270,7 +270,7 @@ namespace Server.Mobiles
 
         public override void AlterMeleeDamageTo(Mobile to, ref int damage)
         {
-            if (!Core.UOAI && !Core.UOREN)
+            if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules())
                 if (to is Dragon || to is WhiteWyrm || to is SwampDragon || to is Drake || to is Nightmare || to is Daemon)
                     damage *= 3;
         }

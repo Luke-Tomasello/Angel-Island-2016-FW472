@@ -21,7 +21,7 @@
 
 /* Scripts\Engines\Spawner\SpawnerCapture.cs
  * CHANGELOG:
- *	3/3/11, adam
+ *	3/3/11, Adam
  *		Add the ability to name a spawned object which acts as the filter.
  *		For instance, "[savespawners " will save all spawners in the world, but "[savespawners cottonplant" will save all spawners that 
  *		spawn cotton plants. 

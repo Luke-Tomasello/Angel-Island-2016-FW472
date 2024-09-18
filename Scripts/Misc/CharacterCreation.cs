@@ -110,7 +110,7 @@ namespace Server.Misc
                 m.AddItem(pack);
             }
 
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackItem(new RedBook("a book", m.Name, 20, true));
                 PackItem(new Gold(204));    // Adam: add the magic starting gold of 204
@@ -133,7 +133,7 @@ namespace Server.Misc
                 TentBag newbtent = new TentBag();
                 PackItem(newbtent);
             }
-            else if (Core.UOSP || Core.UOMO)
+            else if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
             {
                 //daggers are newbie, everything else isn't
                 Dagger dagger = new Dagger();
@@ -435,7 +435,7 @@ namespace Server.Misc
             newChar.Hunger = 20;
 
             // Adam: Mortalis
-            if (Core.UOMO && newChar is PlayerMobile && newChar.AccessLevel == AccessLevel.Player)
+            if (Core.RuleSets.MortalisRules() && newChar is PlayerMobile && newChar.AccessLevel == AccessLevel.Player)
             {   // UO Mortalis is a dangerous place
                 (newChar as PlayerMobile).Mortal = true;
                 (newChar as PlayerMobile).Hidden = true;
@@ -464,7 +464,7 @@ namespace Server.Misc
                 PackItem(new CoreManagementConsole());
             }
 
-            if (!Core.AOS || (args.Profession != 4 && args.Profession != 5))
+            if (!Core.RuleSets.AOSRules() || (args.Profession != 4 && args.Profession != 5))
             {
                 AddShirt(newChar, args.ShirtHue);
                 AddPants(newChar, args.PantsHue);
@@ -476,7 +476,7 @@ namespace Server.Misc
 
             CityInfo city;
 
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 /*
 				 * Our numbers have been so low lately (< 50), it's once again important
@@ -686,7 +686,7 @@ namespace Server.Misc
                     }
                 //				case 4: // Necromancer
                 //				{
-                //					if ( !Core.AOS )
+                //					if ( !Core.RuleSets.AOSRules() )
                 //						goto default;
                 //
                 //					skills = new SkillNameValue[]
@@ -702,7 +702,7 @@ namespace Server.Misc
                 //				}
                 //				case 5: // Paladin
                 //				{
-                //					if ( !Core.AOS )
+                //					if ( !Core.RuleSets.AOSRules() )
                 //						goto default;
                 //
                 //					skills = new SkillNameValue[]
@@ -737,7 +737,7 @@ namespace Server.Misc
                     //				{
                     //					Container regs = new BagOfNecroReagents( 50 );
                     //
-                    //					if ( !Core.AOS )
+                    //					if ( !Core.RuleSets.AOSRules() )
                     //					{
                     //						foreach ( Item item in regs.Items )
                     //							item.LootType = LootType.Newbied;
@@ -816,7 +816,7 @@ namespace Server.Misc
 
         private static void EquipItem(Item item, bool mustEquip)
         {
-            if (!Core.AOS)
+            if (!Core.RuleSets.AOSRules())
                 item.LootType = LootType.Newbied;
 
             if (m_Mobile != null && m_Mobile.EquipItem(item))
@@ -832,10 +832,10 @@ namespace Server.Misc
 
         private static void PackItem(Item item)
         {
-            if (!Core.AOS)
+            if (!Core.RuleSets.AOSRules())
                 item.LootType = LootType.Newbied;
 
-            if (Core.UOSP || Core.UOMO)
+            if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
             {
                 item.LootType = LootType.Regular;
             }
@@ -1061,7 +1061,7 @@ namespace Server.Misc
                         BagOfReagents regs = new BagOfReagents(30);
 
                         // Adam: no more blessed reagents
-                        //if ( !Core.AOS )
+                        //if ( !Core.RuleSets.AOSRules() )
                         //{
                         //	foreach ( Item item in regs.Items )
                         //		item.LootType = LootType.Newbied;

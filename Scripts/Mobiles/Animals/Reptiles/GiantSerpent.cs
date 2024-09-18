@@ -70,7 +70,7 @@ namespace Server.Mobiles
         public override Poison HitPoison { get { return (0.8 >= Utility.RandomDouble() ? Poison.Greater : Poison.Deadly); } }
 
         public override int Meat { get { return 4; } }
-        public override int Hides { get { return Core.UOAI || Core.UOREN ? 15 : 20; } }
+        public override int Hides { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 15 : 20; } }
         public override HideType HideType { get { return HideType.Spined; } }
 
         public GiantSerpent(Serial serial)
@@ -80,7 +80,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(50, 100);
                 PackItem(new Bone());
@@ -88,7 +88,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020210164600/uo.stratics.com/hunters/giantserpent.shtml
                     // 4 Raw Ribs (carved), 20 Hides (carved)
                     if (Spawning)

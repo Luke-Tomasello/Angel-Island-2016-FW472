@@ -21,7 +21,7 @@
 
 /* Scripts/Mobiles/Monsters/Humanoid/Magic/Daemon.cs
  * ChangeLog
- *	7/16/10, adam
+ *	7/16/10, Adam
  *		o increase average wrestling
  *		o increase average magery
  *		o new skill meditation
@@ -102,9 +102,9 @@ namespace Server.Mobiles
             }
         }
 
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : true; } }
+        public override bool CanRummageCorpses { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? true : true; } }
         public override Poison PoisonImmune { get { return Poison.Regular; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 4 : 4; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 4 : 4; } }
         public override int Meat { get { return 1; } }
 
         public override void InitBody()
@@ -124,7 +124,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(300, 400);
                 PackScroll(1, 7);
@@ -138,7 +138,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020220114823/uo.stratics.com/hunters/daemon.shtml
                     // 	150 to 600 Gold, Magic items, Gems, Scrolls, Level 4 treasure maps, 1 Raw Ribs (carved)
 

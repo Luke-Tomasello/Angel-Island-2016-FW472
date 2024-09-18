@@ -133,7 +133,7 @@ namespace Server.Engines.Craft
             AddCraft(typeof(TricorneHat), 1011375, 1025915, 6.2, 31.2, typeof(Cloth), 1044286, 12, 1044287);
             AddCraft(typeof(JesterHat), 1011375, 1025916, 7.2, 32.2, typeof(Cloth), 1044286, 15, 1044287);
 
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
                 AddCraft(typeof(FlowerGarland), 1011375, 1028965, 10.0, 35.0, typeof(Cloth), 1044286, 5, 1044287);
 
             // Shirts
@@ -148,7 +148,7 @@ namespace Server.Engines.Craft
             AddCraft(typeof(Robe), 1015269, 1027939, 53.9, 75.9,/*53.9, 78.9,*/ typeof(Cloth), 1044286, 16, 1044287);
             AddCraft(typeof(JesterSuit), 1015269, 1028095, 8.2, 33.2, typeof(Cloth), 1044286, 24, 1044287);
 
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
             {
                 AddCraft(typeof(FurCape), 1015269, 1028969, 35.0, 60.0, typeof(Cloth), 1044286, 13, 1044287);
                 AddCraft(typeof(GildedDress), 1015269, 1028973, 37.5, 62.5, typeof(Cloth), 1044286, 16, 1044287);
@@ -161,7 +161,7 @@ namespace Server.Engines.Craft
             AddCraft(typeof(Kilt), 1015279, 1025431, 20.7, 45.7, typeof(Cloth), 1044286, 8, 1044287);
             AddCraft(typeof(Skirt), 1015279, 1025398, 29.0, 54.0, typeof(Cloth), 1044286, 10, 1044287);
 
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
                 AddCraft(typeof(FurSarong), 1015279, 1028971, 35.0, 60.0, typeof(Cloth), 1044286, 12, 1044287);
 
             // Misc
@@ -170,11 +170,11 @@ namespace Server.Engines.Craft
             AddCraft(typeof(FullApron), 1015283, 1025437, 29.0, 54.0, typeof(Cloth), 1044286, 10, 1044287);
             AddCraft(typeof(OilCloth), 1015283, 1041498, 74.6, 75.9,/*74.6, 99.6,*/ typeof(Cloth), 1044286, 1, 1044287);
 
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                 AddCraft(typeof(ClothGloves), 1015283, "cloth gloves", SkillName.Tailoring, 74.6, 75.6,/*74.6, 99.9,*/ typeof(Cloth), "Cloth", 3, 1044287);
 
             // Footwear
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
                 AddCraft(typeof(FurBoots), 1015288, 1028967, 50.0, 75.0, typeof(Cloth), 1044286, 12, 1044287);
 
             AddCraft(typeof(Sandals), 1015288, 1025901, 12.4, 37.4, typeof(Leather), 1044462, 4, 1044463);
@@ -233,8 +233,8 @@ namespace Server.Engines.Craft
             AddSubRes(typeof(BarbedLeather), 1049153, 99.0, 1044462, 1049311);
 
             MarkOption = true;
-            Repair = Core.AOS;
-            CanEnhance = Core.AOS;
+            Repair = Core.RuleSets.AOSRules();
+            CanEnhance = Core.RuleSets.AOSRules();
         }
     }
 }

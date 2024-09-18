@@ -115,7 +115,7 @@ namespace Server.Spells
             Register(62, typeof(Eighth.FireElementalSpell));
             Register(63, typeof(Eighth.WaterElementalSpell));
             /*
-                        if ( Core.AOS )
+                        if ( Core.RuleSets.AOSRules() )
                         {
                             // Necromancy spells
                             Register( 100, typeof( Necromancy.AnimateDeadSpell ) );

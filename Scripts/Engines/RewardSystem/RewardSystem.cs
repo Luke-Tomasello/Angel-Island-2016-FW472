@@ -24,7 +24,7 @@
  * ChangeLog
  * 3/10/10, Adam
  *		Turned off Rewards system
- * 6/19/04, adam
+ * 6/19/04, Adam
  *		1. fixed typo "enterred." to "entered."
  *	5/26/04, mith
  *		Removed AccessLevel check in Reward_OnCommand.

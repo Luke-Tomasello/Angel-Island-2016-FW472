@@ -83,7 +83,7 @@ namespace Server.Spells.Eighth
             {
                 TimeSpan duration;
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                     duration = TimeSpan.FromSeconds(90.0);
                 else
                     duration = TimeSpan.FromSeconds(Utility.Random(80, 40));

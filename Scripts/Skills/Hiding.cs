@@ -55,7 +55,7 @@ namespace Server.SkillHandlers
             {
                 bonus = 100.0;
             }
-            else if (!Core.AOS)
+            else if (!Core.RuleSets.AOSRules())
             {
                 if (house == null)
                     house = BaseHouse.FindHouseAt(new Point3D(m.X - 1, m.Y, 127), m.Map, 16);
@@ -121,7 +121,7 @@ namespace Server.SkillHandlers
 
                     // Publish 15
                     // Players who successfully use their hiding skill while under the effects of an invisibility spell will no longer be revealed when the invisibility timer expires.
-                    if (PublishInfo.Publish >= 15 || Core.UOAI || Core.UOREN || Core.UOMO)
+                    if (PublishInfo.Publish >= 15 || Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
                         Spells.Sixth.InvisibilitySpell.RemoveTimer(m);
 
                     m.LocalOverheadMessage(MessageType.Regular, 0x1F4, 501240); // You have hidden yourself well.

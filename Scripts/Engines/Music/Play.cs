@@ -49,7 +49,7 @@ namespace Server.Commands
     {
         public static void Initialize()
         {
-            if (Core.UOAI || Core.UOREN || Core.UOMO)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
             {
                 Server.CommandSystem.Register("Play", CoreAI.PlayAccessLevel, new CommandEventHandler(Play_OnCommand));
                 Server.CommandSystem.Register("StopMusic", AccessLevel.Player, new CommandEventHandler(StopMusic_OnCommand));

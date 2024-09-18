@@ -21,7 +21,7 @@
 
 /* Scripts/Skills/Stealing.cs
  * ChangeLog:
- *	5/27/10, adam
+ *	5/27/10, Adam
  *		special case: disallow stealing from someones stonebag
  *		We could generalize thos say you cannot steal from a blessed container if need be
  *	06/01/09, plasma

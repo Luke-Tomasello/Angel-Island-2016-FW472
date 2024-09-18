@@ -21,7 +21,7 @@
 
 /* Scripts/Skills/AnimalTaming.cs
  * ChangeLog
- *	4/1/10, adam
+ *	4/1/10, Adam
  *		Add a check to prevent taming from within a house
  *	10/31/05, erlein
  *		Added flushing of aggressor list on successful taming attempt.
@@ -61,12 +61,12 @@ namespace Server.SkillHandlers
 
         public static TimeSpan OnUse(Mobile m)
         {
-            if (Core.UOAI || Core.UOREN || Core.UOMO || PublishInfo.Publish >= 13.6)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules() || PublishInfo.Publish >= 13.6)
                 m.RevealingAction();
 
             m.Target = new InternalTarget();
 
-            if (Core.UOAI || Core.UOREN || Core.UOMO || PublishInfo.Publish >= 13.6)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules() || PublishInfo.Publish >= 13.6)
                 m.RevealingAction();
 
             if (!m_DisableMessage)
@@ -138,7 +138,7 @@ namespace Server.SkillHandlers
 
             protected override void OnTarget(Mobile from, object targeted)
             {
-                if (Core.UOAI || Core.UOREN || Core.UOMO || PublishInfo.Publish >= 13.6)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules() || PublishInfo.Publish >= 13.6)
                     from.RevealingAction();
 
                 if (targeted is Mobile)
@@ -311,7 +311,7 @@ namespace Server.SkillHandlers
                     }
                     else
                     {
-                        if (Core.UOAI || Core.UOREN || Core.UOMO || PublishInfo.Publish >= 13.6)
+                        if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules() || PublishInfo.Publish >= 13.6)
                             m_Tamer.RevealingAction();
 
                         m_Tamer.NextSkillTime = DateTime.UtcNow;

@@ -22,7 +22,7 @@
 /* Scripts/Engines/AngelIsland/AIGuardSpawn/AIPostGuard.cs
  * Created 4/1/04 by mith
  * ChangeLog
- *	3/17/10, adam
+ *	3/17/10, Adam
  *		Every once ana while a guard will drop a key the the guard's after hours club.
  *		Logic:
  *			Dying guards rekey lock and generate+drop a key IF the door is locked
@@ -95,7 +95,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 DropWeapon(1, 1);
                 DropWeapon(1, 1);
@@ -120,7 +120,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // ai special
                     if (Spawning)
                     {

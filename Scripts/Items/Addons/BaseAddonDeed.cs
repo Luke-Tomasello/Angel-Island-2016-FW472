@@ -53,7 +53,7 @@ namespace Server.Items
         {
             Weight = 1.0;
 
-            if (!Core.AOS)
+            if (!Core.RuleSets.AOSRules())
                 LootType = LootType.Regular;
         }
 

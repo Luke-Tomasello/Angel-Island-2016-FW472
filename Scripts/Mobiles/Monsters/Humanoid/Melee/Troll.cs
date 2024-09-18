@@ -62,8 +62,8 @@ namespace Server.Mobiles
             VirtualArmor = 40;
         }
 
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : true; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 1 : 1; } }
+        public override bool CanRummageCorpses { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? true : true; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 1 : 1; } }
         public override int Meat { get { return 2; } }
 
         public Troll(Serial serial)
@@ -73,11 +73,11 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                 PackGold(50, 100);
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20021215174532/uo.stratics.com/hunters/troll.shtml
                     // 50 to 200 Gold, Potions, Arrows, Weapon Carried, 2 Raw Ribs (carved), Level 1 Treasure Maps
 

@@ -21,6 +21,8 @@
 
 /* Items/Misc/PublicMoongate.cs
  * CHANGELOG:
+  *  9/17/2024, Adam (SetFlag()/GetFlag() LegitHide)
+ *      Exploit prevention: hiding is delegitimized when exiting a moongate if you were not hidden to begin with
  *	2/24/11, Adam
  *		Update to RunUO script for old-style moongates.
  *		o Added our BaseOverland check
@@ -171,7 +173,12 @@ namespace Server.Items
 
                 from.Combatant = null;
                 from.Warmode = false;
+                bool wasHidden = from.Hidden;
                 from.Hidden = true;
+
+                // if you were only hidden by a moongate, you cannot stealth
+                if (wasHidden == false)
+                    from.SetFlag(Mobile.MobileFlags.LegitHide, false);  
 
                 from.MoveToWorld(m_entry.Location, m_list.Map);
                 Effects.PlaySound(m_entry.Location, m_list.Map, 0x1FE);
@@ -519,9 +526,9 @@ namespace Server.Items
                     int flags = mobile.NetState == null ? 0 : mobile.NetState.Flags;
                     bool young = mobile is PlayerMobile ? /*((PlayerMobile)mobile).Young*/ false : false;   // no young on GMN shards
 
-                    if (Core.SE && (flags & 0x10) != 0)
+                    if (Core.RuleSets.SERules() && (flags & 0x10) != 0)
                         checkLists = young ? PMList.SEListsYoung : PMList.SELists;
-                    else if (Core.AOS && (flags & 0x8) != 0)
+                    else if (Core.RuleSets.AOSRules() && (flags & 0x8) != 0)
                         checkLists = young ? PMList.AOSListsYoung : PMList.AOSLists;
                     else if ((flags & 0x4) != 0)
                         checkLists = young ? PMList.LBRListsYoung : PMList.LBRLists;

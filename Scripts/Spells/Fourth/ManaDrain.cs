@@ -92,7 +92,7 @@ namespace Server.Spells.Fourth
 
                 m.Paralyzed = false;
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     int toDrain = 40 + (int)(GetDamageSkill(Caster) - GetResistSkill(m));
 

@@ -21,11 +21,14 @@
 
 /* Server\Mobile.cs
  * ChangeLog:
+ *  9/17/2024, Adam (SetFlag()/GetFlag() LegitHide)
+ *      Exploit prevention: hiding is delegitimized when exiting a moongate if you were not hidden to begin with
  *	9/10/2024, Adam
  *	    BlockDamage is now persistent to staff, cleared on deserialization for all else
  */
 
 using Server.Accounting;
+using Server.Commands;
 using Server.ContextMenus;
 using Server.Guilds;
 using Server.Gumps;
@@ -526,9 +529,10 @@ namespace Server
             InvisibleShield = 0x00000010,   // under the effect of the NPC Invisible Shield Spell
             SuicideBomber = 0x00000020,     // did this player detonate an explosion on their person?
             BlockDamage = 0x00000040,       // Are we blocking damage on this mobile
+            LegitHide = 0x00000080,         // hiding is legit if they used the hiding skill. E.g., cant' stealth if LegitHide == false
         }
 
-        private void SetFlag(MobileFlags flag, bool value)
+        public void SetFlag(MobileFlags flag, bool value)
         {
             if (value)
                 m_Flags |= flag;
@@ -536,7 +540,7 @@ namespace Server
                 m_Flags &= ~flag;
         }
 
-        private bool GetFlag(MobileFlags flag)
+        public bool GetFlag(MobileFlags flag)
         {
             return ((m_Flags & flag) != 0);
         }
@@ -4121,7 +4125,7 @@ public static RegenRateHandler ManaRegenRateHandler
             return item.OnInventoryDeath(this);
         }
 
-        public virtual bool RetainPackLocsOnDeath { get { return Core.AOS; } }
+        public virtual bool RetainPackLocsOnDeath { get { return Core.RuleSets.AOSRules(); } }
 
         public virtual void Kill()
         {
@@ -5017,8 +5021,16 @@ public static RegenRateHandler ManaRegenRateHandler
 
         public virtual void DoSpeech(string text, int[] keywords, MessageType type, int hue)
         {
-            if (m_Deleted || CommandSystem.Handle(this, text))
+            try
+            {
+                if (m_Deleted || CommandSystem.Handle(this, text))
+                    return;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.LogException(ex);
                 return;
+            }
 
             int range = 15;
 
@@ -6880,7 +6892,10 @@ public static RegenRateHandler ManaRegenRateHandler
             if (m_Hidden && m_AccessLevel == AccessLevel.Player)
                 Hidden = false;
 
-            DisruptiveAction(); // Anything that unhides you will also distrupt meditation
+            if (m_AccessLevel == AccessLevel.Player)
+                SetFlag(MobileFlags.LegitHide, false);  // Set when using the hiding skill, LegitHide is the flag used to for stealth
+
+            DisruptiveAction();                         // Anything that unhides you will also disrupt meditation
         }
 
         public void SayTo(Mobile to, bool ascii, string text)
@@ -7576,7 +7591,7 @@ public static RegenRateHandler ManaRegenRateHandler
         {
             if (isCriminal)
             {
-                if (!Core.UOSP && !Core.UOMO)
+                if (!Core.RuleSets.SiegeRules() && !Core.RuleSets.MortalisRules())
                     CriminalAction(false);
                 else
                 {   // Healing a red character is a criminal offence, but will not get you guard whacked.
@@ -8217,7 +8232,7 @@ public static RegenRateHandler ManaRegenRateHandler
         {
             get
             {
-                if (Core.UOAI || Core.UOREN || Core.UOMO || PublishInfo.Publish >= 13)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules() || PublishInfo.Publish >= 13)
                 {
                     // Hit Point Calculation
                     //	The following change will be made to the manner in which hit points are calculated for players.
@@ -8244,7 +8259,7 @@ public static RegenRateHandler ManaRegenRateHandler
             }
             set
             {
-                /*if (this.Mount != null && !Core.UOAI && !Core.UOAR && !Core.UOMO)
+                /*if (this.Mount != null && !Core.RuleSets.AngelIslandRules() && !Core.UOAR && !Core.RuleSets.MortalisRules())
 				{
 					(this.Mount as Mobile).Stam = value;
 					return;
@@ -8296,7 +8311,7 @@ public static RegenRateHandler ManaRegenRateHandler
         {
             get
             {
-                /*if (this.Mounted && !Core.UOAI && !Core.UOAR && !Core.UOMO)
+                /*if (this.Mounted && !Core.RuleSets.AngelIslandRules() && !Core.UOAR && !Core.RuleSets.MortalisRules())
 					return (this.Mount as Mobile).StamMax; 
 				else*/
                 return Dex;
@@ -8548,6 +8563,9 @@ public static RegenRateHandler ManaRegenRateHandler
             }
             set
             {
+                // Exploit prevention: hiding is delegitimized when exiting a moongate if you were not hidden to begin with
+                this.SetFlag(Mobile.MobileFlags.LegitHide, value);
+
                 if (m_Hidden != value)
                 {
                     m_AllowedStealthSteps = 0;
@@ -9448,7 +9466,7 @@ public static RegenRateHandler ManaRegenRateHandler
 
         public void InvalidateProperties()
         {
-            if (!Core.AOS)
+            if (!Core.RuleSets.AOSRules())
                 return;
 
             if (m_Map != null && m_Map != Map.Internal && !World.Loading)
@@ -11370,7 +11388,7 @@ public static RegenRateHandler ManaRegenRateHandler
 
         // I don't know when shopkeepers got their title
         // Question(12) on the boards
-        public virtual bool ClickTitle { get { return (Core.UOAI || Core.UOREN || Core.UOMO || PublishInfo.Publish > 8) ? true : false; } }
+        public virtual bool ClickTitle { get { return (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules() || PublishInfo.Publish > 8) ? true : false; } }
 
         private static bool m_DisableHiddenSelfClick = true;
 
@@ -11466,7 +11484,7 @@ public static RegenRateHandler ManaRegenRateHandler
             // http://martin.brenner.de/ultima/uo/news1.html
             // the (invulnerable) tag has been removed; invulnerable NPCs and players can now be identified by the yellow hue of their name
             // Adam: June 2, 2001 probably means Publish 12 which was July 24, 2001
-            if (IsInvulnerable && !Core.UOAI && !Core.UOREN && !Core.UOMO && PublishInfo.Publish < 12)
+            if (IsInvulnerable && !Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.MortalisRules() && PublishInfo.Publish < 12)
                 suffix = String.Concat(suffix, " ", "(invulnerable)");
 
             string val;
@@ -11493,7 +11511,7 @@ public static RegenRateHandler ManaRegenRateHandler
         // Adam: to allow us to restart the same world under a different rule set, we need to reset the name hue here
         public int CalcInvulNameHue()
         {
-            if (IsInvulnerable && !Core.AOS && (Core.UOAI || Core.UOREN || Core.UOMO || PublishInfo.Publish >= 12))
+            if (IsInvulnerable && !Core.RuleSets.AOSRules() && (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules() || PublishInfo.Publish >= 12))
                 return 0x35;
             else
                 return -1;

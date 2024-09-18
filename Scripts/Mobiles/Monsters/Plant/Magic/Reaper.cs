@@ -65,7 +65,7 @@ namespace Server.Mobiles
         }
 
         public override Poison PoisonImmune { get { return Poison.Greater; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 2 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 2 : 0; } }
         public override bool DisallowAllMoves { get { return true; } }
 
         public Reaper(Serial serial)
@@ -75,14 +75,14 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackItem(new Log(10));
                 PackGold(0, 50);
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20021014235628/uo.stratics.com/hunters/reaper.shtml
                     // 0 to 150 Gold, 10 Logs
 

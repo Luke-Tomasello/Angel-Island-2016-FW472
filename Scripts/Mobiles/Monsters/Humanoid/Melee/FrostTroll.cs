@@ -69,7 +69,7 @@ namespace Server.Mobiles
         // page not found
         // http://web.archive.org/web/20080627205222/uo.stratics.com/database/view.php?db_content=hunters&id=179
         // 25 - 175 Gold. 1 Gem, Weapon Carved: 2 Raw Ribs Special: Level 1 Treasure Map
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 1 : 1; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 1 : 1; } }
 
         public FrostTroll(Serial serial)
             : base(serial)
@@ -78,7 +78,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGem();
                 PackPotion();
@@ -91,7 +91,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020301014847/uo.stratics.com/hunters/frosttroll.shtml
                     // page not found
                     // http://web.archive.org/web/20080627205222/uo.stratics.com/database/view.php?db_content=hunters&id=179

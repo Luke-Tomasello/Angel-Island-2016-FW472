@@ -22,7 +22,7 @@
 /* Scripts\Engines\AngelIsland\Gumps\AITeleportQueryGump.cs
  * ChangeLog
  *	2/10/11, Adam
- *		make gump conditioned on Core.UOAI || Core.UOAR
+ *		make gump conditioned on Core.RuleSets.AngelIslandRules() || Core.UOAR
  * 4/8/08, Adam
  *		Ignore gump during Server Wars.
  *		There is no murder counts, no prison, no statloss during Server Wars.
@@ -51,7 +51,7 @@ namespace Server.Gumps
             Mobile m = e.Mobile;
 
             // only on AI
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                 // Adam: not during Server Wars
                 if (m.Player && m.AccessLevel == AccessLevel.Player && m.ShortTermMurders >= 5 && !Server.Misc.TestCenter.ServerWars())
                     if (!((PlayerMobile)m).Inmate)

@@ -21,7 +21,7 @@
 
 /* Scripts/Mobiles/Monsters/Humanoid/Magic/PirateWench.cs
  * ChangeLog:
- *	7/9/10, adam
+ *	7/9/10, Adam
  *		o Merge pirate class hierarchy (all pirates are now derived from class Pirate)
  *		o switch over to using AI_HumanMage
  *		o defuff skills a tad since AI_HumanMage mad her much tougher to kill
@@ -49,7 +49,7 @@ namespace Server.Mobiles
     [CorpseName("corpse of a salty seadog")]
     public class PirateWench : Pirate
     {
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 3 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 3 : 0; } }
 
         [Constructable]
         public PirateWench()
@@ -109,7 +109,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGem();
                 PackReg(8, 12);
@@ -137,7 +137,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // ai special
                     if (Spawning)
                     {

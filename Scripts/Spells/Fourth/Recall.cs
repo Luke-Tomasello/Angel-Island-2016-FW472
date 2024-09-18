@@ -24,7 +24,7 @@
  *	2/28/11, Adam
  *		Fix logic error in recalling to your boat.
  *	2/17/11, Adam
- *		Block recalling to boats only if Core.UOAI || Core.UOAR || Core.UOSP (allowed on UOMO)
+ *		Block recalling to boats only if Core.RuleSets.AngelIslandRules() || Core.UOAR || Core.RuleSets.SiegeRules() (allowed on UOMO)
  * 11/06/10, Pix
  *      Conditionalized out recall for IS.
  *	6/18/10, Adam
@@ -111,7 +111,7 @@ namespace Server.Spells.Fourth
 
         public override bool CheckCast()
         {
-            if (Core.UOSP)
+            if (Core.RuleSets.SiegeRules())
             {
                 Caster.SendMessage("That spell does not work here.");
                 return false;
@@ -143,7 +143,7 @@ namespace Server.Spells.Fourth
 
         public void Effect(Point3D loc, Map map, bool checkMulti)
         {
-            if (map == null || (!Core.AOS && Caster.Map != map))
+            if (map == null || (!Core.RuleSets.AOSRules() && Caster.Map != map))
             {
                 Caster.SendLocalizedMessage(1005569); // You can not recall to another facet.
             }
@@ -181,7 +181,7 @@ namespace Server.Spells.Fourth
             {
                 Caster.SendLocalizedMessage(502412); // There are no charges left on that item.
             }
-            else if ((Core.UOAI || Core.UOREN || Core.UOSP) && BaseBoat.FindBoatAt(loc, map, 16) != null)
+            else if ((Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.SiegeRules()) && BaseBoat.FindBoatAt(loc, map, 16) != null)
             {
                 // disallow recalling onto the boat (AI&SP) - they recalled off their key
                 Caster.SendLocalizedMessage(501942); // That location is blocked.

@@ -21,13 +21,13 @@
 
 /* Scripts/Engines/AI/AI/MageAI.cs
  * CHANGELOG
- *	7/11/10, adam
+ *	7/11/10, Adam
  *		o major reorganization of AI
  *			o push most smart-ai logic from the advanced magery classes down to baseAI so that we can use potions and bandages from 
  *				the new advanced melee class
  *			o remove plasma's constant focus logic as it pertains to 'memory' .. here we should have simply Remember()'ed the 
  *				ConstantFocus mob instead of all the special cases
- *	4/9/10, adam
+ *	4/9/10, Adam
  *		Add SmartSpell function for the 8th level default spell behavior of high-level magical mobs
  *		Add a SmartSpellMCi for managing the 8th level default spell behavior of high-level magical mobs
  *	05/25/09, plasma

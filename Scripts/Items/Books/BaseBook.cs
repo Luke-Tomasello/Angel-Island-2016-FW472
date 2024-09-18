@@ -21,10 +21,10 @@
 
 /* Scripts/Items/Books/BaseBook.cs
  * ChangeLog
- *	4/17/10, adam
+ *	4/17/10, Adam
  *		Add BookSubtype and BookVersion - 
  *			allows us to check for types of a book already on a player so that we don't keep giving them
- *	3/22/10, adam
+ *	3/22/10, Adam
  *		use the better logger for logging book updates.
  *		PS. the old way didn't include the books itemid!
  *	03/11/07, weaver

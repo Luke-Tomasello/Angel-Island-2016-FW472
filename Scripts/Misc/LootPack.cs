@@ -83,7 +83,7 @@ namespace Server
 
         public static int GetLuckChance(Mobile from)
         {
-            if (!Core.AOS)
+            if (!Core.RuleSets.AOSRules())
                 return 0;
 
             int luck = from.Luck;
@@ -136,7 +136,7 @@ namespace Server
             if (cont == null)
                 return;
 
-            bool checkLuck = Core.AOS;
+            bool checkLuck = Core.RuleSets.AOSRules();
 
             for (int i = 0; i < m_Entries.Length; ++i)
             {
@@ -360,13 +360,13 @@ namespace Server
         #endregion
 
         #region Generic accessors
-        public static LootPack Poor { get { return Core.AOS ? AosPoor : OldPoor; } }
-        public static LootPack Meager { get { return Core.AOS ? AosMeager : OldMeager; } }
-        public static LootPack Average { get { return Core.AOS ? AosAverage : OldAverage; } }
-        public static LootPack Rich { get { return Core.AOS ? AosRich : OldRich; } }
-        public static LootPack FilthyRich { get { return Core.AOS ? AosFilthyRich : OldFilthyRich; } }
-        public static LootPack UltraRich { get { return Core.AOS ? AosUltraRich : OldUltraRich; } }
-        public static LootPack SuperBoss { get { return Core.AOS ? AosSuperBoss : OldSuperBoss; } }
+        public static LootPack Poor { get { return Core.RuleSets.AOSRules() ? AosPoor : OldPoor; } }
+        public static LootPack Meager { get { return Core.RuleSets.AOSRules() ? AosMeager : OldMeager; } }
+        public static LootPack Average { get { return Core.RuleSets.AOSRules() ? AosAverage : OldAverage; } }
+        public static LootPack Rich { get { return Core.RuleSets.AOSRules() ? AosRich : OldRich; } }
+        public static LootPack FilthyRich { get { return Core.RuleSets.AOSRules() ? AosFilthyRich : OldFilthyRich; } }
+        public static LootPack UltraRich { get { return Core.RuleSets.AOSRules() ? AosUltraRich : OldUltraRich; } }
+        public static LootPack SuperBoss { get { return Core.RuleSets.AOSRules() ? AosSuperBoss : OldSuperBoss; } }
         #endregion
 
         public static readonly LootPack LowScrolls = new LootPack(new LootPackEntry[]
@@ -470,7 +470,7 @@ namespace Server
         private int GetRandomOldBonus()
         {
             int rnd = 0;
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                 rnd = Utility.Random(m_MinIntensity, m_MaxIntensity - m_MinIntensity);
             else
                 rnd = Utility.RandomMinMax(m_MinIntensity, m_MaxIntensity);
@@ -509,7 +509,7 @@ namespace Server
 
                 if (item is BaseWeapon || item is BaseArmor || item is BaseJewel)
                 {
-                    if (Core.AOS)
+                    if (Core.RuleSets.AOSRules())
                     {
                         int bonusProps = GetBonusProperties();
                         int min = m_MinIntensity;
@@ -570,7 +570,7 @@ namespace Server
                 {
                     SlayerName slayer = SlayerName.None;
 
-                    if (Core.AOS)
+                    if (Core.RuleSets.AOSRules())
                         slayer = BaseRunicTool.GetRandomSlayer();
                     else
                         slayer = SlayerGroup.GetLootSlayerType(from.GetType());
@@ -715,7 +715,7 @@ namespace Server
             if (index == 0)
                 scrollCount += m_BlankTypes.Length;
 
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
                 scrollCount += m_NecroTypes[index].Length;
 
             int rnd = Utility.Random(scrollCount);
@@ -725,9 +725,9 @@ namespace Server
             else if (index == 0)
                 rnd -= m_BlankTypes.Length;
 
-            if (Core.AOS && rnd < m_NecroTypes.Length)
+            if (Core.RuleSets.AOSRules() && rnd < m_NecroTypes.Length)
                 return Loot.Construct(m_NecroTypes[index]);
-            else if (Core.AOS)
+            else if (Core.RuleSets.AOSRules())
                 rnd -= m_NecroTypes[index].Length;
 
             return Loot.RandomScroll(minCircle * 8, (maxCircle * 8) + 7, SpellbookType.Regular);
@@ -748,7 +748,7 @@ namespace Server
                 else if (m_Type == typeof(BaseShield))
                     item = Loot.RandomShield();
                 else if (m_Type == typeof(BaseJewel))
-                    item = Core.AOS ? Loot.RandomJewelry() : Loot.RandomArmorOrShieldOrWeapon();
+                    item = Core.RuleSets.AOSRules() ? Loot.RandomJewelry() : Loot.RandomArmorOrShieldOrWeapon();
                 else if (m_Type == typeof(BaseInstrument))
                     item = Loot.RandomInstrument();
                 else if (m_Type == typeof(Amber)) // gem

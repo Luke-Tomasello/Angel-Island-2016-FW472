@@ -21,15 +21,15 @@
 
 /* Scripts/Engines/AngelIsland/AITeleporters.cs
  * ChangeLog
- *	3/17/10, adam
+ *	3/17/10, Adam
  *		Add a KeepStartup parameter to the EmptyPackOnExit() function.
  *			if KeepStartup is true, you will keep a blessed stinger and your spellbook.
  *			this is never sent when exiting the prison, but instead set OnLogon() in PlayerMobile to reset your backpack
  *			see comments in PlayerMobile:OnLogon
- *	3/12/10, adam
+ *	3/12/10, Adam
  *		Add suppord for ShortCriminalCounts. Like murder counts, but not reduced if you escape
  *		ShortCriminalCounts decay at the same rate as short term murder counts in prison only
- *	3/10/10, adam
+ *	3/10/10, Adam
  *		Lots of cleanup.
  *		Add common function for cleaning the players backpack on exit
  *		add 1 in 5000 chance to keep your light housepass

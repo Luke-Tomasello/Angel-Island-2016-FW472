@@ -21,6 +21,8 @@
 
 /* Scripts/Items/Clothing/BaseClothing.cs
  * CHANGELOG
+ *  9/16/2024, Adam (OnSingleClick)
+ *      More robust OnSingleClick processing
  * 3/8/2016, Adam
  *		o looks like several magic clothes/jewlery were never tested. Fixing them now:
  *		o remove animation/sound from nightsight and spell reflect. these should be stealth
@@ -32,7 +34,7 @@
  *		o Port OnHit logic to that of RunUO 2.0
  *		o clothing is now deleted when it is destroyed
  *		o clothing now absorbs a little bit of damage as per RunUO 2.0
- * 4/1/10, adam
+ * 4/1/10, Adam
  *		Add support for save/restore hue (for CTF colorizing)
  * 5/2/08, Adam
  *		Update use of HideAttributes to be simpler.
@@ -432,7 +434,7 @@ namespace Server.Items
             return false;
         }
 
-        private string MagicName()
+        private string GetMagicName()
         {
             string MagicName;
             switch (MagicType)
@@ -477,6 +479,51 @@ namespace Server.Items
 
             return MagicName;
         }
+        private int GetMagicLabel()
+        {
+            int MagicLabel;
+            switch (MagicType)
+            {
+                case MagicEffect.MagicReflect:
+                    MagicLabel = 1017371;           // spell reflection charges: ~1_val~
+                    break;
+                case MagicEffect.Invisibility:
+                    MagicLabel = 1017347;           // invisibility charges: ~1_val~
+                    break;
+                case MagicEffect.Bless:
+                    MagicLabel = 1017336;           // bless charges: ~1_val~
+                    break;
+                case MagicEffect.Agility:
+                    MagicLabel = 1017331;           // agility charges: ~1_val~
+                    break;
+                case MagicEffect.Cunning:
+                    MagicLabel = 1017332;           // cunning charges: ~1_val~
+                    break;
+                case MagicEffect.Strength:
+                    MagicLabel = 1017333;           // strength charges: ~1_val~
+                    break;
+                case MagicEffect.NightSight:
+                    MagicLabel = 1017324;           // night sight charges: ~1_val~
+                    break;
+                case MagicEffect.Curse:
+                    MagicLabel = 1017335;           // curse charges: ~1_val~
+                    break;
+                case MagicEffect.Clumsy:
+                    MagicLabel = 1017326;           // clumsiness charges: ~1_val~
+                    break;
+                case MagicEffect.Feeblemind:
+                    MagicLabel = 1017327;           // feeblemind charges: ~1_val~
+                    break;
+                case MagicEffect.Weakness:
+                    MagicLabel = 1017328;           // weakness charges: ~1_val~
+                    break;
+                default:
+                    MagicLabel = -1;
+                    break;
+            }
+
+            return MagicLabel;
+        }
 
         public override void GetProperties(ObjectPropertyList list)
         {
@@ -492,29 +539,11 @@ namespace Server.Items
 
             if (m_Quality == ClothingQuality.Exceptional)
                 list.Add(1060636); // exceptional
-
-            if (Identified == true && MagicCharges > 0)
-            {
-                string MagicName = this.MagicName();
-                string MagicProp = String.Format("{0} - Charges:{1}", MagicName, MagicCharges);
-                list.Add(MagicProp);
-            }
-            else if (Identified == false && MagicCharges > 0)
-                list.Add("Unidentified");
         }
 
-        #region OnSingleClick
         public override void OnSingleClick(Mobile from)
         {
-#if def_old
-			// FOR TEST - DELETE WHEN DONE
-			if (false)
-			{
-				OldOnSingleClick(from);
-				return;
-			}
-#endif
-            if (this.HideAttributes == true)
+            if (this.HideAttributes == true || (Name == null && UseOldNames))
             {
                 base.OnSingleClick(from);
                 return;
@@ -535,107 +564,26 @@ namespace Server.Items
                 attrs.Add(new EquipInfoAttribute(1041350)); // faction item
             #endregion
 
-            if (Name != null || OldName == null) // only use the new ([X/Y/Z]) method on things we don't have OldNames for
-            {
-                if (m_Quality == ClothingQuality.Exceptional)
-                    attrs.Add(new EquipInfoAttribute(1018305 - (int)m_Quality));
+            //Ethics.EthicBless.AddEquipmentInfoAttribute(this, attrs);
 
-                if (Identified == false && MagicCharges > 0)
-                    attrs.Add(new EquipInfoAttribute(1038000)); // unidentified
-                else if (Identified == true && MagicCharges > 0)
-                {
-                    switch (MagicType)
-                    {
-                        case MagicEffect.MagicReflect:
-                            attrs.Add(new EquipInfoAttribute(1044416, m_MagicCharges)); // magic reflection
-                            break;
-                        case MagicEffect.Invisibility:
-                            attrs.Add(new EquipInfoAttribute(1044424, m_MagicCharges)); // invisibility
-                            break;
-                        case MagicEffect.Bless:
-                            attrs.Add(new EquipInfoAttribute(1044397, m_MagicCharges)); // bless
-                            break;
-                        case MagicEffect.Agility:
-                            attrs.Add(new EquipInfoAttribute(1044389, m_MagicCharges)); // agility
-                            break;
-                        case MagicEffect.Cunning:
-                            attrs.Add(new EquipInfoAttribute(1044390, m_MagicCharges)); // cunning
-                            break;
-                        case MagicEffect.Strength:
-                            attrs.Add(new EquipInfoAttribute(1044396, m_MagicCharges)); // strength
-                            break;
-                        case MagicEffect.NightSight:
-                            attrs.Add(new EquipInfoAttribute(1044387, m_MagicCharges)); // night sight
-                            break;
-                        case MagicEffect.Curse:
-                            attrs.Add(new EquipInfoAttribute(1044407, m_MagicCharges)); // curse
-                            break;
-                        case MagicEffect.Clumsy:
-                            attrs.Add(new EquipInfoAttribute(1044382, m_MagicCharges)); // clumsy
-                            break;
-                        case MagicEffect.Feeblemind:
-                            attrs.Add(new EquipInfoAttribute(1044384, m_MagicCharges)); // feeblemind
-                            break;
-                        case MagicEffect.Weakness:
-                            attrs.Add(new EquipInfoAttribute(1044388, m_MagicCharges)); // weaken
-                            break;
-                    }
-                }
+            if (m_Quality == ClothingQuality.Exceptional)
+                attrs.Add(new EquipInfoAttribute(1018305 - (int)m_Quality));
+
+            if (m_Identified)
+            {
+                if (MagicType != MagicEffect.None && MagicCharges > 0)
+                    attrs.Add(new EquipInfoAttribute(this.GetMagicLabel(), m_MagicCharges));
+            }
+            else if (MagicType != MagicEffect.None && MagicCharges > 0)
+            {
+                attrs.Add(new EquipInfoAttribute(1038000)); // Unidentified
             }
 
             int number;
 
             if (Name == null)
             {
-                if (OldName == null)
-                {
-                    number = LabelNumber;
-                }
-                else
-                {
-                    // display old style
-
-                    string oldname = OldName;
-                    string article = OldArticle;
-
-                    // TBD
-#if def_old
-					OldOnSingleClick(from);
-					return;
-#else
-                    //yay!  Show us the old way!
-                    if (m_Quality == ClothingQuality.Exceptional)
-                    {
-                        oldname = "exceptional " + oldname;
-                        if (OldArticle != null)         // careful here: 'boots' do not have an article, so don't add one here either
-                            article = "an";             // magic boots should just read 'exceptional boots'
-                    }
-
-                    if (MagicType != MagicEffect.None && MagicCharges > 0)
-                    {
-                        if (m_Identified)
-                        {
-                            string MagicName = this.MagicName();
-                            if (OldArticle != null)         // careful here: 'boots' do not have an article, so don't add one here either
-                                article = "a";              // magic boots should just read 'magic boots'
-
-                            oldname = oldname + " of " + MagicName + String.Format(" charges: {0}", MagicCharges);
-                        }
-                        else
-                        {
-                            oldname = "magic " + oldname;
-                            if (OldArticle != null)         // careful here: 'boots' do not have an article, so don't add one here either
-                                article = "a";              // magic boots should just read 'boots of night eyes (2 charges)'
-                        }
-                    }
-#endif
-
-                    //finally, add the article
-                    oldname = article + " " + oldname;
-
-                    this.LabelTo(from, oldname);
-                    number = 1041000;
-                }
+                number = LabelNumber;
             }
             else
             {
@@ -646,117 +594,78 @@ namespace Server.Items
             if (attrs.Count == 0 && Crafter == null && Name != null)
                 return;
 
-            /*EquipmentInfo eqInfo = new EquipmentInfo(number, m_Crafter, false, (EquipInfoAttribute[])attrs.ToArray(typeof(EquipInfoAttribute)));
-			from.Send(new DisplayEquipmentInfo(this, eqInfo));*/
+            EquipmentInfo eqInfo = new EquipmentInfo(number, m_Crafter, false, (EquipInfoAttribute[])attrs.ToArray(typeof(EquipInfoAttribute)));
+            from.Send(new DisplayEquipmentInfo(this, eqInfo));
+        }
 
-            if (Name != null || OldName == null)
+        public override string GetOldPrefix(ref Article article)
+        {
+            string prefix = "";
+
+            if (!HideAttributes && m_Quality == ClothingQuality.Exceptional)
             {
-                EquipmentInfo eqInfo = new EquipmentInfo(number, m_Crafter, false, (EquipInfoAttribute[])attrs.ToArray(typeof(EquipInfoAttribute)));
-                from.Send(new DisplayEquipmentInfo(this, eqInfo));
+                if ((article == Article.A || article == Article.An) && prefix.Length == 0)
+                    article = Article.An;
+
+                prefix += "exceptional ";
             }
-            else
+
+            if (m_Identified)
             {
-                if (attrs.Count > 0)
+                // there are no identifyable prefixes
+            }
+            else if (!HideAttributes && MagicType != MagicEffect.None && MagicCharges > 0)
+            {
+                if ((article == Article.A || article == Article.An) && prefix.Length == 0)
+                    article = Article.A;
+
+                prefix += "magic ";
+            }
+
+            return prefix;
+        }
+
+        public override string GetOldSuffix()
+        {
+            string suffix = "";
+
+            if (m_Identified)
+            {
+                if (!HideAttributes && MagicType != MagicEffect.None && MagicCharges > 0)
                 {
-                    EquipmentInfo eqInfo = new EquipmentInfo(number, null, false, (EquipInfoAttribute[])attrs.ToArray(typeof(EquipInfoAttribute)));
-                    from.Send(new DisplayEquipmentInfo(this, eqInfo));
+                    if (suffix.Length == 0)
+                        suffix += " of ";
+                    else
+                        suffix += " and ";
+
+                    suffix += FormatOldSuffix(MagicType, m_MagicCharges);
                 }
             }
+
+            if (m_Crafter != null)
+                suffix += " crafted by " + m_Crafter.Name;
+
+            return suffix;
         }
-        #endregion
 
-        #region OLD OnSingleClick
-#if def_old
-		// FOR TEST - comment-out WHEN DONE
-		public void OldOnSingleClick(Mobile from)
-		{
-			if (this.HideAttributes == true)
-			{
-				base.OnSingleClick(from);
-				return;
-			}
+        public string FormatOldSuffix(MagicEffect effect, int charges)
+        {
+            //MagicEffect e = GetEffect(effect);
 
-			ArrayList attrs = new ArrayList();
+            //if (e == null)
+            //    return string.Empty;
 
-			if (DisplayLootType)
-			{
-				if (LootType == LootType.Blessed)
-					attrs.Add(new EquipInfoAttribute(1038021)); // blessed
-				else if (LootType == LootType.Cursed)
-					attrs.Add(new EquipInfoAttribute(1049643)); // cursed
-			}
+            //string name = e.OldName;
+            string name = name = this.GetMagicName();
 
-            #region Factions
-			if (m_FactionState != null)
-				attrs.Add(new EquipInfoAttribute(1041350)); // faction item
-            #endregion
+            //if (name == null && !Server.Text.Cliloc.Lookup.TryGetValue(this.GetMagicLabel(), out name))
+            //    return string.Empty;
+            
+            //if (name != null)
+            //    name = name.Replace(" charges: ~1_val~", "");
 
-			if (m_Quality == ClothingQuality.Exceptional)
-				attrs.Add(new EquipInfoAttribute(1018305 - (int)m_Quality));
-
-			int number;
-
-			if (Name == null)
-			{
-				number = LabelNumber;
-			}
-			else
-			{
-				this.LabelTo(from, Name);
-				number = 1041000;
-			}
-
-			if (Identified == false && MagicCharges > 0)
-				attrs.Add(new EquipInfoAttribute(1038000)); // unidentified
-			else if (Identified == true && MagicCharges > 0)
-			{
-				switch (MagicType)
-				{
-					case MagicEffect.MagicReflect:
-						attrs.Add(new EquipInfoAttribute(1044416, m_MagicCharges)); // magic reflection
-						break;
-					case MagicEffect.Invisibility:
-						attrs.Add(new EquipInfoAttribute(1044424, m_MagicCharges)); // invisibility
-						break;
-					case MagicEffect.Bless:
-						attrs.Add(new EquipInfoAttribute(1044397, m_MagicCharges)); // bless
-						break;
-					case MagicEffect.Agility:
-						attrs.Add(new EquipInfoAttribute(1044389, m_MagicCharges)); // agility
-						break;
-					case MagicEffect.Cunning:
-						attrs.Add(new EquipInfoAttribute(1044390, m_MagicCharges)); // cunning
-						break;
-					case MagicEffect.Strength:
-						attrs.Add(new EquipInfoAttribute(1044396, m_MagicCharges)); // strength
-						break;
-					case MagicEffect.NightSight:
-						attrs.Add(new EquipInfoAttribute(1044387, m_MagicCharges)); // night sight
-						break;
-					case MagicEffect.Curse:
-						attrs.Add(new EquipInfoAttribute(1044407, m_MagicCharges)); // curse
-						break;
-					case MagicEffect.Clumsy:
-						attrs.Add(new EquipInfoAttribute(1044382, m_MagicCharges)); // clumsy
-						break;
-					case MagicEffect.Feeblemind:
-						attrs.Add(new EquipInfoAttribute(1044384, m_MagicCharges)); // feeblemind
-						break;
-					case MagicEffect.Weakness:
-						attrs.Add(new EquipInfoAttribute(1044388, m_MagicCharges)); // weaken
-						break;
-				}
-			}
-
-			if (attrs.Count == 0 && Crafter == null && Name != null)
-				return;
-
-			EquipmentInfo eqInfo = new EquipmentInfo(number, m_Crafter, false, (EquipInfoAttribute[])attrs.ToArray(typeof(EquipInfoAttribute)));
-
-			from.Send(new DisplayEquipmentInfo(this, eqInfo));
-		}
-#endif
-        #endregion
+            return string.Format("{0} (charges: {1})", name.ToLower(), charges);
+        }
 
         public override void OnAdded(object parent)
         {
@@ -842,7 +751,7 @@ namespace Server.Items
 
             if (25 > Utility.Random(100)) // 25% chance to lower durability
             {
-                if (Core.AOS /*&& m_AosClothingAttributes.SelfRepair > Utility.Random(10)*/)
+                if (Core.RuleSets.AOSRules() /*&& m_AosClothingAttributes.SelfRepair > Utility.Random(10)*/)
                 {
                     HitPoints += 2;
                 }
@@ -925,7 +834,7 @@ namespace Server.Items
                 {
                     PlayerMobile pm = (PlayerMobile)m;
 
-                    if (Core.UOMO || Core.UOAI || Core.UOREN)
+                    if (Core.RuleSets.MortalisRules() || Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                         if (this.IOBAlignment != IOBAlignment.None)
                         {
                             if (pm.IOBEquipped == true)
@@ -1543,7 +1452,7 @@ namespace Server.Items
                 iMax = (iMax * 3) / 2; // Fixed order of precedence bug
                 iMin = (iMin * 3) / 2;
 
-                if (Core.UOAI || Core.UOREN)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                 {
                     // make exceptional clothes newbied
                     this.LootType = LootType.Newbied;

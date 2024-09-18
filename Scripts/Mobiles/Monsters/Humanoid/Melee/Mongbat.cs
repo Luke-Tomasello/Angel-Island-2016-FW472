@@ -75,11 +75,11 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                 PackGold(1, 25);
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020210133039/uo.stratics.com/hunters/mongbat.shtml
                     // 1 Raw Ribs (carved), 6 Hides (carved) off of stronger Mongbat. The stronger version also give 0 to 50 Gold.
 

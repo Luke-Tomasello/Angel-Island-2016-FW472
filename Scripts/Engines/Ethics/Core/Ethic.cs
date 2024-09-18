@@ -124,7 +124,7 @@ namespace Server.Ethics
 
         public static void Initialize()
         {
-            if (Core.UOSP)
+            if (Core.RuleSets.SiegeRules())
             {
                 if (Core.NewEthics)
                 {

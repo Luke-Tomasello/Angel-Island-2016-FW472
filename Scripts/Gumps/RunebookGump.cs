@@ -181,7 +181,7 @@ namespace Server.Gumps
                     AddHtmlLocalized(175 + (half * 140), 15, 100, 18, 1011300, false, false); // Set default
                 }
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     AddButton(135 + (half * 160), 140, 2103, 2104, 2 + (index * 6) + 3, GumpButtonType.Reply, 0);
                     AddHtmlLocalized(150 + (half * 160), 136, 110, 20, 1062722, false, false); // Recall
@@ -423,7 +423,7 @@ namespace Server.Gumps
                             }
                         case 5: // Sacred Journey
                             {
-                                if (Core.AOS)
+                                if (Core.RuleSets.AOSRules())
                                 {
                                     /*
 									if ( HasSpell( from, 209 ) )

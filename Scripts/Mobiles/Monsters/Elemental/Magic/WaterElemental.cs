@@ -21,7 +21,7 @@
 
 /* Scripts/Mobiles/Monsters/Elemental/Magic/WaterElemental.cs
  * ChangeLog
- *	7/16/10, adam
+ *	7/16/10, Adam
  *		o increase average int 
  *		o increase average hp
  *		o increase average damage
@@ -99,7 +99,7 @@ namespace Server.Mobiles
             }
         }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 2 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 2 : 0; } }
 
         public WaterElemental(Serial serial)
             : base(serial)
@@ -108,7 +108,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackPotion();
                 PackReg(2);
@@ -119,7 +119,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020214225041/uo.stratics.com/hunters/waterelemental.shtml
                     //	200 to 250 Gold, Potions, Reagents
 

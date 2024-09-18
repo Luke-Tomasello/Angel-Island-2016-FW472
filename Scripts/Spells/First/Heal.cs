@@ -76,7 +76,7 @@ namespace Server.Spells.First
 
                 int toHeal;
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     // TODO: / 100 or / 120 ? 1, 3 or 1, 4 ?
                     toHeal = Caster.Skills.Magery.Fixed / 100;

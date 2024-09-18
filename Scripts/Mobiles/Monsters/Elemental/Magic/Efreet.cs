@@ -29,7 +29,7 @@
  *		1. implement Jade's new Category Based Drop requirements
  *  6/5/04, Pix
  *		Merged in 1.0RC0 code.
- *	4/24/04, adam
+ *	4/24/04, Adam
  *		Add break statements for the OnBeforeDeath switch statement
  */
 
@@ -68,7 +68,7 @@ namespace Server.Mobiles
             VirtualArmor = 56;
         }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 5 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 5 : 0; } }
 
         public Efreet(Serial serial)
             : base(serial)
@@ -77,7 +77,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGem();
 
@@ -103,7 +103,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020403232027/uo.stratics.com/hunters/efreet.shtml
                     // 	250 to 500 Gold, Potions, Arrows, Magic Items, Gems, Daemon Bone Armor
                     if (Spawning)

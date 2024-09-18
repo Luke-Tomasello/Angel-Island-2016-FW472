@@ -21,7 +21,7 @@
 
 /* Scripts\Spells\NPC\InvisibleShield.cs
  * ChangeLog:
- * 	6/29/10, adam
+ * 	6/29/10, Adam
  * 		Initial creation
  *		This spell is used by guards on Suicide Bombers to contain the blast
  */

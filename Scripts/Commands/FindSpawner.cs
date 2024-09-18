@@ -21,7 +21,7 @@
 
 /* Scripts/Commands/FindSpawner.cs
  * ChangeLog
- *	3/3/11, adam
+ *	3/3/11, Adam
  *		Fix a logic bug that was preventing Owners from accessing the results. I.e., access >= Administrators
  *  11/21/10, Adam
  *      1. Make available to GMs for world building/cleanup if the server is launched with the -build command

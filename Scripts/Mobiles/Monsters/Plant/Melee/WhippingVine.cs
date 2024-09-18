@@ -73,7 +73,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackReg(6);
                 PackItem(new FertileDirt(Utility.RandomMinMax(5, 10)));
@@ -85,7 +85,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // no pages until...
                     // http://web.archive.org/web/20021019193742/uo.stratics.com/hunters/whippingvine.shtml
                     // Reagents, Fertile Dirt, Executioner's Cap, Vines

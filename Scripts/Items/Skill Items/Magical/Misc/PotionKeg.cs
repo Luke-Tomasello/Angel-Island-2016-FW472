@@ -21,7 +21,7 @@
 
 /* Items/SkillItems/Magical/Misc/PotionKeg.cs
  * CHANGELOG:
- *	5/29/10, adam
+ *	5/29/10, Adam
  *		Place filled bottles back into the same pack the empty came from
  *		Use  the version of ConsumeTotal() that takes an on OnItemConsumed delegate so that we can record the bottles parent container
  *	9/4/04, mith
@@ -122,7 +122,7 @@ namespace Server.Items
                 // Publish 15
                 // Potion kegs will now display the correct contents when single-clicked (ex. the keg will say �a keg of greater poison� versus �a keg of green potions�).
                 // more info on id'ing http://forums.uosecondage.com/viewtopic.php?f=4&t=1440
-                if (!Core.UOAI && !Core.UOREN && !Core.UOMO && PublishInfo.Publish < 15)
+                if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.MortalisRules() && PublishInfo.Publish < 15)
                     switch (m_Type)
                     {
                         case PotionEffect.Nightsight: return 1041611;       // "A keg of black liquid.";

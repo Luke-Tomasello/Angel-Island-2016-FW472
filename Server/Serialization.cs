@@ -21,6 +21,9 @@
 
 /* Server\Serialization.cs
  * Changelog
+ *  9/18/2024, Adam (WouldOverflowDateTime())
+ *      There appears to be a bug in CTF control saving bogus time deltas
+ *      Until it gets fixed, we now trap for overflow date time in ReadDeltaTime() without throwing an exception.
  *	7/18/09, Adam
  *		Remove iPack32Lib software dongle - no longer needed for open source
  *	1/1/09, Adam
@@ -758,7 +761,9 @@ namespace Server
             long ticks = m_File.ReadInt64();
             long now = DateTime.UtcNow.Ticks;
 
-            if (ticks > 0 && (ticks + now) < 0)
+            if (WouldOverflowDateTime(ticks, now))
+                return DateTime.MaxValue; 
+            else if (ticks > 0 && (ticks + now) < 0)
                 return DateTime.MaxValue;
             else if (ticks < 0 && (ticks + now) < 0)
                 return DateTime.MinValue;
@@ -766,7 +771,14 @@ namespace Server
             try { return new DateTime(now + ticks); }
             catch { if (ticks > 0) return DateTime.MaxValue; else return DateTime.MinValue; }
         }
-
+        private static bool WouldOverflowDateTime(long read_ticks, long now)
+        {
+            long max_value = DateTime.MaxValue.Ticks - DateTime.MinValue.Ticks;
+            long test_value = now + read_ticks;
+            if (test_value > max_value)
+                return true;
+            return false;
+        }
         public override IPAddress ReadIPAddress()
         {
             return new IPAddress(m_File.ReadInt64());

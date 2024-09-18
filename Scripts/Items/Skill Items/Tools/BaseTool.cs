@@ -149,7 +149,7 @@ namespace Server.Items
         {
             // we would like a date here but we do not know when Durability display appeared.
             //	for now we will just condition on SP
-            if (!Core.UOSP)
+            if (!Core.RuleSets.SiegeRules())
                 DisplayDurabilityTo(from);
 
             base.OnSingleClick(from);
@@ -173,7 +173,7 @@ namespace Server.Items
                     CraftContext context = system.GetContext(from);
 
                     // add UOSP old school craft system hook here
-                    if (Core.UOSP)
+                    if (Core.RuleSets.SiegeRules())
                     {
                         if (new OldSchoolCraft(from, system, this, null).DoOldSchoolCraft() == false)
                             from.SendGump(new CraftGump(from, system, this, null)); // call the old system as the old-school system is not impl

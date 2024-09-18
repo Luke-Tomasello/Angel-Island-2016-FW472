@@ -34,18 +34,18 @@
  *      We use a confirmation prompt
  *  2/28/22, Adam
  *      add new Cron command to pause/resume cron tasks
- *  7/27/2021, adam
+ *  7/27/2021, Adam
  *      Add the Cron.PostMessage() function.
  *      This function allows server entities like mobiles, engines like the harvest system, etc to post a message for cron priority processing.
  *      This is different from standard cron processing where a time specification dictates when a job is run.
  *      When a message is posted via PostMessage, a special one-time sub second timer is kicked off to process the PriorityQueue which holds
  *      this type of message.
- *	3/20/10, adam
+ *	3/20/10, Adam
  *		Add compiler so we can use the '?' specification.
  *		Remember we need to precompile any specification that uses the '?' since the specification is reinterpreted each pass
  *		which means it is possibe a job will not fire since the time is marching forward and the random ('?') value keeps moving.
  *		We precompile these specifications to lock the random value at job creation time.
- *	3/16/10, adam
+ *	3/16/10, Adam
  *		Add a new '?' specification which means; generate a random value for this specification
  *  11/26/08, Adam
  *      More repairs to Normalize()
@@ -178,7 +178,7 @@ namespace Server.Engines.CronScheduler
                     else
                     {   // running certain commands can do damage on the production server.
                         //  check to make sure we are on TC, or that the user is sure they want to run this command.
-                        if (cee.Name.ToLower() == "plantgrowth" && Core.UOTC == false)
+                        if (cee.Name.ToLower() == "plantgrowth" && Core.RuleSets.TestCenterRules() == false)
                         {   // confirmation prompt for dangerous tasks.
                             e.Mobile.Prompt = new ConfirmTaskPrompt(cee);
                             e.Mobile.SendMessage("You are about to run a dangerous task on the production server.");

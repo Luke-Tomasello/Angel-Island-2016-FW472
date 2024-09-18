@@ -21,6 +21,8 @@
 
 /* Scripts/Skills/Stealth.cs
  * ChangeLog
+ *  9/17/2024, Adam (SetFlag()/GetFlag() LegitHide)
+ *      Exploit prevention: hiding is delegitimized when exiting a moongate if you were not hidden to begin with
  *	7/13/04 changes by Old Salty
  *		wearing only plain leather armor now increases the amount of armor you can wear while stealthing. (secret benefit for players to find out)
  *	7/11/04 changes by Old Salty
@@ -70,9 +72,14 @@ namespace Server.SkillHandlers
             //			m.Say( "armor: " + Armor.ToString()  );				
             //			m.Say( "allowed: " + AllowedArmor.ToString()  );
 
+            
             if (!m.Hidden)
             {
                 m.SendLocalizedMessage(502725); // You must hide first
+            }
+            else if (!m.GetFlag(Mobile.MobileFlags.LegitHide))
+            {   // Set when using the hiding skill and cleared on RevealingAction. LegitHide is the flag used to for stealth
+                m.SendMessage("You must use the hiding skill before you may stealth.");
             }
             else if (m.Skills[SkillName.Hiding].Base < 80.0)
             {
@@ -87,7 +94,7 @@ namespace Server.SkillHandlers
             else if (((int)stealth - (Armor * 2)) >= 75)   //If not wearing enough armor for stealth level - always succeed, no gain
             {
 
-                int steps = (int)(m.Skills[SkillName.Stealth].Value / (Core.AOS ? 5.0 : 10.0));
+                int steps = (int)(m.Skills[SkillName.Stealth].Value / (Core.RuleSets.AOSRules() ? 5.0 : 10.0));
 
                 if (steps < 1)
                     steps = 1;
@@ -101,7 +108,7 @@ namespace Server.SkillHandlers
             }
             else if (m.CheckSkill(SkillName.Stealth, (stealth - Armor * 2) / 100))  //wearing an appropriate level of armor - skillcheck processed, can gain
             {
-                int steps = (int)(m.Skills[SkillName.Stealth].Value / (Core.AOS ? 5.0 : 10.0));
+                int steps = (int)(m.Skills[SkillName.Stealth].Value / (Core.RuleSets.AOSRules() ? 5.0 : 10.0));
 
                 if (steps < 1)
                     steps = 1;

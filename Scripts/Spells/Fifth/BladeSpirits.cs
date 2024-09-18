@@ -50,7 +50,7 @@ namespace Server.Spells.Fifth
 
         public override TimeSpan GetCastDelay()
         {
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
                 return TimeSpan.FromTicks(base.GetCastDelay().Ticks * 5);
 
             return base.GetCastDelay() + TimeSpan.FromSeconds(6.0);
@@ -89,7 +89,7 @@ namespace Server.Spells.Fifth
             {
                 TimeSpan duration;
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                     duration = TimeSpan.FromSeconds(120);
                 else
                     duration = TimeSpan.FromSeconds(Utility.Random(80, 40));

@@ -71,8 +71,8 @@ namespace Server.Mobiles
         }
 
         public override HideType HideType { get { return HideType.Spined; } }
-        public override int Hides { get { return Core.UOAI || Core.UOREN ? 5 : 20; } }
-        public override int Meat { get { return Core.UOAI || Core.UOREN ? 1 : 19; } }
+        public override int Hides { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 5 : 20; } }
+        public override int Meat { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 1 : 19; } }
 
 
         public override void InitBody()
@@ -91,7 +91,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGem();
                 PackGem();
@@ -102,7 +102,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020806152337/uo.stratics.com/hunters/pixie.shtml
                     // gems, scrolls, statues, 20 hides, 19 ribs
                     if (Spawning)

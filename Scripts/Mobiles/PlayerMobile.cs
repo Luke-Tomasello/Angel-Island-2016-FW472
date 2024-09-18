@@ -40,23 +40,23 @@
  *      First version of Siege RoT. - skill & stat.
  *	6/18/10, Adam
  *		Update region logic to reflect shift from static to new dynamic regions
- *	5/13/10, adam
+ *	5/13/10, Adam
  *		When you take damage and your explosion potion is set off, gibe the use a message
  *			"Your explosive potion is jostled thus setting it off!"
- *	4/1/10, adam
+ *	4/1/10, Adam
  *		Undo CheckSkill() changes of 3/14/10 since you cannot do the skill if checkskill is fails.
  *		(We didn't want to block the skill, only the skill gain.)
  *		Add a check to prevent taming from within a house in AnimalTaming.cs
- *	3/17/10, adam
+ *	3/17/10, Adam
  *		OnLogin
  *		(1) remove old dismount code (hold over from when we tried slow mounts)
  *		(2) If a player is in prison and they have been logged out for 3+ hours, reinitialize their backpack to near original state.
  *			basically throw away any stuff they may be muling for another char on that or a related account.
- *	3/14/10, adam
+ *	3/14/10, Adam
  *		Modify CheckSkill() to disallow a gain if you are using skill "Animal Taming" and passive "Animal Lore" from a house
  *	3/12/10, Adam
  *		Add CriminalCounts for sending players to prison
- *	3/10/10, adam
+ *	3/10/10, Adam
  *		add the jump list (m_JumpList) initial implementation
  *		See also: [next
  *	07/06/09, plasma
@@ -429,7 +429,7 @@
  *		Modified Resurrect() and OnBeforeDeath() to modify murder count decay times to prevent people from macroing counts on AI as ghosts.
  *	5/13/04, mith
  *		Added RetainPackLocsOnDeath property, overrriding the property from Mobile.
- *		This was returning Core.AOS as the true/false value. Set it to always be true (no more messy packs on resurrection).
+ *		This was returning Core.RuleSets.AOSRules() as the true/false value. Set it to always be true (no more messy packs on resurrection).
  *	5/2/04, Pixie
  *		Cleaned up the way we modify MurderCount timers based on whether the player is an Inmate or not.
  *		Added DecayKills method which we call from various places to reset our count timers.
@@ -439,7 +439,7 @@
  *	4/29/04, mith
  *		Modified code that sets murder count decay timers to also check if Inmates are Alive or not
  *		If Inmates are sitting around as ghosts, their counts decay as if they were not on Angel Island (8/40).
- *	4/24/04, adam
+ *	4/24/04, Adam
  *		Commented out "bool gainedPath = false;"
  *	4/24/04, mith
  *		Commented Justice award in OnDeath() since virtues are disabled.
@@ -635,7 +635,7 @@ namespace Server.Mobiles
         // called on a timer
         private void GoBlind()
         {   // no blindness on other shards
-            if (Core.UOAI || Core.UOREN || Core.UOMO)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
             {
                 // process rules
                 // make sure the player is dead and the timer has not been reset
@@ -1871,7 +1871,7 @@ namespace Server.Mobiles
             // if this player is in prison and they have been logged out for 3 hours, empty their backpack
             //	this attempts to thwart fully loaded prison mules from veing viable.
             //	Note: players can still stash stuff around the prison.
-            if ((Core.UOAI || Core.UOREN) && pm != null)
+            if ((Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules()) && pm != null)
             {
                 try
                 {
@@ -1906,7 +1906,7 @@ namespace Server.Mobiles
             #region Players on UOMortalis login hidden
             //	Players on UOMortalis login hidden to prevent camping of inns
             //	we require that the player has been logged out to at least
-            if (Core.UOMO && from is PlayerMobile)
+            if (Core.RuleSets.MortalisRules() && from is PlayerMobile)
             {
                 try
                 {
@@ -2584,7 +2584,7 @@ namespace Server.Mobiles
                 int strBase;
                 double strOffs = GetStatOffset(StatType.Str);
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     strBase = this.Str;
                     strOffs += AosAttributes.GetValue(this, AosAttribute.BonusHits);
@@ -2594,7 +2594,7 @@ namespace Server.Mobiles
                     strBase = this.RawStr;
                 }
 
-                if (Core.UOAI || Core.UOREN || Core.UOMO || PublishInfo.Publish >= 13)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules() || PublishInfo.Publish >= 13)
                 {
                     // Hit Point Calculation
                     //	The following change will be made to the manner in which hit points are calculated for players.
@@ -3105,7 +3105,7 @@ namespace Server.Mobiles
 
         public override void OnDamage(int amount, Mobile from, bool willKill, object source_weapon)
         {
-            if (amount > (Core.AOS ? 25 : 0))
+            if (amount > (Core.RuleSets.AOSRules() ? 25 : 0))
             {
                 BandageContext c = BandageContext.GetContext(this);
 
@@ -3201,7 +3201,7 @@ namespace Server.Mobiles
             if (this.SavagePaintExpiration != TimeSpan.Zero)
             {
                 // Ai uses HUE value and not the BodyMod as there is no sitting graphic
-                if (!Core.UOSP && !Core.UOMO && !Core.UOAI && !Core.UOREN)
+                if (!Core.RuleSets.SiegeRules() && !Core.RuleSets.MortalisRules() && !Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules())
                     this.BodyMod = (this.Female ? 184 : 183);
                 else
                     this.HueMod = 0;
@@ -3740,7 +3740,7 @@ namespace Server.Mobiles
                 if (AccessLevel == AccessLevel.Player)
                     Timer.DelayCall(TimeSpan.FromSeconds(10.0), new TimerCallback(Delete));
 
-                if (Core.UOMO && c as Container != null)
+                if (Core.RuleSets.MortalisRules() && c as Container != null)
                 {   // drop the bankbox as loot.
                     List<Item> lootz = new List<Item>();
                     if (BankBox != null && BankBox.Items != null && BankBox.Items.Count > 0)
@@ -3907,7 +3907,7 @@ namespace Server.Mobiles
             {
                 m_LastShortDecayed = DateTime.UtcNow;
 
-                if ((Core.UOAI || Core.UOREN) && Inmate && Alive)
+                if ((Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules()) && Inmate && Alive)
                 {
                     m_ShortTermElapse = this.GameTime + TimeSpan.FromHours(4);
                 }
@@ -3925,7 +3925,7 @@ namespace Server.Mobiles
 
             if (m_LongTermElapse < this.GameTime)
             {
-                if ((Core.UOAI || Core.UOREN) && Inmate && Alive)
+                if ((Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules()) && Inmate && Alive)
                 {
                     m_LongTermElapse = this.GameTime + TimeSpan.FromHours(20);
                 }
@@ -4047,7 +4047,7 @@ namespace Server.Mobiles
             if (Alive)
                 return false;
 
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
             {
                 for (int i = 0; i < hears.Count; ++i)
                 {
@@ -4698,7 +4698,7 @@ namespace Server.Mobiles
                         if (SavagePaintExpiration > TimeSpan.Zero)
                         {
                             // Ai uses HUE value and not the BodyMod as there is no sitting graphic
-                            if (!Core.UOSP && !Core.UOMO && !Core.UOAI && !Core.UOREN)
+                            if (!Core.RuleSets.SiegeRules() && !Core.RuleSets.MortalisRules() && !Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules())
                                 BodyMod = (Female ? 184 : 183);
                             else
                                 HueMod = 0;
@@ -5414,7 +5414,7 @@ namespace Server.Mobiles
             bool running = ((dir & Direction.Running) != 0);
 
             bool onHorse;
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 onHorse = (AccessLevel > AccessLevel.Player) && (this.Mount != null);
             }
@@ -5612,7 +5612,7 @@ namespace Server.Mobiles
         public override void OnSingleClick(Mobile from)
         {
             #region UOAI UOMO
-            if (Core.UOAI || Core.UOREN || Core.UOMO)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
             {
                 if (Deleted)
                     return;
@@ -5641,7 +5641,7 @@ namespace Server.Mobiles
             }
             #endregion
 
-            if (Core.UOSP)
+            if (Core.RuleSets.SiegeRules())
             {
                 if (Map == Faction.Facet)
                 {
@@ -5700,7 +5700,7 @@ namespace Server.Mobiles
 
         protected override void GainStat(Stat stat)
         {
-            if (Core.UOSP)
+            if (Core.RuleSets.SiegeRules())
             {
                 if ((LastStatGain + TimeSpan.FromMinutes(15.0)) >= DateTime.UtcNow)
                     return;
@@ -5717,7 +5717,7 @@ namespace Server.Mobiles
 
         protected override double StatGainChance(Skill skill, Stat stat)
         {
-            if (Core.UOSP)
+            if (Core.RuleSets.SiegeRules())
             {
                 if (m_rotstatgaintoday < 6) //can gain 6 points per day
                 {
@@ -5865,7 +5865,7 @@ namespace Server.Mobiles
         {
             //Pix - on Siege, we are using anti-macro code.
             if (((AntiMacroCode && UseAntiMacro[skill.Info.SkillID])
-                  || (Core.UOSP && skill.Base < 70.0)) // on siegeonly use anti-macro code if < 70.
+                  || (Core.RuleSets.SiegeRules() && skill.Base < 70.0)) // on siegeonly use anti-macro code if < 70.
                 && !AntiMacroCheck(skill, obj))
             {
                 if (m_RoTDebug)
@@ -5876,7 +5876,7 @@ namespace Server.Mobiles
                 return false;
             }
 
-            if (Core.UOSP)
+            if (Core.RuleSets.SiegeRules())
             {
                 //ROT skill gain
 

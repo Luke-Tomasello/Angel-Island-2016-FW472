@@ -65,7 +65,7 @@ namespace Server.Mobiles
         public override int Meat { get { return 1; } }
         public override MeatType MeatType { get { return MeatType.Bird; } }
         public override int Feathers { get { return 36; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 4 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 4 : 0; } }
 
         public Phoenix(Serial serial)
             : base(serial)
@@ -74,7 +74,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(500, 600);
                 PackScroll(2, 7);
@@ -85,7 +85,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020403082709/uo.stratics.com/hunters/phoenix.shtml
                     // 600 - 1000 Gold, Magic Items, 36 feathers, raw bird
 

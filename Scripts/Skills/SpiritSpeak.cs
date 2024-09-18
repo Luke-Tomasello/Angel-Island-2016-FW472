@@ -25,13 +25,13 @@
  *		make The Slayer and The Summoner based upon UOAI
  *	7/23/10. adam
  *		Add a variable check to filter SpiritSpeak UsageReports
- *	7/20/10, adam
+ *	7/20/10, Adam
  *		Add slayer damage bonus
  *		You have a 10 second window to pump up to ((m.Skills.SpiritSpeak.Value + (m.Dex * 2.0) + (m.Skills.Tactics.Value * 2.0)) / 5.0)
  *			bonus points of damage into the DamageAccumulator before it is transfered into the DamageCache
  *			where it is used by BaseWeapon. The DamageCache will hold that charge to 10 seconds.
  *			The DamageAccumulator cannot accept new bonus points until the DamageCache times-out
- *	7/17/10, adam
+ *	7/17/10, Adam
  *		Add healing of your summons via SS
  *			you have a 10 second window to pump the heal-meter up as high as 100 heal points before they are applied.
  *			A GM with 100 int will pump 25 heal points into the heal meter per SS; less than GM or 100 int will pump less.
@@ -68,7 +68,7 @@ namespace Server.SkillHandlers
         public static TimeSpan OnUse(Mobile m)
         {
             #region AOS
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
             {
                 Spell spell = new SpiritSpeakSpell(m);
 
@@ -101,7 +101,7 @@ namespace Server.SkillHandlers
                 }
                 #endregion ghosts
 
-                if (Core.UOAI || Core.UOREN)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                 {
                     #region summon healing
                     // summon healing
@@ -125,7 +125,7 @@ namespace Server.SkillHandlers
                     #endregion summon healing
                 }
 
-                if (Core.UOAI || Core.UOREN)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                 {
                     #region slayer damage bonus
                     // slayer damage bonus

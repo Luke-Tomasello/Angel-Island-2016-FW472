@@ -95,9 +95,9 @@ namespace Server.Mobiles
         {
         }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 5 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 5 : 0; } }
         public override bool AlwaysMurderer { get { return true; } }
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : false; } }
+        public override bool CanRummageCorpses { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? true : false; } }
         public override bool ShowFameTitle { get { return false; } }
         public override bool ClickTitle { get { return true; } }
 

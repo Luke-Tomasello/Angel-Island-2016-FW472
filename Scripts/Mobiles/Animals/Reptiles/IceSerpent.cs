@@ -76,7 +76,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(25, 50);
                 PackItem(Loot.RandomArmorOrShieldOrWeapon());
@@ -85,7 +85,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20011031224927/uo.stratics.com/hunters/gianticeserpent.shtml
                     // 50 Gold, Weapon or Armor, Body Parts, Jewelry, Glacial Staff
                     if (Spawning)

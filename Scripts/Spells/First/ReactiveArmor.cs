@@ -83,7 +83,7 @@ namespace Server.Spells.First
 
         public override void OnCast()
         {
-            /*if ( Core.AOS )
+            /*if ( Core.RuleSets.AOSRules() )
             {
                  // The reactive armor spell increases the caster's physical resistance, while lowering the caster's elemental resistances.
                  //* 15 + (Inscription/20) Physcial bonus

@@ -83,7 +83,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 for (int i = 0; i <= CoreAI.CaptainGuardWeapDrop; ++i)
                     DropWeapon(CoreAI.CaptainGuardWeapDrop, CoreAI.CaptainGuardWeapDrop);
@@ -106,7 +106,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {
                     if (Spawning)
                     {   // ai special

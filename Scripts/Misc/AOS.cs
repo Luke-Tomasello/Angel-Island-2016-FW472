@@ -21,7 +21,7 @@
 
 /* Misc/AOS.cs
  * CHANGELOG:
- *	6/12/10, adam
+ *	6/12/10, Adam
  *		o Replace the variable Enabled with simple true/false values for clarity.
  *		avoids ugly satements like "Mobile.AsciiClickMessage = !Enabled;" where you need to lookup Enabled to findout how to read the statement.
  *		o Turn on VisibleDamageType for test center (also available in the core command console.)
@@ -56,7 +56,7 @@ namespace Server
         public static void Configure()
         {
             //PIX: added 2/8/2008 - set our own expansion definition
-            if (Core.UOSP || Core.UOMO)
+            if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
             {
                 Core.Expansion = Expansion.UOSiegePerilous;
             }
@@ -65,11 +65,11 @@ namespace Server
                 Core.Expansion = Expansion.AngelIsland;
             }
 
-            Core.AOS = false;
+            Core.RuleSets.AOS_SVR = false;
             Mobile.InsuranceEnabled = false;
             ObjectPropertyList.Enabled = false;
             // off on prod, on on test center. You can also turn it on in the core command console (not saved)
-            Mobile.VisibleDamageType = (Core.UOTC == true) ? VisibleDamageType.Related : VisibleDamageType.None;
+            Mobile.VisibleDamageType = (Core.RuleSets.TestCenterRules() == true) ? VisibleDamageType.Related : VisibleDamageType.None;
             //Mobile.VisibleDamageType = VisibleDamageType.Related;
             Mobile.GuildClickMessage = true;
             Mobile.AsciiClickMessage = true;
@@ -92,7 +92,7 @@ namespace Server
 
             SupportedFeatures.Value = iSupportedFeatures;
 
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
             {
                 DisableStatInfluences();
 
@@ -136,7 +136,7 @@ namespace Server
                 Mobiles.MeerMage.StopEffect(m, true);
 
             // Adam: only valid return path
-            //if ( !Core.AOS )
+            //if ( !Core.RuleSets.AOSRules() )
             {
                 m.Damage(damage, from, source_weapon: source_weapon);
                 return damage;
@@ -268,7 +268,7 @@ namespace Server
 
         public static int GetValue(Mobile m, AosAttribute attribute)
         {
-            if (!Core.AOS)
+            if (!Core.RuleSets.AOSRules())
                 return 0;
 
             return 0;
@@ -435,7 +435,7 @@ namespace Server
 
         public static int GetValue(Mobile m, AosWeaponAttribute attribute)
         {
-            if (!Core.AOS)
+            if (!Core.RuleSets.AOSRules())
                 return 0;
             return 0;
             /*
@@ -569,7 +569,7 @@ namespace Server
 
         public static int GetValue(Mobile m, AosArmorAttribute attribute)
         {
-            if (!Core.AOS)
+            if (!Core.RuleSets.AOSRules())
                 return 0;
 
             ArrayList items = m.Items;
@@ -896,7 +896,7 @@ namespace Server
 
         public int GetValue(int bitmask)
         {
-            if (!Core.AOS)
+            if (!Core.RuleSets.AOSRules())
                 return 0;
 
             uint mask = (uint)bitmask;

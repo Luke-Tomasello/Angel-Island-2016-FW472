@@ -83,7 +83,7 @@ namespace Server.Mobiles
         public override int Meat { get { return 1; } }
         public override bool AlwaysMurderer { get { return true; } }
         public override bool ShowFameTitle { get { return false; } }
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : false; } }
+        public override bool CanRummageCorpses { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? true : false; } }
 
         public override bool CanBandage { get { return true; } }
         // since we have bandages AND magic, double bandage time from normal
@@ -148,7 +148,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackMagicEquipment(1, 3, 0.80, 0.80);
                 PackMagicEquipment(1, 3, 0.10, 0.10);
@@ -185,7 +185,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // ai special creature
                     if (Spawning)
                     {

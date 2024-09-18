@@ -21,26 +21,29 @@
 
 /* Scripts/Engines/AI/AI/BaseAI.cs
  * CHANGELOG
+ *  9/13/2024, Adam (CheckFocusMobAcquired(), and RegisterFocusMobAcquired())
+ *      These two functions register aggressive creatures attacking players in a guarded region.
+ *      Please see notes in BaseGuard to see the circumstances under which a guard will respond (without having been called.)
  *	8/8/10, Adam
  *		Add: OldFlee switch
  *			BaseAI seems to have a bug where they clear FocusMob in OnActionChanged().Flee
- *	7/11/10, adam
+ *	7/11/10, Adam
  *		o major reorganization of AI
  *			o push most smart-ai logic from the advanced magery classes down to baseAI so that we can use potions and bandages from 
  *				the new advanced melee class
- *	6/30/10, adam
+ *	6/30/10, Adam
  *		Add AI_Guard support
- *	6/23/10, adam
+ *	6/23/10, Adam
  *		We now call IsGuardCandidate() instead of just checking if Murderer. This adds Criminals and returns false if a guard is already
  *		on them
- *	6/21/10, adam
+ *	6/21/10, Adam
  *		o Vendors and other townspeople now LookAround() as part of their wandering. I.e:
  *		remember the mobiles around me so that if they are then hidden and release a spell while hidden, I can reasonably call guards.
  *		If a crime is committed around me, the guards may ask me if i've seen anyone and if I have, then they will go into action.
  *		o We also call guards now in LookAround() if appropriate
- *	5/12/10, adam
+ *	5/12/10, Adam
  *		fix ScaredOfScaryThings to actually work in cases other than "all kill"
- *	3/13/10, adam
+ *	3/13/10, Adam
  *		(1) Add DoorExploit() check
  *		we are within 1 tile of our target, but we are also at the same location as a door.
  *		the player is probably trying to stand behind an open door so that they can hit us, but we cannot hit them.
@@ -4056,6 +4059,51 @@ namespace Server.Mobiles
                 }
             }
         }
+        
+        // shortcut for guards protecting citizens in town
+        public static Memory FocusMobAcquired = new Memory();
+        private bool CheckFocusMobAcquired(Mobile source, Mobile target)
+        {
+            if (source == null || target == null || !target.Player)
+                return false;
+
+            BaseCreature bc = source as BaseCreature;
+            if (bc == null)
+                return false;
+
+            if (bc.Tamable && bc.ControlMaster != null)
+                // we exclude this case and let normal guard processing handle it
+                //  we're really after released pets, or other dangerous creatures dragged into town
+                return false;
+
+            if ((target.Region is GuardedRegion gr && gr.IsGuarded) == false)
+                return false;
+
+            // not an aggressive creature
+            if ((bc.FightMode & FightMode.All) == 0)
+                return false;
+
+            // did we attack first?
+            for (int i = 0; i < target.Aggressed.Count; ++i)
+            {
+                AggressorInfo info = (AggressorInfo)target.Aggressed[i];
+                if (info.Expired) continue;
+                // we attacked first
+                if (info.Defender == source)
+                    return false;
+            }
+
+            return true; 
+        }
+        
+        private void RegisterFocusMobAcquired(Mobile source, Mobile target)
+        { 
+            if (FocusMobAcquired.Recall(source) == false)
+            {   // don't know about this creature, remember him
+                FocusMobAcquired.Remember(source, target, seconds: 5);
+            }
+            return ; 
+        }
 
         /* ** total rewrite of AcquireFocusMob() **
 		 * We split the FightMode into two different bitmasks: 
@@ -4095,7 +4143,13 @@ namespace Server.Mobiles
                     {   // if this fight-mode-value exists in the acqType
                         if (((int)acqType & (int)m_FightModeValues[ix]) >= 1)
                             if (AcquireFocusMobWorker(iRange, (FightMode)m_FightModeValues[ix], acqFlags, bPlayerOnly, bFacFriend, bFacFoe))
+                            {
+                                if (CheckFocusMobAcquired(m_Mobile, m_Mobile != null ? m_Mobile.FocusMob : null))
+                                    RegisterFocusMobAcquired(m_Mobile, m_Mobile.FocusMob);
+
                                 return true;
+                            }
+
                     }
                 }
                 else

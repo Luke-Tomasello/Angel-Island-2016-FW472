@@ -62,7 +62,7 @@ namespace Server.Mobiles
             VirtualArmor = 50;
         }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 2 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 2 : 0; } }
 
         public StoneGargoyle(Serial serial)
             : base(serial)
@@ -71,7 +71,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGem();
                 PackPotion();
@@ -85,7 +85,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20021015002109/uo.stratics.com/hunters/stonegargoyle.shtml
                     // 150 to 250 Gold, Potions, Arrows, Gems, Scrolls, Ore, "a gargoyle's pickaxe"
                     if (Spawning)

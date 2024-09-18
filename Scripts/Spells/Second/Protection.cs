@@ -61,7 +61,7 @@ namespace Server.Spells.Second
 		 */
         public override bool CheckCast()
         {
-            if (Core.AOS || true) // this is the behavior we want for all of our shards
+            if (Core.RuleSets.AOSRules() || true) // this is the behavior we want for all of our shards
                 return true;
 
             if (m_Registry.ContainsKey(Caster))
@@ -132,7 +132,7 @@ namespace Server.Spells.Second
 
         public override void OnCast()
         {
-            if (Core.AOS || true)   // this is the behavior we want for all of our shards
+            if (Core.RuleSets.AOSRules() || true)   // this is the behavior we want for all of our shards
             {
                 if (CheckSequence())
                     Toggle(Caster, Caster);

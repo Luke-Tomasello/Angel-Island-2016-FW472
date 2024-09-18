@@ -83,7 +83,7 @@ namespace Server.Mobiles
 
         public override void OnControlOrder(OrderType order)
         {   // do the old-school stam refresh on "all follow"
-            if (!Core.UOAI && !Core.UOREN && !Core.UOMO && order == OrderType.Follow)
+            if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.MortalisRules() && order == OrderType.Follow)
             {
                 // as usual, we we don't know the actual formula, make something up, but make it reasonable
 
@@ -195,7 +195,7 @@ namespace Server.Mobiles
 
         public virtual void OnDisallowedRider(Mobile m)
         {
-            if (Core.UOAI || Core.UOREN || Core.UOMO)    // when no mounts use this message
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())    // when no mounts use this message
                 m.SendMessage("That beast will not allow you to mount it.");
             else
                 m.SendMessage("You may not ride this creature.");
@@ -203,7 +203,7 @@ namespace Server.Mobiles
 
         public override void OnDoubleClick(Mobile from)
         {
-            if (Core.UOAI || Core.UOREN || Core.UOMO) // "turn off" mounts for AI an MO
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules()) // "turn off" mounts for AI an MO
             {
                 if (from.AccessLevel == AccessLevel.Player)
                 {
@@ -217,7 +217,7 @@ namespace Server.Mobiles
 
             if (from.IsBodyMod && !from.Body.IsHuman)
             {
-                if (Core.AOS) // You cannot ride a mount in your current form.
+                if (Core.RuleSets.AOSRules()) // You cannot ride a mount in your current form.
                     PrivateOverheadMessage(Network.MessageType.Regular, 0x3B2, 1062061, from.NetState);
                 else
                     from.SendLocalizedMessage(1061628); // You can't do that while polymorphed.

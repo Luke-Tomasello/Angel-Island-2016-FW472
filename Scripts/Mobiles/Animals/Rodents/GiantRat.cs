@@ -67,7 +67,7 @@ namespace Server.Mobiles
         }
 
         public override int Meat { get { return 1; } }
-        public override int Hides { get { return Core.UOAI || Core.UOREN ? 6 : Utility.Random(3) == 0 ? 6 : 0; } }
+        public override int Hides { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 6 : Utility.Random(3) == 0 ? 6 : 0; } }
         public override FoodType FavoriteFood { get { return FoodType.Fish | FoodType.Meat | FoodType.FruitsAndVegies | FoodType.Eggs; } }
 
         public GiantRat(Serial serial)
@@ -77,11 +77,11 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                 PackGold(0, 25);
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020313115208/uo.stratics.com/hunters/giantrat.shtml
                     // 1 Raw Ribs (carved), 6 Hides (carved) (sometimes)
                     if (Spawning)

@@ -77,10 +77,10 @@ namespace Server.Items
 			 */
 
             // old runuo test.. I don't think it's right.
-            // if (!Core.AOS && Layer == Layer.TwoHanded && (attacker.Skills[SkillName.Anatomy].Value / 400.0) >= Utility.RandomDouble())
+            // if (!Core.RuleSets.AOSRules() && Layer == Layer.TwoHanded && (attacker.Skills[SkillName.Anatomy].Value / 400.0) >= Utility.RandomDouble())
 
             // these publishes don't have random special moves
-            if (Core.UOAI || Core.UOREN || Core.UOMO || Core.AOS || PublishInfo.Publish >= 18)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules() || Core.RuleSets.AOSRules() || PublishInfo.Publish >= 18)
                 return;
 
             // humanoids can use the moves I guess, but only on players.
@@ -100,7 +100,7 @@ namespace Server.Items
 
             // adam: why is this not enabled?
             /*
-			if (!Core.AOS && Poison != null && PoisonCharges > 0)
+			if (!Core.RuleSets.AOSRules() && Poison != null && PoisonCharges > 0)
 			{
 				--PoisonCharges;
 

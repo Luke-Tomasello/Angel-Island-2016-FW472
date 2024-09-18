@@ -21,21 +21,23 @@
 
 /* Scripts/Items/Armor/BaseArmor.cs
  * ChangeLog
- *	6/12/10, adam
- *		Add a switch for controling the algo used for calculating armor absorb	(ArmorAbsorbClassic)
- * 6/10/10, adam
+ *  9/16/2024, Adam (OnSingleClick)
+ *      More robust OnSingleClick processing
+ *	6/12/10, Adam
+ *		Add a switch for controlling the algo used for calculating armor absorb	(ArmorAbsorbClassic)
+ * 6/10/10, Adam
  *		Update OnHit to match RunUO 2.0 armor damage
  *		This includes changing:
  *			HalfAr = ArmorRatingScaled / 2.0; 
  *		TO 
  *			HalfAr = ArmorRating / 2.0;
  *		This should increase damage by bashing weapons substantially.
- *		The damage to a piece of armor should not be scaled since ArmorRatingScaled was designed to determing how much protection that 
+ *		The damage to a piece of armor should not be scaled since ArmorRatingScaled was designed to determining how much protection that 
  *		particular piece of armor GIVES (not TAKES) relative to it's placement on the body. I.e., Plate Gloves give less AR than a plate chest. 
  *		(The chance to hit the armor piece was already taken into account.)
  *		This code was probably a bug in an early version of RunUO and carried forward all these years. The new code matches RunUO 2.0 and makes 
  *		better sense.
- * 4/1/10, adam
+ * 4/1/10, Adam
  *		Add support for save/restore hue (for CTF colorizing)
  * 5/2/08, Adam
  *		Update use of HideAttributes to be simpler.
@@ -57,8 +59,8 @@
  *  10/10/05 TK
  *		Changed some ints to doubles for more of a floating-point math pipeline.
  *  10/08/05 Taran Kain
- *		Made DexBonus dependant on resource type
- *		Changed calculated dex bonus to be dependant on wearer's strength
+ *		Made DexBonus dependent on resource type
+ *		Changed calculated dex bonus to be dependent on wearer's strength
  *		Added hook to Mobile.StatChange event
  *	10/04/05, Pix
  *		Changed OnAdded for IOB item equipping to use new GetIOBName() function.
@@ -87,7 +89,7 @@
  *	26,may,04 - changes made by Old Salty:
  *		commented lines 638-651 to remove armor rating bonus
  *		added lines 480-485 to give leather types a durability bonus
- *	18,march,04 edited lines 442-457 for durabily change
+ *	18,march,04 edited lines 442-457 for durability change
  *	18,march,04 edited lines 611-621 for ar changes
  *	23,march,04 uploaded
  */
@@ -198,7 +200,7 @@ namespace Server.Items
         [CommandProperty(AccessLevel.GameMaster)]
         public AMA MeditationAllowance
         {
-            get { return (m_Meditate == (AMA)(-1) ? Core.AOS ? AosMedAllowance : OldMedAllowance : m_Meditate); }
+            get { return (m_Meditate == (AMA)(-1) ? Core.RuleSets.AOSRules() ? AosMedAllowance : OldMedAllowance : m_Meditate); }
             set { m_Meditate = value; }
         }
 
@@ -212,7 +214,7 @@ namespace Server.Items
         [CommandProperty(AccessLevel.GameMaster)]
         public double StrBonus
         {
-            get { return (m_StrBonus == -1 ? Core.AOS ? AosStrBonus : OldStrBonus : m_StrBonus); }
+            get { return (m_StrBonus == -1 ? Core.RuleSets.AOSRules() ? AosStrBonus : OldStrBonus : m_StrBonus); }
             set { m_StrBonus = value; InvalidateProperties(); }
         }
 
@@ -233,28 +235,28 @@ namespace Server.Items
         [CommandProperty(AccessLevel.GameMaster)]
         public double IntBonus
         {
-            get { return (m_IntBonus == -1 ? Core.AOS ? AosIntBonus : OldIntBonus : m_IntBonus); }
+            get { return (m_IntBonus == -1 ? Core.RuleSets.AOSRules() ? AosIntBonus : OldIntBonus : m_IntBonus); }
             set { m_IntBonus = value; InvalidateProperties(); }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public int StrRequirement
         {
-            get { return (m_StrReq == -1 ? Core.AOS ? AosStrReq : OldStrReq : m_StrReq); }
+            get { return (m_StrReq == -1 ? Core.RuleSets.AOSRules() ? AosStrReq : OldStrReq : m_StrReq); }
             set { m_StrReq = value; InvalidateProperties(); }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public int DexRequirement
         {
-            get { return (m_DexReq == -1 ? Core.AOS ? AosDexReq : OldDexReq : m_DexReq); }
+            get { return (m_DexReq == -1 ? Core.RuleSets.AOSRules() ? AosDexReq : OldDexReq : m_DexReq); }
             set { m_DexReq = value; InvalidateProperties(); }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public int IntRequirement
         {
-            get { return (m_IntReq == -1 ? Core.AOS ? AosIntReq : OldIntReq : m_IntReq); }
+            get { return (m_IntReq == -1 ? Core.RuleSets.AOSRules() ? AosIntReq : OldIntReq : m_IntReq); }
             set { m_IntReq = value; InvalidateProperties(); }
         }
 
@@ -582,7 +584,7 @@ namespace Server.Items
                 case ArmorDurabilityLevel.Indestructible: bonus += 120; break;
             }
             /*
-						if ( Core.AOS )
+						if ( Core.RuleSets.AOSRules() )
 						{
 							bonus += m_AosArmorAttributes.DurabilityBonus;
 
@@ -674,7 +676,7 @@ namespace Server.Items
 
         public int GetLowerStatReq()
         {
-            if (!Core.AOS)
+            if (!Core.RuleSets.AOSRules())
                 return 0;
             return 0;/*
 			int v = m_AosArmorAttributes.LowerStatReq;
@@ -710,7 +712,7 @@ namespace Server.Items
             {
                 Mobile from = (Mobile)parent;
 
-                //if ( Core.AOS )
+                //if ( Core.RuleSets.AOSRules() )
                 //m_AosSkillBonuses.AddTo( from );
 
                 from.Delta(MobileDelta.Armor); // Tell them armor rating has changed
@@ -1263,7 +1265,7 @@ namespace Server.Items
                 return false;
 
             #region Kin
-            if (Core.UOMO || Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.MortalisRules() || Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                 if (this.IOBAlignment != IOBAlignment.None)
                 {
                     if (from is PlayerMobile)
@@ -1413,7 +1415,7 @@ namespace Server.Items
                 m.RemoveStatMod(modName + "Dex");
                 m.RemoveStatMod(modName + "Int");
 
-                //if ( Core.AOS )
+                //if ( Core.RuleSets.AOSRules() )
                 //m_AosSkillBonuses.Remove();
 
                 ((Mobile)parent).Delta(MobileDelta.Armor); // Tell them armor rating has changed
@@ -1624,9 +1626,11 @@ namespace Server.Items
                 list.Add(1060639, "{0}\t{1}", m_HitPoints, m_MaxHitPoints); // durability ~1_val~ / ~2_val~
         }
 
+        public virtual bool ShowArmorAttributes { get { return true; } }
+
         public override void OnSingleClick(Mobile from)
         {
-            if (this.HideAttributes == true)
+            if (this.HideAttributes == true || (Name == null && UseOldNames))
             {
                 base.OnSingleClick(from);
                 return;
@@ -1647,11 +1651,13 @@ namespace Server.Items
                 attrs.Add(new EquipInfoAttribute(1041350)); // faction item
             #endregion
 
-            if (Name != null || OldName == null) // only use the new ([X/Y/Z]) method on things we don't have OldNames for
-            {
-                if (m_Quality == ArmorQuality.Exceptional)
-                    attrs.Add(new EquipInfoAttribute(1018305 - (int)m_Quality));
+            //Ethics.EthicBless.AddEquipmentInfoAttribute(this, attrs);
 
+            if (m_Quality == ArmorQuality.Exceptional)
+                attrs.Add(new EquipInfoAttribute(1018305 - (int)m_Quality));
+
+            if (ShowArmorAttributes)
+            {
                 if (m_Identified)
                 {
                     if (m_Durability != ArmorDurabilityLevel.Regular)
@@ -1659,8 +1665,14 @@ namespace Server.Items
 
                     if (m_Protection > ArmorProtectionLevel.Regular && m_Protection <= ArmorProtectionLevel.Invulnerability)
                         attrs.Add(new EquipInfoAttribute(1038005 + (int)m_Protection));
+
+                    //if (m_MagicEffect != MagicEquipEffect.None)
+                    //    attrs.Add(new EquipInfoAttribute(MagicEquipment.GetLabel(m_MagicEffect), m_MagicCharges));
                 }
-                else if (m_Durability != ArmorDurabilityLevel.Regular || (m_Protection > ArmorProtectionLevel.Regular && m_Protection <= ArmorProtectionLevel.Invulnerability))
+                else if (
+                    m_Durability != ArmorDurabilityLevel.Regular ||
+                    m_Protection != ArmorProtectionLevel.Regular /*||
+                    m_MagicEffect != MagicEquipEffect.None*/)
                 {
                     attrs.Add(new EquipInfoAttribute(1038000)); // Unidentified
                 }
@@ -1670,48 +1682,7 @@ namespace Server.Items
 
             if (Name == null)
             {
-                if (OldName == null)
-                {
-                    number = LabelNumber;
-                }
-                else
-                {
-                    string oldname = OldName;
-                    //yay!  Show us the old way!
-                    if (m_Quality == ArmorQuality.Exceptional)
-                    {
-                        oldname = "exceptional " + oldname;
-                    }
-
-                    if (m_Identified)
-                    {
-                        if (m_Durability != ArmorDurabilityLevel.Regular)
-                        {
-                            //attrs.Add(new EquipInfoAttribute(1038000 + (int)m_Durability));
-                            oldname = m_Durability.ToString().ToLower() + " " + oldname;
-                        }
-
-                        if (m_Protection > ArmorProtectionLevel.Regular && m_Protection <= ArmorProtectionLevel.Invulnerability)
-                        {
-                            //attrs.Add(new EquipInfoAttribute(1038005 + (int)m_Protection));
-                            oldname = oldname + " of " + m_Protection.ToString().ToLower();
-                        }
-                    }
-                    else if (m_Durability != ArmorDurabilityLevel.Regular
-                             || (m_Protection > ArmorProtectionLevel.Regular && m_Protection <= ArmorProtectionLevel.Invulnerability))
-                    {
-                        oldname = "magic " + oldname;
-                    }
-
-                    //crafted-by goes at the end
-                    if (m_Crafter != null)
-                    {
-                        oldname += " crafted by " + m_Crafter.Name;
-                    }
-
-                    this.LabelTo(from, oldname);
-                    number = 1041000;
-                }
+                number = LabelNumber;
             }
             else
             {
@@ -1722,19 +1693,95 @@ namespace Server.Items
             if (attrs.Count == 0 && Crafter == null && Name != null)
                 return;
 
-            if (OldName == null)
+            EquipmentInfo eqInfo = new EquipmentInfo(number, m_Crafter, false, (EquipInfoAttribute[])attrs.ToArray(typeof(EquipInfoAttribute)));
+            from.Send(new DisplayEquipmentInfo(this, eqInfo));
+        }
+
+        public override string GetOldPrefix(ref Article article)
+        {
+            string prefix = "";
+
+            if (!HideAttributes && m_Quality == ArmorQuality.Exceptional)
             {
-                EquipmentInfo eqInfo = new EquipmentInfo(number, m_Crafter, false, (EquipInfoAttribute[])attrs.ToArray(typeof(EquipInfoAttribute)));
-                from.Send(new DisplayEquipmentInfo(this, eqInfo));
+                if ((article == Article.A || article == Article.An) && prefix.Length == 0)
+                    article = Article.An;
+
+                prefix += "exceptional ";
             }
-            else
+
+            if (m_Identified)
             {
-                if (attrs.Count > 0)
+                if (!HideAttributes && m_Durability != ArmorDurabilityLevel.Regular)
                 {
-                    EquipmentInfo eqInfo = new EquipmentInfo(number, null, false, (EquipInfoAttribute[])attrs.ToArray(typeof(EquipInfoAttribute)));
-                    from.Send(new DisplayEquipmentInfo(this, eqInfo));
+                    if ((article == Article.A || article == Article.An) && prefix.Length == 0)
+                    {
+                        if (m_Durability == ArmorDurabilityLevel.Indestructible)
+                            article = Article.An;
+                        else
+                            article = Article.A;
+                    }
+
+                    prefix += m_Durability.ToString().ToLower() + " ";
                 }
             }
+            else if (!HideAttributes && (
+                m_Durability != ArmorDurabilityLevel.Regular ||
+                m_Protection != ArmorProtectionLevel.Regular /*||
+                m_MagicEffect != MagicEquipEffect.None*/))
+            {
+                if ((article == Article.A || article == Article.An) && prefix.Length == 0)
+                    article = Article.A;
+
+                prefix += "magic ";
+            }
+
+            //if (EventResourceSystem.Find(m_Resource) != null)
+            //{
+            //    CraftResourceInfo info = CraftResources.GetInfo(m_Resource);
+
+            //    if (info != null)
+            //    {
+            //        if ((article == Article.A || article == Article.An) && prefix.Length == 0)
+            //            article = info.Article;
+
+            //        prefix += string.Concat(info.Name.ToLower(), " ");
+            //    }
+            //}
+
+            return prefix;
+        }
+
+        public override string GetOldSuffix()
+        {
+            string suffix = "";
+
+            if (Identified)
+            {
+                if (!HideAttributes && m_Protection != ArmorProtectionLevel.Regular)
+                {
+                    if (suffix.Length == 0)
+                        suffix += " of ";
+                    else
+                        suffix += " and ";
+
+                    suffix += m_Protection.ToString().ToLower();
+                }
+
+                //if (!HideAttributes && m_MagicEffect != MagicEquipEffect.None)
+                //{
+                //    if (suffix.Length == 0)
+                //        suffix += " of ";
+                //    else
+                //        suffix += " and ";
+
+                //    suffix += MagicEquipment.GetOldSuffix(m_MagicEffect, m_MagicCharges);
+                //}
+            }
+
+            if (m_Crafter != null)
+                suffix += " crafted by " + m_Crafter.Name;
+
+            return suffix;
         }
 
         #region ICraftable Members
@@ -1761,9 +1808,9 @@ namespace Server.Items
 
             if (Quality == ArmorQuality.Exceptional)
             {
-                DistributeBonuses((tool is BaseRunicTool ? 6 : Core.SE ? 15 : 14)); // Not sure since when, but right now 15 points are added, not 14.
+                DistributeBonuses((tool is BaseRunicTool ? 6 : Core.RuleSets.SERules() ? 15 : 14)); // Not sure since when, but right now 15 points are added, not 14.
 
-                /*if (Core.ML && !(this is BaseShield))
+                /*if (Core.RuleSets.MLRules() && !(this is BaseShield))
 				{
 					int bonus = (int)(from.Skills.ArmsLore.Value / 20);
 
@@ -1783,7 +1830,7 @@ namespace Server.Items
 				}*/
             }
 
-            if (Core.AOS && tool is BaseRunicTool)
+            if (Core.RuleSets.AOSRules() && tool is BaseRunicTool)
                 ((BaseRunicTool)tool).ApplyAttributesTo(this);
 
             return quality;
@@ -1818,7 +1865,7 @@ namespace Server.Items
 						if (quality == 2)
 							armor.DistributeBonuses((tool is BaseRunicTool ? 6 : 14));
 
-						if (Core.AOS && tool is BaseRunicTool)
+						if (Core.RuleSets.AOSRules() && tool is BaseRunicTool)
 							((BaseRunicTool)tool).ApplyAttributesTo(armor);
 					}
 #endif

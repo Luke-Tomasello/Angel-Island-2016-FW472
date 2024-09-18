@@ -101,7 +101,7 @@ namespace Server.Mobiles
 
         public override bool IsEnemy(Mobile m, RelationshipFilter filter)
         {
-            if (!Core.UOAI && !Core.UOREN)
+            if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules())
                 if (m.Player && m.FindItemOnLayer(Layer.Helm) is OrcishKinMask)
                     return false;
 
@@ -112,7 +112,7 @@ namespace Server.Mobiles
         {
             base.AggressiveAction(aggressor, criminal);
 
-            if (!Core.UOAI && !Core.UOREN)
+            if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules())
             {
                 Item item = aggressor.FindItemOnLayer(Layer.Helm);
 
@@ -126,9 +126,9 @@ namespace Server.Mobiles
             }
         }
 
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : true; } }
+        public override bool CanRummageCorpses { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? true : true; } }
         // Auto-dispel is UOR - http://forums.uosecondage.com/viewtopic.php?f=8&t=6901
-        public override bool AutoDispel { get { return Core.UOAI || Core.UOREN ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
+        public override bool AutoDispel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? false : PublishInfo.PublishDate >= Core.EraREN ? true : false; } }
 
         public override void OnDamagedBySpell(Mobile caster)
         {
@@ -192,7 +192,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(600, 700);
                 PackItem(new ShadowIronOre(25));
@@ -225,7 +225,7 @@ namespace Server.Mobiles
                 // http://web.archive.org/web/20020221205654/uo.stratics.com/hunters/orcbrute.shtml
                 // 50 -120 Gold, 25 shadow ore, 10 ingots, a war mace, orc helm, orc mask, bola ball
 
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {
                     if (Spawning)
                     {

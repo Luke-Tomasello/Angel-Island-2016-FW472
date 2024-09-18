@@ -49,10 +49,10 @@ namespace Server.Mobiles
         {
             public InternalBuyInfo()
             {
-                if (Core.UOAI || Core.UOREN || Core.UOMO || (Core.UOSP && PublishInfo.Publish >= 13.5))
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules() || (Core.RuleSets.SiegeRules() && PublishInfo.Publish >= 13.5))
                     Add(new GenericBuyInfo("1047016", typeof(CommodityDeed), 5, 20, 0x14F0, 0x47));
 
-                if (Core.UOAI || Core.UOREN || Core.UOMO)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
                 {
                     Add(new GenericBuyInfo("1041243", typeof(ContractOfEmployment), 1025, 20, 0x14F0, 0));
                     Add(new GenericBuyInfo("account book", typeof(AccountBook), 150, 10, 0xFF1, 0));

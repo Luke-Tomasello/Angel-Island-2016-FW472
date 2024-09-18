@@ -112,7 +112,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(60, 90);
                 PackItem(new Bone());
@@ -121,7 +121,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020606082014/uo.stratics.com/hunters/sandvortex.shtml
                     // ?
                     // http://web.archive.org/web/20020606082014/uo.stratics.com/hunters/sandvortex.shtml

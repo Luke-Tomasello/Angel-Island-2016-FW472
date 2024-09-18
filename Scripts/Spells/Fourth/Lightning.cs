@@ -86,7 +86,7 @@ namespace Server.Spells.Fourth
 
                 double damage;
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     damage = GetNewAosDamage(22, 1, 4);
                 }

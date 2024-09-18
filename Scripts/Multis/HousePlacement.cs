@@ -23,7 +23,7 @@
  *	ChangeLog: 
  *	3/17/16, Adam
  *		Tent Annex() by implementing rule #7 until better understood.
- *	6/18/10, adam
+ *	6/18/10, Adam
  *		Remove test for NoHousingRegion since we've moved to custom regions.
  *	2/27/10, Adam
  *		Tents don't block houses.

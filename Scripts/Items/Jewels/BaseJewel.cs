@@ -19,15 +19,10 @@
  *
  ***************************************************************************/
 
-/********************************************************
- * TO DO
- * Finish the old style display never finished by Pixie.
- * See BaseClothes for a completed version
- ********************************************************
- */
-
 /* Scripts/Items/Jewels/BaseJewel.cs
  * CHANGE LOG
+ *  9/16/2024, Adam (OnSingleClick)
+ *      More robust OnSingleClick processing
  * 3/8/2016, Adam
  *		o looks like several magic clothes/jewlery were never tested. Fixing them now:
  *		o essentially all the changes for this date in BaseClothing
@@ -402,7 +397,7 @@ namespace Server.Items
                 {
                     PlayerMobile pm = (PlayerMobile)m;
 
-                    if (Core.UOMO || Core.UOAI || Core.UOREN)
+                    if (Core.RuleSets.MortalisRules() || Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                         if (this.IOBAlignment != IOBAlignment.None)
                         {
                             if (pm.IOBEquipped == true)
@@ -866,10 +861,107 @@ namespace Server.Items
             : base(serial)
         {
         }
+        private string GetMagicName()
+        {
+            string MagicName;
+            switch (MagicType)
+            {
+                case JewelMagicEffect.MagicReflect:
+                    MagicName = "spell reflection";
+                    break;
+                case JewelMagicEffect.Invisibility:
+                    MagicName = "invisibility";
+                    break;
+                case JewelMagicEffect.Bless:
+                    MagicName = "blessings";
+                    break;
+                case JewelMagicEffect.Teleport:
+                    MagicName = "teleport";
+                    break;
+                case JewelMagicEffect.Agility:
+                    MagicName = "agility";
+                    break;
+                case JewelMagicEffect.Cunning:
+                    MagicName = "cunning";
+                    break;
+                case JewelMagicEffect.Strength:
+                    MagicName = "strength";
+                    break;
+                case JewelMagicEffect.NightSight:
+                    MagicName = "night eyes";
+                    break;
+                case JewelMagicEffect.Curse:
+                    MagicName = "curses";
+                    break;
+                case JewelMagicEffect.Clumsy:
+                    MagicName = "clumsiness";
+                    break;
+                case JewelMagicEffect.Feeblemind:
+                    MagicName = "feeblemindedness";
+                    break;
+                case JewelMagicEffect.Weakness:
+                    MagicName = "weakness";
+                    break;
+                default:
+                    MagicName = "Unknown";
+                    break;
+            }
+
+            return MagicName;
+        }
+        private int GetMagicLabel()
+        {
+            int MagicLabel;
+            switch (MagicType)
+            {
+                case JewelMagicEffect.MagicReflect:
+                    MagicLabel = 1017371;           // spell reflection charges: ~1_val~
+                    break;
+                case JewelMagicEffect.Invisibility:
+                    MagicLabel = 1017347;           // invisibility charges: ~1_val~
+                    break;
+                case JewelMagicEffect.Bless:
+                    MagicLabel = 1017336;           // bless charges: ~1_val~
+                    break;
+                case JewelMagicEffect.Teleport:
+                    MagicLabel = 1017337;           // teleport charges: ~1_val~
+                    break;
+                case JewelMagicEffect.Agility:
+                    MagicLabel = 1017331;           // agility charges: ~1_val~
+                    break;
+                case JewelMagicEffect.Cunning:
+                    MagicLabel = 1017332;           // cunning charges: ~1_val~
+                    break;
+                case JewelMagicEffect.Strength:
+                    MagicLabel = 1017333;           // strength charges: ~1_val~
+                    break;
+                case JewelMagicEffect.NightSight:
+                    MagicLabel = 1017324;           // night sight charges: ~1_val~
+                    break;
+                case JewelMagicEffect.Curse:
+                    MagicLabel = 1017335;           // curse charges: ~1_val~
+                    break;
+                case JewelMagicEffect.Clumsy:
+                    MagicLabel = 1017326;           // clumsiness charges: ~1_val~
+                    break;
+                case JewelMagicEffect.Feeblemind:
+                    MagicLabel = 1017327;           // feeblemind charges: ~1_val~
+                    break;
+                case JewelMagicEffect.Weakness:
+                    MagicLabel = 1017328;           // weakness charges: ~1_val~
+                    break;
+                default:
+                    MagicLabel = -1;
+                    break;
+            }
+
+            return MagicLabel;
+        }
 
         public override void GetProperties(ObjectPropertyList list)
         {
             base.GetProperties(list);
+
             /*
 						m_AosSkillBonuses.GetProperties( list );
 
@@ -944,56 +1036,6 @@ namespace Server.Items
 						if ( (prop = m_AosAttributes.WeaponSpeed) != 0 )
 							list.Add( 1060486, prop.ToString() ); // swing speed increase ~1_val~%
 			*/
-            if (Identified == true && MagicCharges > 0)
-            {
-                string MagicName;
-                switch (MagicType)
-                {
-                    case JewelMagicEffect.MagicReflect:
-                        MagicName = "magic reflection";
-                        break;
-                    case JewelMagicEffect.Invisibility:
-                        MagicName = "invisibility";
-                        break;
-                    case JewelMagicEffect.Bless:
-                        MagicName = "bless";
-                        break;
-                    case JewelMagicEffect.Teleport:
-                        MagicName = "teleport";
-                        break;
-                    case JewelMagicEffect.Agility:
-                        MagicName = "agility";
-                        break;
-                    case JewelMagicEffect.Cunning:
-                        MagicName = "cunning";
-                        break;
-                    case JewelMagicEffect.Strength:
-                        MagicName = "strength";
-                        break;
-                    case JewelMagicEffect.NightSight:
-                        MagicName = "night sight";
-                        break;
-                    case JewelMagicEffect.Curse:
-                        MagicName = "curse";
-                        break;
-                    case JewelMagicEffect.Clumsy:
-                        MagicName = "clumsy";
-                        break;
-                    case JewelMagicEffect.Feeblemind:
-                        MagicName = "feeblemind";
-                        break;
-                    case JewelMagicEffect.Weakness:
-                        MagicName = "weakness";
-                        break;
-                    default:
-                        MagicName = "Unknown";
-                        break;
-                }
-                string MagicProp = String.Format("{0} - charges:{1}", MagicName, MagicCharges);
-                list.Add(MagicProp);
-            }
-            else if (Identified == false && MagicCharges > 0)
-                list.Add("Unidentified");
 
             if (m_Crafter != null)
                 list.Add(1050043, m_Crafter.Name); // crafted by ~1_NAME~
@@ -1004,131 +1046,7 @@ namespace Server.Items
 
         public override void OnSingleClick(Mobile from)
         {
-            if (this.HideAttributes == true)
-            {
-                base.OnSingleClick(from);
-                return;
-            }
-
-            ArrayList attrs = new ArrayList();
-
-            if (DisplayLootType)
-            {
-                if (LootType == LootType.Blessed)
-                    attrs.Add(new EquipInfoAttribute(1038021)); // blessed
-                else if (LootType == LootType.Cursed)
-                    attrs.Add(new EquipInfoAttribute(1049643)); // cursed
-            }
-
-            if (Name != null || OldName == null) // only use the new ([X/Y/Z]) method on things we don't have OldNames for
-            {
-                if (m_Quality == JewelQuality.Exceptional)
-                    attrs.Add(new EquipInfoAttribute(1018305 - (int)m_Quality));
-
-                if (Identified == false && MagicCharges > 0)
-                    attrs.Add(new EquipInfoAttribute(1038000)); // unidentified
-                else if (Identified == true && MagicCharges > 0)
-                {
-                    switch (MagicType)
-                    {
-                        case JewelMagicEffect.MagicReflect:
-                            attrs.Add(new EquipInfoAttribute(1044416, m_MagicCharges)); // magic reflection
-                            break;
-                        case JewelMagicEffect.Invisibility:
-                            attrs.Add(new EquipInfoAttribute(1044424, m_MagicCharges)); // invisibility
-                            break;
-                        case JewelMagicEffect.Bless:
-                            attrs.Add(new EquipInfoAttribute(1044397, m_MagicCharges)); // bless
-                            break;
-                        case JewelMagicEffect.Teleport:
-                            attrs.Add(new EquipInfoAttribute(1044402, m_MagicCharges)); // teleport
-                            break;
-                        case JewelMagicEffect.Agility:
-                            attrs.Add(new EquipInfoAttribute(1044389, m_MagicCharges)); // agility
-                            break;
-                        case JewelMagicEffect.Cunning:
-                            attrs.Add(new EquipInfoAttribute(1044390, m_MagicCharges)); // cunning
-                            break;
-                        case JewelMagicEffect.Strength:
-                            attrs.Add(new EquipInfoAttribute(1044396, m_MagicCharges)); // strength
-                            break;
-                        case JewelMagicEffect.NightSight:
-                            attrs.Add(new EquipInfoAttribute(1044387, m_MagicCharges)); // night sight
-                            break;
-                        case JewelMagicEffect.Curse:
-                            attrs.Add(new EquipInfoAttribute(1044407, m_MagicCharges)); // curse
-                            break;
-                        case JewelMagicEffect.Clumsy:
-                            attrs.Add(new EquipInfoAttribute(1044382, m_MagicCharges)); // clumsy
-                            break;
-                        case JewelMagicEffect.Feeblemind:
-                            attrs.Add(new EquipInfoAttribute(1044384, m_MagicCharges)); // feeblemind
-                            break;
-                        case JewelMagicEffect.Weakness:
-                            attrs.Add(new EquipInfoAttribute(1044388, m_MagicCharges)); // weaken
-                            break;
-                    }
-                }
-            }
-
-            if (attrs.Count == 0 && Name != null && m_Crafter == null)
-                return;
-
-            int number;
-
-            if (Name == null)
-            {
-                if (OldName == null)
-                {
-                    number = LabelNumber;
-                }
-                else
-                {
-                    // display old style
-
-                    string oldname = OldName;
-                    string article = OldArticle;
-
-                    // TBD
-                    OldOnSingleClick(from);
-                    return;
-
-                    //finally, add the article
-                    oldname = article + " " + oldname;
-
-                    this.LabelTo(from, oldname);
-                    number = 1041000;
-                }
-            }
-            else
-            {
-                this.LabelTo(from, Name);
-                number = 1041000;
-            }
-
-            if (attrs.Count == 0 && Crafter == null && Name != null)
-                return;
-
-            if (Name != null || OldName == null)
-            {
-                EquipmentInfo eqInfo = new EquipmentInfo(number, m_Crafter, false, (EquipInfoAttribute[])attrs.ToArray(typeof(EquipInfoAttribute)));
-                from.Send(new DisplayEquipmentInfo(this, eqInfo));
-            }
-            else
-            {
-                if (attrs.Count > 0)
-                {
-                    EquipmentInfo eqInfo = new EquipmentInfo(number, null, false, (EquipInfoAttribute[])attrs.ToArray(typeof(EquipInfoAttribute)));
-                    from.Send(new DisplayEquipmentInfo(this, eqInfo));
-                }
-            }
-        }
-
-        #region OLD OnSingleClick
-        // FOR TEST - comment-out WHEN DONE
-        public void OldOnSingleClick(Mobile from)
-        {
-            if (this.HideAttributes == true)
+            if (this.HideAttributes == true || (Name == null && UseOldNames))
             {
                 base.OnSingleClick(from);
                 return;
@@ -1147,6 +1065,16 @@ namespace Server.Items
             if (m_Quality == JewelQuality.Exceptional)
                 attrs.Add(new EquipInfoAttribute(1018305 - (int)m_Quality));
 
+            if (m_Identified)
+            {
+                if (MagicType != JewelMagicEffect.None)
+                    attrs.Add(new EquipInfoAttribute(GetMagicLabel(), m_MagicCharges));
+            }
+            else if (MagicType != JewelMagicEffect.None)
+            {
+                attrs.Add(new EquipInfoAttribute(1038000)); // Unidentified
+            }
+
             int number;
 
             if (Name == null)
@@ -1159,59 +1087,73 @@ namespace Server.Items
                 number = 1041000;
             }
 
-            if (Identified == false && MagicCharges > 0)
-                attrs.Add(new EquipInfoAttribute(1038000)); // unidentified
-            else if (Identified == true && MagicCharges > 0)
-            {
-                switch (MagicType)
-                {
-                    case JewelMagicEffect.MagicReflect:
-                        attrs.Add(new EquipInfoAttribute(1044416, m_MagicCharges)); // magic reflection
-                        break;
-                    case JewelMagicEffect.Invisibility:
-                        attrs.Add(new EquipInfoAttribute(1044424, m_MagicCharges)); // invisibility
-                        break;
-                    case JewelMagicEffect.Bless:
-                        attrs.Add(new EquipInfoAttribute(1044397, m_MagicCharges)); // bless
-                        break;
-                    case JewelMagicEffect.Teleport:
-                        attrs.Add(new EquipInfoAttribute(1044402, m_MagicCharges)); // teleport
-                        break;
-                    case JewelMagicEffect.Agility:
-                        attrs.Add(new EquipInfoAttribute(1044389, m_MagicCharges)); // agility
-                        break;
-                    case JewelMagicEffect.Cunning:
-                        attrs.Add(new EquipInfoAttribute(1044390, m_MagicCharges)); // cunning
-                        break;
-                    case JewelMagicEffect.Strength:
-                        attrs.Add(new EquipInfoAttribute(1044396, m_MagicCharges)); // strength
-                        break;
-                    case JewelMagicEffect.NightSight:
-                        attrs.Add(new EquipInfoAttribute(1044387, m_MagicCharges)); // night sight
-                        break;
-                    case JewelMagicEffect.Curse:
-                        attrs.Add(new EquipInfoAttribute(1044407, m_MagicCharges)); // curse
-                        break;
-                    case JewelMagicEffect.Clumsy:
-                        attrs.Add(new EquipInfoAttribute(1044382, m_MagicCharges)); // clumsy
-                        break;
-                    case JewelMagicEffect.Feeblemind:
-                        attrs.Add(new EquipInfoAttribute(1044384, m_MagicCharges)); // feeblemind
-                        break;
-                    case JewelMagicEffect.Weakness:
-                        attrs.Add(new EquipInfoAttribute(1044388, m_MagicCharges)); // weaken
-                        break;
-                }
-            }
-
-            if (attrs.Count == 0 && Name != null && m_Crafter == null)
+            if (attrs.Count == 0 && Crafter == null && Name != null)
                 return;
 
             EquipmentInfo eqInfo = new EquipmentInfo(number, m_Crafter, false, (EquipInfoAttribute[])attrs.ToArray(typeof(EquipInfoAttribute)));
-
             from.Send(new DisplayEquipmentInfo(this, eqInfo));
         }
-        #endregion
+
+        public override string GetOldPrefix(ref Article article)
+        {
+            string prefix = "";
+
+            if (m_Identified)
+            {
+                // there are no identifiable prefixes
+            }
+            else if (!HideAttributes && MagicType != JewelMagicEffect.None && MagicCharges > 0)
+            {
+                if ((article == Article.A || article == Article.An) && prefix.Length == 0)
+                    article = Article.A;
+
+                prefix += "magic ";
+            }
+
+            return prefix;
+        }
+
+        public override string GetOldSuffix()
+        {
+            string suffix = "";
+
+            if (m_Identified)
+            {
+                if (!HideAttributes && MagicType != JewelMagicEffect.None && MagicCharges > 0)
+                {
+                    if (suffix.Length == 0)
+                        suffix += " of ";
+                    else
+                        suffix += " and ";
+
+                    suffix += FormatOldSuffix(MagicType, m_MagicCharges);
+                }
+            }
+
+            if (m_Crafter != null)
+                suffix += " crafted by " + m_Crafter.Name;
+
+            return suffix;
+        }
+
+        public string FormatOldSuffix(JewelMagicEffect effect, int charges)
+        {
+            //MagicEffect e = GetEffect(effect);
+
+            //if (e == null)
+            //    return string.Empty;
+
+            //string name = e.OldName;
+            string name = name = this.GetMagicName();
+
+            //if (name == null && !Server.Text.Cliloc.Lookup.TryGetValue(this.GetMagicLabel(), out name))
+            //    return string.Empty;
+
+            //if (name != null)
+            //    name = name.Replace(" charges: ~1_val~", "");
+
+            return string.Format("{0} (charges: {1})", name.ToLower(), charges);
+        }
 
         private class MagicEffectTimer : Timer
         {
@@ -1379,7 +1321,7 @@ namespace Server.Items
                     GemType = GemType.Diamond;
             }
 
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 if (makersMark)
                     this.Crafter = from;
@@ -1586,7 +1528,7 @@ namespace Server.Items
                             dmy_AosResistances = new AosElementAttributes(this, reader);
                             dmy_AosSkillBonuses = new AosSkillBonuses(this, reader);
 
-                            if (Core.AOS && Parent is Mobile)
+                            if (Core.RuleSets.AOSRules() && Parent is Mobile)
                                 dmy_AosSkillBonuses.AddTo((Mobile)Parent);
 
                             int strBonus = dmy_AosAttributes.BonusStr;

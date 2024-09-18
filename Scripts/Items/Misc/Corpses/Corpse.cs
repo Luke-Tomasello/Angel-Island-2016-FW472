@@ -322,12 +322,12 @@ namespace Server.Items
                 {
                     Item item = (Item)initialContent[i];
 
-                    if (Core.AOS && owner.Player && item.Parent == owner.Backpack)
+                    if (Core.RuleSets.AOSRules() && owner.Player && item.Parent == owner.Backpack)
                         c.AddItem(item);
                     else
                         c.DropItem(item);
 
-                    if (owner.Player && Core.AOS)
+                    if (owner.Player && Core.RuleSets.AOSRules())
                         c.SetRestoreInfo(item, item.Location);
                 }
             }
@@ -825,7 +825,7 @@ namespace Server.Items
         {
             base.GetContextMenuEntries(from, list);
 
-            if (Core.AOS && m_Owner == from && from.Alive)
+            if (Core.RuleSets.AOSRules() && m_Owner == from && from.Alive)
                 list.Add(new OpenCorpseEntry());
         }
 
@@ -1035,7 +1035,7 @@ namespace Server.Items
 
         public override void OnDoubleClick(Mobile from)
         {
-            Open(from, Core.AOS);
+            Open(from, Core.RuleSets.AOSRules());
         }
 
         public override bool CheckContentDisplay(Mobile from)

@@ -54,10 +54,10 @@ namespace Server.SkillHandlers
             if (item is Spellbook || item is Runebook || item is BountyLedger)
                 return true;
 
-            //if ( Core.AOS && item is BaseWeapon && ((BaseWeapon)item).Attributes.SpellChanneling != 0 )
+            //if ( Core.RuleSets.AOSRules() && item is BaseWeapon && ((BaseWeapon)item).Attributes.SpellChanneling != 0 )
             //return true;
 
-            //if ( Core.AOS && item is BaseArmor && ((BaseArmor)item).Attributes.SpellChanneling != 0 )
+            //if ( Core.RuleSets.AOSRules() && item is BaseArmor && ((BaseArmor)item).Attributes.SpellChanneling != 0 )
             //return true;
 
             return false;
@@ -125,7 +125,7 @@ namespace Server.SkillHandlers
                 Item oneHanded = m.FindItemOnLayer(Layer.OneHanded);
                 Item twoHanded = m.FindItemOnLayer(Layer.TwoHanded);
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     if (!CheckOkayHolding(oneHanded))
                         m.AddToBackpack(oneHanded);

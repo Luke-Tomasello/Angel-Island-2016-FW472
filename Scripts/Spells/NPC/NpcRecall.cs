@@ -83,7 +83,7 @@ namespace Server.Spells.Fourth
 
         public void Effect(Point3D loc, Map map, bool checkMulti)
         {
-            if (map == null || (!Core.AOS && Caster.Map != map))
+            if (map == null || (!Core.RuleSets.AOSRules() && Caster.Map != map))
             {
                 Caster.SendLocalizedMessage(1005569); // You can not recall to another facet.
             }

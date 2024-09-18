@@ -210,16 +210,16 @@ namespace Server.Engines.BulkOrders
                 list.Add(new PowerScroll(SkillName.Blacksmith, 120));
 
             if (rDull)
-                list.Add(new RunicHammer(CraftResource.DullCopper, Core.AOS ? 50 : 50));
+                list.Add(new RunicHammer(CraftResource.DullCopper, Core.RuleSets.AOSRules() ? 50 : 50));
 
             if (rShadow)
-                list.Add(new RunicHammer(CraftResource.ShadowIron, Core.AOS ? 45 : 50));
+                list.Add(new RunicHammer(CraftResource.ShadowIron, Core.RuleSets.AOSRules() ? 45 : 50));
 
             if (rCopper)
-                list.Add(new RunicHammer(CraftResource.Copper, Core.AOS ? 40 : 50));
+                list.Add(new RunicHammer(CraftResource.Copper, Core.RuleSets.AOSRules() ? 40 : 50));
 
             if (rBronze)
-                list.Add(new RunicHammer(CraftResource.Bronze, Core.AOS ? 35 : 50));
+                list.Add(new RunicHammer(CraftResource.Bronze, Core.RuleSets.AOSRules() ? 35 : 50));
 
             if (a10)
                 list.Add(new AncientSmithyHammer(10));

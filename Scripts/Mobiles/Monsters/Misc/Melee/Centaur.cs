@@ -100,7 +100,7 @@ namespace Server.Mobiles
         }
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(180, 250);
                 PackGem();
@@ -110,7 +110,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020806171152/uo.stratics.com/hunters/centaur.shtml
                     // 250-300 Gold, Scrolls, Bow, Magic Items
                     if (Spawning)

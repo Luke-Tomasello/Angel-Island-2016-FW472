@@ -309,7 +309,7 @@ namespace Server.Items
 
             if (m_KeyVal == 0)
                 desc = "(blank)";
-            else if (Link is BaseBoat && ((BaseBoat)Link).Owner == from && (Core.UOAI || Core.UOREN))
+            else if (Link is BaseBoat && ((BaseBoat)Link).Owner == from && (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules()))
             {
                 //plasma: display boat's co-ords to owner (stole/modified from Sextant.cs)
                 int xLong = 0, yLat = 0;

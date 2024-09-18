@@ -2649,10 +2649,10 @@ namespace Server.Network
             /*
 			int flags = 0x3 | m_AdditionalFlags;
 
-			if ( Core.SE )
+			if ( Core.RuleSets.SERules() )
 				flags |= 0x0040;
 
-			if ( Core.AOS )
+			if ( Core.RuleSets.AOSRules() )
 				flags |= 0x801C;
 			 * */
 
@@ -2879,7 +2879,7 @@ namespace Server.Network
             string name = m.Name;
             if (name == null) name = "";
 
-            bool sendMaxWeight = (Core.ML && m.NetState != null && m.NetState.SupportsExpansion(Expansion.ML));
+            bool sendMaxWeight = (Core.RuleSets.MLRules() && m.NetState != null && m.NetState.SupportsExpansion(Expansion.ML));
 
 
             this.EnsureCapacity(sendMaxWeight ? 91 : 88);
@@ -2892,7 +2892,7 @@ namespace Server.Network
 
             m_Stream.Write(m.CanBeRenamedBy(m));
 
-            m_Stream.Write((byte)(sendMaxWeight ? 0x05 : Core.AOS ? 0x04 : 0x03)); // type
+            m_Stream.Write((byte)(sendMaxWeight ? 0x05 : Core.RuleSets.AOSRules() ? 0x04 : 0x03)); // type
 
             m_Stream.Write(m.Female);
 
@@ -2907,7 +2907,7 @@ namespace Server.Network
             m_Stream.Write((short)m.ManaMax);
 
             m_Stream.Write((int)m.TotalGold);
-            //m_Stream.Write( (short) (Core.AOS ? m.PhysicalResistance : (int)(m.ArmorRating + 0.5)) );
+            //m_Stream.Write( (short) (Core.RuleSets.AOSRules() ? m.PhysicalResistance : (int)(m.ArmorRating + 0.5)) );
             m_Stream.Write((short)((int)(m.ArmorRating + 0.5)));
             m_Stream.Write((short)(Mobile.BodyWeight + m.TotalWeight));
 
@@ -2923,7 +2923,7 @@ namespace Server.Network
             m_Stream.Write((byte)m.Followers);
             m_Stream.Write((byte)m.FollowersMax);
 
-            if (Core.AOS)
+            if (Core.RuleSets.AOSRules())
             {
                 //SMD: we're never AOS, so we shouldn't need this!
                 //                m_Stream.Write( (short) m.FireResistance ); // Fire
@@ -2955,7 +2955,7 @@ namespace Server.Network
             string name = beheld.Name;
             if (name == null) name = "";
 
-            bool sendMaxWeight = (Core.ML && beheld.NetState != null && beheld.NetState.SupportsExpansion(Expansion.ML));
+            bool sendMaxWeight = (Core.RuleSets.MLRules() && beheld.NetState != null && beheld.NetState.SupportsExpansion(Expansion.ML));
 
             this.EnsureCapacity(43 + (beholder == beheld ? (sendMaxWeight ? 48 : 45) : 0));
 
@@ -2972,7 +2972,7 @@ namespace Server.Network
 
             if (beholder == beheld)
             {
-                m_Stream.Write((byte)(sendMaxWeight ? 0x05 : Core.AOS ? 0x04 : 0x03)); // type
+                m_Stream.Write((byte)(sendMaxWeight ? 0x05 : Core.RuleSets.AOSRules() ? 0x04 : 0x03)); // type
 
                 m_Stream.Write(beheld.Female);
 
@@ -2984,7 +2984,7 @@ namespace Server.Network
                 WriteAttr(beheld.Mana, beheld.ManaMax);
 
                 m_Stream.Write((int)beheld.TotalGold);
-                //m_Stream.Write( (short) (Core.AOS ? beheld.PhysicalResistance : (int)(beheld.ArmorRating + 0.5)) );
+                //m_Stream.Write( (short) (Core.RuleSets.AOSRules() ? beheld.PhysicalResistance : (int)(beheld.ArmorRating + 0.5)) );
                 m_Stream.Write((short)((int)(beheld.ArmorRating + 0.5)));
                 m_Stream.Write((short)(Mobile.BodyWeight + beheld.TotalWeight));
 
@@ -3000,7 +3000,7 @@ namespace Server.Network
                 m_Stream.Write((byte)beheld.Followers);
                 m_Stream.Write((byte)beheld.FollowersMax);
 
-                if (Core.AOS)
+                if (Core.RuleSets.AOSRules())
                 {
                     //SMD: We're never AOS, so we shouldn't need this!
                     //					m_Stream.Write( (short) beheld.FireResistance ); // Fire
@@ -3555,9 +3555,9 @@ namespace Server.Network
             /*
 						int flags = 0x08; //Context Menus
 
-						if ( Core.SE )
+						if ( Core.RuleSets.SERules() )
 							flags |= 0xA0; //SE & AOS
-						else if ( Core.AOS )
+						else if ( Core.RuleSets.AOSRules() )
 							flags |= 0x20; //AOS
 			 * */
 

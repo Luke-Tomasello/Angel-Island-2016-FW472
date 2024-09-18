@@ -21,7 +21,7 @@
 
 /* Items/Deeds/RareSpellbookSet1Deed.cs
  * ChangeLog:
- *	4/1/10, adam
+ *	4/1/10, Adam
  *		Remove LootType = LootType.Blessed; from deserialize
  *		This was preventing the items from dropping via lootpacks
  *	5/14/09, Adam

@@ -95,9 +95,9 @@ namespace Server.Mobiles
             VirtualArmor = 50;
         }
 
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : true; } }
+        public override bool CanRummageCorpses { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? true : true; } }
         public override Poison PoisonImmune { get { return Poison.Lethal; } }
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 5 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 5 : 0; } }
 
         public LichLord(Serial serial)
             : base(serial)
@@ -106,7 +106,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackItem(new GnarledStaff());
                 PackScroll(3, 7);
@@ -144,7 +144,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020213054135/uo.stratics.com/hunters/lichlord.shtml
                     // 400 to 700 Gold, Magic items, Gems, Scrolls, Blackmoor reagent
 
@@ -168,7 +168,7 @@ namespace Server.Mobiles
                     if (Spawning)
                     {
                         PackItem(new GnarledStaff());
-                        if (Core.AOS)
+                        if (Core.RuleSets.AOSRules())
                             PackNecroReg(12, 40);
                     }
 

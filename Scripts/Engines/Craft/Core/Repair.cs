@@ -247,7 +247,7 @@ namespace Server.Engines.Craft
                     SkillName skill = m_CraftSystem.MainSkill;
                     int toWeaken = 0;
 
-                    if (Core.AOS)
+                    if (Core.RuleSets.AOSRules())
                     {
                         toWeaken = 1;
                     }
@@ -308,7 +308,7 @@ namespace Server.Engines.Craft
                     SkillName skill = m_CraftSystem.MainSkill;
                     int toWeaken = 0;
 
-                    if (Core.AOS)
+                    if (Core.RuleSets.AOSRules())
                     {
                         toWeaken = 1;
                     }
@@ -369,7 +369,7 @@ namespace Server.Engines.Craft
                     SkillName skill = m_CraftSystem.MainSkill;
                     int toWeaken = 0;
 
-                    if (Core.AOS)
+                    if (Core.RuleSets.AOSRules())
                     {
                         toWeaken = 1;
                     }

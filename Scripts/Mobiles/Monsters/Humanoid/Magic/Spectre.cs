@@ -81,7 +81,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(25, 50);
                 PackReg(10);
@@ -100,7 +100,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20021215160806/uo.stratics.com/hunters/spectre.shtml
                     // 50 to 150 Gold, Magic Items, Gems, Reagents, Scrolls, Bones
 

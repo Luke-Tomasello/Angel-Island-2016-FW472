@@ -163,7 +163,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 if (0.25 > Utility.RandomDouble())
                     PackItem(new Board(10));
@@ -177,7 +177,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020207053503/uo.stratics.com/hunters/bogling.shtml
                     // no page
                     // http://web.archive.org/web/20020806164704/uo.stratics.com/hunters/bogthing.shtml

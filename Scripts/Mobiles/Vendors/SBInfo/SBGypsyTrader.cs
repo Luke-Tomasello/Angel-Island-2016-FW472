@@ -57,7 +57,7 @@ namespace Server.Mobiles
         {
             public InternalBuyInfo()
             {
-                if (Core.UOAI || Core.UOREN || Core.UOMO)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
                 {
                     Add(new GenericBuyInfo("Gender Change Deed", typeof(GenderChangeDeed), 100000, 20, 0x14F0, 0x0));
                     Add(new GenericBuyInfo("Name Change Deed", typeof(NameChangeDeed), 100000, 20, 0x14F0, 0x0));

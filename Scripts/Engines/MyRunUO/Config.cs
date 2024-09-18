@@ -65,17 +65,17 @@ namespace Server.Engines.MyRunUO
             {
                 Enabled = true;
 
-                if ((Core.UOAI || Core.UOREN) && !Core.UOTC)
+                if ((Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules()) && !Core.RuleSets.TestCenterRules())
                 {
                     Enabled = false;
                     Console.WriteLine("MyRunUO: Disabled.");
                 }
-                else if (Core.UOSP && !Core.UOTC)
+                else if (Core.RuleSets.SiegeRules() && !Core.RuleSets.TestCenterRules())
                 {
                     Enabled = false;
                     Console.WriteLine("MyRunUO: Disabled.");
                 }
-                else if (Core.UOTC)
+                else if (Core.RuleSets.TestCenterRules())
                 {
                     Console.WriteLine("MyRunUO: Enabled.");
                     DatabaseDriver = "{MySQL ODBC 3.51 Driver}";

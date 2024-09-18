@@ -25,23 +25,23 @@
  *		add target 'under house' exploit check
  *		if ((target is Server.Targeting.LandTarget && Server.Multis.BaseHouse.FindHouseAt(((Server.Targeting.LandTarget)(target)).Location, Caster.Map, 16) != null))
  *			target cannot be seen
- *	6/30/10, adam
+ *	6/30/10, Adam
  *		o If the potion is not in your backpack, a skill check is made to make sure you are skilled enough
  *		o Before a potion explodes after you die, a skill check is made to make sure you are skilled enough
  *		o If you are exploding a potion in your backpack, in town, and 'invisible shield' hasn't caught it...
  *			do a skill check to see if you are skilled enough to pull it off otherwise the guard defuses it.
- *	6/30/10, adam
+ *	6/30/10, Adam
  *		finish up work started yesterday (SuicideBomber/InvisibleShield)
- *	6/29/10, adam
+ *	6/29/10, Adam
  *		If you blow up a potion in town you will be flagged as a SuicideBomber 
  *		If a guard sees a SuicideBomber he will cast InvisibleShield on him whereby nerfing all collateral damage
  *	6/27/10, Adam
  *		Add the notion of Smart Guards to defend against in-town griefing (exp pots, and melee attacks)
- *	6/25/10, adam
+ *	6/25/10, Adam
  *		o Add messages to indicate how the guard blocked the potion
  *		o add flags to the class to support the notion of a dud
  *			a potion that is batted away by a guard is a dud
- *	6/24/10, adam
+ *	6/24/10, Adam
  *		o if you throw the potion in town and there is a guard on you...
  *			there is a skill check to throw successfully. if you fail, the guard may:
  *			a) block the throw entirely such that it stays in your backpack and explodes
@@ -49,7 +49,7 @@
  *			c) deflect it such that it goes flying
  *		o if the potion is exploded in your backpack && ur skillz < from.Skills.Alchemy.Value > 96.8, it only delivers 1 pt damage
  *		o guards are called when a potion is targeted (from an RP perspective 'thrown', if an NPC sees this they call guards.)
- *	6/23/10, adam
+ *	6/23/10, Adam
  *		if the potion is exploded in your backpack, it only delivers 1 pt damage
  *  05/01/06 Taran Kain
  *		Fixed that goddamn z-axis problem. Targets must be within (Range * 8) z-units of the explosion to be affected.
@@ -171,7 +171,7 @@ namespace Server.Items
 
         public override void Drink(Mobile from)
         {
-            if (Core.AOS && (from.Paralyzed || from.Frozen || (from.Spell != null && from.Spell.IsCasting)))
+            if (Core.RuleSets.AOSRules() && (from.Paralyzed || from.Frozen || (from.Spell != null && from.Spell.IsCasting)))
             {
                 from.SendLocalizedMessage(1062725); // You can not use a purple potion while paralyzed.
                 return;
@@ -484,7 +484,7 @@ namespace Server.Items
             int alchemyBonus = 0;
 
             if (direct)
-                alchemyBonus = (int)(from.Skills.Alchemy.Value / (Core.AOS ? 5 : 10));
+                alchemyBonus = (int)(from.Skills.Alchemy.Value / (Core.RuleSets.AOSRules() ? 5 : 10));
 
             IPooledEnumerable eable = LeveledExplosion ? map.GetObjectsInRange(loc, ExplosionRange) : map.GetMobilesInRange(loc, ExplosionRange);
             ArrayList toExplode = new ArrayList();
@@ -547,9 +547,9 @@ namespace Server.Items
 
                         damage += alchemyBonus;
 
-                        if (!Core.AOS && damage > 40)
+                        if (!Core.RuleSets.AOSRules() && damage > 40)
                             damage = 40;
-                        else if (Core.AOS && toDamage > 2)
+                        else if (Core.RuleSets.AOSRules() && toDamage > 2)
                             damage /= toDamage - 1;
 
                         //	a guard cast InvisibleShield on you since you're flagged as a SuicideBomber and the potion is in your backpack

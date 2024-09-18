@@ -21,7 +21,7 @@
 
 /* Scripts/Mobiles/Monsters/Humanoid/Melee/OrcCaptain.cs
  * ChangeLog
- *	2/8/11, adam
+ *	2/8/11, Adam
  *		UOSI: the orc captain should have classic loot.. I don't know wtf RunUO is giving
  *		drop UOSP style loot UOSI.
  *  8/16/06, Rhiannon
@@ -89,7 +89,7 @@ namespace Server.Mobiles
             VirtualArmor = 34;
         }
 
-        public override bool CanRummageCorpses { get { return Core.UOAI || Core.UOREN ? true : true; } }
+        public override bool CanRummageCorpses { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? true : true; } }
         public override int Meat { get { return 1; } }
 
         public override OppositionGroup OppositionGroup
@@ -99,7 +99,7 @@ namespace Server.Mobiles
 
         public override bool IsEnemy(Mobile m, RelationshipFilter filter)
         {
-            if (!Core.UOAI && !Core.UOREN)
+            if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules())
                 if (m.Player && m.FindItemOnLayer(Layer.Helm) is OrcishKinMask)
                     return false;
 
@@ -110,7 +110,7 @@ namespace Server.Mobiles
         {
             base.AggressiveAction(aggressor, criminal);
 
-            if (!Core.UOAI && !Core.UOREN)
+            if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules())
             {
                 Item item = aggressor.FindItemOnLayer(Layer.Helm);
 
@@ -140,7 +140,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 // TODO: Skull?
                 switch (Utility.Random(7))
@@ -174,7 +174,7 @@ namespace Server.Mobiles
             }
             else
             {   // Adam: the orc captain should have classic loot.. I don't know wtf RunUO is giving
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020607073208/uo.stratics.com/hunters/orccap.shtml
                     // 	50 to 150 Gold, Gems, Two-Handed Axe, Ringmail Tunic, Orc Helm, Thigh Boots, 1 Raw Ribs (carved)
                     if (Spawning)
@@ -207,7 +207,7 @@ namespace Server.Mobiles
                             case 6: PackItem(new Jug(BeverageType.Cider)); break;
                         }
 
-                        if (Core.AOS)
+                        if (Core.RuleSets.AOSRules())
                             PackItem(Loot.RandomNecromancyReagent());
                     }
 

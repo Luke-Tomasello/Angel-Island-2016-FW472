@@ -73,7 +73,7 @@ namespace Server.Mobiles
         public override Poison HitPoison { get { return Poison.Lethal; } }
         public override double HitPoisonChance { get { return 0.75; } }
 
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 5 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 5 : 0; } }
 
         public PoisonElemental(Serial serial)
             : base(serial)
@@ -82,7 +82,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(250, 325);
                 PackScroll(1, 7);
@@ -96,7 +96,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20011205104734/uo.stratics.com/hunters/poisonelemental.shtml
                     // 800 to 1100 Gold, Magic Items, Gems
 

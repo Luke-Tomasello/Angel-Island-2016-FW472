@@ -25,9 +25,9 @@
  *		o New AllowRespawnMana player rule option.
  *			by default you respawn with the mana you died with
  *		o Call RefreshPlayers() from NewRound() to refresh the player stats between rounds.	
- * 5/2/10, adam
+ * 5/2/10, Adam
  *		Add DropHolding logic before Colorization and teleportation
- * 4/10/10, adam
+ * 4/10/10, Adam
  *		initial framework.
  */
 

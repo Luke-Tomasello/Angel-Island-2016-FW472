@@ -189,7 +189,7 @@ namespace Server.Items
 
         public static WeaponAbility GetCurrentAbility(Mobile m)
         {
-            if (!Core.AOS)
+            if (!Core.RuleSets.AOSRules())
             {
                 ClearCurrentAbility(m);
                 return null;
@@ -214,7 +214,7 @@ namespace Server.Items
 
         public static bool SetCurrentAbility(Mobile m, WeaponAbility a)
         {
-            if (!Core.AOS)
+            if (!Core.RuleSets.AOSRules())
             {
                 ClearCurrentAbility(m);
                 return false;

@@ -69,7 +69,7 @@ namespace Server.Mobiles
 				 *				Add( typeof( ThinLongsword ), 30 );
 				 *				Add( typeof( VikingSword ), 33 );
 
-								if ( Core.AOS )
+								if ( Core.RuleSets.AOSRules() )
 								{
 									Add( typeof( Scythe ), 23 );
 									Add( typeof( BoneHarvester ), 18 );

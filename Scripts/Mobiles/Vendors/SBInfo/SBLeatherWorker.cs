@@ -56,14 +56,14 @@ namespace Server.Mobiles
                 /* Shopkeeper NPCs do not sell any resources (Ingots, Cloth, etc.))
 				 * http://www.uoguide.com/Siege_Perilous
 				 */
-                if (!Core.UOSP && !Core.UOAI && !Core.UOREN && !Core.UOMO)
+                if (!Core.RuleSets.SiegeRules() && !Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.MortalisRules())
                     Add(new GenericBuyInfo(typeof(Hides), 4, 999, 0x1078, 0));
 
-                if (!Core.UOAI && !Core.UOREN && !Core.UOMO)
+                if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.MortalisRules())
                     // only sell these on some servers
                     Add(new GenericBuyInfo(typeof(ThighBoots), 56, 10, 0x1711, 0));
 
-                if (Core.UOAI || Core.UOREN || Core.UOMO)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
                 {   // balanced buyback support
                     Add(new GenericBuyInfo(typeof(Leather)));
                     Add(new GenericBuyInfo(typeof(SpinedLeather)));
@@ -77,7 +77,7 @@ namespace Server.Mobiles
         {
             public InternalSellInfo()
             {
-                if (Core.UOAI || Core.UOREN || Core.UOMO)
+                if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() || Core.RuleSets.MortalisRules())
                 {   // balanced buyback system
                     Add(typeof(Leather));
                     Add(typeof(Hides));
@@ -89,7 +89,7 @@ namespace Server.Mobiles
                     Add(typeof(HornedHides));
                 }
 
-                if (!Core.UOAI && !Core.UOREN && !Core.UOSP && !Core.UOMO)
+                if (!Core.RuleSets.AngelIslandRules() && !Core.RuleSets.RenaissanceRules() && !Core.RuleSets.SiegeRules() && !Core.RuleSets.MortalisRules())
                 {   // cash buyback
                     Add(typeof(ThighBoots), 28);
                 }

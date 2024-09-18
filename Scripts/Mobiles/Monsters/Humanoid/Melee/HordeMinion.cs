@@ -94,14 +94,14 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackItem(new Bone(3));
                 // TODO: Body parts
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // 02 2002 - no page
                     // http://web.archive.org/web/20020806230925/uo.stratics.com/hunters/hordedaemon.shtml
                     // body parts

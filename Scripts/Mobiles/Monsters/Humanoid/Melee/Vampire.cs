@@ -21,15 +21,15 @@
 
 /* Scripts/Mobiles/Monsters/Humanoid/Melee/Vampire.cs
  * ChangeLog
- *	7/19/10, adam
+ *	7/19/10, Adam
  *		remove kits wild speedups and use normal UO speeds.
  * 		reason: vampires are anti tamer to encourage warriors and mages, but the flee speed was crazy
  * 			and no warrior could catch them.
- *	7/19/10, adam
+ *	7/19/10, Adam
  *		o remove the silver bonus given here in CheckWeaponImmunity() since we now give the standard Slayer
  *		bonus in BaseWeapon.
  *		o CheckWeaponImmunity() still reduces damage done by non silver weapons to 25%
- *	5/12/10, adam
+ *	5/12/10, Adam
  *		1. change IsScaryCondition() to always be scary to pets
  *		2. call new PackSlayerWeapon() function.
  *		3. remove magic weapon drop (replaced with slayer)
@@ -443,7 +443,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(170, 220); //add gold if its daytime
                                     //PackMagicEquipment(2, 3, 0.60, 0.60);
@@ -463,7 +463,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // ai special
                     if (Spawning)
                     {

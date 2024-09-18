@@ -81,7 +81,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackItem(new Bone());
                 PackGold(10, 50);
@@ -101,7 +101,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {
                     // http://web.archive.org/web/20020221204724/uo.stratics.com/hunters/ghoul.shtml
                     // 50 to 150 Gold, Magic items, Gems, Sometimes Bone Armor

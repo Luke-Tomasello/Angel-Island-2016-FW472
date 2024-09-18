@@ -45,7 +45,7 @@ namespace Server.Items
         public ChaosShield()
             : base(0x1BC3)
         {
-            if (!Core.AOS)
+            if (!Core.RuleSets.AOSRules())
                 LootType = LootType.Newbied;
 
             Weight = 5.0;
@@ -85,7 +85,7 @@ namespace Server.Items
 
         public bool Validate(Mobile m)
         {
-            if (m == null || !m.Player || m.AccessLevel != AccessLevel.Player || Core.AOS)
+            if (m == null || !m.Player || m.AccessLevel != AccessLevel.Player || Core.RuleSets.AOSRules())
                 return true;
 
             Guild g = m.Guild as Guild;

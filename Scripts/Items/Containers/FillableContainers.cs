@@ -21,7 +21,7 @@
 
 /* Scripts\Items\Containers\FillableContainers.cs
  * CHANGELOG:
- *	2/28/11, adam
+ *	2/28/11, Adam
  *		Exclude fillable containers from freezedry system
  */
 

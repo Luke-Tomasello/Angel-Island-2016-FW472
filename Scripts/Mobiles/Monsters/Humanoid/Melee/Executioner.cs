@@ -49,7 +49,7 @@ namespace Server.Mobiles
             Title = "the executioner";
             Hue = Utility.RandomSkinHue();
 
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 SetStr(386, 400);
                 SetDex(70, 90);
@@ -122,7 +122,7 @@ namespace Server.Mobiles
 
         public override void OnGaveMeleeAttack(Mobile target)
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
                 if (0.25 >= Utility.RandomDouble() && target is PlayerMobile)
                     target.Damage(Utility.RandomMinMax(15, 25), this, source_weapon: this);
 
@@ -136,7 +136,7 @@ namespace Server.Mobiles
 
         public override void GenerateLoot()
         {
-            if (Core.UOAI || Core.UOREN)
+            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 PackGold(300, 450);
                 // Category 2 MID
@@ -144,7 +144,7 @@ namespace Server.Mobiles
             }
             else
             {
-                if (Core.UOSP || Core.UOMO)
+                if (Core.RuleSets.SiegeRules() || Core.RuleSets.MortalisRules())
                 {   // http://web.archive.org/web/20020606054853/uo.stratics.com/hunters/executioner.shtml
                     // 750 - 800 Gold, Magic Items
                     if (Spawning)

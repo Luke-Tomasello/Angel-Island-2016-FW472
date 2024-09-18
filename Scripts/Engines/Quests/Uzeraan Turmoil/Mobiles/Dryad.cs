@@ -30,7 +30,7 @@ namespace Server.Engines.Quests.Haven
         public override bool IsActiveVendor { get { return true; } }
         public override bool DisallowAllMoves { get { return false; } }
         public override bool ClickTitle { get { return true; } }
-        public override bool CanTeach { get { return Core.UOSP ? false : true; } }
+        public override bool CanTeach { get { return Core.RuleSets.SiegeRules() ? false : true; } }
 
         [Constructable]
         public Dryad()

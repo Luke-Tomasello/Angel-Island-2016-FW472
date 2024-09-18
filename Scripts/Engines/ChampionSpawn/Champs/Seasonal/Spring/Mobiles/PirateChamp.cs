@@ -21,7 +21,7 @@
 
 /* Scripts\Engines\ChampionSpawn\Champs\Seasonal\Spring\Mobiles\PirateChamp.cs	
  * ChangeLog:
- *	7/9/10, adam
+ *	7/9/10, Adam
  *		o Merge pirate class hierarchy (all pirates are now derived from class Pirate)
  *	1/1/09, Adam
  *		- Add potions and bandages
@@ -45,7 +45,7 @@ namespace Server.Mobiles
     public class PirateChamp : Pirate
     {
         private MetalChest m_MetalChest = null;
-        public override int TreasureMapLevel { get { return Core.UOAI || Core.UOREN ? 5 : 0; } }
+        public override int TreasureMapLevel { get { return Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? 5 : 0; } }
 
         [Constructable]
         public PirateChamp()
