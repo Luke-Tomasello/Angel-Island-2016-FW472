@@ -26,3 +26,9 @@ If you're looking for the .NET 8 version, find it here: https://github.com/Luke-
 # Discord
 
 https://discord.gg/GXcR2DsSnb
+
+# Clan Wars - Videos
+
+https://youtu.be/ULdjLc2WxUk
+https://youtu.be/5MGYbSaOqlo
+https://youtu.be/n52bh8SoxTE
