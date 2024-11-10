@@ -35,6 +35,7 @@
  * 
  */
 
+using Server.Diagnostics;
 using Server.Gumps;
 using Server.Items;
 using Server.Misc;

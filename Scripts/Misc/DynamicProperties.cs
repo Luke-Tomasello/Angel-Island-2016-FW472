@@ -28,6 +28,7 @@
  *      - new dynamic property system
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using System;
 using System.Collections;

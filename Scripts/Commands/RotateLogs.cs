@@ -27,6 +27,7 @@
  *		Initial Version
  */
 
+using Server.Diagnostics;
 using System;
 using System.IO;
 

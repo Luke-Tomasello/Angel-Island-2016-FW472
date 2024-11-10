@@ -420,7 +420,7 @@ namespace Server.Items
                             case 2: // You attempt to toss the potion, but the guard bats it away.
                                 m_Potion.SetFlag(PotFlags.Dud1pt);  // minimize collateral damage 
                                 from.SendMessage("You attempt to toss the potion, but the guard bats it away.");
-                                to = new Entity(Serial.Zero, Server.Mobiles.Spawner.GetSpawnPosition(from.Map, from.Location, 7, false, m_Potion), map);
+                                to = new Entity(Serial.Zero, Server.Mobiles.Spawner.GetSpawnPosition(from.Map, from.Location, 7, m_Potion), map);
                                 Effects.SendMovingEffect(from, to, m_Potion.ItemID & 0x3FFF, 7, 0, false, false, m_Potion.Hue, 0);
                                 m_Potion.Internalize();
                                 Timer.DelayCall(TimeSpan.FromSeconds(1.0), new TimerStateCallback(m_Potion.Reposition_OnTick), new object[] { from, to, map });

@@ -45,6 +45,7 @@
  *  4/06/04 Created by Pixie;
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Engines;
 using Server.Mobiles;

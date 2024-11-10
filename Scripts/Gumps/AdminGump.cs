@@ -83,6 +83,7 @@
  *		Merged in 1.0RC0 code.
  */
 
+using Server.Diagnostics;
 using Server.Accounting;
 using Server.Commands;
 using Server.Items;
@@ -225,7 +226,7 @@ namespace Server.Gumps
         {
             string name = Enum.GetName(typeof(AccessLevel), level);
             if (name != null)
-            { 
+            {
                 return Utility.SplitCamelCase(name);
             }
 

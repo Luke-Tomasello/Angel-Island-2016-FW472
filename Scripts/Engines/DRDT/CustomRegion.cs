@@ -104,6 +104,7 @@
  *  04/29/05, Kitaras
  *	 Initial system
  */
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Engines.IOBSystem;
 using Server.Items;
@@ -882,7 +883,7 @@ namespace Server.Regions
                         }
                         catch (Exception e)
                         {
-                            Server.Commands.LogHelper.LogException(e);
+                            LogHelper.LogException(e);
                         }
                     }
 

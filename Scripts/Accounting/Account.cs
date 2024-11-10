@@ -57,6 +57,7 @@
  *		Added email field to account
  */
 
+using Server.Diagnostics;
 using Server.Misc;
 using Server.Network;
 using System;
@@ -698,7 +699,7 @@ namespace Server.Accounting
             }
             catch (Exception ex)
             {
-                Commands.LogHelper.LogException(ex);
+                LogHelper.LogException(ex);
             }
 
             return true;
@@ -745,7 +746,7 @@ namespace Server.Accounting
             }
             catch (Exception ex)
             {
-                Commands.LogHelper.LogException(ex);
+                LogHelper.LogException(ex);
             }
 
             return true;

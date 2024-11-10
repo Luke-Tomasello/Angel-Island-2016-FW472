@@ -21,6 +21,12 @@
 
 /* Scripts/Mobiles/PlayerMobile.cs
  * ChangeLog:
+ *  10/7/2024, Adam
+ *      lower case spoken text when looking for commands in OnSpeech()
+ *  9/19/2024, Adam, merge Yoar's FW stuff from 2023
+ *      Merge FastWalk prevention with RunUO - Added server-side delay to turning
+ *  9/19/2024, Adam, merge Yoar's FW stuff from 2023
+ *      Now properly registering our MoveReq throttler to prevent speedhack (PacketHandlers.RegisterThrottler)
  *  9/10/2024, Adam
  *      Incorporate Yoar's StamDrain accumulator (from WeightOverloading)
  *	3/9/2016, Adam
@@ -457,9 +463,12 @@
 
 #pragma warning disable 429, 162
 
+using Newtonsoft.Json;
 using Server.Accounting;
 using Server.Commands;
 using Server.ContextMenus;
+using Server.Diagnostics;
+using Server.Engines.IOBSystem;
 using Server.Engines.Quests;
 using Server.Factions;
 using Server.Gumps;
@@ -471,10 +480,13 @@ using Server.Regions;
 using Server.Spells.Fifth;
 using Server.Spells.Seventh;
 using Server.Targeting;
+using static Server.Utility;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using Server.Engines.ClanSystem;
+using System.Linq;
 
 namespace Server.Mobiles
 {
@@ -492,13 +504,18 @@ namespace Server.Mobiles
         UseOwnFilter = 0x00000080,
         PublicMyRunUO = 0x00000100,
         PagingSquelched = 0x00000200,
-        Inmate = 0x00010000,    //inmate at Angel Island
-        IOBEquipped = 0x00020000,   //Pigpen - Addition for IOB Sytem
-        WoodEngraving = 0x00040000, //weaver - added to allow perma prop.
-        Mortal = 0x00080000,    //TK - Permadeath
-        Embroidering = 0x00100000,  //weaver - added to allow perma prop.
-        Etching = 0x00200000,   //weaver - added to allow perma prop.
-        Watched = 0x00400000,   //Pix: added for staff watch list,
+        #region Language Translators
+        // 400-8000                         // reserved for language translators
+        SpeechOrcToEng = 0x00000400,        //Adam - translate Orcish to English
+        SpeechEngToOrc = 0x00000800,        //Adam - translate English to Orcish
+        #endregion Language Translators
+        Inmate = 0x00010000,                //inmate at Angel Island
+        IOBEquipped = 0x00020000,           //Pigpen - Addition for IOB System
+        WoodEngraving = 0x00040000,         //weaver - added to allow perma prop.
+        Mortal = 0x00080000,                //TK - Permadeath
+        Embroidering = 0x00100000,          //weaver - added to allow perma prop.
+        Etching = 0x00200000,               //weaver - added to allow perma prop.
+        Watched = 0x00400000,               //Pix: added for staff watch list,
         LeatherEmbroidering = 0x00800000,   //Pix - leather embroidery
     }
 
@@ -521,6 +538,10 @@ namespace Server.Mobiles
 
     public class PlayerMobile : Mobile
     {
+        public static void Configure()
+        {   // load and configure the kin language libraries
+            LoadKinLanguage();
+        }
         #region Event Score
         private ushort m_EventScore = 0;
         [CommandProperty(AccessLevel.Counselor)]
@@ -540,6 +561,7 @@ namespace Server.Mobiles
             EthicPoints = 0x04,     // Does this player have ethic pre enrollment points?
             ExpireStates = 0x08,        // Does this player have expiring states?
             EventScore = 0x10,      // Does this player have an event score?
+            ClanJoinTime = 0x20,    // Does this player have a clan join time
         }
         private void SetSaveFlag(ref SaveFlag flags, SaveFlag toSet, bool setIf)
         {
@@ -551,8 +573,203 @@ namespace Server.Mobiles
         {
             return ((flags & toGet) != 0);
         }
-
         #endregion
+
+        #region XlatKinSpeech
+        private static Dictionary<string, string> EngToOrcXlatTable = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private static Dictionary<string, string> EngToOrcPhrases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private static Dictionary<string, string> OrcToEngXlatTable = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private static Dictionary<string, string> OrcToEngPhrases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        public static void LoadKinLanguage()
+        {
+            string path = Path.Combine(Core.DataDirectory, "Languages", "language-orc.json");
+            if (File.Exists(path))
+            {   // load the master Orc translation table (EngToOrc)
+                Dictionary<string, string> temp = new Dictionary<string, string>();
+                string json = File.ReadAllText(path);
+                temp = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                foreach (KeyValuePair<string, string> kvp in temp)
+                    EngToOrcXlatTable.Add(kvp.Key, kvp.Value);
+
+                // create the EngToOrc phrases table
+                foreach (KeyValuePair<string, string> kvp in EngToOrcXlatTable)
+                    if (kvp.Key.Contains(" "))
+                        EngToOrcPhrases.Add(kvp.Key, kvp.Value);
+
+                // create the OrcToEng table now
+                foreach (KeyValuePair<string, string> kvp in EngToOrcXlatTable)
+                    if (!OrcToEngXlatTable.ContainsKey(RemoveExclamationPoint(kvp.Value)))
+                        OrcToEngXlatTable.Add(RemoveExclamationPoint(kvp.Value), kvp.Key);
+
+                // create the OrcToEng phrases table
+                foreach (KeyValuePair<string, string> kvp in OrcToEngXlatTable)
+                    if (kvp.Key.Contains(" "))
+                        OrcToEngPhrases.Add(kvp.Key, kvp.Value);
+                return;
+            }
+        }
+        private static string RemoveExclamationPoint(string text)
+        {
+            if (text != null && text.EndsWith("!"))
+                text = text.Substring(0, text.Length - 1);
+
+            return text;
+        }
+        /* Translator model
+         *  Each translator makes two passes over the text. The first pass matches phrases, the
+         *    second pass matches words. Since we don't want the second pass mistakenly revisiting/replacing words
+         *    that were already replaced in the first pass, we encode replacements made in the first pass.
+         *    Then, when we are all done, we decode those encoded substrings, and we're done
+         */
+        public override string DoXlatKinSpeech(Mobile mFrom, Mobile mTo, string text)
+        {
+            PlayerMobile from = mFrom as PlayerMobile;
+            PlayerMobile to = mTo as PlayerMobile;
+
+            if (from == null || to == null)
+                return text;    // error: they should both be players
+
+            if (to.SpeechEngToOrc == true)
+            {
+                return ToOrcish(text, IOBSystem.GetIOBAlignment(from));
+            }
+            else if (to.SpeechOrcToEng == true)
+            {   // alignment here is a hint as to what we are translating from
+                return ToEnglish(text, IOBSystem.GetIOBAlignment(from));
+            }
+
+            return text;
+        }
+
+        private string ToOrcish(string text, IOBAlignment alignment)
+        {
+            // first match phrases
+            Dictionary<string, string> current = EngToOrcPhrases;
+            List<string> encoded = new List<string>();
+            foreach (KeyValuePair<string, string> kvp in current)
+                if (text.Contains(kvp.Key, StringComparison.OrdinalIgnoreCase))
+                {   // we encode the text so that it is not accidentally picked up in the next pass
+                    text = text.Replace(kvp.Key, Base64Encode(kvp.Value), StringComparison.OrdinalIgnoreCase);
+                    encoded.Add(Base64Encode(kvp.Value));
+                }
+
+            // next match words
+            current = EngToOrcXlatTable;
+            List<string> output = new List<string>();
+            string[] tokens = text.Split(new char[] { ' ' });
+            foreach (string s in tokens)
+            {
+                string punct = string.Empty;
+                string value = PopPunctuation(s, ref punct);
+                if (current.ContainsKey(value))
+                    output.Add(current[value] + punct);     // updated
+                else
+                    output.Add(value + punct);              // unchanged
+            }
+
+            // decode
+            text = string.Empty;
+            foreach (string chunk in output)
+            {
+                string punct = string.Empty;
+                string value = PopPunctuation(chunk, ref punct);
+                if (encoded.Contains(value))
+                    text += Base64Decode(value) + punct + " ";
+                else
+                    text += value + punct + " ";
+            }
+
+            // When performing ToEnglish translation, I return the text in Sentence Case, but it is unclear the orcish rules for this
+            //  We'll just return it as-is.
+            return text.Trim();
+        }
+        private string ToEnglish(string text, IOBAlignment alignment)
+        {
+            // first match phrases
+            Dictionary<string, string> current = OrcToEngPhrases;
+            List<string> encoded = new List<string>();
+            foreach (KeyValuePair<string, string> kvp in current)
+                if (text.Contains(kvp.Key, StringComparison.OrdinalIgnoreCase))
+                {   // we encode the text so that it is not accidentally picked up in the next pass
+                    text = text.Replace(kvp.Key, Base64Encode(kvp.Value), StringComparison.OrdinalIgnoreCase);
+                    encoded.Add(Base64Encode(kvp.Value));
+                }
+
+            // next match words
+            current = OrcToEngXlatTable;
+            List<string> output = new List<string>();
+            string[] tokens = text.Split(new char[] { ' ' });
+            foreach (string s in tokens)
+            {
+                string punct = string.Empty;
+                string value = PopPunctuation(s, ref punct);
+                if (current.ContainsKey(value))
+                    output.Add(current[value] + punct);     // updated
+                else
+                    output.Add(value + punct);              // unchanged
+            }
+
+            // decode
+            text = string.Empty;
+            foreach (string chunk in output)
+            {
+                string punct = string.Empty;
+                string value = PopPunctuation(chunk, ref punct);
+                if (encoded.Contains(value))
+                    text += Base64Decode(value) + punct + " ";
+                else
+                    text += value + punct + " ";
+            }
+
+            return SentenceCase(text.Trim());
+        }
+        private static string PopPunctuation(string text, ref string punct)
+        {
+            if (text.EndsWith("."))
+                punct = ".";
+            else if (text.EndsWith(","))
+                punct = ",";
+            else if (text.EndsWith("!"))
+                punct = "!";
+            else if (text.EndsWith("?"))
+                punct = "?";
+
+            if (!string.IsNullOrEmpty(punct))
+                text = text.Remove(text.Length - 1); 
+
+            return text;
+        }
+        #endregion XlatKinSpeech
+
+        #region Clan Management
+        [CommandProperty(AccessLevel.GameMaster)]
+        public override string ClanAlignment
+        {
+            get { return base.ClanAlignment; }
+            set { base.ClanAlignment = value; }
+        }
+        private DateTime m_ClanJoinTime = DateTime.MinValue;
+        private readonly TimeSpan ClanResignWait = TimeSpan.FromDays(7);
+        [CommandProperty(AccessLevel.GameMaster)]
+        public DateTime ClanJoinTime
+        {
+            get { return m_ClanJoinTime; }
+            set { m_ClanJoinTime = value; }
+        }
+        [CommandProperty(AccessLevel.GameMaster)]
+        public bool ClanReset
+        {
+            get { return false; }
+            set 
+            {
+                if (value == true)
+                {
+                    m_ClanJoinTime = DateTime.MinValue;
+                    base.ClanAlignment = null;
+                }
+            }
+        }
+        #endregion Clan Management
         #region Ghost Blindness
         private DateTime m_SightExpire = DateTime.MaxValue;
         private bool m_Blind = false;
@@ -963,7 +1180,7 @@ namespace Server.Mobiles
 			this.RemoveSkillModsOfType(typeof(Engines.IOBSystem.KinHealerStatlossSkillMod));
 		}
 		*/
-        //private IOBAlignment m_IOBAlignment;
+                    //private IOBAlignment m_IOBAlignment;
         private bool m_IOBEquipped;
 
         private DateTime m_KinAggressionTime = DateTime.MinValue;
@@ -987,7 +1204,10 @@ namespace Server.Mobiles
         {
             KinAggressionTime = DateTime.UtcNow + TimeSpan.FromMinutes(5.0/*Engines.IOBSystem.KinSystemSettings.KinAggressionMinutes*/);
         }
-
+        public void OnClanAggression(Mobile m)
+        {
+            ClanSystem.EstablishClanAggression(attacker: this, defender: m);
+        }
         public void OnKinBeneficial()
         {
             //if (Engines.IOBSystem.KinSystemSettings.KinNameHueEnabled)
@@ -1088,7 +1308,13 @@ namespace Server.Mobiles
                 return true;
             }
         }
+        public override bool OnDragLift(Item item)
+        {
+            if (item.GetItemBool(Item.ItemBoolTable.DeleteOnLift))
+                item.Delete();
 
+            return base.OnDragLift(item);
+        }
         public bool OnEquippedIOBItem(IOBAlignment iobalignment)
         {
             if (this.IOBEquipped == false)
@@ -1386,7 +1612,7 @@ namespace Server.Mobiles
             get { return m_StepsTaken; }
             set { m_StepsTaken = value; }
         }
-        
+
         private double m_StamDrain; // Yoar: Accumulate stamina drain - not serialized
         public double StamDrain
         {
@@ -1557,11 +1783,28 @@ namespace Server.Mobiles
             set { SetFlag(PlayerFlag.UseOwnFilter, value); }
         }
 
+        //[CommandProperty(AccessLevel.GameMaster)]
+        //public bool PublicMyRunUO
+        //{
+        //    get { return GetFlag(PlayerFlag.PublicMyRunUO); }
+        //    set { SetFlag(PlayerFlag.PublicMyRunUO, value); InvalidateMyRunUO(); }
+        //}
+
+//#if DEBUG
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool PublicMyRunUO
+//#endif
+        public bool SpeechEngToOrc
         {
-            get { return GetFlag(PlayerFlag.PublicMyRunUO); }
-            set { SetFlag(PlayerFlag.PublicMyRunUO, value); InvalidateMyRunUO(); }
+            get { return GetFlag(PlayerFlag.SpeechOrcToEng); }
+            set { SetFlag(PlayerFlag.SpeechOrcToEng, value); }
+        }
+//#if DEBUG
+        [CommandProperty(AccessLevel.GameMaster)]
+//#endif
+        public bool SpeechOrcToEng
+        {
+            get { return GetFlag(PlayerFlag.SpeechEngToOrc); }
+            set { SetFlag(PlayerFlag.SpeechEngToOrc, value); }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
@@ -1758,9 +2001,9 @@ namespace Server.Mobiles
         {
             if (FastwalkPrevention)
             {
-                PacketHandler ph = PacketHandlers.GetHandler(0x02);
-
-                ph.ThrottleCallback = new ThrottlePacketCallback(MovementThrottle_Callback);
+                //PacketHandler ph = PacketHandlers.GetHandler(0x02);
+                //ph.ThrottleCallback = new ThrottlePacketCallback(MovementThrottle_Callback);
+                PacketHandlers.RegisterThrottler(0x02, new ThrottlePacketCallback(MovementThrottle_Callback));
             }
 
             EventSink.Login += new LoginEventHandler(OnLogin);
@@ -1769,6 +2012,7 @@ namespace Server.Mobiles
             EventSink.Disconnected += new DisconnectedEventHandler(EventSink_Disconnected);
 
             CommandSystem.Register("gsgg", AccessLevel.Administrator, new CommandEventHandler(GSGG_OnCommand));
+            CommandSystem.Register("LoadKinLanguage", AccessLevel.Administrator, new CommandEventHandler(LoadKinLanguage_OnCommand));
         }
 
         private int m_LastGlobalLight = -1, m_LastPersonalLight = -1;
@@ -2001,20 +2245,23 @@ namespace Server.Mobiles
             #region Trying to use the 'preview house' exploit
             try
             {
-                Sector s = pm.Map.GetSector(pm);
-                foreach (BaseMulti mul in s.Multis.Values)
+                if (pm != null && pm.Map != null)
                 {
-                    if (mul == null)
-                        continue;
-
-                    if (mul is PreviewHouse)
+                    Sector s = pm.Map.GetSector(pm);
+                    foreach (BaseMulti mul in s.Multis.Values)
                     {
-                        if (mul.Contains(pm))
+                        if (mul == null)
+                            continue;
+
+                        if (mul is PreviewHouse)
                         {
-                            LogHelper.Cheater(pm, "Trying to use the 'preview house' exploit", true);
-                            Server.Point3D jail = new Point3D(5295, 1174, 0);
-                            pm.MoveToWorld(jail, Map.Felucca);
-                            break;
+                            if (mul.Contains(pm))
+                            {
+                                RecordCheater.Cheater(pm, "Trying to use the 'preview house' exploit", true);
+                                Server.Point3D jail = new Point3D(5295, 1174, 0);
+                                pm.MoveToWorld(jail, Map.Felucca);
+                                break;
+                            }
                         }
                     }
                 }
@@ -3494,6 +3741,7 @@ namespace Server.Mobiles
             {
                 if (this != target)
                 {
+                    #region Kin
                     if (this.IsRealFactioner == false) //if we're NOT a real factioner
                     {
                         if (target is PlayerMobile)
@@ -3505,6 +3753,31 @@ namespace Server.Mobiles
                             }
                         }
                     }
+                    #endregion Kin
+
+                    #region Clan
+                    if (ClanSystem.IsClanAligned(target))
+                    {
+                        // non-aligned heals aligned - you adopt that alignment
+                        if (!ClanSystem.IsClanAligned(this))
+                        {
+                            ClanAlignment = target.ClanAlignment;
+                            this.SendMessage("You are now aligned with {0} for 30 minutes.", ClanAlignment);
+                            m_ClanJoinTime = DateTime.UtcNow + (TimeSpan.FromDays(7) - TimeSpan.FromMinutes(30));
+                        }
+                        // aligned heals different alignment - you are now enemies to all clans for 5 minutes
+                        else if (ClanSystem.GetClanAlignment(this) != ClanSystem.GetClanAlignment(target))
+                        {
+                            Dictionary<Mobile, int> temp = new Dictionary<Mobile, int>();
+                            foreach(KeyValuePair<Mobile,int> kvp in ClanRegistry)
+                                if (!temp.ContainsValue(kvp.Value))
+                                    temp.Add(kvp.Key, kvp.Value);
+
+                            foreach (Mobile m in temp.Keys)
+                                ClanSystem.EstablishClanAggression(attacker: this, defender: m);
+                        }
+                    }
+                    #endregion Clan
                 }
             }
             catch (Exception fhe)
@@ -3705,7 +3978,7 @@ namespace Server.Mobiles
 				}
 			}
 #endif
-            #endregion
+#endregion
 
             #region Insurance
 #if THIS_IS_NOT_USED
@@ -3720,7 +3993,7 @@ namespace Server.Mobiles
 					pm.SendLocalizedMessage( 1060397, pm.m_InsuranceBonus.ToString() ); // ~1_AMOUNT~ gold has been deposited into your bank box.
 			}
 #endif
-            #endregion
+#endregion
 
             #region Mortal
             if (Mortal)
@@ -4089,8 +4362,11 @@ namespace Server.Mobiles
 
             m_Reported = DateTime.UtcNow;
             m_ReportLogger = new LogHelper(GetReportLogName(m_Reported.ToString("MM-dd-yyyy HH-mm-ss")));
-            m_ReportLogger.Log(LogType.Text, String.Format("{0} (acct {1}, SN {2}, IP {3}) reported by {4} (acct {5}, SN {6}) at {7}, at {8}.\r\n\r\n",
-                this.Name, ((Account)this.Account).Username, this.Serial, ((this.NetState != null) ? this.NetState.ToString() : ""), from.Name, ((Account)from.Account).Username, from.Serial, DateTime.UtcNow, from.Location));
+            m_ReportLogger.Log(LogType.Text,
+                string.Format("{0} (acct {1}, SN {2}, IP {3}) reported by {4} (acct {5}, SN {6}) at {7}, at {8}.\r\n\r\n",
+                    this.Name, ((Account)this.Account).Username, this.Serial, ((this.NetState != null) ? this.NetState.ToString() : ""),
+                    from.Name, ((Account)from.Account).Username, from.Serial, string.Format("{0} (Game Time)", AdjustedDateTime.GameTime.ToString()),
+                        from.Location));
             //Console.WriteLine("{0} (acct {1}, SN {2}, IP {3}) reported by {4} (acct {5}, SN {6}) at {7}, at {8}.\r\n\r\n",
             //    this.Name, ((Account)this.Account).Username, this.Serial, this.NetState.ToString(), from.Name, ((Account)from.Account).Username, from.Serial, DateTime.UtcNow, from.Location);
 
@@ -4102,9 +4378,13 @@ namespace Server.Mobiles
 
         private string GetReportLogName(string datestring)
         {
-            string filename = String.Format("{0} {1}.log", datestring, this.Name);
+            string path = "Logs/Abusive Language";
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            
+            string filename = Path.Combine(path, String.Format("{0} {1}.log", datestring, this.Name));
 
-            char[] illegalcharacters = { '\\', '/', ':', '*', '?', '\"', '<', '>', '|' };
+            char[] illegalcharacters = { ':', '*', '?', '\"', '<', '>', '|' };
 
             if (filename.IndexOfAny(illegalcharacters) != -1)
             {
@@ -4145,15 +4425,83 @@ namespace Server.Mobiles
 
             return base.HandlesOnSpeech(from);
         }
-
         public override void OnSpeech(SpeechEventArgs e)
         {
             base.OnSpeech(e);
 
-            if (e.Mobile == this)
+            if (string.IsNullOrEmpty(e.Speech))
                 return;
 
-            RecordSpeech(e.Mobile, e.Speech, null);
+            string value = e.Speech;
+
+            // this block is used for local commands for the player
+            if (e.Mobile == this)
+            {
+                // start the tests
+                if (value.Equals("allegiance", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (!string.IsNullOrEmpty(ClanAlignment))
+                        this.SendMessage("You are currently aligned with {0}.", ClanAlignment);
+                    else
+                        this.SendMessage("You are not aligned with any clan at the moment.");
+                }
+                else if (value.StartsWith("i pledge allegiance to", StringComparison.OrdinalIgnoreCase))
+                {
+                    string clan = value.Replace("i pledge allegiance to", "", StringComparison.OrdinalIgnoreCase).Trim();
+                    if (string.IsNullOrEmpty(clan))
+                    {
+                        this.SendMessage("You must specify a clan to pledge allegiance to.");
+                    }
+                    else if (!string.IsNullOrEmpty(ClanAlignment) && clan.Equals(ClanAlignment, StringComparison.OrdinalIgnoreCase))
+                    {
+                        this.SendMessage("You are already aligned with {0}.", ClanAlignment);
+                    }
+                    else if (!string.IsNullOrEmpty(ClanAlignment))
+                    {
+                        this.SendMessage("You must resign from {0} first.", ClanAlignment);
+                    }
+                    else if (DateTime.UtcNow < m_ClanJoinTime + ClanResignWait)
+                    {
+                        this.SendMessage("You must wait {0} days until you may join {1}.",
+                            ((m_ClanJoinTime + ClanResignWait) - DateTime.UtcNow).TotalDays.ToString("F1"), clan);
+                    }
+                    else if (!ClanRegistry.ContainsValue(Utility.StringToInt(clan)))
+                    {
+                        this.SendMessage("The {0} clan does not exist.", clan);
+                    }
+                    else
+                    {
+                        // get the actual case of the clanmaster
+                        ClanAlignment = ClanRegistry.FirstOrDefault(x => x.Value == Utility.StringToInt(clan)).Key.ClanAlignment;
+                        this.SendMessage("You are now aligned with {0}.", ClanAlignment);
+                        m_ClanJoinTime = DateTime.UtcNow;
+                    }
+
+                }
+                else if (value.StartsWith("i resign from my clan", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (string.IsNullOrEmpty(ClanAlignment))
+                        this.SendMessage("You are not aligned with any clan at the moment.");
+                    else if (DateTime.UtcNow < m_ClanJoinTime + ClanResignWait)
+                    {
+                        this.SendMessage("You must wait {0} days until you may resign.",
+                            ((m_ClanJoinTime + ClanResignWait) - DateTime.UtcNow).TotalDays.ToString("F1"));
+                    }
+                    else
+                    {
+                        this.SendMessage("You have resigned from {0}", ClanAlignment);
+                        ClanAlignment = null;
+                    }
+                }
+                if (Core.RuleSets.TestCenterRules())
+                {
+                    if (value.StartsWith("wipe clan alignment", StringComparison.OrdinalIgnoreCase))
+                        ClanReset = true;
+                }
+                return;
+            }
+
+            RecordSpeech(e.Mobile, value, null);
         }
 
 
@@ -4454,6 +4802,7 @@ namespace Server.Mobiles
             SetSaveFlag(ref flags, SaveFlag.ZCodeMiniGame, ZCodeMiniGameID != 0);
             SetSaveFlag(ref flags, SaveFlag.EthicPoints, EthicKillsLogList.Count > 0 && EthicPlayer == null);   // don't save if an EthicPlayer
             SetSaveFlag(ref flags, SaveFlag.EventScore, EventScore > 0);
+            SetSaveFlag(ref flags, SaveFlag.ClanJoinTime, ClanJoinTime != DateTime.MinValue);
             writer.Write((int)flags);
             return flags;
         }
@@ -4470,7 +4819,12 @@ namespace Server.Mobiles
 
             switch (version)
             {
-
+                case 35:
+                    {
+                        if (GetSaveFlag(saveFlags, SaveFlag.ClanJoinTime) == true)
+                            m_ClanJoinTime = reader.ReadDateTime();
+                        goto case 34;
+                    }
                 case 34:
                     {
                         if (GetSaveFlag(saveFlags, SaveFlag.EventScore) == true)
@@ -4799,6 +5153,9 @@ namespace Server.Mobiles
             //wea: For spirit cohesion, last resurrect time
             m_LastResurrectTime = DateTime.MinValue;
 
+            //Adam: Reset this otherwise it will always be saved
+            if (m_ClanJoinTime != DateTime.MinValue && DateTime.UtcNow > m_ClanJoinTime + ClanResignWait)
+                m_ClanJoinTime = DateTime.MinValue;
         }
 
         public override void Serialize(GenericWriter writer)
@@ -4819,13 +5176,19 @@ namespace Server.Mobiles
             }
             #endregion
             base.Serialize(writer);
-            int version = 34;
+            int version = 35;
             writer.Write(version);                      // write the version    
             SaveFlag saveFlags = WriteSaveBits(writer); // calculate and write the bits that describe what we will write
 
             ///////////////////////////////////////////////////
             // put all normal serialization below this line
             ///////////////////////////////////////////////////
+            
+            // Adam: v35: save the clan join time
+            if (GetSaveFlag(saveFlags, SaveFlag.ClanJoinTime) == true)
+            {
+                writer.Write(m_ClanJoinTime);
+            }
 
             // Adam: v34: save any event score
             if (GetSaveFlag(saveFlags, SaveFlag.EventScore) == true)
@@ -5406,15 +5769,15 @@ namespace Server.Mobiles
 
         public virtual bool UsesFastwalkPrevention { get { return (AccessLevel < FastWalkAccessOverride); } }
 
-        public override TimeSpan ComputeMovementSpeed(Direction dir)
+        public override TimeSpan ComputeMovementSpeed(Direction dir, bool checkTurning)
         {
-            if ((dir & Direction.Mask) != (this.Direction & Direction.Mask))
-                return TimeSpan.Zero;
+            if (checkTurning && (dir & Direction.Mask) != (this.Direction & Direction.Mask))
+                return SpeedRunMount; // We are not actually moving, just a direction change
 
             bool running = ((dir & Direction.Running) != 0);
 
             bool onHorse;
-            if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
+            if (Core.RuleSets.AngelIslandRules())
             {
                 onHorse = (AccessLevel > AccessLevel.Player) && (this.Mount != null);
             }
@@ -5469,10 +5832,61 @@ namespace Server.Mobiles
             }
             else
             {
+                //if (CoreAI.JailFastwalkers && !pm.PrisonInmate && CheckTrap(ts, pm))
+                //{
+                //    //HackerTrap(pm, Accounting.Account.AccountInfraction.fastwalk);
+                //    Utility.Monitor.WriteLine("Jail", ConsoleColor.Red);
+                //    //pm.DebugOut("Jailed");
+                //    //Console.WriteLine("Jailed");
+                //}
+                //Console.WriteLine("throttled");
                 return false; // this packet is being throttled
             }
         }
-        #endregion
+#if false
+        private static Memory TrapMemory = new Memory();
+        private static bool CheckTrap(TimeSpan ts, PlayerMobile pm)
+        {
+            Console.WriteLine("checking");
+            if (ts > FastwalkThreshold * CoreAI.FastwalkTrapFactor)
+            {
+                // if the player exceeds N throttles in Y time, trigger trap
+                Memory.ObjectMemory ox;
+                if ((ox = TrapMemory.Recall((object)pm)) != null)
+                {   // only count if they heading in the same direction
+                    if (((Direction)ox.Context) == pm.Direction && pm.FastwalkInfractionCount++ >= CoreAI.FastwalkInfractionThreshold)
+                    {
+                        Utility.Monitor.WriteLine("Triggered", ConsoleColor.Red);
+                        //Console.WriteLine("Triggered");
+                        pm.FastwalkInfractionCount = 0;
+                        return true;
+                    }
+
+                    if (((Direction)ox.Context) != pm.Direction)
+                    {   // don't count if they are changing direction
+                        pm.FastwalkInfractionCount = (pm.FastwalkInfractionCount > 0 ? pm.FastwalkInfractionCount - 1 : 0);
+                        ox.Context = pm.Direction;
+                    }
+                }
+                else
+                {   // remember them for this long
+                    Utility.Monitor.WriteLine("Remembering", ConsoleColor.Red);
+                    //Console.WriteLine("Remembering");
+                    TrapMemory.Remember(pm, pm.Direction, CoreAI.FastwalkTrapMemory);
+                    pm.FastwalkInfractionCount = 0;
+                    return false;
+                }
+            }
+            return false;
+        }
+        private int m_fastwalkInfractionCount;
+        public int FastwalkInfractionCount
+        {
+            get { return m_fastwalkInfractionCount; }
+            set { m_fastwalkInfractionCount = value; }
+        }
+#endif
+#endregion
 
         #region Enemy of One
         private Type m_EnemyOfOneType;
@@ -6009,7 +6423,21 @@ namespace Server.Mobiles
                 return true;
             }
         }
-
+        public static void LoadKinLanguage_OnCommand(CommandEventArgs e)
+        {
+            try
+            {
+                EngToOrcXlatTable = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                EngToOrcPhrases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                OrcToEngXlatTable = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                OrcToEngPhrases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                LoadKinLanguage();
+            }
+            catch (Exception exc)
+            {
+                LogHelper.LogException(exc);
+            }
+        }
         public static void GSGG_OnCommand(CommandEventArgs e)
         {
             try
@@ -6097,7 +6525,7 @@ namespace Server.Mobiles
         public bool RTT(string notification, bool bForced, int mode, string strSkillName)
         {
             bool bDoTest = false;
-
+            
             if (m_RTTNextTest == DateTime.MinValue)
             {
                 m_RTTNextTest = DateTime.UtcNow.AddMinutes(5.0);
@@ -6122,7 +6550,7 @@ namespace Server.Mobiles
                 }
                 catch (Exception exc)
                 {
-                    Server.Commands.LogHelper.LogException(exc);
+                    LogHelper.LogException(exc);
                 }
             }
 

@@ -100,6 +100,7 @@
  *      added line 581 to temporarily deal with empty buy lists
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.ContextMenus;
 using Server.Engines.BulkOrders;
@@ -1998,7 +1999,7 @@ namespace Server.Mobiles
 
         public override void OnActionFlee()
         {
-            if (this.Combatant != null)
+            if (this.Combatant != null && this.Combatant.NetState != null)
             {   // close open inventory lists
                 this.Combatant.NetState.Send(new EndVendorBuy(this));
             }
@@ -2019,7 +2020,7 @@ namespace Server.Mobiles
                 this.FightMode = FightMode.None;    // revert to passive
                 this.Aggressed.Clear();             // because we do not AcquireFocusMob in AI_Vendor AI, we fail to reset the Combatant 
                 this.Aggressors.Clear();            //	in mobile.AggressiveAction(). Rather that handle this special case, we can force the issue
-                                                    //	by simply clearing the vendor's agressors list
+                                                    //	by simply clearing the vendor's aggressors list
                 this.DebugSay("Changing from AI_Melee to AI_Vendor");
             }
 

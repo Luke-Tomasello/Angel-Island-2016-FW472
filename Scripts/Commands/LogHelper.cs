@@ -21,6 +21,16 @@
 
 /* Scripts/Commands/LogHelper.cs
  * ChangeLog
+ *  9/20/2024, Adam (LogInvalidAttribute)
+ *      Add a new method that dumps the stack frame that is responsible for setting an invalid attribute
+ *      For example, in Dragon, something like this would cause the log: 
+ *          BaseWeapon test = Loot.RandomWeapon(); 
+ *          test.AccuracyLevel = (WeaponAccuracyLevel)88;
+ *      This illegal action would generate the log:
+ *          9/20/2024 6:30:04 AM: Setting WeaponAccuracyLevel to 88
+ *          9/20/2024 6:30:04 AM: Void GenerateLoot()
+ *          9/20/2024 6:30:04 AM: Server.Mobiles.Dragon
+ *          9/20/2024 6:30:04 AM: GenerateLoot
  *  9/15/2024, Adam
  *      Use AdjustedDateTime.GameTime instead of UtcNow. We need to be able to easily correlate what happened to game time.
  *	6/18/10, Adam
@@ -76,6 +86,7 @@
  *		Initial creation
  */
 
+using Server.Diagnostics;
 using Server.Accounting;
 using Server.Mobiles;
 using System;
@@ -84,6 +95,7 @@ using System.IO;
 
 namespace Server.Commands
 {
+#if false
     public class LogHelper
     {
         private ArrayList m_LogFile;
@@ -176,6 +188,23 @@ namespace Server.Commands
             m_SingleLine = sline;
 
             Start();
+        }
+
+        public static void LogInvalidAttribute(string headder)
+        {
+            string filename = "Invalid Attributes.log";
+            LogHelper logger = new LogHelper(filename, overwrite: false, sline: true);
+            StackFrame frame = new StackFrame(2);   // our callers's caller
+            var method = frame.GetMethod();
+            var type = method.DeclaringType;
+            var name = method.Name;
+
+            logger.Log(headder);
+            logger.Log(method.ToString());
+            logger.Log(type.ToString());
+            logger.Log(name);
+
+            logger.Finish();
         }
 
         private static int m_LogExceptionCount = 0;
@@ -533,5 +562,74 @@ namespace Server.Commands
         Text,
         ItemSerial
     }
+#endif
+    public class RecordCheater
+    {
+        public static void Cheater(Mobile from, string text)
+        {
+            try
+            {
+                Cheater(from, text, false);
+            }
+            catch (Exception ex) { EventSink.InvokeLogException(new LogExceptionEventArgs(ex)); }
+        }
 
+        public static void Cheater(Mobile from, string text, bool accomplice)
+        {
+            if (from is PlayerMobile == false)
+                return;
+
+            // log what's going on
+            TrackIt(from, text, accomplice);
+
+            //Add to watchlist
+            (from as PlayerMobile).WatchList = true;
+
+            //Add comment to account
+            Account a = (from as PlayerMobile).Account as Account;
+            if (a != null)
+            {
+                // We may add lots of these, so only keep the last 5 AUDIT records
+                ArrayList delete = new ArrayList();
+                for (int ix = 0; ix < a.Comments.Count; ix++)
+                {
+                    if (a.Comments[ix] is AccountComment)
+                    {
+                        AccountComment temp = a.Comments[ix] as AccountComment;
+                        // old audit key "System", new audit key "AUDIT"
+                        if (temp.AddedBy.StartsWith("System", false, null) || temp.AddedBy.StartsWith("AUDIT", false, null))
+                            delete.Add(a.Comments[ix]);
+                    }
+                }
+
+                // delete all messages but the last 5
+                if (delete.Count > 5)
+                {
+                    int limit = delete.Count - 5;
+                    for (int jx = 0; jx < limit; jx++)
+                        a.Comments.Remove(delete[jx]);
+                }
+
+                // okay, now add a fresh message
+                a.Comments.Add(new AccountComment("AUDIT", text));
+            }
+        }
+        public static void TrackIt(Mobile from, string text, bool accomplice)
+        {
+
+            Server.Diagnostics.LogHelper Logger = new Server.Diagnostics.LogHelper("Cheater.log", false);
+            Logger.Log(Server.Diagnostics.LogType.Mobile, from, text);
+            if (accomplice == true)
+            {
+                IPooledEnumerable eable = from.GetMobilesInRange(24);
+                foreach (Mobile m in eable)
+                {
+                    if (m is PlayerMobile && m != from)
+                        Logger.Log(Server.Diagnostics.LogType.Mobile, m, "Possible accomplice.");
+                }
+                eable.Free();
+            }
+            Logger.Finish();
+        }
+    }
 }

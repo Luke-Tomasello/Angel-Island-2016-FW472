@@ -37,6 +37,7 @@
  *		Initial creation.
  */
 
+using Server.Diagnostics;
 using System;
 using System.Collections;
 using System.Reflection;

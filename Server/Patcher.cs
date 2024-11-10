@@ -21,6 +21,11 @@
 
 /* Server\Patcher.cs
  * CHANGELOG:
+ *  10/10/2024, Adam
+ *      Patch fire pits and camp fires to have the correct Light (LightType.Circle225)
+ *  9/24/2024, Adam
+ *      fold SpawnFlags and SpawnerFlags into a single enum.
+ *      Update all dungeon chest spawners to be 'ClearPath'
  *  9/12/2024, Adam
  *      Keys on the Ocean patch.
  *      Keyrings were not properly storing their keys and they were ending up on the ocean.
@@ -30,11 +35,15 @@
  *	    Runs patches on shard launch
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Items;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Server.Mobiles;
+using Server.Engines.ChampionSpawn;
+using System.Text.RegularExpressions;
 
 namespace Server
 {
@@ -69,7 +78,19 @@ namespace Server
 
                 patches += PatchV1(m_PatchID++);
 
-                //patches += PatchV2(m_PatchID++);
+                patches += PatchV2(m_PatchID++);
+
+                patches += PatchV3(m_PatchID++);
+
+                patches += PatchV4(m_PatchID++);
+
+                patches += PatchV5(m_PatchID++);
+
+                patches += PatchV6(m_PatchID++);
+
+                patches += PatchV7(m_PatchID++);
+
+                patches += PatchV8(m_PatchID++);
 
                 if (patches == 0)
                     EchoOut(string.Format("No Initialize patching required."), ConsoleColor.Magenta);
@@ -88,6 +109,262 @@ namespace Server
             System.Console.WriteLine("Patcher1 completed in {0}", tc.TimeTaken);
             #endregion Finally
         }
+        #region PatchV8
+        private static int PatchV8(int patchid)
+        {
+            int patches = 0;
+            PatchIndex bits = PatchIndex.PatchV8;
+            if (!Patched(bits) && AllShards() && !LoginServer(quiet: true))
+            {
+                int patched = 0;
+                #region Begin Implementation
+
+                #region Clear Clan Spawners and Enemy Lists
+                if (AllShards())
+                {
+                    foreach (KeyValuePair<Clanmaster, ChampMini> kvp in Clanmaster.Instances)
+                        if (kvp.Key.Controller != null)
+                        {
+                            kvp.Key.Controller.Level = 0;
+                            kvp.Key.Controller.TotalKills = 0;
+                            Clanmaster.Despawn(kvp.Key.Controller);
+                            kvp.Key.EnemySpawners.Clear();
+                            patched++;
+                        }
+                }
+                #endregion Clear Clan Spawners and Enemy Lists
+
+                #endregion End Implementation
+                EchoOut(string.Format("{1} patched with {0} objects updated", patched, GetPatchName(bits)), ConsoleColor.Magenta);
+                PatchComplete(bits, patchid);
+                patches = patched;
+            }
+
+            return patches;
+        }
+        #endregion PatchV8
+
+        #region PatchV7
+        private static int PatchV7(int patchid)
+        {
+            int patches = 0;
+            PatchIndex bits = PatchIndex.PatchV7;
+            if (!Patched(bits) && AllShards() && !LoginServer(quiet: true))
+            {
+                int patched = 0;
+                #region Begin Implementation
+
+                #region Despawn (correct) Clan Spawners
+                if (AllShards())
+                {   
+                    foreach (KeyValuePair<Clanmaster, ChampMini> kvp in Clanmaster.Instances)
+                        if (kvp.Key.Controller != null)
+                        {
+                            kvp.Key.Controller.Level = 0;
+                            kvp.Key.Controller.TotalKills = 0;
+                            Clanmaster.Despawn(kvp.Key.Controller);
+                            patched++;
+                        }
+                }
+                #endregion Despawn (correct) Clan Spawners
+
+                #endregion End Implementation
+                EchoOut(string.Format("{1} patched with {0} objects updated", patched, GetPatchName(bits)), ConsoleColor.Magenta);
+                PatchComplete(bits, patchid);
+                patches = patched;
+            }
+
+            return patches;
+        }
+        #endregion PatchV7
+
+        #region PatchV6
+        private static int PatchV6(int patchid)
+        {
+            int patches = 0;
+            PatchIndex bits = PatchIndex.PatchV6;
+            if (!Patched(bits) && AllShards() && !LoginServer(quiet: true))
+            {
+                int patched = 0;
+                #region Begin Implementation
+
+                #region Patch Clan Spawners
+                if (AllShards())
+                {
+                    foreach (KeyValuePair<Clanmaster, ChampMini> kvp in Clanmaster.Instances)
+                        if (kvp.Key.Controller != null)
+                        {
+                            kvp.Key.Controller.Active = false;
+                            kvp.Key.Controller.ClearMonsters = true;
+                            kvp.Key.Controller.ClearAbandonedMonsters = true;
+                            kvp.Key.Controller.ReloadTables = true;
+                            kvp.Key.Controller.NavDestination = null;
+                            kvp.Key.Controller.TotalKills = 0;
+                            kvp.Key.Controller.RestartDelay = TimeSpan.FromMinutes(5);
+                            kvp.Key.Controller.RestartTimer = true;
+                            kvp.Key.Controller.Active = true;
+                            patched++;
+                        }
+
+                    // remove ClanOrc spawners - now handled by MiniChamp spawner within the Clanmaster
+                    foreach (Item item in World.Items.Values)
+                        if (item is Spawner spawner)
+                            if (spawner.Spawns("ClanOrc"))
+                            {
+                                spawner.Delete();
+                                patched++;
+                            }
+                }
+                #endregion Patch Clan Spawners
+
+                #endregion End Implementation
+                EchoOut(string.Format("{1} patched with {0} objects updated", patched, GetPatchName(bits)), ConsoleColor.Magenta);
+                PatchComplete(bits, patchid);
+                patches = patched;
+            }
+
+            return patches;
+        }
+        #endregion PatchV6
+
+        #region PatchV5
+        private static int PatchV5(int patchid)
+        {
+            int patches = 0;
+            PatchIndex bits = PatchIndex.PatchV5;
+            if (!Patched(bits) && AllShards() && !LoginServer(quiet: true))
+            {
+                int patched = 0;
+                #region Begin Implementation
+
+                #region Patch fire pits
+                if (AllShards())
+                {
+                    foreach (Item item in World.Items.Values)
+                        if (item != null && (item.ItemID == 0x0FAC || item.ItemID == 0x0DE3))
+                        {
+                            item.Light = LightType.Circle225;
+                            patched++;
+                        }
+                }
+                #endregion Patch fire pits
+
+                #endregion End Implementation
+                EchoOut(string.Format("{1} patched with {0} objects updated", patched, GetPatchName(bits)), ConsoleColor.Magenta);
+                PatchComplete(bits, patchid);
+                patches = patched;
+            }
+
+            return patches;
+        }
+        #endregion PatchV5
+
+        #region PatchV4
+        private static int PatchV4(int patchid)
+        {
+            int patches = 0;
+            PatchIndex bits = PatchIndex.PatchV4;
+            if (!Patched(bits) && AllShards() && !LoginServer(quiet: true))
+            {
+                int patched = 0;
+
+                #region Begin Implementation
+                
+                #region Set Dungeon Chests to Clear Path
+                if (AllShards())
+                {
+                    List<Spawner> list = new List<Spawner>();
+                    foreach(Item item in World.Items.Values)
+                        if (item is Spawner spawner && spawner.ObjectNames != null)
+                            foreach (object obj in spawner.ObjectNames) 
+                                if (obj is string s && !string.IsNullOrEmpty(s))
+                                    if (Regex.Match(s, "L?TreasureChest", RegexOptions.IgnoreCase).Success)
+                                    {
+                                        spawner.ClearPath = true;
+                                        if (spawner.Running)
+                                            list.Add(spawner);
+                                        patched++;
+                                        break;
+                                    }
+
+                    foreach (Spawner spawner in list)
+                        spawner.Respawn();
+                }
+                #endregion Set Dungeon Chests to Clear Path
+
+                #endregion End Implementation
+                EchoOut(string.Format("{1} patched with {0} objects updated", patched, GetPatchName(bits)), ConsoleColor.Magenta);
+                PatchComplete(bits, patchid);
+                patches = patched;
+            }
+
+            return patches;
+        }
+        #endregion PatchV4
+
+        #region PatchV3
+        private static int PatchV3(int patchid)
+        {
+            int patches = 0;
+            PatchIndex bits = PatchIndex.PatchV3;
+            if (!Patched(bits) && AllShards() && !LoginServer(quiet: true))
+            {
+                int patched = 0;
+
+                #region Begin Implementation
+
+                #region Setup Teleport-Running handler
+                if (AllShards())
+                {
+                    CoreAI.TeleRunningEnabled = true;   // turn on ingame when ready
+                    CoreAI.TeleDelay = TimeSpan.FromMilliseconds(5000).TotalSeconds;
+                    CoreAI.TeleTiles = 8;
+                    patched++;
+                }
+                #endregion Teleport-Running handler
+
+                #endregion End Implementation
+                EchoOut(string.Format("{1} patched with {0} objects updated", patched, GetPatchName(bits)), ConsoleColor.Magenta);
+                PatchComplete(bits, patchid);
+                patches = patched;
+            }
+
+            return patches;
+        }
+        #endregion PatchV3
+
+        #region PatchV2
+        private static int PatchV2(int patchid)
+        {
+            int patches = 0;
+            PatchIndex bits = PatchIndex.PatchV2;
+            if (!Patched(bits) && AllShards() && !LoginServer(quiet: true))
+            {
+                int patched = 0;
+
+                #region Begin Implementation
+
+                #region Patch Tower doors
+                if (AllShards())
+                {
+                    foreach (Item item in World.Items.Values)
+                        if (item is BaseDoor bd && (bd.Z == 26 || bd.Z == 46) && bd.Facing == DoorFacing.SouthCW)
+                        {
+                            bd.Facing = DoorFacing.NorthCW;
+                            patched++;
+                        }
+                }
+                #endregion Patch Tower doors
+
+                #endregion End Implementation
+                EchoOut(string.Format("{1} patched with {0} objects updated", patched, GetPatchName(bits)), ConsoleColor.Magenta);
+                PatchComplete(bits, patchid);
+                patches = patched;
+            }
+
+            return patches;
+        }
+        #endregion PatchV2
 
         #region PatchV1
         private static int PatchV1(int patchid)
@@ -124,31 +401,6 @@ namespace Server
         }
         #endregion PatchV1
 
-        #region PatchV2
-        private static int PatchV2(int patchid)
-        {
-            int patches = 0;
-            PatchIndex bits = PatchIndex.PatchV2;
-            if (!Patched(bits) && AllShards() && !LoginServer(quiet: true))
-            {
-                int patched = 0;
-
-                #region Begin Implementation
-
-                if (AngelIsland())
-                {
-                    Console.WriteLine("Hello World II");
-                }
-
-                #endregion End Implementation
-                EchoOut(string.Format("{1} patched with {0} objects updated", patched, GetPatchName(bits)), ConsoleColor.Magenta);
-                PatchComplete(bits, patchid);
-                patches = patched;
-            }
-
-            return patches;
-        }
-        #endregion PatchV2
 
         private static int FeluccaMap00Check(int patchid)
         {
@@ -298,7 +550,7 @@ namespace Server
         {
             // PatchIndex.None is a special flag that runs each and every server restart. Usually 
             //  to cleanup map (0,0) and other common errors
-            
+
             // Ensure size
             while (PatchDatabase.Count < (int)PatchIndex.__last)
                 PatchDatabase.Add(false);
@@ -380,6 +632,12 @@ namespace Server
         {
             PatchV1,
             PatchV2,
+            PatchV3,
+            PatchV4,
+            PatchV5,
+            PatchV6,
+            PatchV7,
+            PatchV8,
             __last  // defines the size of the table
         }
         private static List<bool> PatchDatabase = new List<bool>((int)PatchIndex.__last);

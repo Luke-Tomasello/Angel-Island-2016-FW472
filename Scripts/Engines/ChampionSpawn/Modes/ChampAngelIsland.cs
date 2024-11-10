@@ -135,7 +135,12 @@ namespace Server.Engines.ChampionSpawn
             }
 
             //wipe the spawn on level up
-            WipeMonsters();
+            if(WipeOnLevelUp)
+                WipeMonsters();
+            else
+                //Adam, 10/22/2024: Put these free monsters in the free monsters list since our warring system
+                //  wishes to keep them in play
+                MoveMonstersToFree();
 
             // call base 
             base.AdvanceLevel();

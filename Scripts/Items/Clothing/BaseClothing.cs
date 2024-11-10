@@ -660,7 +660,7 @@ namespace Server.Items
 
             //if (name == null && !Server.Text.Cliloc.Lookup.TryGetValue(this.GetMagicLabel(), out name))
             //    return string.Empty;
-            
+
             //if (name != null)
             //    name = name.Replace(" charges: ~1_val~", "");
 

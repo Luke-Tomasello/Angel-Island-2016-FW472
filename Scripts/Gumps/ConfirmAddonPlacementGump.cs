@@ -65,6 +65,8 @@ namespace Server.Gumps
 
             if (info.ButtonID != 1)
                 CancelPlacement(from);
+            else
+                from.SendMessage("You will have 30 minutes to chop this addon and get back a deed.");
         }
 
         private void CancelPlacement(Mobile from)

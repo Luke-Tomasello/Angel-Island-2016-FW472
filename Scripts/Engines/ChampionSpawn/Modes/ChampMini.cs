@@ -21,6 +21,14 @@
 
 /* Scripts/Engines/ChampionSpawn/Modes/ChampMini.cs
  *	ChangeLog:
+ *	10/22/2024, Adam
+ *	    Various external interfaces to support a mobile (Clanmaster) carrying one of these things around.
+ *	        These changes give the Clanmaster a 'command interface' into the champ engine.
+ *	    Free Monster management:
+ *	        Put these free monsters in the free monsters list since our warring system wishes to keep them in play
+ *	    AbandonedMonsters:
+ *	        Rather than the 'let them go' model for most champs, our warring system wants to clean up these monsters
+ *	        on a warring engine reset
  *	11/01/2006, plasma
  *		Added WipeMonsters() back in due to ebb and flow system
  *	10/29/2006, plasma
@@ -38,6 +46,14 @@ namespace Server.Engines.ChampionSpawn
     // Mini champ spawns.  These are represented by a lever which is thrown to activate the spawn
     public class ChampMini : ChampEngine
     {
+        private bool m_WipeOnLevelUp = true;    // default is to wipe monsters on a level up
+        [CommandProperty(AccessLevel.GameMaster)]
+        public override bool WipeOnLevelUp { get { return m_WipeOnLevelUp; } set { m_WipeOnLevelUp = value; } }
+
+        private bool m_WipeOnLevelDown = true;  // default is to wipe monsters on a level down
+        [CommandProperty(AccessLevel.GameMaster)]
+        public override bool WipeOnLevelDown { get { return m_WipeOnLevelDown; } set { m_WipeOnLevelDown = value; } }
+
         [Constructable]
         public ChampMini()
             : base()
@@ -55,27 +71,41 @@ namespace Server.Engines.ChampionSpawn
         {
         }
 
-        // #region serialize
-
+        #region serialize
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);
+            int version = 2;
+            writer.Write(version);
 
-            writer.Write((int)0);
+            // version 2
+            writer.Write(m_WipeOnLevelDown);
 
+            // version 1
+            writer.Write(m_WipeOnLevelUp);
         }
         public override void Deserialize(GenericReader reader)
         {
             base.Deserialize(reader);
 
             int version = reader.ReadInt();
-
+            
             switch (version)
             {
+                case 2:
+                    {
+                        m_WipeOnLevelDown = reader.ReadBool();
+                        goto case 1;
+                    }
+                case 1:
+                    {
+                        m_WipeOnLevelUp = reader.ReadBool();
+                        goto case 0;
+                    }
                 case 0: break;
             }
         }
-        // #endregion
+        #endregion
 
         protected override void Activate()
         {
@@ -93,12 +123,12 @@ namespace Server.Engines.ChampionSpawn
             {
                 //for a mini champ, a level down from 0 switchs off the champ
                 double f = ((double)Kills) / ((double)Lvl_MaxKills);
-                if (f * 100 < 20)
+                if (f * 100 < 20 && m_WipeOnLevelDown)
                 {
                     // They didn't even get 20% of level 0, stop champ totally	!
                     Kills = 0;
                     StopSlice();
-                    WipeMonsters();
+                    WipeMonsters(); // considering turnoff this as well as below
                     Active = false;
                     InvalidateProperties();
                 }
@@ -119,7 +149,13 @@ namespace Server.Engines.ChampionSpawn
                 this.ItemID = 0x108d;
 
             //wipe the spawn on level up
-            WipeMonsters();
+            if (WipeOnLevelUp)
+                WipeMonsters();
+            else
+                //Adam, 10/22/2024: Put these free monsters in the free monsters list since our warring system
+                //  wishes to keep them in play
+                MoveMonstersToFree();
+
             // call base
             base.AdvanceLevel();
             if (m_Type == ChampLevelData.SpawnTypes.Mini_Wrong)

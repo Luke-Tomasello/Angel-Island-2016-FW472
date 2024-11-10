@@ -316,8 +316,10 @@ namespace Server
 
         public static double SlayerWeaponDropRate = 0.05;
 
-        public static double TeleDelay = 0.0;
-        public static int TeleTiles = 12;
+        public static bool TeleRunningEnabled = true;   // when disabled, a distance and delay may be imposed (default true)
+        public static bool TeleGlobalDelay = false;     // a delay will always be imposed (default false)
+        public static double TeleDelay = 0.0;           // delay before tele (default 0.0)
+        public static int TeleTiles = 12;               // how far you can tele (default 12)
 
         public enum FeatureBits
         {
@@ -396,10 +398,20 @@ namespace Server
                 xml.WriteStartDocument(true);
 
                 xml.WriteStartElement("CoreAI");
+
+        
+                xml.WriteStartElement("TeleRunningEnabled");
+                xml.WriteString(TeleRunningEnabled ? "1" : "0");
+                xml.WriteEndElement();
+                
+                xml.WriteStartElement("TeleGlobalDelay");
+                xml.WriteString(TeleGlobalDelay ? "1" : "0");
+                xml.WriteEndElement();
                 
                 xml.WriteStartElement("TeleDelay");
                 xml.WriteString(TeleDelay.ToString());
                 xml.WriteEndElement();
+
                 xml.WriteStartElement("TeleTiles");
                 xml.WriteString(TeleTiles.ToString());
                 xml.WriteEndElement();
@@ -701,7 +713,7 @@ namespace Server
                 xml.WriteStartElement("TentAnnexation");
                 xml.WriteString(TentAnnexation ? "1" : "0");
                 xml.WriteEndElement();
-                
+
                 xml.WriteStartElement("TCAcctCleanupDays");
                 xml.WriteString(TCAcctCleanupDays.ToString());
                 xml.WriteEndElement();
@@ -776,6 +788,8 @@ namespace Server
 
             XmlElement root = doc["CoreAI"];
 
+            TeleRunningEnabled = (GetInt32(GetText(root["TeleRunningEnabled"], "0"), 0) != 0);
+            TeleGlobalDelay = (GetInt32(GetText(root["TeleGlobalDelay"], "0"), 0) != 0);
             TeleDelay = GetDouble(GetText(root["TeleDelay"], TeleDelay.ToString()), TeleDelay);
             TeleTiles = GetValue(root["TeleTiles"], TeleTiles);
 

@@ -27,6 +27,8 @@
  *		Changed namespace to Server.Commands.
  */
 
+using Server.Diagnostics;
+
 namespace Server.Commands
 {
     public class FindItemByName

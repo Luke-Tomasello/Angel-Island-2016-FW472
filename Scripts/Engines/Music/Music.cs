@@ -30,6 +30,7 @@
  *	08/05/06, Rhiannon
  *		Initial creation.
  */
+using Server.Diagnostics;
 using Server.Items;
 using Server.Mobiles;
 using System;
@@ -107,7 +108,7 @@ namespace Server.Misc
             }
             catch (Exception ex)
             {
-                Server.Commands.LogHelper.LogException(ex);
+                LogHelper.LogException(ex);
             }
         }
 

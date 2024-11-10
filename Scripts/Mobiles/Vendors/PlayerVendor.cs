@@ -118,6 +118,7 @@
  *		Merged in 1.0RC0 code.
  */
 
+using Server.Diagnostics;
 using Server;
 using Server.Commands;
 using Server.Gumps;
@@ -652,7 +653,7 @@ namespace Server.Mobiles
             {
                 Hashtable newsellitems = new Hashtable();
 
-                Server.Commands.LogHelper lh = null;
+                LogHelper lh = null;
 
                 foreach (VendorItem vi in m_SellItems.Values)
                 {
@@ -660,7 +661,7 @@ namespace Server.Mobiles
                     {
                         if (lh == null)
                         {
-                            lh = new Server.Commands.LogHelper("ValidateSellItems.log");
+                            lh = new LogHelper("ValidateSellItems.log");
                         }
 
                         System.Text.StringBuilder sb = new System.Text.StringBuilder();
@@ -679,7 +680,7 @@ namespace Server.Mobiles
                         {
                             if (lh == null)
                             {
-                                lh = new Server.Commands.LogHelper("ValidateSellItems.log");
+                                lh = new LogHelper("ValidateSellItems.log");
                             }
 
                             System.Text.StringBuilder sb = new System.Text.StringBuilder();
@@ -703,7 +704,7 @@ namespace Server.Mobiles
                             {
                                 if (lh == null)
                                 {
-                                    lh = new Server.Commands.LogHelper("ValidateSellItems.log");
+                                    lh = new LogHelper("ValidateSellItems.log");
                                 }
 
                                 System.Text.StringBuilder sb = new System.Text.StringBuilder();
@@ -728,7 +729,7 @@ namespace Server.Mobiles
             }
             catch (Exception e)
             {
-                Server.Commands.LogHelper.LogException(e);
+                LogHelper.LogException(e);
             }
 
             return invalid;

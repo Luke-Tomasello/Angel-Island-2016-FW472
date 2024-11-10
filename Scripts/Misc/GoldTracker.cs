@@ -21,8 +21,25 @@
 
 /* Misc/GoldTracker.cs
  * Created by Pixie.
- * 
  * ChangeLog:
+ *  9/6/22, Adam
+ *  ignore Shard Owner (I own all the static houses in the custom housing area)
+ *  For Siege this raises an assert()
+ *      if (player == World.GetAdminAcct())
+ *          continue;
+ *  8/22/22, Adam
+ *      Fix and item leak to the internal map.
+ *      gold tracker gets house deeds to determine worth. But the code was only deleting the deed if it wasn't a tent deed.
+ *      Now the code deletes the deed regardless.
+ *  8/13/22, Adam
+ *      Added null container checks.
+ *  9/6/21, Pix
+ *      - Refactored somewhat
+ *      - Extracted GetWealthTable method for other use
+ *      - added GetSortedWealthArray to make it easy
+ *      - added character name (uses character on acct with most game time)
+ *      - added option to command to display character name instead of account name
+ *      - removed output messaging
  *  9/2/07, Adam
  *		- Check for character access > Player (not just account access > Player.)
  *			This is because your account may be AccessLevel.Player, your you have a Seer character.
@@ -50,6 +67,7 @@
  *    Initial Version
  */
 
+using Server.Diagnostics;
 using Server.Accounting;
 using Server.Commands;
 using Server.Items;
@@ -105,10 +123,6 @@ namespace Server.Misc
         [Description("Tracks the gold in the world.")]
         private static void GoldTracker_OnCommand(CommandEventArgs e)
         {
-
-            Server.World.Broadcast(0x35, true, "Performing routine maintenance, please wait.");
-            DateTime startTime = DateTime.UtcNow;
-
             if (e.Arguments.Length == 0)
             {
                 OnCalculateAndWrite(e.Mobile); //this does 100
@@ -120,9 +134,11 @@ namespace Server.Misc
                 //-sn // supress names 
                 //-ss // supress staff 
                 //-ib // indicate banned 
+                //-cn // use character name instead of account name
                 bool bSupressNames = false;
                 bool bSupressStaff = false;
                 bool bIndicateBanned = false;
+                bool bUseCharacterName = false;
 
                 for (int i = 0; i < e.Arguments.Length; i++)
                 {
@@ -147,6 +163,10 @@ namespace Server.Misc
                         {
                             bIndicateBanned = true;
                         }
+                        else if (arg.StartsWith("-cn"))
+                        {
+                            bUseCharacterName = true;
+                        }
                         else
                         {
                             e.Mobile.SendMessage("Ignoring unrecognized switch: " + arg);
@@ -163,11 +183,8 @@ namespace Server.Misc
                     number = Server.Accounting.Accounts.Table.Count;
                 }
 
-                OnCalculateAndWrite(e.Mobile, number, bSupressNames, bSupressStaff, bIndicateBanned);
+                OnCalculateAndWrite(e.Mobile, number, bSupressNames, bSupressStaff, bIndicateBanned, bUseCharacterName);
             }
-
-            DateTime endTime = DateTime.UtcNow;
-            Server.World.Broadcast(0x35, true, "Routine maintenance complete. The entire process took {0:F1} seconds.", (endTime - startTime).TotalSeconds);
         }
 
         private static void SM(Mobile m, string message)
@@ -185,10 +202,10 @@ namespace Server.Misc
 
         private static void OnCalculateAndWrite(Mobile cmdmob, int maxtoprint)
         {
-            OnCalculateAndWrite(cmdmob, maxtoprint, false, false, false);
+            OnCalculateAndWrite(cmdmob, maxtoprint, false, false, false, false);
         }
 
-        private static void OnCalculateAndWrite(Mobile cmdmob, int maxtoprint, bool bSupressNames, bool bSupressStaff, bool bIndicateBanned)
+        private static void OnCalculateAndWrite(Mobile cmdmob, int maxtoprint, bool bSupressNames, bool bSupressStaff, bool bIndicateBanned, bool bUseCharacterName)
         {
             if (bInProcess == true)
             {
@@ -205,199 +222,7 @@ namespace Server.Misc
 
             try
             {
-                string initmsg = string.Format("Tracking Gold...outputing top {0}", maxtoprint);
-                System.Console.WriteLine(initmsg);
-                SM(cmdmob, initmsg);
-
-#if false
-				using ( StreamWriter op = new StreamWriter( OUTPUT_DIRECTORY + "/" + OUTPUT_FILE ) )
-				{
-					op.WriteLine("<HTML><BODY>");
-					op.WriteLine("<TABLE BORDER=1 WIDTH=90%><TR>");
-					op.WriteLine("<TD>Account</TD><TD>Character</TD><TD>Total Worth</TD><TD>Backpack Gold</TD><TD>Bank Gold</TD><TD>House Gold</TD><TD>Number of Houses</TD><TD>Vendor Gold</TD>");
-					op.WriteLine("</TR>");
-
-					foreach ( Account acct in Accounts.Table.Values )
-					{
-						string acctname = acct.Username;
-						//System.Console.WriteLine(acctname);
-						
-						//iterate through characters:
-						for ( int i = 0; i < 5; ++i )
-						{
-							if ( acct[i] != null )
-							{
-								PlayerMobile player = (PlayerMobile)acct[i];
-
-								op.WriteLine("<TR><TD><B>" + acctname + "</B></TD>");
-								op.WriteLine("<TD>" + player.Name + "</TD>");
-
-								Container backpack = player.Backpack;
-								BankBox bank = player.BankBox;
-								int backpackgold = 0;
-								int bankgold = 0;
-							
-								//BACKPACK
-								backpackgold = GetGoldInContainer(backpack);
-
-								//BANK
-								bankgold = GetGoldInContainer(bank);
-
-								//house?
-								int housetotal = 0;
-								ArrayList list = Multis.BaseHouse.GetHouses( player );
-								for ( int j = 0; j < list.Count; ++j )
-								{
-									if( list[j] is BaseHouse )
-									{
-										BaseHouse house = (BaseHouse)list[j];
-										housetotal += GetGoldInHouse(house);
-									}
-								}
-
-								//vendors
-								int vendortotal = 0;
-								ArrayList vendors = GetVendors( player );
-								for( int j=0; j<vendors.Count; j++ )
-								{
-									if( vendors[j] is PlayerVendor )
-									{
-										PlayerVendor pv = vendors[j] as PlayerVendor;
-										vendortotal += pv.HoldGold;
-									}
-								}
-
-								op.WriteLine("<TD>" + (backpackgold+bankgold+housetotal+vendortotal) + "</TD>");
-
-								op.WriteLine("<TD>" + backpackgold + "</TD>");
-								op.WriteLine("<TD>" + bankgold + "</TD>");
-								op.WriteLine("<TD>" + housetotal + "</TD>");
-								op.WriteLine("<TD>" + list.Count + "</TD>");
-								op.WriteLine("<TD>" + vendortotal + " (" + vendors.Count + " vendors)"  + "</TD>");
-
-								op.WriteLine("</TR>");
-
-							}
-						}
-					}
-
-					op.WriteLine("</BODY></HTML>");
-					op.Flush();
-					op.Close();
-				}
-#else
-                Hashtable table = new Hashtable(Accounts.Table.Values.Count);
-
-                System.Console.WriteLine("GT: building hashtable");
-                SM(cmdmob, "GT: building hashtable");
-                foreach (Account acct in Accounts.Table.Values)
-                {
-                    if (acct == null)
-                        continue;
-
-                    if ((bSupressStaff && acct.GetAccessLevel() > AccessLevel.Player) == false)
-                        table.Add(acct, new GoldTotaller());
-                }
-
-                System.Console.WriteLine("GT: looping through accounts");
-                SM(cmdmob, "GT: looping through accounts");
-                foreach (Account acct in Accounts.Table.Values)
-                {
-                    if (acct == null)
-                        continue;
-
-                    if ((bSupressStaff && acct.GetAccessLevel() > AccessLevel.Player) == false)
-                    {
-                        //iterate through characters:
-                        for (int i = 0; i < 5; ++i)
-                        {
-                            if (acct[i] != null)
-                            {
-                                PlayerMobile player = (PlayerMobile)acct[i];
-                                Container backpack = player.Backpack;
-                                BankBox bank = player.BankBox;
-                                int backpackgold = 0;
-                                int bankgold = 0;
-
-                                int housedeedcount = 0;
-                                int housedeedworth = 0;
-
-                                int housesworth = 0;
-
-                                //BACKPACK
-                                backpackgold = GetGoldInContainer(backpack);
-                                housedeedworth = GetHouseDeedsInContainer(backpack, ref housedeedcount);
-
-                                //BANK
-                                bankgold = GetGoldInContainer(bank);
-                                housedeedworth += GetHouseDeedsInContainer(bank, ref housedeedcount);
-
-                                //house?
-                                int housetotal = 0;
-                                ArrayList list = Multis.BaseHouse.GetHouses(player);
-                                for (int j = 0; j < list.Count; ++j)
-                                {
-                                    if (list[j] is BaseHouse)
-                                    {
-                                        BaseHouse house = (BaseHouse)list[j];
-                                        housesworth += (int)house.UpgradeCosts;
-                                        HouseDeed hd = house.GetDeed();
-                                        if (hd != null && hd is SiegeTentBag == false && hd is TentBag == false)
-                                        {
-                                            housesworth += RealEstateBroker.ComputePriceFor(hd);
-                                            hd.Delete();
-                                        }
-
-                                        housetotal += GetGoldInHouse(house);
-                                        housedeedworth += GetHouseDeedWorthInHouse(house, ref housedeedcount);
-                                    }
-                                }
-
-                                ((GoldTotaller)table[acct]).BackpackGold += backpackgold;
-                                ((GoldTotaller)table[acct]).BankGold += bankgold;
-                                ((GoldTotaller)table[acct]).HouseGold += housetotal;
-                                ((GoldTotaller)table[acct]).HouseCount += list.Count;
-                                ((GoldTotaller)table[acct]).CharacterCount += 1;
-                                ((GoldTotaller)table[acct]).HouseDeedCount += housedeedcount;
-                                ((GoldTotaller)table[acct]).HouseDeedWorth += housedeedworth;
-                                ((GoldTotaller)table[acct]).HousesWorth += housesworth;
-                            }
-                        }
-                    }
-                }
-
-                System.Console.WriteLine("GT: Searching mobiles for PlayerVendors");
-                SM(cmdmob, "GT: Searching mobiles for PlayerVendors");
-                foreach (Mobile wm in World.Mobiles.Values)
-                {
-                    if (wm == null)
-                        continue;
-
-                    if (wm is PlayerVendor)
-                    {
-                        PlayerVendor pv = wm as PlayerVendor;
-                        if (pv != null && pv.Owner != null)
-                        {
-                            Account thisacct = pv.Owner.Account as Account;
-                            if (thisacct != null)
-                            {
-                                if ((bSupressStaff && thisacct.GetAccessLevel() > AccessLevel.Player) == false)
-                                {
-                                    ((GoldTotaller)table[thisacct]).VendorCount += 1;
-                                    ((GoldTotaller)table[thisacct]).VendorGold += pv.HoldGold;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                System.Console.WriteLine("GT: sorting");
-                SM(cmdmob, "GT: sorting");
-                ArrayList keys = new ArrayList(table.Keys);
-                keys.Sort(new GTComparer(table));
-
-                System.Console.WriteLine("GT: Outputting html");
-                SM(cmdmob, "GT: Outputting html");
+                GoldTotaller[] goldTotallers = GetSortedWealthArray(bSupressStaff);
 
                 using (StreamWriter op = new StreamWriter(OUTPUT_DIRECTORY + "/" + OUTPUT_FILE))
                 {
@@ -406,6 +231,10 @@ namespace Server.Misc
                     if (bSupressNames)
                     {
                         op.WriteLine("<TD>=(char count)</TD>");
+                    }
+                    else if (bUseCharacterName)
+                    {
+                        op.WriteLine("<TD>Character (char count)</TD>");
                     }
                     else
                     {
@@ -420,27 +249,30 @@ namespace Server.Misc
                     op.WriteLine("<TD>House(s) Worth</TD>");
                     op.WriteLine("</TR>");
 
-                    for (int i = 0; i < keys.Count && i < maxtoprint; i++)
+                    for (int i = 0; i < goldTotallers.Length && i < maxtoprint; i++)
                     {
-                        GoldTotaller gt = table[keys[i]] as GoldTotaller;
+                        GoldTotaller gt = goldTotallers[i];
                         if (gt != null)
                         {
                             string bannedstr = "";
                             if (bIndicateBanned)
                             {
-                                if (((Account)keys[i]).Banned)
+                                if (gt.Banned)
                                 {
                                     bannedstr = " **banned** ";
                                 }
                             }
-                            //System.Console.WriteLine( "Acct: {0}, total: {1}", ((Account)keys[i]).Username, gt.TotalGold );
                             if (bSupressNames)
                             {
                                 op.WriteLine("<TR><TD>(" + gt.CharacterCount + ")" + bannedstr + "</TD>"); //Account
                             }
+                            else if (bUseCharacterName)
+                            {
+                                op.WriteLine("<TR><TD><B>" + gt.CharacterName + "</B>(" + gt.CharacterCount + ")" + bannedstr + "</TD>"); //Account
+                            }
                             else
                             {
-                                op.WriteLine("<TR><TD><B>" + ((Account)keys[i]).Username + "</B>(" + gt.CharacterCount + ")" + bannedstr + "</TD>"); //Account
+                                op.WriteLine("<TR><TD><B>" + gt.AccountName + "</B>(" + gt.CharacterCount + ")" + bannedstr + "</TD>"); //Account
                             }
                             op.WriteLine("<TD>" + gt.TotalGold + "</TD>"); //Total Worth
                             op.WriteLine("<TD>" + gt.BackpackGold + "</TD>"); //Backpack
@@ -458,8 +290,6 @@ namespace Server.Misc
                     op.Flush();
                     op.Close();
                 }
-
-#endif
             }
             catch (Exception e)
             {
@@ -472,10 +302,146 @@ namespace Server.Misc
                 DateTime endDateTime = DateTime.UtcNow;
                 TimeSpan time = endDateTime - startDateTime;
                 string endmsg = "finished in " + ((double)time.TotalMilliseconds / (double)1000) + " seconds.";
-                System.Console.WriteLine(endmsg);
-                SM(cmdmob, endmsg);
                 bInProcess = false;
             }
+        }
+
+        public static GoldTotaller[] GetSortedWealthArray(bool bSuppressStaff)
+        {
+            Hashtable table = GetWealthTable(bSuppressStaff);
+
+            ArrayList keys = new ArrayList(table.Keys);
+            keys.Sort(new GTComparer(table));
+
+            GoldTotaller[] goldTotallerArray = new GoldTotaller[keys.Count];
+
+            //blah
+            for (int i = 0; i < keys.Count; i++)
+            {
+                goldTotallerArray[i] = table[keys[i]] as GoldTotaller;
+            }
+
+            return goldTotallerArray;
+        }
+
+        public static Hashtable GetWealthTable(bool bSupressStaff)
+        {
+            Hashtable table = new Hashtable(Accounts.Table.Values.Count);
+
+            foreach (Account acct in Accounts.Table.Values)
+            {
+                if (acct == null)
+                    continue;
+
+                if ((bSupressStaff && acct.GetAccessLevel() > AccessLevel.Player) == false)
+                    table.Add(acct, new GoldTotaller(acct));
+            }
+
+            foreach (Account acct in Accounts.Table.Values)
+            {
+                if (acct == null)
+                    continue;
+
+                if ((bSupressStaff && acct.GetAccessLevel() > AccessLevel.Player) == false)
+                {
+                    TimeSpan timeSpan = TimeSpan.Zero;
+
+                    //iterate through characters:
+                    for (int i = 0; i < 5; ++i)
+                    {
+                        if (acct[i] != null)
+                        {
+                            PlayerMobile player = (PlayerMobile)acct[i];
+                            Container backpack = player.Backpack;
+                            BankBox bank = player.BankBox;
+                            int backpackgold = 0;
+                            int bankgold = 0;
+
+                            int housedeedcount = 0;
+                            int housedeedworth = 0;
+
+                            int housesworth = 0;
+
+                            // ignore Shard Owner (I own all the static houses in the custom housing area)
+                            if (player == World.GetAdminAcct())
+                                continue;
+
+                            //BACKPACK
+                            backpackgold = GetGoldInContainer(backpack);
+                            housedeedworth = GetHouseDeedsInContainer(backpack, ref housedeedcount);
+
+                            //BANK
+                            bankgold = GetGoldInContainer(bank);
+                            housedeedworth += GetHouseDeedsInContainer(bank, ref housedeedcount);
+
+                            //house?
+                            int housetotal = 0;
+                            ArrayList list = Multis.BaseHouse.GetHouses(player);
+                            for (int j = 0; j < list.Count; ++j)
+                            {
+                                if (list[j] is BaseHouse)
+                                {
+                                    BaseHouse house = (BaseHouse)list[j];
+                                    housesworth += (int)house.UpgradeCosts;
+                                    HouseDeed hd = house.GetDeed();
+                                    if (hd != null && hd is SiegeTentBag == false && hd is TentBag == false)
+                                    {
+                                        housesworth += RealEstateBroker.ComputePriceFor(hd);
+                                        hd.Delete();
+                                    }
+                                    else if (hd != null)
+                                        hd.Delete();
+                                    housetotal += GetGoldInHouse(house);
+                                    housedeedworth += GetHouseDeedWorthInHouse(house, ref housedeedcount);
+                                }
+                            }
+
+                            GoldTotaller acctGoldTotaller = table[acct] as GoldTotaller;
+
+                            //if the name in acctGoldTotaller is empty or this char's time is larger than the one stored.
+                            if (string.IsNullOrWhiteSpace(acctGoldTotaller.CharacterName) || player.GameTime > timeSpan)
+                            {
+                                acctGoldTotaller.CharacterName = player.Name;
+                                timeSpan = player.GameTime;
+                            }
+
+                            acctGoldTotaller.BackpackGold += backpackgold;
+                            acctGoldTotaller.BankGold += bankgold;
+                            acctGoldTotaller.HouseGold += housetotal;
+                            acctGoldTotaller.HouseCount += list.Count;
+                            acctGoldTotaller.CharacterCount += 1;
+                            acctGoldTotaller.HouseDeedCount += housedeedcount;
+                            acctGoldTotaller.HouseDeedWorth += housedeedworth;
+                            acctGoldTotaller.HousesWorth += housesworth;
+                        }
+                    }
+                }
+            }
+
+            foreach (Mobile wm in World.Mobiles.Values)
+            {
+                if (wm == null)
+                    continue;
+
+                if (wm is PlayerVendor)
+                {
+                    PlayerVendor pv = wm as PlayerVendor;
+                    if (pv != null && pv.Owner != null)
+                    {
+                        Account thisacct = pv.Owner.Account as Account;
+                        if (thisacct != null)
+                        {
+                            if ((bSupressStaff && thisacct.GetAccessLevel() > AccessLevel.Player) == false)
+                            {
+                                ((GoldTotaller)table[thisacct]).VendorCount += 1;
+                                ((GoldTotaller)table[thisacct]).VendorGold += pv.HoldGold;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return table;
         }
 
         private class GTComparer : System.Collections.IComparer
@@ -524,8 +490,14 @@ namespace Server.Misc
 
         }
 
-        private class GoldTotaller
+        public class GoldTotaller
         {
+            public string AccountName;
+
+            public string CharacterName;
+
+            public bool Banned;
+
             public int CharacterCount = 0;
 
             public int BackpackGold = 0;
@@ -547,8 +519,10 @@ namespace Server.Misc
                 get { return BackpackGold + BankGold + HouseGold + VendorGold + HouseDeedWorth + HousesWorth; }
             }
 
-            public GoldTotaller()
+            public GoldTotaller(Account acct)
             {
+                this.AccountName = acct.Username;
+                this.Banned = acct.Banned;
             }
         }
 
@@ -577,50 +551,51 @@ namespace Server.Misc
         private static int GetHouseDeedsInContainer(Container c, ref int count)
         {
             int iGold = 0;
-
-            Item[] deeds = c.FindItemsByType(typeof(Server.Multis.Deeds.HouseDeed), true);
-            foreach (Item i in deeds)
+            if (c != null)
             {
-                Server.Multis.Deeds.HouseDeed housedeed = i as Server.Multis.Deeds.HouseDeed;
-                // don't count tents as they cannot be redeemed for cash
-                if (housedeed != null && housedeed is SiegeTentBag == false && housedeed is TentBag == false)
+                Item[] deeds = c.FindItemsByType(typeof(Server.Multis.Deeds.HouseDeed), true);
+                foreach (Item i in deeds)
                 {
-                    count++;
-                    iGold += RealEstateBroker.ComputePriceFor(housedeed);
+                    Server.Multis.Deeds.HouseDeed housedeed = i as Server.Multis.Deeds.HouseDeed;
+                    // don't count tents as they cannot be redeemed for cash
+                    if (housedeed != null && housedeed is SiegeTentBag == false && housedeed is TentBag == false)
+                    {
+                        count++;
+                        iGold += RealEstateBroker.ComputePriceFor(housedeed);
+                    }
+                }
+
+                Item[] BUCdeeds = c.FindItemsByType(typeof(BaseUpgradeContract), true);
+                foreach (Item i in BUCdeeds)
+                {
+                    BaseUpgradeContract budeed = i as BaseUpgradeContract;
+                    if (budeed != null)
+                    {
+                        count++;
+                        iGold += (int)budeed.Price;
+                    }
                 }
             }
-
-            Item[] BUCdeeds = c.FindItemsByType(typeof(BaseUpgradeContract), true);
-            foreach (Item i in BUCdeeds)
-            {
-                BaseUpgradeContract budeed = i as BaseUpgradeContract;
-                if (budeed != null)
-                {
-                    count++;
-                    iGold += (int)budeed.Price;
-                }
-            }
-
-
             return iGold;
         }
 
         private static int GetGoldInContainer(Container c)
         {
             int iGold = 0;
-
-            Item[] golds = c.FindItemsByType(typeof(Gold), true);
-            foreach (Item g in golds)
+            if (c != null)
             {
-                iGold += g.Amount;
+                Item[] golds = c.FindItemsByType(typeof(Gold), true);
+                foreach (Item g in golds)
+                {
+                    iGold += g.Amount;
+                }
+                Item[] checks = c.FindItemsByType(typeof(BankCheck), true);
+                foreach (Item i in checks)
+                {
+                    BankCheck bc = (BankCheck)i;
+                    iGold += bc.Worth;
+                }
             }
-            Item[] checks = c.FindItemsByType(typeof(BankCheck), true);
-            foreach (Item i in checks)
-            {
-                BankCheck bc = (BankCheck)i;
-                iGold += bc.Worth;
-            }
-
             return iGold;
         }
 

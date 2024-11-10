@@ -41,6 +41,7 @@
  */
 
 using Server.Accounting;
+using Server.Engines.ChampionSpawn;
 using Server.Guilds;
 using Server.Network;
 using System;
@@ -50,6 +51,8 @@ using System.Net.Sockets;
 
 namespace Server
 {
+    #region delegates
+    public delegate void ChampInfoEventHandler(ChampInfoEventArgs e);
     public delegate void CharacterCreatedEventHandler(CharacterCreatedEventArgs e);
     public delegate void OpenDoorMacroEventHandler(OpenDoorMacroEventArgs e);
     public delegate void SpeechEventHandler(SpeechEventArgs e);
@@ -97,7 +100,34 @@ namespace Server
     public delegate void LogExceptionEventHandler(LogExceptionEventArgs e);
     public delegate void UNUSEDEventHandler(UNUSEDEventArgs e);
     public delegate void DropMobileEventHandler(DropMobileEventArgs e);
+    #endregion delegates
 
+    #region Event Args
+    public class ChampInfoEventArgs : EventArgs
+    {
+        [Flags]
+        public enum ChampInfo
+        {
+            None =          0x0000,
+            ChampComplete = 0x0001,
+            LevelUp =       0x0002,
+            LevelDown =     0x0004,
+            LevelCounter =  0x0008,
+            Level =         0x0010,
+            Activated =     0x0020,
+            Deactivated =   0x0040,
+        }
+        private ChampEngine m_Id;
+        private ChampInfo m_Info;
+        public ChampEngine Engine { get { return m_Id; } set { m_Id = value; } }
+        public ChampInfo Info { get { return m_Info; } set { m_Info = value; } }
+
+        public ChampInfoEventArgs(ChampEngine id, ChampInfo info)
+        {
+            m_Id = id;
+            m_Info = info;
+        }
+    }
     public class ClientVersionReceivedArgs : EventArgs
     {
         private NetState m_State;
@@ -777,7 +807,12 @@ namespace Server
 
             return false;
         }
+        public bool WasNamed(Mobile m)
+        {
+            string name = m.Name;
 
+            return (name != null && Insensitive.StartsWith(m_Speech, name));
+        }
         public SpeechEventArgs(Mobile mobile, string speech, MessageType type, int hue, int[] keywords, bool isInternal)
         {
             m_Mobile = mobile;
@@ -915,9 +950,12 @@ namespace Server
         public bool Blocked { get { return m_Blocked; } set { m_Blocked = value; } }
         public int FastWalkCount { get { return m_FastWalkCount; } set { m_FastWalkCount = value; } }
     }
+    #endregion Event Args
 
+    #region EventSink
     public class EventSink
     {
+        public static event ChampInfoEventHandler ChampInfoEvent;
         public static event CharacterCreatedEventHandler CharacterCreated;
         public static event OpenDoorMacroEventHandler OpenDoorMacroUsed;
         public static event SpeechEventHandler Speech;
@@ -967,6 +1005,25 @@ namespace Server
         public static event UNUSEDEventHandler UNUSED;
         public static event DropMobileEventHandler DropMobile;
 
+        public static void InvokeChampInfoEvent(ChampInfoEventArgs e)
+        {
+            if (ChampInfoEvent != null)
+            {
+                foreach (ChampInfoEventHandler currentDelegate in ChampInfoEvent.GetInvocationList())
+                {
+                    try
+                    {
+                        currentDelegate.Invoke(e);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log an exception
+                        EventSink.InvokeLogException(new LogExceptionEventArgs(ex));
+                    }
+                }
+            }
+        }
+
         public static BaseGuild InvokeCreateGuild(CreateGuildEventArgs e)
         {
             if (CreateGuild != null)
@@ -1001,7 +1058,6 @@ namespace Server
                 }
             }
         }
-
 
         public static void InvokeOpenDoorMacroUsed(OpenDoorMacroEventArgs e)
         {
@@ -1969,4 +2025,5 @@ namespace Server
             DropMobile = null;
         }
     }
+    #endregion EventSink
 }

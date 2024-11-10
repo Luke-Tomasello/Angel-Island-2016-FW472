@@ -32,6 +32,7 @@
  *		initial framework.
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Items;
 using Server.Mobiles;
@@ -215,7 +216,7 @@ namespace Server.Engines
                 }
                 catch (Exception e)
                 {
-                    Server.Commands.LogHelper.LogException(e, string.Format("CTFControl : WriteRuleBook() : {0}", e.ToString()));
+                    LogHelper.LogException(e, string.Format("CTFControl : WriteRuleBook() : {0}", e.ToString()));
                 }
                 finally
                 {
@@ -307,7 +308,7 @@ namespace Server.Engines
                 }
                 catch (Exception e)
                 {
-                    Server.Commands.LogHelper.LogException(e, string.Format("CTFControl : WriteHelpBook() : {0}", e.ToString()));
+                    LogHelper.LogException(e, string.Format("CTFControl : WriteHelpBook() : {0}", e.ToString()));
                 }
                 finally
                 {
@@ -579,7 +580,7 @@ namespace Server.Engines
 
         public void RespawnMobile(Mobile m)
         {
-            Point3D destination = Spawner.GetSpawnPosition(this.TargetMap, GetTeamBase(m), 6, false, m);
+            Point3D destination = Spawner.GetSpawnPosition(this.TargetMap, GetTeamBase(m), 6, m);
             TeleportPlayer(m as PlayerMobile, this.TargetMap, destination);
             Timer.DelayCall(TimeSpan.FromSeconds(2), new TimerStateCallback(ResurrectMobile_Callback), m);
         }
@@ -873,7 +874,7 @@ namespace Server.Engines
 
         private void TeleportPlayerCTF(Mobile m, Point3D destination)
         {
-            destination = Spawner.GetSpawnPosition(this.TargetMap, destination, 6, false, m);
+            destination = Spawner.GetSpawnPosition(this.TargetMap, destination, 6, m);
             TeleportPlayer(m, this.TargetMap, destination);
         }
 

@@ -25,6 +25,7 @@
  *		Clone from Jail command.
  */
 
+using Server.Diagnostics;
 using Server.Accounting;
 using Server.Items;
 using Server.Mobiles;

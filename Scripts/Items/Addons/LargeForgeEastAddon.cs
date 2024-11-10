@@ -25,6 +25,7 @@
 *		Add Forge Bellows, Rise of the animated forges!
 */
 
+using Server.Diagnostics;
 using Server.Commands;
 using System;
 

@@ -1,2 +1,31 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<TCGL Count="0" />
+<TCGL Count="4">
+	<TCEntry>
+		<LineCount>2</LineCount>
+		<Line0>The merchant Cyril was last seen somewhere outside of Britain and is said to be bringing us some of his finest wares.</Line0>
+		<Line1>Cyril was last seen near 21� 58'N, 47� 36'W. Please see that Cyril arrives safely.</Line1>
+		<ExpireTime>2024-11-10T18:08:34.3168258Z</ExpireTime>
+		<PosterSerial>0xFFFFFFFF</PosterSerial>
+	</TCEntry>
+	<TCEntry>
+		<LineCount>2</LineCount>
+		<Line0>The treasure hunter Kieran was last seen somewhere outside of Britain and is said to be in need of assistance.</Line0>
+		<Line1>Kieran was last seen near 78� 23'N, 70� 18'E. Please see that Kieran receives whatever help he needs.</Line1>
+		<ExpireTime>2024-11-10T18:08:34.3178258Z</ExpireTime>
+		<PosterSerial>0xFFFFFFFF</PosterSerial>
+	</TCEntry>
+	<TCEntry>
+		<LineCount>2</LineCount>
+		<Line0>The treasure hunter Givon was last seen somewhere outside of Britain and is said to be in need of assistance.</Line0>
+		<Line1>Givon was last seen near 92� 1'S, 24� 57'E. Please see that Givon receives whatever help he needs.</Line1>
+		<ExpireTime>2024-11-10T18:08:34.3178258Z</ExpireTime>
+		<PosterSerial>0xFFFFFFFF</PosterSerial>
+	</TCEntry>
+	<TCEntry>
+		<LineCount>2</LineCount>
+		<Line0>The treasure hunter Nan was last seen somewhere outside of Britain and is said to be in need of assistance.</Line0>
+		<Line1>Nan was last seen near 86� 23'N, 69� 53'E. Please see that Nan receives whatever help she needs.</Line1>
+		<ExpireTime>2024-11-10T18:08:34.3178258Z</ExpireTime>
+		<PosterSerial>0xFFFFFFFF</PosterSerial>
+	</TCEntry>
+</TCGL>

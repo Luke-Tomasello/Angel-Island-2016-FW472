@@ -48,6 +48,7 @@
  *		Changed m_Delay to 30 minutes
 */
 
+using Server.Diagnostics;
 using Server.Commands;
 using System;
 using System.IO;

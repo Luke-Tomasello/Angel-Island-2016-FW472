@@ -68,7 +68,7 @@ namespace Server.Commands
                         from.SendMessage("That mobile is homeless");
                     }
                 }
-                if (o is Item)
+                else if (o is Item)
                 {
                     if (((Item)o).SpawnerLocation != Point3D.Zero && (o as Item).SpawnerMap != null)
                     {

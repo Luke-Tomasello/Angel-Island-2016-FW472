@@ -68,6 +68,7 @@
  */
 
 using Server.Accounting;
+using Server.Diagnostics;
 using Server.Items;
 using Server.Misc;
 using Server.Mobiles;

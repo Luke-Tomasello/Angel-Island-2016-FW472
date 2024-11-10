@@ -78,7 +78,7 @@ namespace Server.Items
             TileData.ItemTable[0x246].Flags = TileFlag.None; //N-S right
             TileData.ItemTable[0x245].Flags = TileFlag.None; //E-W left
                                                              //TileData.ItemTable[0x249].Flags = TileFlag.None; //E-W right
-
+#if false
             //Orc Fort flap - left
             TileData.ItemTable[0x22C].Flags = TileFlag.Impassable | TileFlag.Door | TileFlag.NoShoot;
             //Orc Fort flap - right
@@ -90,7 +90,7 @@ namespace Server.Items
             TileData.ItemTable[0x22E].Flags |= TileFlag.NoShoot;
 
             TileData.ItemTable[0x22F].Flags = TileFlag.None; //Brigand Fort flap - right
-
+#endif
 
             //NOTE NOTE NOTE by Pixie!
             //This was left in here as an example of what to do...

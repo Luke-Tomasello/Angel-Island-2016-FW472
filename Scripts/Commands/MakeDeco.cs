@@ -33,6 +33,7 @@
  *		Initial creation.
  */
 
+using Server.Diagnostics;
 using Server.Items;
 using Server.Regions;
 

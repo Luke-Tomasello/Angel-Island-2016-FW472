@@ -21,6 +21,11 @@
 
 /* Items/Containers/DungeonTreasureChest.cs
  * ChangeLog:
+ *  9/30/2024, Adam
+ *      Restoring the multiple piles of gold to increase your chance of being revealed.
+ *  9/21/2024, Adam (ClearPath)
+ *      We now require a clear path from the guardian to the picker. This isn't usually a problem, but in tight placed like some of the rooms
+ *      in Wind, the guardian can end up on the other side of a wall.
  *	7/14/10, Adam
  *		o revert multi-piles of gold until we can balance the lift-risk
  *		o soften the pirates magic ability (based on level) so that he's got less of a chance at casting reveal
@@ -142,6 +147,7 @@
  *     Changed so telekinesis doesn't trip the trap
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Engines.PartySystem;
 using Server.Mobiles;
@@ -276,8 +282,9 @@ namespace Server.Items
                         (int)(((double)((level * 1000) / 3)) * .75), // min is 75% of MAX
                         (level * 1000) / 3);
 
-                //int piles = level * 2;	// cool way but the players whined
-                int piles = 1;              // sissy way
+                // 9/30/2024, Adam: Restoring the multiple piles to increase your chance of being revealed.
+                int piles = level * 2;	// cool way but the players whined
+                //int piles = 1;              // sissy way
 
                 // make several piles
                 for (int ix = 0; ix < piles; ix++)
@@ -779,14 +786,15 @@ namespace Server.Items
             base.LockPick(from);
 
             if (m_Level >= 3)
-                m_Guardian = SpawnGuardian("Pirate", m_Level, from.Skills[SkillName.Hiding].Value);
+                m_Guardian = SpawnGuardian(from, "Pirate", m_Level);
 
             if (m_Guardian != null)
                 m_Guardian.AggressiveAction(from);
         }
 
-        public Mobile SpawnGuardian(string name, int level, double PlayersHidingSkill)
+        public Mobile SpawnGuardian(Mobile from, string name, int level)
         {
+            double PlayersHidingSkill = from.Skills[SkillName.Hiding].Value;
             Type type = ScriptCompiler.FindTypeByName(name);
             BaseCreature c = null;
 
@@ -853,8 +861,19 @@ namespace Server.Items
                         c.AddItem(new Quip("That be a downright lovely tune ye be playing thar."));
                         c.AddItem(new Quip("Har! Me thinks a cutlass would be a better choice!"));
 
+                        // position them
+                        int tries = 10;
+                        Point3D loc = Point3D.Zero;
+                        do
+                        {   // ClearPath can return a valid path on the other side of walls and such.
+                            //  Because of this, we limit the 'steps' to the target
+                            int steps = 0;
+                            loc = (GetSpawnPosition(c.RangeHome));
+                            if (Utility.ClearPath(this.Map, start: loc, goal: this.Location, ref steps) && steps <= c.RangeHome)
+                                break;
+                        } while (tries-- >  0);
+
                         // show them
-                        Point3D loc = (GetSpawnPosition(c.RangeHome));
                         c.MoveToWorld(loc, this.Map);
 
                         // teleport

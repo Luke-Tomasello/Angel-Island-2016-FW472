@@ -72,7 +72,7 @@ namespace Server.SkillHandlers
             //			m.Say( "armor: " + Armor.ToString()  );				
             //			m.Say( "allowed: " + AllowedArmor.ToString()  );
 
-            
+
             if (!m.Hidden)
             {
                 m.SendLocalizedMessage(502725); // You must hide first

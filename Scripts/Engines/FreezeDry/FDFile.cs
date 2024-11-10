@@ -27,6 +27,7 @@
  *		Initial version.
  */
 
+using Server.Diagnostics;
 using Server.Items;
 using Server.Targeting;
 using System;

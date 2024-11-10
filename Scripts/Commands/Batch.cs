@@ -19,6 +19,7 @@
  *
  ***************************************************************************/
 
+using Server.Diagnostics;
 using Server.Gumps;
 using Server.Network;
 using System;

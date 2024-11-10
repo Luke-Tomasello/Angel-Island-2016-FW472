@@ -39,6 +39,7 @@
  *		Removed the GetMaxStabled function from here, as it was just a copy of what's in BaseCreature.
  */
 
+using Server.Diagnostics;
 using Server.ContextMenus;
 using Server.Gumps;
 using Server.Items;
@@ -234,7 +235,7 @@ namespace Server.Mobiles
                     // charge the player back stable fees
                     if ((from.BankBox != null && from.BankBox.ConsumeTotal(typeof(Gold), pet.StableBackFees) == true))
                     {
-                        Server.Commands.LogHelper Logger = new Server.Commands.LogHelper("PetHoldFromStables.log", false, true);
+                        LogHelper Logger = new LogHelper("PetHoldFromStables.log", false, true);
                         Logger.Log(string.Format("{0} gold was taken from {2}'s bank to cover late stable fees for {1}.", pet.StableBackFees, pet.Name, from));
                         Logger.Finish();
 
@@ -480,7 +481,7 @@ namespace Server.Mobiles
                     // charge the player back stable fees
                     if ((from.BankBox != null && from.BankBox.ConsumeTotal(typeof(Gold), pet.StableBackFees) == true))
                     {
-                        Server.Commands.LogHelper Logger = new Server.Commands.LogHelper("PetHoldFromStables.log", false, true);
+                        LogHelper Logger = new LogHelper("PetHoldFromStables.log", false, true);
                         Logger.Log(string.Format("{0} gold was taken from {2}'s bank to cover late stable fees for {1}.", pet.StableBackFees, pet.Name, from));
                         Logger.Finish();
 

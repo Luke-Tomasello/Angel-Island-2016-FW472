@@ -20,6 +20,10 @@
  ***************************************************************************/
 
 /* ChangeLog 
+ *  9/20/2025, Adam (MatchingRegions)
+ *      MatchingRegions verifies all regions match between the player and the banker.
+ *      A good example is standing in Wind Park, and yelling over the cave wall there to town to bank.
+ *          this.Say("I will not do business with an exploiter!");
  *  9/13/2024, Adam (GetBalance())
  *      Use GetBalance() instead of BankBox.TotalGold as GetBalance includes checks
  *	01/03/07, plasma
@@ -43,6 +47,7 @@
 using Server.ContextMenus;
 using Server.Items;
 using Server.Network;
+using Server.Regions;
 using System;
 using System.Collections;
 
@@ -289,7 +294,13 @@ namespace Server.Mobiles
         public override void OnSpeech(SpeechEventArgs e)
         {
             if (!e.Handled && e.Mobile.InRange(this.Location, 12))
-            {
+            {   // 8/20/2024, Adam: Avoid certain exploits with MatchingRegions (ignore township bankers)
+                //  Exploit: player in Wind Park shouts over rocks to Wind Town to bank.
+                if (TownshipRegion.GetTownshipAt(e.Mobile) == null && !Region.MatchingRegions(this, e.Mobile))
+                {
+                    this.Say("I will not do business with an exploiter!");
+                    return;
+                }
                 for (int i = 0; i < e.Keywords.Length; ++i)
                 {
                     int keyword = e.Keywords[i];

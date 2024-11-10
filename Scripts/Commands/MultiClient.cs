@@ -33,6 +33,7 @@
  *			Initial Version.
  */
 
+using Server.Diagnostics;
 using Server.Mobiles;
 using Server.Network;
 using System;

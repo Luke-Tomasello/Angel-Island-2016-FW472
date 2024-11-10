@@ -116,7 +116,7 @@ namespace Server
         public static void Initialize()
         {
             m_ListenerEndPoints = new IPEndPoint[1];
-            
+
             if (Core.RuleSets.EventShardRules())
             {
                 // Core EventShard can be turned on with all other server configurations and overrides the default port for that shard.
@@ -140,10 +140,10 @@ namespace Server
                         m_ListenerEndPoints[0] = new IPEndPoint(IPAddress.Any, SiegePerilousPort);
                     else if (Core.RuleSets.MortalisRules())
                         m_ListenerEndPoints[0] = new IPEndPoint(IPAddress.Any, MortalisPort);
-//#if !GMN
+                    //#if !GMN
                     else if (Core.RuleSets.RenaissanceRules())
                         m_ListenerEndPoints[0] = new IPEndPoint(IPAddress.Any, RenaissancePort);
-//#endif
+                    //#endif
                     else
                         m_ListenerEndPoints[0] = new IPEndPoint(IPAddress.Any, AngelIslandPort);
                 }

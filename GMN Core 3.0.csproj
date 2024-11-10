@@ -290,13 +290,19 @@
     <Compile Include="Scripts\Engines\Chat\Chatold.cs" />
     <Compile Include="Scripts\Engines\Chat\ChatUser.cs" />
     <Compile Include="Scripts\Engines\Chat\Packets.cs" />
+    <Compile Include="Scripts\Engines\ClanSystem\ClanSystem.cs" />
+    <Compile Include="Scripts\Engines\ClanSystem\Mobiles\Clanmaster.cs" />
+    <Compile Include="Scripts\Engines\ClanSystem\Mobiles\ClanOrc.cs" />
+    <Compile Include="Scripts\Engines\ClanSystem\Mobiles\Warg.cs" />
     <Compile Include="Scripts\Engines\CommitGump\CommitGump.cs" />
     <Compile Include="Scripts\Engines\CommitGump\Controls\ButtonSet.cs" />
     <Compile Include="Scripts\Engines\CommitGump\DirtyState.cs" />
     <Compile Include="Scripts\Engines\CommitGump\ICommitGumpEntity.cs" />
+    <Compile Include="Scripts\Engines\CoreManagement\AIConsole.cs" />
     <Compile Include="Scripts\Engines\CoreManagement\CoreManagementConsole.cs" />
     <Compile Include="Scripts\Engines\CoreManagement\JobManagerConsole.cs" />
     <Compile Include="Scripts\Engines\CoreManagement\SecurityManagementConsole.cs" />
+    <Compile Include="Scripts\Engines\CoreManagement\TeleportConsole.cs" />
     <Compile Include="Scripts\Engines\CoreManagement\VendorManagementConsole.cs" />
     <Compile Include="Scripts\Engines\Craft\Core\CraftContext.cs" />
     <Compile Include="Scripts\Engines\Craft\Core\CraftGroup.cs" />
@@ -2396,6 +2402,7 @@
     <Compile Include="Server\DefensiveSpell.cs" />
     <Compile Include="Server\Diagnostics\BaseProfile.cs" />
     <Compile Include="Server\Diagnostics\GumpProfile.cs" />
+    <Compile Include="Server\Diagnostics\LogHelper.cs" />
     <Compile Include="Server\Diagnostics\PacketProfile.cs" />
     <Compile Include="Server\Diagnostics\TargetProfile.cs" />
     <Compile Include="Server\Diagnostics\TimerProfile.cs" />

@@ -52,6 +52,7 @@
  */
 
 
+using Server.Diagnostics;
 using Server.Mobiles;
 using Server.Network;
 using System;
@@ -327,8 +328,8 @@ namespace Server.Gumps
                     //Pix: LOG it!!
                     try
                     {
-                        Server.Commands.LogHelper lh = new Server.Commands.LogHelper("statloss.log");
-                        lh.Log(Server.Commands.LogType.Mobile, pm, "Statloss was " + loss.ToString());
+                        LogHelper lh = new LogHelper("statloss.log");
+                        lh.Log(LogType.Mobile, pm, "Statloss was " + loss.ToString());
                         lh.Finish();
                     }
                     catch (Exception ex) { EventSink.InvokeLogException(new LogExceptionEventArgs(ex)); }

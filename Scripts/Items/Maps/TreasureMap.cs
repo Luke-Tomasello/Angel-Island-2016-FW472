@@ -146,7 +146,7 @@ namespace Server.Items
                     for (int tries = 0; tries < 1000; tries++)
                     {   // Utility.BritWrap contains T2A and dungeons and is not compatible with treasure maps
                         Point2D px2 = m_Locations[Utility.Random(m_Locations.Length)];
-                        Point3D px3 = Spawner.GetSpawnPosition(Map.Felucca, new Point3D(px2.X, px2.Y, 0), 45, false, null);
+                        Point3D px3 = Spawner.GetSpawnPosition(Map.Felucca, new Point3D(px2.X, px2.Y, 0), 45, null);
                         if (!(Utility.BritWrap[0].Contains(new Point2D(px3.X, px3.Y)) || Utility.BritWrap[1].Contains(new Point2D(px3.X, px3.Y))))
                             Console.WriteLine("Bad treasure map location detected, discarding.");
                         else
@@ -528,7 +528,7 @@ namespace Server.Items
                             if (m_TreasureMap.Level > 3 && (Utility.RandomChance(25) || themed == true))
                             {
                                 TaxCollector tc = new TaxCollector(m_Chest);
-                                Point3D px = Spawner.GetSpawnPosition(m_Chest.Map, m_Chest.Location, 25, false, true, Spawner.SpawnFlags.SpawnFar, tc);
+                                Point3D px = Spawner.GetSpawnPosition(m_Chest.Map, m_Chest.Location, 25, tc, Spawner.SpawnerFlags.SpawnFar | Spawner.SpawnerFlags.AvoidPlayers);
                                 if (px != m_Chest.Location)
                                 {   // got a good location
                                     tc.MoveToWorld(px, m_Chest.Map);

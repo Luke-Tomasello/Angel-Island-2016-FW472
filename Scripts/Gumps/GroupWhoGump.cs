@@ -26,6 +26,7 @@
  * Used for listing 'who's online' for Guilds members Aliance members and Party members
  */
 
+using Server.Diagnostics;
 using Server.Guilds;
 using Server.Mobiles;
 using Server.Network;
@@ -348,7 +349,7 @@ namespace Server.Gumps
                                 }
                                 catch (Exception ex)
                                 {
-                                    Server.Commands.LogHelper.LogException(ex);
+                                    LogHelper.LogException(ex);
                                 }
 
                             }

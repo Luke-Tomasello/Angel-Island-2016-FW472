@@ -32,6 +32,7 @@
  *		Merged in 1.0RC0 code.
  */
 
+using Server.Diagnostics;
 using Server.Engines.Quests.Haven;
 using Server.Engines.Quests.Necro;
 using Server.Items;

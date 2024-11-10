@@ -35,6 +35,7 @@
  */
 
 using Server.Commands;
+using Server.Diagnostics;
 using System;
 using System.Collections;
 using System.IO;

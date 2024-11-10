@@ -26,6 +26,7 @@
  *		- InvokeWealthTracker
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using System;
 

@@ -21,6 +21,9 @@
 
 /* Scripts/Items/Weapons/BaseWeapon.cs
  * ChangeLog:
+ *  9/20/2024, Adam (LogInvalidAttribute)
+ *      We now trap, log, and convert invalid object attributes (creating super weapons and armor.)
+ *      Not only do we convert the value to something reasonable, but we also log where it came from (so we can fix it.)
  *  9/16/2024, Adam (OnSingleClick)
  *      More robust OnSingleClick processing
  *	3/2/11, Adam
@@ -149,6 +152,7 @@
  * 3/25/04 changes by mith
  *	modified CheckSkill call to use max value of 100.0 instead of 120.0.
  */
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Engines.Craft;
 using Server.Factions;
@@ -358,13 +362,6 @@ namespace Server.Items
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public WeaponQuality Quality
-        {
-            get { return m_Quality; }
-            set { UnscaleDurability(); m_Quality = value; ScaleDurability(); InvalidateProperties(); }
-        }
-
-        [CommandProperty(AccessLevel.GameMaster)]
         public Mobile Crafter
         {
             get { return m_Crafter; }
@@ -389,16 +386,96 @@ namespace Server.Items
         public WeaponDamageLevel DamageLevel
         {
             get { return m_DamageLevel; }
-            set { m_DamageLevel = value; InvalidateProperties(); }
+            set
+            {
+                // handle the bad value
+                if (Enum.IsDefined(typeof(WeaponDamageLevel), value) == false)
+                {
+                    LogHelper.LogInvalidAttribute(string.Format("Setting WeaponDamageLevel to {0}", value.ToString()));
+                    value = (WeaponDamageLevel)Utility.RandomMinMaxScaled(0, 3);
+                }
+
+
+                m_DamageLevel = value; InvalidateProperties();
+            }
+        }
+        [CommandProperty(AccessLevel.GameMaster)]
+        public WeaponAccuracyLevel AccuracyLevel
+        {
+            get
+            {
+                return m_AccuracyLevel;
+            }
+            set
+            {
+                // handle the bad value
+                if (Enum.IsDefined(typeof(WeaponAccuracyLevel), value) == false)
+                {
+                    LogHelper.LogInvalidAttribute(string.Format("Setting WeaponAccuracyLevel to {0}", value.ToString()));
+                    value = (WeaponAccuracyLevel)Utility.RandomMinMaxScaled(0, 3);
+                }
+
+                if (m_AccuracyLevel != value)
+                {
+                    m_AccuracyLevel = value;
+
+                    if (UseSkillMod)
+                    {
+                        if (m_AccuracyLevel == WeaponAccuracyLevel.Regular)
+                        {
+                            if (m_SkillMod != null)
+                                m_SkillMod.Remove();
+
+                            m_SkillMod = null;
+                        }
+                        else if (m_SkillMod == null && Parent is Mobile)
+                        {
+                            m_SkillMod = new DefaultSkillMod(SkillName.Tactics, true, (int)m_AccuracyLevel * 5);
+                            ((Mobile)Parent).AddSkillMod(m_SkillMod);
+                        }
+                        else if (m_SkillMod != null)
+                        {
+                            m_SkillMod.Value = (int)m_AccuracyLevel * 5;
+                        }
+                    }
+
+                    InvalidateProperties();
+                }
+            }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public WeaponDurabilityLevel DurabilityLevel
         {
             get { return m_DurabilityLevel; }
-            set { UnscaleDurability(); m_DurabilityLevel = value; InvalidateProperties(); ScaleDurability(); }
-        }
+            set
+            {
+                // handle the bad value
+                if (Enum.IsDefined(typeof(WeaponDurabilityLevel), value) == false)
+                {
+                    LogHelper.LogInvalidAttribute(string.Format("Setting WeaponDurabilityLevel to {0}", value.ToString()));
+                    value = (WeaponDurabilityLevel)Utility.RandomMinMaxScaled(0, 3);
+                }
 
+                UnscaleDurability(); m_DurabilityLevel = value; InvalidateProperties(); ScaleDurability();
+            }
+        }
+        [CommandProperty(AccessLevel.GameMaster)]
+        public WeaponQuality Quality
+        {
+            get { return m_Quality; }
+            set
+            {
+                // handle the bad value
+                if (Enum.IsDefined(typeof(WeaponQuality), value) == false)
+                {
+                    LogHelper.LogInvalidAttribute(string.Format("Setting WeaponQuality to {0}", value.ToString()));
+                    value = (WeaponQuality)Utility.RandomMinMaxScaled(0, 3);
+                }
+
+                UnscaleDurability(); m_Quality = value; ScaleDurability(); InvalidateProperties();
+            }
+        }
         [CommandProperty(AccessLevel.GameMaster)]
         public int MaxRange
         {
@@ -481,44 +558,6 @@ namespace Server.Items
         {
             get { return (m_IntReq == -1 ? Core.RuleSets.AOSRules() ? AosIntelligenceReq : OldIntelligenceReq : m_IntReq); }
             set { m_IntReq = value; }
-        }
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public WeaponAccuracyLevel AccuracyLevel
-        {
-            get
-            {
-                return m_AccuracyLevel;
-            }
-            set
-            {
-                if (m_AccuracyLevel != value)
-                {
-                    m_AccuracyLevel = value;
-
-                    if (UseSkillMod)
-                    {
-                        if (m_AccuracyLevel == WeaponAccuracyLevel.Regular)
-                        {
-                            if (m_SkillMod != null)
-                                m_SkillMod.Remove();
-
-                            m_SkillMod = null;
-                        }
-                        else if (m_SkillMod == null && Parent is Mobile)
-                        {
-                            m_SkillMod = new DefaultSkillMod(SkillName.Tactics, true, (int)m_AccuracyLevel * 5);
-                            ((Mobile)Parent).AddSkillMod(m_SkillMod);
-                        }
-                        else if (m_SkillMod != null)
-                        {
-                            m_SkillMod.Value = (int)m_AccuracyLevel * 5;
-                        }
-                    }
-
-                    InvalidateProperties();
-                }
-            }
         }
 
         public void UnscaleDurability()
@@ -2139,12 +2178,12 @@ namespace Server.Items
 
             // Old quality bonus:
 #if true
-			/* Apply quality offset
+            /* Apply quality offset
 			 * : Low         : -4
 			 * : Regular     :  0
 			 * : Exceptional : +4
 			 */
-			damage += ((int)m_Quality - 1) * 4.0;
+            damage += ((int)m_Quality - 1) * 4.0;
 #endif
 
             /* Apply damage level offset
@@ -2181,13 +2220,13 @@ namespace Server.Items
             if (Core.RuleSets.AOSRules())
                 return ComputeDamageAOS(attacker, defender);
 
-            int damage =  (int)ScaleDamageOld(attacker, GetBaseDamage(attacker, defender), true, true);
+            int damage = (int)ScaleDamageOld(attacker, GetBaseDamage(attacker, defender), true, true);
 
             // pre-AOS, halve damage if the defender is a player or the attacker is not a player
             if (PublishInfo.Publish < 16)
                 if (defender is PlayerMobile || !(attacker is PlayerMobile))
                     damage = (int)(damage / 2.0);
-            
+
             return damage;
         }
 
@@ -2759,6 +2798,14 @@ namespace Server.Items
 
             //if ( version < 6 )
             //PlayerCrafted = true; // we don't know, so, assume it's crafted
+
+            // patch the bad values
+            //  The properties themselves will correct erroneous values.
+            DamageLevel = m_DamageLevel;
+            AccuracyLevel = m_AccuracyLevel;
+            DurabilityLevel = m_DurabilityLevel;
+            Quality = m_Quality;
+
         }
 
 
@@ -3813,7 +3860,7 @@ namespace Server.Items
 						}
 					}
 #endif
-#endregion
+        #endregion
     }
 
     public enum CheckSlayerResult

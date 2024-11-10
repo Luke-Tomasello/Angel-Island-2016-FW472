@@ -52,6 +52,7 @@
  *		If you pass in a (case-sensitive) region name, it'll list the runes for that region.
  */
 
+using Server.Diagnostics;
 using Server.Items;
 using System;
 using System.Collections;

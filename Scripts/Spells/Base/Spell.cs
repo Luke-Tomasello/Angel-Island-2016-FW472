@@ -80,6 +80,7 @@
  *		Changed OnDisturbDelay()
  *		Amended m_Caster.NextSpellTime = DateTime.UtcNow + GetDisturbRecovery();
  */
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Items;
 using Server.Mobiles;

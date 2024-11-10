@@ -66,6 +66,7 @@
  */
 
 
+using Server.Diagnostics;
 using Server.Engines.RewardSystem;
 using Server.Gumps;
 using Server.Items;
@@ -82,6 +83,7 @@ using System.Collections;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Server.Commands
 {
@@ -116,6 +118,8 @@ namespace Server.Commands
             Register("Stuck", AccessLevel.Counselor, new CommandEventHandler(Stuck_OnCommand));
 
             Register("Help", AccessLevel.Player, new CommandEventHandler(Help_OnCommand));
+
+            Register("Language", AccessLevel.Player, new CommandEventHandler(Language_OnCommand));
 
             Register("Save", AccessLevel.Administrator, new CommandEventHandler(Save_OnCommand));
 
@@ -1370,7 +1374,7 @@ namespace Server.Commands
                     catch (Exception ex) { EventSink.InvokeLogException(new LogExceptionEventArgs(ex)); }
                     from.SendMessage("Region name not found");
                 }
-                else if (e.Length == 2)
+                else if (e.Length == 2 && Utility.IntParser(string.Join(" ", e.Arguments)).Length == 2)
                 {
                     Map map = from.Map;
 
@@ -1382,7 +1386,7 @@ namespace Server.Commands
                         from.Location = new Point3D(ints[0], ints[1], map.GetAverageZ(ints[0], ints[1]));
                     }
                 }
-                else if (e.Length == 3)
+                else if (e.Length == 3 && Utility.IntParser(string.Join(" ", e.Arguments)).Length == 3)
                 {
                     /// 5/25/2021, Adam: Allow comma delimited coords
                     /// For example; [go 4406, 1032, 1
@@ -1550,6 +1554,56 @@ namespace Server.Commands
             }
         }
 #endif
+        /// <summary>
+        /// Allows players to both speak and hear Orcish to English and English to Orcish
+        /// http://www.bloodrockclan.com/language.html
+        /// </summary>
+        private static readonly Regex sWhitespace = new Regex(@"\s+", RegexOptions.Compiled);
+        [Usage("Language")]
+        [Description("Allows the player to toggle language translators.")]
+        public static void Language_OnCommand(CommandEventArgs e)
+        {
+            PlayerMobile from = e.Mobile as PlayerMobile;
+            if (string.IsNullOrEmpty(e.ArgString))
+            {
+                from.SendMessage("Orcish to English {0}", from.SpeechOrcToEng ? "Enabled" : "Disabled");
+                from.SendMessage("English to Orcish  {0}", from.SpeechEngToOrc ? "Enabled" : "Disabled");
+                goto usage;
+            }
+            string normalize = sWhitespace.Replace(e.ArgString.ToLower(), "");
+            if (normalize == "orctoeng")
+            {
+                from.SpeechOrcToEng = !from.SpeechOrcToEng;
+                from.SpeechEngToOrc = false;
+                from.SendMessage("Orcish to English {0}", from.SpeechOrcToEng ? "Enabled" : "Disabled");
+                from.SendMessage("English to Orcish  {0}", from.SpeechEngToOrc ? "Enabled" : "Disabled");
+
+                if (from.AccessLevel == AccessLevel.Player)
+                    BroadcastMessage(AccessLevel.Administrator, 0x482,
+                        String.Format("{0} Orcish to English {1}", from.SpeechOrcToEng ? "Enabled" : "Disabled", from));
+                return;
+            }
+            else if (normalize == "engtoorc")
+            {
+                from.SpeechEngToOrc = !from.SpeechEngToOrc;
+                from.SpeechOrcToEng = false;
+                from.SendMessage("Orcish to English {0}", from.SpeechOrcToEng ? "Enabled" : "Disabled");
+                from.SendMessage("English to Orcish  {0}", from.SpeechEngToOrc ? "Enabled" : "Disabled");
+
+                if (from.AccessLevel == AccessLevel.Player)
+                    BroadcastMessage(AccessLevel.Administrator, 0x482,
+                        String.Format("{0} English to Orcish {1}", from.SpeechOrcToEng ? "Enabled" : "Disabled", from));
+                return;
+            }
+            else
+                goto usage;
+
+            usage:
+            from.SendMessage("Usage: [Language <orc to eng> | <eng to orc>");
+            from.SendMessage("Running the command more than once, toggles the setting on/off.");
+            return;
+        }
+
         [Usage("Help")]
         [Description("Lists all available commands.")]
         public static void Help_OnCommand(CommandEventArgs e)

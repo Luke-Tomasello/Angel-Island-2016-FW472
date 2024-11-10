@@ -36,7 +36,7 @@ namespace Server.Items
             : base(0x1F14)
         {
             Weight = 1.0;
-            Hue = 51;
+            Hue = Utility.RandomSpecialHue(GetType().FullName);
             Name = "Vendor Management Console";
         }
 
@@ -94,6 +94,9 @@ namespace Server.Items
         {
             base.Deserialize(reader);
             int version = reader.ReadInt();
+
+            if (version == 1)
+                Hue = Utility.RandomSpecialHue(GetType().FullName);
         }
     }
 

@@ -29,6 +29,7 @@
  *		initial creation
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Items;
 using System;
@@ -94,7 +95,7 @@ namespace Server.Mobiles
             }
         }
 
-        public override void OnSee(Mobile m)
+        public override void OnSeePlayer(Mobile m)
         {
             // yeah
             if (m is PlayerMobile == false)

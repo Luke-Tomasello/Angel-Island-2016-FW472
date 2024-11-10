@@ -26,6 +26,7 @@
  *		of consequences for beneficial actions on targets by huing them differently.
  */
 
+
 namespace Server
 {
     public delegate int NotorietyHandler(Mobile source, Mobile target);
@@ -85,7 +86,7 @@ namespace Server
         public static int Compute(Mobile source, Mobile target)
         {
             int noto = m_Handler == null ? CanBeAttacked : m_Handler(source, target);
-
+            //Console.WriteLine("Notoriety: {0}", noto);
             return noto;
         }
 
@@ -97,7 +98,9 @@ namespace Server
             }
             else
             {
-                return m_BeneficialHandler(source, target);
+                int result = m_BeneficialHandler(source, target);
+                //Console.WriteLine("GetBeneficialHue: {0}", result);
+                return result;
             }
         }
     }

@@ -27,6 +27,7 @@
  *		Initial Version
  */
 
+using Server.Diagnostics;
 using Server.Accounting;
 using Server.Items;
 using Server.Mobiles;
@@ -35,6 +36,8 @@ using Server.Targeting;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Server.Engines.ChampionSpawn;
+using System.Linq;
 
 namespace Server.Commands
 {
@@ -99,6 +102,30 @@ namespace Server.Commands
                     case "buildmaze":
                         BuildMaze(e);
                         break;
+
+                    case "patchbeacons":
+                        PatchBeacons(e);
+                        break;
+
+                    case "loadbeacons":
+                        LoadBeacons(e);
+                        break;
+
+                    case "dupedeepsimple":
+                        DupeDeepSimple(e);
+                        break;
+
+                    case "deleteclanorcs":
+                        DeleteClanOrcs(e);
+                        break;
+
+                    case "countclanorcs":
+                        CountClanOrcs(e);
+                        break;
+
+                    case "resetclanorcs":
+                        ResetClanOrcs(e);
+                        break;
                 }
             }
             catch (Exception ex)
@@ -106,6 +133,116 @@ namespace Server.Commands
                 LogHelper.LogException(ex);
             }
         }
+        private static void ResetClanOrcs(CommandEventArgs e)
+        {
+            foreach (KeyValuePair<Clanmaster, ChampMini> kvp in Clanmaster.Instances)
+                if (kvp.Key.Controller != null)
+                {
+                    kvp.Key.EnemySpawners.Clear();
+                    Clanmaster.ResetChamp(kvp.Key.Controller);
+                }
+        }
+        private static void CountClanOrcs(CommandEventArgs e)
+        {
+            List<string> list = new List<string>();
+            foreach (Mobile m in World.Mobiles.Values)
+                if (m is ClanOrc co && !co.Deleted)
+                    list.Add(co.ClanAlignment);
+
+            string clan = e.ArgString.Replace(e.GetString(0), "", StringComparison.OrdinalIgnoreCase).Trim();
+            if (!string.IsNullOrEmpty(clan))
+            {
+                Clanmaster cm = Clanmaster.GetEnemyClanmaster(clan);
+                if (cm == null)
+                {
+                    e.Mobile.SendMessage("There is no {0} clan", clan);
+                    return;
+                }
+                list.RemoveAll(c => !c.Equals(clan, StringComparison.OrdinalIgnoreCase));
+
+                e.Mobile.SendMessage("There are {0} {1} Clan Orc(s)", list.Count, clan);
+                return;
+            }
+
+            e.Mobile.SendMessage("There are {0} Clan Orc(s)", list.Count);
+        }
+        private static void DeleteClanOrcs(CommandEventArgs e)
+        {
+            List<ClanOrc> list = new List<ClanOrc>();
+            foreach (Mobile m in World.Mobiles.Values)
+                if (m is ClanOrc co)
+                    list.Add(co);
+
+            foreach (ClanOrc co in list)
+                co.Delete();
+        }
+
+        #region Dupe Deep Simple
+
+        private static void DupeDeepSimple(CommandEventArgs e)
+        {
+            e.Mobile.SendMessage("Target the container you would like to dupe...");
+            e.Mobile.Target = new DupeTarget(e.Mobile);
+        }
+        public class DupeTarget : Target
+        {
+            private Mobile m_From;
+            public DupeTarget(Mobile from)
+                : base(17, true, TargetFlags.None)
+            {
+                m_From = from;
+            }
+
+            protected override void OnTarget(Mobile from, object target)
+            {
+                if (target is Container cont)
+                {
+                    Container new_cont = Utility.DupeDeepSimple(cont);
+                    if (new_cont != null)
+                    {
+                        from.Backpack.AddItem(new_cont);
+                        from.SendMessage("Done.");
+                    }
+                    else
+                        from.SendMessage("Failed to create deep copy.");
+                }
+                else
+                {
+                    from.SendMessage("That is not a container.");
+                    return;
+                }
+            }
+        }
+
+        #endregion Dupe Deep Simple
+
+        #region Patch Beacons
+        private static void PatchBeacons(CommandEventArgs e)
+        {
+            foreach (KeyValuePair<string, List<NavigationBeacon>> list in NavigationBeacon.Registry)
+                foreach (NavigationBeacon nb in list.Value)
+                    if (nb.Journey == "Rockbiter Clan")
+                        nb.Journey = "Bloodskull Orks => Rockbiter Clan";
+                    else if (nb.Journey == "Bloodskull Orks")
+                        nb.Journey = "Rockbiter Clan => Bloodskull Orks";
+        }
+        #endregion Patch Beacons
+        #region Load Beacons
+        private static void LoadBeacons(CommandEventArgs e)
+        {
+            PlayerMobile pm = e.Mobile as PlayerMobile;
+            pm.JumpIndex = 0;
+            pm.JumpList = new System.Collections.ArrayList();
+            List<NavigationBeacon> beacon_list = new List<NavigationBeacon>();
+            foreach (KeyValuePair<string, List<NavigationBeacon>> list in NavigationBeacon.Registry)
+                foreach (NavigationBeacon nb in list.Value)
+                    if (nb.Journey == e.GetString(1))
+                        beacon_list.Add(nb);
+
+            var sortedItems =  beacon_list.OrderBy(item => item.Ring).ToList();
+            pm.JumpList.AddRange(sortedItems);
+        }
+        #endregion Load Beacons
         #region Maze Builder
 
         private static void BuildMaze(CommandEventArgs e)
@@ -208,7 +345,7 @@ namespace Server.Commands
                             Container parent = SaveParent(item);
                             Spawner.CopyProperties(dest, item);
                             RestoreParent(item, parent);
-                            Point3D point = new Point3D(origin.X+x, origin.Y+y, origin.Z);
+                            Point3D point = new Point3D(origin.X + x, origin.Y + y, origin.Z);
                             dest.MoveToWorld(point, item.Map);
                         }
                     }
@@ -646,7 +783,7 @@ namespace Server.Commands
                 try
                 {
                     Gypsy m_to = new Gypsy();
-                    WipeLayers(m_to);
+                    Utility.WipeLayers(m_to);
                     m_to.IsInvulnerable = true;
                     m_to.Name = p.Name;
                     m_to.Title = p.Title;
@@ -668,48 +805,6 @@ namespace Server.Commands
                 {
                     ;
                 }
-            }
-        }
-        private static void WipeLayers(Mobile m)
-        {
-            try
-            {
-                Item[] items = new Item[21];
-                items[0] = m.FindItemOnLayer(Layer.Shoes);
-                items[1] = m.FindItemOnLayer(Layer.Pants);
-                items[2] = m.FindItemOnLayer(Layer.Shirt);
-                items[3] = m.FindItemOnLayer(Layer.Helm);
-                items[4] = m.FindItemOnLayer(Layer.Gloves);
-                items[5] = m.FindItemOnLayer(Layer.Neck);
-                items[6] = m.FindItemOnLayer(Layer.Waist);
-                items[7] = m.FindItemOnLayer(Layer.InnerTorso);
-                items[8] = m.FindItemOnLayer(Layer.MiddleTorso);
-                items[9] = m.FindItemOnLayer(Layer.Arms);
-                items[10] = m.FindItemOnLayer(Layer.Cloak);
-                items[11] = m.FindItemOnLayer(Layer.OuterTorso);
-                items[12] = m.FindItemOnLayer(Layer.OuterLegs);
-                items[13] = m.FindItemOnLayer(Layer.InnerLegs);
-                items[14] = m.FindItemOnLayer(Layer.Bracelet);
-                items[15] = m.FindItemOnLayer(Layer.Ring);
-                items[16] = m.FindItemOnLayer(Layer.Earrings);
-                items[17] = m.FindItemOnLayer(Layer.OneHanded);
-                items[18] = m.FindItemOnLayer(Layer.TwoHanded);
-                items[19] = m.FindItemOnLayer(Layer.Hair);
-                items[20] = m.FindItemOnLayer(Layer.FacialHair);
-                for (int i = 0; i < items.Length; i++)
-                {
-                    if (items[i] != null)
-                    {
-                        m.RemoveItem(items[i]);
-                        items[i].Delete();
-                    }
-                }
-            }
-            catch (Exception exc)
-            {
-                System.Console.WriteLine("Send to Zen please: ");
-                System.Console.WriteLine("Exception caught in Mobile.WipeLayers: " + exc.Message);
-                System.Console.WriteLine(exc.StackTrace);
             }
         }
         private static void WritePlayers(string shard, List<PlayerDesc> list)

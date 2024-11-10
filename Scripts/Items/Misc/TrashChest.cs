@@ -33,6 +33,7 @@
  *			functionality in the core.
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using System;
 using System.Collections;

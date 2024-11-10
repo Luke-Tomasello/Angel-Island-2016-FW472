@@ -26,6 +26,7 @@
  *		Added a bit of flexibility and logging capabilities.
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using System;
 using System.Collections.Generic;

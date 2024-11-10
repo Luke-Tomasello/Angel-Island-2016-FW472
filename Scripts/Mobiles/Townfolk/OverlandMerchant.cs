@@ -21,6 +21,8 @@
 
 /* Scripts/Mobiles/Monsters/Humanoid/Melee/OverlandMerchant.cs
  * ChangeLog
+ *  10/10/2024 (RareFactoryItem)
+ *      merchants now have a small chance top drop a RareFactoryItem
  *	10/21/08, Adam
  *		Turn off rare factory drop until we reload the rare factory 
  *	1/4/08, Adam
@@ -44,6 +46,7 @@
  *		First time checkin
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Items;
 using System;
@@ -256,6 +259,15 @@ namespace Server.Mobiles
 							GiveLoot(Server.Engines.RareFactory.AcquireRare(2, "Wines"), false);
 						else
 							GiveLoot(Server.Engines.RareFactory.AcquireRare(2, "WineBooks"), false);*/
+
+                        if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
+                        {
+                            Item rare = Loot.RareFactoryItem(0.1);
+                            LogHelper Logger = new LogHelper("BabyRareFactory.log", false, true);
+                            Logger.Log(LogType.Mobile, this, string.Format("Dropped baby rare factory item {0}", rare));
+                            Logger.Finish();
+                            PackItem(rare);
+                        }
                     }
                     else
                     {

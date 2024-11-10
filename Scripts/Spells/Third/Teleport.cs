@@ -122,21 +122,39 @@ namespace Server.Spells.Third
         public static Memory SpiritCohesion = new Memory();
         public bool CheckDelay(Mobile from, bool check_only = false)
         {
+            //simply turned off
+            if (CoreAI.TeleRunningEnabled || !Core.RuleSets.AngelIslandRules())
+                return true;    // no metering
+
+            // if not global and not in PvP combat
+            if (!CoreAI.TeleGlobalDelay && !Utility.CheckPvPCombat(from))
+                return true;    // no metering
+
+            // TeleGlobalDelay is true or we are in PvP combat
             if (SpiritCohesion.Recall(from) == false)
             {   // nope, don't remember him.
                 if (!check_only)
                     SpiritCohesion.Remember(from, null, CoreAI.TeleDelay);
-                return true;
+                return true;    // no metering
             }
 
-            return false;
+            return false;       // meter
+        }
+        private static int GetTeleDistance(Mobile m)
+        {
+            if (CoreAI.TeleRunningEnabled || !Core.RuleSets.AngelIslandRules())
+                return TeleportConsole.DefaultTeleTiles;    // they can tele run 12 tiles
+            else if (Utility.CheckPvPCombat(m))             // if they have a PvP combatant, meter
+                return CoreAI.TeleTiles;                    // limited
+
+            return TeleportConsole.DefaultTeleTiles;        // they can tele run 12 tiles
         }
         public class InternalTarget : Target
         {
             private TeleportSpell m_Owner;
 
             public InternalTarget(TeleportSpell owner)
-                : base(CoreAI.TeleTiles/*12*/, true, TargetFlags.None)
+                : base(GetTeleDistance(owner.Caster), true, TargetFlags.None)
             {
                 m_Owner = owner;
             }

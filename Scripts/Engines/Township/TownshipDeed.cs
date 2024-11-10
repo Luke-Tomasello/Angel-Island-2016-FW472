@@ -44,6 +44,7 @@
  *		Added confirmation gump.
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Guilds;
 using Server.Gumps;

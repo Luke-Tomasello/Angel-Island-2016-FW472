@@ -21,6 +21,8 @@
 
 /* Scripts/Multis/Houses.cs
  * ChangeLog
+ * 9/20/2024, Adam (Tower)
+ *      set the 2nd and 3rd floor doors to NorthCW. This is so they secure the inner room
  * 11/08/10, Pix
  *      Changed secures/lockdowns for UOSP
  *	7/27/07, Adam
@@ -236,8 +238,8 @@ namespace Server.Multis
             BanLocation = new Point3D(5, 8, 0);
 
             AddSouthDoor(false, 3, -2, 6);
-            AddEastDoor(false, 1, 4, 26);
-            AddEastDoor(false, 1, 4, 46);
+            AddEastDoor(false, 1, 4, 26, DoorFacing.NorthCW);
+            AddEastDoor(false, 1, 4, 46, DoorFacing.NorthCW);
         }
 
         public Tower(Serial serial)

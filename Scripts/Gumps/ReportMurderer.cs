@@ -53,6 +53,7 @@
  *    Gump doesn't report murder 10 minutes after being created.
  */
 
+using Server.Diagnostics;
 using Server.BountySystem;
 using Server.Misc;
 using Server.Mobiles;
@@ -242,7 +243,7 @@ namespace Server.Gumps
                 }
                 catch (Exception e)
                 {
-                    Server.Commands.LogHelper.LogException(e);
+                    LogHelper.LogException(e);
                 }
 
                 m_Victim.SendGump(new ReportMurdererGump(m_Victim, m_Killers));

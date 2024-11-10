@@ -47,6 +47,7 @@
  *	modified CheckSkill call to use max value of 100.0 instead of 120.0.
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Gumps;
 using Server.Mobiles;
@@ -98,7 +99,7 @@ namespace Server.Items
                 {
                     //if (patient is PlayerMobile) (patient as PlayerMobile).Say("Exploit: Z axis");
                     // log the exploiter and possible accomplices
-                    LogHelper.Cheater(healer, "Bandage resurrection with > 18 Z axis.", true);
+                    RecordCheater.Cheater(healer, "Bandage resurrection with > 18 Z axis.", true);
                     return false;
                 }
 
@@ -108,7 +109,7 @@ namespace Server.Items
                     {
                         //if (patient is PlayerMobile) (patient as PlayerMobile).Say("Exploit: through door");
                         // log the exploiter and possible accomplices
-                        LogHelper.Cheater(healer, "Possible through door or other blocking tile exploit.", true);
+                        RecordCheater.Cheater(healer, "Possible through door or other blocking tile exploit.", true);
                         return false;
                     }
 
@@ -117,7 +118,7 @@ namespace Server.Items
                 {
                     //if (patient is PlayerMobile) (patient as PlayerMobile).Say("Exploit: not in LOS");
                     // log the exploiter and possible accomplices
-                    LogHelper.Cheater(healer, "not in LOS.", true);
+                    RecordCheater.Cheater(healer, "not in LOS.", true);
                     return false;
                 }
 
@@ -131,7 +132,7 @@ namespace Server.Items
                     if (Multis.BaseHouse.FindHouseAt(patient) != null) // if they are in a house
                         if (healer.CheckMovement(healer.GetDirectionTo(patient.Location), out newZ) == false)
                         {
-                            LogHelper.Cheater(healer, "Blocked path.", true);
+                            RecordCheater.Cheater(healer, "Blocked path.", true);
                             return false;
                         }
             }

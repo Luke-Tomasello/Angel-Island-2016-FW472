@@ -53,7 +53,7 @@ namespace Server
                 }
                 else if (IPLimiter.SocketBlock && !IPLimiter.Verify(ip))
                 {
-                   Utility.Monitor.WriteLine("Client: {0}: Past IP limit threshold", ConsoleColor.Red, ip);
+                    Utility.Monitor.WriteLine("Client: {0}: Past IP limit threshold", ConsoleColor.Red, ip);
 
                     using (StreamWriter op = new StreamWriter("ipLimits.log", true))
                         op.WriteLine("{0}\tPast IP limit threshold\t{1}", ip, DateTime.UtcNow);

@@ -41,6 +41,7 @@
  *		Initial creation - designed to retrieve locations of all mobs who have used that
  *		skill last in time specified as argument (or 2 min default)
 */
+using Server.Diagnostics;
 using Server.Mobiles;
 using Server.Network;
 using System;

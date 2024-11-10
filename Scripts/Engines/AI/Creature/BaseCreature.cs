@@ -532,7 +532,10 @@
 
 using Server.Commands;
 using Server.ContextMenus;
+using Server.Diagnostics;
 using Server.Engines;
+using Server.Engines.ChampionSpawn;
+using Server.Engines.ClanSystem;
 using Server.Engines.IOBSystem;
 using Server.Engines.PartySystem;
 using Server.Engines.Quests;
@@ -545,6 +548,7 @@ using Server.Spells;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Server.Mobiles
@@ -745,6 +749,7 @@ namespace Server.Mobiles
 
     public class BaseCreature : Mobile
     {
+        
         public virtual void OnBeforeDispel(Mobile Caster)
         {
         }
@@ -784,12 +789,10 @@ namespace Server.Mobiles
         private Point3D m_pHome;                // The home position of the creature, used by some AI
         private int m_iRangeHome = 10;      // The home range of the creature
 
-        private Spawner m_Spawner;              //The spawner that spawned this mob, if applicable
-
         ArrayList m_arSpellAttack;      // List of attack spell/power
-        ArrayList m_arSpellDefense;     // Liste of defensive spell/power
+        ArrayList m_arSpellDefense;     // List of defensive spell/power
 
-        private bool m_bControlled;     // Is controled
+        private bool m_bControlled;     // Is controlled
         private Mobile m_ControlMaster; // My master
         private Mobile m_ControlTarget; // My target mobile
         private Point3D m_ControlDest;      // My target destination (patrol)
@@ -812,7 +815,7 @@ namespace Server.Mobiles
         private DateTime m_timeBardEnd;
         private WayPoint m_CurrentWayPoint = null;
         private Point2D m_TargetLocation = Point2D.Zero;
-        private IOBAlignment m_IOBAlignment; //Pigpen - Addition for IOB Sytem
+        private IOBAlignment m_IOBAlignment; //Pigpen - Addition for IOB System
         private Mobile m_SummonMaster;
 
         private int m_HitsMax = -1;
@@ -829,11 +832,11 @@ namespace Server.Mobiles
 
         private Point3D LastSound;
 
-        private Point3D Destination;
+        private string m_navDestination;
 
-        private NavDestinations dest;
+        private Point3D m_navPoint;
 
-        private NavBeacon Nav;
+        private NavigationBeacon m_navBeacon;
 
         private DateTime loyaltyfeed;
 
@@ -853,26 +856,44 @@ namespace Server.Mobiles
             get { return this.Blessed == false; }
         }
 
+        #region NavStar
         [CommandProperty(AccessLevel.GameMaster)]
-        public NavDestinations NavDestination
+        public string NavDestination
         {
-            get { return dest; }
-            set { dest = value; }
-        }
+            get { return m_navDestination; }
+            set 
+            { 
+                m_navDestination = value;
+                m_navBeacon = null;
+                m_navPoint = Point3D.Zero;
+                NavStar.FlushContext(this); // forget any queued NavBeacons
+                // if they are pulled out of battle, exit guard mode
+                if (this is BaseCreature bc && bc.AIObject != null)
+                {
+                    if (bc.AIObject.InGuardMode)
+                        bc.AIObject.StopGuardMode();
+                    
+                    bc.FocusMob = bc.Combatant = null;
+                }
 
+            }
+        }
+        
         [CommandProperty(AccessLevel.GameMaster)]
-        public NavBeacon Beacon
+        public NavigationBeacon NavBeacon
         {
-            get { return Nav; }
-            set { Nav = value; }
+            get { return m_navBeacon; }
+            set { m_navBeacon = value; }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public Point3D NavPoint
         {
-            get { return Destination; }
-            set { Destination = value; }
+            get { return m_navPoint; }
+            set { m_navPoint = value; }
         }
+        public Stack<Point3D> NavWalkback = new Stack<Point3D>();
+        #endregion NavStar
 
         [CommandProperty(AccessLevel.GameMaster)]
         public Point3D LastSoundHeard
@@ -1033,7 +1054,12 @@ namespace Server.Mobiles
                 m_IOBAlignment = Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules() ? value : IOBAlignment.None;
             }
         }
-
+        [CommandProperty(AccessLevel.GameMaster)]
+        public override string ClanAlignment
+        {
+            get { return base.ClanAlignment; }
+            set { base.ClanAlignment = value; }
+        }
         [CommandProperty(AccessLevel.GameMaster)]
         public bool IsBonded
         {
@@ -1581,22 +1607,30 @@ namespace Server.Mobiles
                 if (IsOpposition(m))
                     return false;
 
-            // Adam: If you are an ememy, you are not a friend (PC)
-            if (IOBSystem.IsEnemy(this, m) == true)
-                return false;
-
             // Adam: different teams are always waring (NPC)
             if (IsTeamOpposition(m) == true)
                 return false;
 
-            // Adam: Is this an IOB kinship? (PC)
+            // Adam: If you are an enemy, you are not a friend (PC/NPC)
+            if (IOBSystem.IsEnemy(this, m) == true)
+                return false;
+
+            // Adam: Is this an IOB kinship? (PC/NPC)
             if (IOBSystem.IsFriend(this, m) == true)
+                return true;
+
+            // Adam: If you are an enemy, you are not a friend (PC/NPC)
+            if (ClanSystem.IsEnemy(this, m) == true)
+                return false;
+
+            // Adam: Is this a fellowship? (PC/NPC)
+            if (ClanSystem.IsFriend(this, m) == true)
                 return true;
 
             BaseCreature c = m as BaseCreature;
             if (c != null)
             {
-                //if both are tamed pets dont attack each other
+                //if both are tamed pets don't attack each other
                 if (m_bControlled && c.m_bControlled)
                     return true;
 
@@ -1694,16 +1728,24 @@ namespace Server.Mobiles
                 if (IsOpposition(m))
                     return true;
 
-            // Adam: Is this an IOB kinship? (PC)
-            if (IOBSystem.IsEnemy(this, m) == true)
-                return true;
-
             // Adam: different teams are always waring (NPC)
             if (IsTeamOpposition(m) == true)
                 return true;
 
-            // Adam: If you are a friend, you are not an enemy (PC)
+            // Adam: Is this an IOB kinship? (PC/NPC)
+            if (IOBSystem.IsEnemy(this, m) == true)
+                return true;
+
+            // Adam: If you are a friend, you are not an enemy (PC/NPC)
             if (IOBSystem.IsFriend(this, m) == true)
+                return false;
+
+            // Adam: Is this a Clan enemy? (PC/NPC)
+            if (ClanSystem.IsEnemy(this, m) == true)
+                return true;
+
+            // Adam: If you are a friend, you are not an enemy (PC/NPC)
+            if (ClanSystem.IsFriend(this, m) == true)
                 return false;
 
             // don't hate PCs just because they are PCs
@@ -2289,15 +2331,36 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            int version = 34;
+            int version = 37;
+            writer.Write((int)version); // version
+
+            // version 37, NavStar Walkback navigation
+            List<Point3D> temp = new List<Point3D>(NavWalkback);
+            writer.Write(temp.Count);
+            foreach (var px in temp)
+                writer.Write(px);
+
+            // version 36, push ClanAlignment down the Mobile
+
+            // version 35, new NavStar
+            if (!string.IsNullOrEmpty(m_navDestination))
+            {
+                writer.Write(true);             // save flag
+                writer.Write(m_navDestination);
+                writer.Write(m_navPoint);
+                writer.Write(m_navBeacon);
+            }
+            else
+                writer.Write(false);             // save flag
+
+            // pushed down to the mobile
+            //writer.Write(m_ClanAlignment);
 
             // version 34 m_SuppressNormalLoot
             // version 33, constant focus 
             // version 32, ad AI Serialization
             // version 31, add FightStyle parameter
             // version 30 maps old FightMode to new [flags] FightMode (so does 29)
-
-            writer.Write((int)version); // version
 
             writer.Write((int)m_CurrentAI);
             writer.Write((int)m_DefaultAI);
@@ -2416,12 +2479,14 @@ namespace Server.Mobiles
 
             // version 18 - Adam: eliminate crazy resistances
 
-            //version 19 (Kit NavStar variables
-            writer.Write((Point3D)Destination);
+            /* Obsolete in Version 35
+                //version 19 (Kit NavStar variables
+                writer.Write((Point3D)Destination);
 
-            writer.Write((int)dest);
+                writer.Write((int)dest);
 
-            writer.Write((NavBeacon)Nav);
+                writer.Write((NavBeacon)Nav);
+            */
 
             //version 20
             writer.Write((bool)m_bBardImmune);
@@ -2483,342 +2548,371 @@ namespace Server.Mobiles
 
             int version = reader.ReadInt();
 
-            m_CurrentAI = (AIType)reader.ReadInt();
-            m_DefaultAI = (AIType)reader.ReadInt();
-
-            m_iRangePerception = reader.ReadInt();
-            m_iRangeFight = reader.ReadInt();
-
-            m_iTeam = reader.ReadInt();
-
-            m_dActiveSpeed = reader.ReadDouble();
-            m_dPassiveSpeed = reader.ReadDouble();
-            m_dCurrentSpeed = reader.ReadDouble();
-
-            double activeSpeed = m_dActiveSpeed;
-            double passiveSpeed = m_dPassiveSpeed;
-
-            if (SpeedOverrideOK == false)
-                SpeedInfo.GetSpeeds(this, ref activeSpeed, ref passiveSpeed);
-
-            if (activeSpeed != m_dActiveSpeed || passiveSpeed != m_dPassiveSpeed)
+            switch(version)
             {
-                Console.WriteLine("Non standard creature speed detected for {0}. Patching...", this.ToString());
-                m_dActiveSpeed = activeSpeed;
-                m_dPassiveSpeed = passiveSpeed;
-                m_dCurrentSpeed = m_dCurrentSpeed == m_dActiveSpeed ? m_dActiveSpeed : m_dPassiveSpeed;
-            }
+                case 37:
+                    {   // version 37, NavStar Walkback navigation
+                        int count = reader.ReadInt();
+                        List<Point3D> temp = new List<Point3D>();
+                        for (int ix = 0; ix < count; ix++)
+                            temp.Add(reader.ReadPoint3D());
 
-            if (m_iRangePerception == OldRangePerception)
-                m_iRangePerception = DefaultRangePerception;
+                        NavWalkback = new Stack<Point3D>(temp.Reverse<Point3D>());
 
-            m_pHome.X = reader.ReadInt();
-            m_pHome.Y = reader.ReadInt();
-            m_pHome.Z = reader.ReadInt();
-
-            if (version >= 1)
-            {
-                m_iRangeHome = reader.ReadInt();
-
-                int i, iCount;
-
-                iCount = reader.ReadInt();
-                for (i = 0; i < iCount; i++)
-                {
-                    string str = reader.ReadString();
-                    Type type = Type.GetType(str);
-
-                    if (type != null)
-                    {
-                        m_arSpellAttack.Add(type);
+                        goto case 36;
                     }
-                }
-
-                iCount = reader.ReadInt();
-                for (i = 0; i < iCount; i++)
-                {
-                    string str = reader.ReadString();
-                    Type type = Type.GetType(str);
-
-                    if (type != null)
+                case 36:    // pushed ClanAlignment down to the Mobile
+                case 35:
                     {
-                        m_arSpellDefense.Add(type);
+                        if (reader.ReadBool())  // save flag
+                        {
+                            m_navDestination = reader.ReadString();
+                            m_navPoint = reader.ReadPoint3D();
+                            m_navBeacon = (NavigationBeacon)reader.ReadItem();
+                        }
+
+                        if (version <= 35)
+                            base.ClanAlignment = reader.ReadString();
+                        goto default;
                     }
-                }
-            }
-            else
-            {
-                m_iRangeHome = 0;
-            }
+                default:
+                    {
+                        m_CurrentAI = (AIType)reader.ReadInt();
+                        m_DefaultAI = (AIType)reader.ReadInt();
 
-            if (version >= 2)
-            {
-                m_FightMode = (FightMode)reader.ReadInt();
+                        m_iRangePerception = reader.ReadInt();
+                        m_iRangeFight = reader.ReadInt();
 
-                m_bControlled = reader.ReadBool();
-                m_ControlMaster = reader.ReadMobile();
-                m_ControlTarget = reader.ReadMobile();
-                m_ControlDest = reader.ReadPoint3D();
-                m_ControlOrder = (OrderType)reader.ReadInt();
+                        m_iTeam = reader.ReadInt();
 
-                m_dMinTameSkill = reader.ReadDouble();
+                        m_dActiveSpeed = reader.ReadDouble();
+                        m_dPassiveSpeed = reader.ReadDouble();
+                        m_dCurrentSpeed = reader.ReadDouble();
 
-                if (version < 9)
-                    reader.ReadDouble();
+                        double activeSpeed = m_dActiveSpeed;
+                        double passiveSpeed = m_dPassiveSpeed;
 
-                m_bTamable = reader.ReadBool();
-                m_bSummoned = reader.ReadBool();
+                        if (SpeedOverrideOK == false)
+                            SpeedInfo.GetSpeeds(this, ref activeSpeed, ref passiveSpeed);
 
-                if (m_bSummoned)
-                {
-                    m_SummonEnd = reader.ReadDeltaTime();
-                    new UnsummonTimer(m_ControlMaster, this, m_SummonEnd - DateTime.UtcNow).Start();
-                }
+                        if (activeSpeed != m_dActiveSpeed || passiveSpeed != m_dPassiveSpeed)
+                        {
+                            Console.WriteLine("Non standard creature speed detected for {0}. Patching...", this.ToString());
+                            m_dActiveSpeed = activeSpeed;
+                            m_dPassiveSpeed = passiveSpeed;
+                            m_dCurrentSpeed = m_dCurrentSpeed == m_dActiveSpeed ? m_dActiveSpeed : m_dPassiveSpeed;
+                        }
 
-                m_iControlSlots = reader.ReadInt();
-            }
-            else
-            {
-                m_FightMode = FightMode.All | FightMode.Closest;
+                        if (m_iRangePerception == OldRangePerception)
+                            m_iRangePerception = DefaultRangePerception;
 
-                m_bControlled = false;
-                m_ControlMaster = null;
-                m_ControlTarget = null;
-                m_ControlOrder = OrderType.None;
-            }
+                        m_pHome.X = reader.ReadInt();
+                        m_pHome.Y = reader.ReadInt();
+                        m_pHome.Z = reader.ReadInt();
 
-            if (version >= 3) // loyalty redo
-            {
-                m_Loyalty = (PetLoyalty)reader.ReadInt();
+                        if (version >= 1)
+                        {
+                            m_iRangeHome = reader.ReadInt();
 
-                if (version < 23)
-                    m_Loyalty = (PetLoyalty)((int)m_Loyalty * 10);
-            }
-            else
-                m_Loyalty = PetLoyalty.WonderfullyHappy;
+                            int i, iCount;
+
+                            iCount = reader.ReadInt();
+                            for (i = 0; i < iCount; i++)
+                            {
+                                string str = reader.ReadString();
+                                Type type = Type.GetType(str);
+
+                                if (type != null)
+                                {
+                                    m_arSpellAttack.Add(type);
+                                }
+                            }
+
+                            iCount = reader.ReadInt();
+                            for (i = 0; i < iCount; i++)
+                            {
+                                string str = reader.ReadString();
+                                Type type = Type.GetType(str);
+
+                                if (type != null)
+                                {
+                                    m_arSpellDefense.Add(type);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            m_iRangeHome = 0;
+                        }
+
+                        if (version >= 2)
+                        {
+                            m_FightMode = (FightMode)reader.ReadInt();
+
+                            m_bControlled = reader.ReadBool();
+                            m_ControlMaster = reader.ReadMobile();
+                            m_ControlTarget = reader.ReadMobile();
+                            m_ControlDest = reader.ReadPoint3D();
+                            m_ControlOrder = (OrderType)reader.ReadInt();
+
+                            m_dMinTameSkill = reader.ReadDouble();
+
+                            if (version < 9)
+                                reader.ReadDouble();
+
+                            m_bTamable = reader.ReadBool();
+                            m_bSummoned = reader.ReadBool();
+
+                            if (m_bSummoned)
+                            {
+                                m_SummonEnd = reader.ReadDeltaTime();
+                                new UnsummonTimer(m_ControlMaster, this, m_SummonEnd - DateTime.UtcNow).Start();
+                            }
+
+                            m_iControlSlots = reader.ReadInt();
+                        }
+                        else
+                        {
+                            m_FightMode = FightMode.All | FightMode.Closest;
+
+                            m_bControlled = false;
+                            m_ControlMaster = null;
+                            m_ControlTarget = null;
+                            m_ControlOrder = OrderType.None;
+                        }
+
+                        if (version >= 3) // loyalty redo
+                        {
+                            m_Loyalty = (PetLoyalty)reader.ReadInt();
+
+                            if (version < 23)
+                                m_Loyalty = (PetLoyalty)((int)m_Loyalty * 10);
+                        }
+                        else
+                            m_Loyalty = PetLoyalty.WonderfullyHappy;
 
 
-            if (version >= 4)
-                m_CurrentWayPoint = reader.ReadItem() as WayPoint;
+                        if (version >= 4)
+                            m_CurrentWayPoint = reader.ReadItem() as WayPoint;
 
-            if (version >= 5)
-                m_SummonMaster = reader.ReadMobile();
+                        if (version >= 5)
+                            m_SummonMaster = reader.ReadMobile();
 
-            if (version >= 6)
-            {
-                m_HitsMax = reader.ReadInt();
-                m_StamMax = reader.ReadInt();
-                m_ManaMax = reader.ReadInt();
-                m_DamageMin = reader.ReadInt();
-                m_DamageMax = reader.ReadInt();
-            }
+                        if (version >= 6)
+                        {
+                            m_HitsMax = reader.ReadInt();
+                            m_StamMax = reader.ReadInt();
+                            m_ManaMax = reader.ReadInt();
+                            m_DamageMin = reader.ReadInt();
+                            m_DamageMax = reader.ReadInt();
+                        }
 
-            if (version >= 7 && version < 18) // Adam: eliminate crazy resistances ver. 18
-            {
-                int dummy;
-                dummy = reader.ReadInt();   // PhysicalResistance
-                dummy = reader.ReadInt();   // PhysicalDamage
-                dummy = reader.ReadInt();   // FireResistance
-                dummy = reader.ReadInt();   // FireDamage
-                dummy = reader.ReadInt();   // ColdResistance
-                dummy = reader.ReadInt();   // ColdDamage
-                dummy = reader.ReadInt();   // PoisonResistance
-                dummy = reader.ReadInt();   // PoisonDamage
-                dummy = reader.ReadInt();   // EnergyResistance
-                dummy = reader.ReadInt();   // EnergyDamage
-            }
+                        if (version >= 7 && version < 18) // Adam: eliminate crazy resistances ver. 18
+                        {
+                            reader.ReadInt();   // PhysicalResistance
+                            reader.ReadInt();   // PhysicalDamage
+                            reader.ReadInt();   // FireResistance
+                            reader.ReadInt();   // FireDamage
+                            reader.ReadInt();   // ColdResistance
+                            reader.ReadInt();   // ColdDamage
+                            reader.ReadInt();   // PoisonResistance
+                            reader.ReadInt();   // PoisonDamage
+                            reader.ReadInt();   // EnergyResistance
+                            reader.ReadInt();   // EnergyDamage
+                        }
 
-            //if ( version >= 7 && version >= 18) // Adam: eliminate crazy resistances ver. 18
-            //{
-            //	m_PhysicalResistance = reader.ReadInt();
-            //	m_PhysicalDamage = reader.ReadInt();
-            //}
+                        //if ( version >= 7 && version >= 18) // Adam: eliminate crazy resistances ver. 18
+                        //{
+                        //	m_PhysicalResistance = reader.ReadInt();
+                        //	m_PhysicalDamage = reader.ReadInt();
+                        //}
 
-            if (version >= 8)
-                m_Owners = reader.ReadMobileList();
-            else
-                m_Owners = new ArrayList();
+                        if (version >= 8)
+                            m_Owners = reader.ReadMobileList();
+                        else
+                            m_Owners = new ArrayList();
 
-            if (version >= 10)
-            {
-                m_IsDeadPet = reader.ReadBool();
-                m_IsBonded = reader.ReadBool();
-                m_BondingBegin = reader.ReadDateTime();
-                m_OwnerAbandonTime = reader.ReadDateTime();
-            }
+                        if (version >= 10)
+                        {
+                            m_IsDeadPet = reader.ReadBool();
+                            m_IsBonded = reader.ReadBool();
+                            m_BondingBegin = reader.ReadDateTime();
+                            m_OwnerAbandonTime = reader.ReadDateTime();
+                        }
 
-            if (version >= 11)
-                m_HasGeneratedLoot = reader.ReadBool();
-            else
-                m_HasGeneratedLoot = true;
+                        if (version >= 11)
+                            m_HasGeneratedLoot = reader.ReadBool();
+                        else
+                            m_HasGeneratedLoot = true;
 
-            if (version >= 12)
-            {
-                m_StatLossTime = reader.ReadDateTime();
-            }
+                        if (version >= 12)
+                        {
+                            m_StatLossTime = reader.ReadDateTime();
+                        }
 
-            if (version >= 13) //Pigpen - Addition for IOB Sytem
-            {
-                m_IOBAlignment = (IOBAlignment)reader.ReadInt();
-            }
+                        if (version >= 13) //Pigpen - Addition for IOB Sytem
+                        {
+                            m_IOBAlignment = (IOBAlignment)reader.ReadInt();
+                        }
 
-            if (version >= 14) //Pix: IOBLeader/IOBFollower
-            {
-                m_IOBFollower = reader.ReadBool();
-                m_IOBLeader = reader.ReadMobile();
-            }
+                        if (version >= 14) //Pix: IOBLeader/IOBFollower
+                        {
+                            m_IOBFollower = reader.ReadBool();
+                            m_IOBLeader = reader.ReadMobile();
+                        }
 
-            if (version >= 15) //Pix: Spawner
-            {
-                m_Spawner = (Spawner)reader.ReadItem();
-            }
+                        if (version >= 15) //Pix: Spawner
+                        {
+                            m_Spawner = reader.ReadItem();
+                        }
 
-            if (version >= 16) //Pix: Lifespan
-            {
-                m_lifespan = reader.ReadDeltaTime();
-            }
-            if (version >= 17 && version < 30) //Kit: preferred target ai
-            {   // eliminated in version 30
-                //m_preferred = reader.ReadBool();
-                //m_preferredTargetType = reader.ReadMobile();
-                //Sortby = (SortTypes)reader.ReadInt();
-                reader.ReadBool();
-                reader.ReadMobile();
-                reader.ReadInt();
-            }
-            if (version >= 18) //Adam: eliminate stupid resistances
-            {
-                // see above - version 7
-            }
-            if (version >= 19) //Kit: NavStar
-            {
-                Destination = reader.ReadPoint3D();
+                        if (version >= 16) //Pix: Lifespan
+                        {
+                            m_lifespan = reader.ReadDeltaTime();
+                        }
+                        if (version >= 17 && version < 30) //Kit: preferred target ai
+                        {   // eliminated in version 30
+                            //m_preferred = reader.ReadBool();
+                            //m_preferredTargetType = reader.ReadMobile();
+                            //Sortby = (SortTypes)reader.ReadInt();
+                            reader.ReadBool();
+                            reader.ReadMobile();
+                            reader.ReadInt();
+                        }
+                        if (version >= 18) //Adam: eliminate stupid resistances
+                        {
+                            // see above - version 7
+                        }
+                        if (version >= 19 && version < 35) //Kit: NavStar
+                        {
+                            /*Destination = */reader.ReadPoint3D();
+                            /*dest = (NavDestinations)*/reader.ReadInt();
+                            /*Nav = (NavBeacon)*/reader.ReadItem();
+                        }
+                        if (version >= 20) //Adam: convert BardImmune from an override to a property
+                        {
+                            m_bBardImmune = reader.ReadBool();
+                        }
 
-                dest = (NavDestinations)reader.ReadInt();
+                        if (version >= 21)
+                        {
+                            loyaltyfeed = reader.ReadDateTime();
+                        }
 
-                Nav = (NavBeacon)reader.ReadItem();
-            }
-            if (version >= 20) //Adam: convert BardImmune from an override to a property
-            {
-                m_bBardImmune = reader.ReadBool();
-            }
+                        if (version >= 22)
+                        {
+                            m_Flags = (CreatureFlags)reader.ReadInt();
+                        }
 
-            if (version >= 21)
-            {
-                loyaltyfeed = reader.ReadDateTime();
-            }
+                        if (version >= 24)
+                        {
+                            m_ControlSlotModifier = reader.ReadDouble();
+                            m_Patience = reader.ReadInt();
+                            m_Wisdom = reader.ReadInt();
+                            m_Temper = reader.ReadInt();
+                            m_MaxLoyalty = reader.ReadInt();
+                        }
 
-            if (version >= 22)
-            {
-                m_Flags = (CreatureFlags)reader.ReadInt();
-            }
+                        if (version >= 25)
+                        {
+                            m_HitsRegenGene = reader.ReadDouble();
+                            m_ManaRegenGene = reader.ReadDouble();
+                            m_StamRegenGene = reader.ReadDouble();
+                        }
 
-            if (version >= 24)
-            {
-                m_ControlSlotModifier = reader.ReadDouble();
-                m_Patience = reader.ReadInt();
-                m_Wisdom = reader.ReadInt();
-                m_Temper = reader.ReadInt();
-                m_MaxLoyalty = reader.ReadInt();
-            }
+                        // note the LESS THAN symbol instead of GTE
+                        // this is an example of run-once deserialization code - every old critter will run this once.
+                        if (version < 26)
+                            InitializeGenes();
 
-            if (version >= 25)
-            {
-                m_HitsRegenGene = reader.ReadDouble();
-                m_ManaRegenGene = reader.ReadDouble();
-                m_StamRegenGene = reader.ReadDouble();
-            }
+                        // version 27
+                        if (version >= 27)
+                            m_LifespanMinutes = reader.ReadInt();
 
-            // note the LESS THAN symbol instead of GTE
-            // this is an example of run-once deserialization code - every old critter will run this once.
-            if (version < 26)
-                InitializeGenes();
+                        // we need to reset this because reading the Flags will have turned it off
+                        //	the flags value will obnly be valid when version >= 28
+                        if (version < 28)
+                            IsScaredOfScaryThings = true;
 
-            // version 27
-            if (version >= 27)
-                m_LifespanMinutes = reader.ReadInt();
+                        /*	versions < 29 get their FightMode upgraded to the new [Flags] version
+                        public enum FightMode
+                        {
+                            None,			// Never focus on others
+                            Aggressor,		// Only attack Aggressors
+                            Strongest,		// Attack the strongest
+                            Weakest,		// Attack the weakest
+                            Closest, 		// Attack the closest
+                            Evil,			// Only attack aggressor -or- negative karma
+                            Criminal,		// Attack the criminals
+                            Player
+                        }
+                         */
+                        if (version < 29)
+                        {
+                            switch ((int)m_FightMode)
+                            {   // now outdated values
+                                case 0: m_FightMode = (FightMode)0x00; break;   /*None*/
+                                case 1: m_FightMode = (FightMode)0x01; break;   /*Aggressor*/
+                                case 2: m_FightMode = (FightMode)0x02; break;   /*Strongest*/
+                                case 3: m_FightMode = (FightMode)0x04; break;   /*Weakest*/
+                                case 4: m_FightMode = (FightMode)0x08; break;   /*Closest*/
+                                case 5: m_FightMode = (FightMode)0x10; break;   /*Evil*/
+                                case 6: m_FightMode = (FightMode)0x20; break;   /*Criminal*/
+                                case 7: m_FightMode = (FightMode)0x40; break;   /*Player*/
+                            }
+                        }
 
-            // we need to reset this because reading the Flags will have turned it off
-            //	the flags value will obnly be valid when version >= 28
-            if (version < 28)
-                IsScaredOfScaryThings = true;
+                        /* versions < 30 get their FightMode upgraded to the new [Flags] version
+                        public enum FightMode
+                        {
+                            None		= 0x00,		// Never focus on others
+                            Aggressor	= 0x01,		// Only attack Aggressors
+                            Strongest	= 0x02,		// Attack the strongest
+                            Weakest		= 0x04,		// Attack the weakest
+                            Closest		= 0x08, 	// Attack the closest
+                            Evil		= 0x10,		// Only attack aggressor -or- negative karma
+                            Criminal	= 0x20,		// Attack the criminals
+                            Player		= 0x40		// Attack Players (Vampires for feeding on blood)
+                        }
+                         */
+                        if (version < 30)
+                        {
+                            switch ((int)m_FightMode)
+                            {
+                                case 0x00 /*None*/		: m_FightMode = FightMode.None; break;
+                                case 0x01 /*Aggressor*/	: m_FightMode = FightMode.Aggressor; break;
+                                case 0x02 /*Strongest*/	: m_FightMode = FightMode.All | FightMode.Strongest; break;
+                                case 0x04 /*Weakest*/	: m_FightMode = FightMode.All | FightMode.Weakest; break;
+                                case 0x08 /*Closest*/	: m_FightMode = FightMode.All | FightMode.Closest; break;
+                                case 0x10 /*Evil*/		: m_FightMode = FightMode.Aggressor | FightMode.Evil; break;
+                                case 0x20 /*Criminal*/	: m_FightMode = FightMode.Aggressor | FightMode.Criminal; break;
+                                case 0x40 /*Player*/	: m_FightMode = FightMode.All | FightMode.Closest; break;
+                            }
+                        }
 
-            /*	versions < 29 get their FightMode upgraded to the new [Flags] version
-			public enum FightMode
-			{
-				None,			// Never focus on others
-				Aggressor,		// Only attack Aggressors
-				Strongest,		// Attack the strongest
-				Weakest,		// Attack the weakest
-				Closest, 		// Attack the closest
-				Evil,			// Only attack aggressor -or- negative karma
-				Criminal,		// Attack the criminals
-				Player
-			}
-			 */
-            if (version < 29)
-            {
-                switch ((int)m_FightMode)
-                {   // now outdated values
-                    case 0: m_FightMode = (FightMode)0x00; break;   /*None*/
-                    case 1: m_FightMode = (FightMode)0x01; break;   /*Aggressor*/
-                    case 2: m_FightMode = (FightMode)0x02; break;   /*Strongest*/
-                    case 3: m_FightMode = (FightMode)0x04; break;   /*Weakest*/
-                    case 4: m_FightMode = (FightMode)0x08; break;   /*Closest*/
-                    case 5: m_FightMode = (FightMode)0x10; break;   /*Evil*/
-                    case 6: m_FightMode = (FightMode)0x20; break;   /*Criminal*/
-                    case 7: m_FightMode = (FightMode)0x40; break;   /*Player*/
-                }
-            }
+                        // new Fight Style for enhanced AI
+                        if (version >= 31)
+                            m_FightStyle = (FightStyle)reader.ReadInt();
 
-            /* versions < 30 get their FightMode upgraded to the new [Flags] version
-			public enum FightMode
-			{
-				None		= 0x00,		// Never focus on others
-				Aggressor	= 0x01,		// Only attack Aggressors
-				Strongest	= 0x02,		// Attack the strongest
-				Weakest		= 0x04,		// Attack the weakest
-				Closest		= 0x08, 	// Attack the closest
-				Evil		= 0x10,		// Only attack aggressor -or- negative karma
-				Criminal	= 0x20,		// Attack the criminals
-				Player		= 0x40		// Attack Players (Vampires for feeding on blood)
-			}
-			 */
-            if (version < 30)
-            {
-                switch ((int)m_FightMode)
-                {
-                    case 0x00 /*None*/		: m_FightMode = FightMode.None; break;
-                    case 0x01 /*Aggressor*/	: m_FightMode = FightMode.Aggressor; break;
-                    case 0x02 /*Strongest*/	: m_FightMode = FightMode.All | FightMode.Strongest; break;
-                    case 0x04 /*Weakest*/	: m_FightMode = FightMode.All | FightMode.Weakest; break;
-                    case 0x08 /*Closest*/	: m_FightMode = FightMode.All | FightMode.Closest; break;
-                    case 0x10 /*Evil*/		: m_FightMode = FightMode.Aggressor | FightMode.Evil; break;
-                    case 0x20 /*Criminal*/	: m_FightMode = FightMode.Aggressor | FightMode.Criminal; break;
-                    case 0x40 /*Player*/	: m_FightMode = FightMode.All | FightMode.Closest; break;
-                }
-            }
+                        // version 32, read in the AI data, but we must construct the AI object first
+                        ChangeAIType(m_CurrentAI);
+                        if (version >= 32)
+                        {
+                            if (AIObject != null)
+                                AIObject.Deserialize(reader);
+                        }
 
-            // new Fight Style for enhanced AI
-            if (version >= 31)
-                m_FightStyle = (FightStyle)reader.ReadInt();
+                        if (version >= 33)
+                        {
+                            m_ConstantFocus = reader.ReadMobile();
+                        }
 
-            // version 32, read in the AI data, but we must construct the AI object first
-            ChangeAIType(m_CurrentAI);
-            if (version >= 32)
-            {
-                if (AIObject != null)
-                    AIObject.Deserialize(reader);
-            }
-
-            if (version >= 33)
-            {
-                m_ConstantFocus = reader.ReadMobile();
-            }
-
-            if (version >= 34)
-            {
-                m_SuppressNormalLoot = reader.ReadBool();
+                        if (version >= 34)
+                        {
+                            m_SuppressNormalLoot = reader.ReadBool();
+                        }
+                        break;
+                    }
             }
 
             // -------------------------------
@@ -3075,7 +3169,9 @@ namespace Server.Mobiles
         public virtual void OnActionNavStar()
         {
         }
-
+        public virtual void OnActionNavWalkback()
+        {
+        }
         public virtual void OnActionFlee()
         {
         }
@@ -3408,11 +3504,20 @@ namespace Server.Mobiles
                 m_pHome = value;
             }
         }
+        
+        private Item m_Spawner;              //The spawner that spawned this mob, if applicable
 
         [CommandProperty(AccessLevel.GameMaster)]
         public Spawner Spawner
         {
-            get { return m_Spawner; }
+            get { return m_Spawner as Spawner; }
+            set { m_Spawner = value; }
+        }
+
+        [CommandProperty(AccessLevel.GameMaster)]
+        public ChampEngine Engine
+        {
+            get { return m_Spawner as ChampEngine; }
             set { m_Spawner = value; }
         }
 
@@ -4301,12 +4406,20 @@ namespace Server.Mobiles
                     }
                 }
 
+                #region Clan Aggression
+                if (ClanSystem.IsFriend(this, pm) && !Tamable && !Summoned && !(this is BaseHire))
+                {
+                    if (ClanSystem.IsClanAligned(this))
+                    {
+                        //reset Clan Aggression time
+                        pm.OnClanAggression(this);
+                    }
+                }
+                #endregion Clan Aggression
+
+                #region Kin Aggression
                 //Only punish actions towards Non-Controlled NPCS (no tames, no summons, no hires)
-                if (IOBSystem.IsFriend(this, pm)
-                    && !Tamable
-                    && !Summoned
-                    && !(this is BaseHire)
-                    )
+                if (IOBSystem.IsFriend(this, pm) && !Tamable && !Summoned && !(this is BaseHire))
                 {
                     //reset Kin Aggression time
                     pm.OnKinAggression();
@@ -4365,6 +4478,7 @@ namespace Server.Mobiles
                         aggressor.Warmode = false;
                     }
                 }
+                #endregion Kin Aggression
 
             }
 
@@ -6868,6 +6982,10 @@ namespace Server.Mobiles
 
                 Lift(item, item.Amount, out rejected, out reason);
 
+                //Adam: Don't rummage items that are DeleteOnLift
+                if (item.GetItemBool(Item.ItemBoolTable.DeleteOnLift))
+                    rejected = true;
+
                 if (!rejected && Drop(this, new Point3D(-1, -1, 0)))
                 {
                     // *rummages through a corpse and takes an item*
@@ -7146,8 +7264,28 @@ namespace Server.Mobiles
 
             return base.CanBeDamaged();
         }
+        public virtual bool CanDeactivate
+        {
+            get
+            {
+                // Adam we don't want our critters to stop healing when the players leave the sector (a trick for killing monsters)
+                // okay to deactivate if we are at max health
+                bool rule1 = Hits == HitsMax;
 
-        public virtual bool PlayerRangeSensitive { get { return true; } }
+                // okay to deactivate if we do not have a nav destination
+                bool rule2 = string.IsNullOrEmpty(NavDestination);
+
+                /* 10/13/2023, Adam
+                 * following my master across a sector would otherwise cause me to deactivate / reactivate.This is the reason
+                 *  for the pet 'lag step' every so often. "every so often" happens when my master steps out of my sector and I'm deactivated.
+                 */
+                // okay to deactivate if are not a pet following our master
+                bool rule3 = !(Controlled && ControlMaster != null && InRange(ControlMaster.Location, RangePerception * 2));
+
+                return rule1 && rule2 && rule3;
+            }
+        }
+        public virtual bool PlayerRangeSensitive { get { return CanDeactivate; } }
 
         public override void OnSectorDeactivate()
         {

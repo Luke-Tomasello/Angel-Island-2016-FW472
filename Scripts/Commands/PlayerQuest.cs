@@ -30,6 +30,7 @@
  *		Created.
  */
 
+using Server.Diagnostics;
 using Server.Items;
 using Server.Multis;
 using Server.Targeting;

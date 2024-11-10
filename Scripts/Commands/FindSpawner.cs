@@ -45,6 +45,7 @@
  *		Initial creation - designed to retrieve list of spawners
  *		spawning mobile type passed as parameter.
 */
+using Server.Diagnostics;
 using Server.Items;
 using Server.Mobiles;
 using System;

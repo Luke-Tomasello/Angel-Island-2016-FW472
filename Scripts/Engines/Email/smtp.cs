@@ -63,6 +63,7 @@
  * AI.EMAIL.SHARDOWNER = (example: luke.tomasello@gmail.com)
  */
 
+using Server.Diagnostics;
 using Server.Accounting;
 using Server.Commands;
 using System;

@@ -25,6 +25,7 @@
  *	Created
  */
 
+using Server.Diagnostics;
 using Server.Mobiles;
 using Server.Network;
 using System;
@@ -268,7 +269,7 @@ namespace Server.Gumps
                                 }
                                 catch (Exception ex)
                                 {
-                                    Server.Commands.LogHelper.LogException(ex);
+                                    LogHelper.LogException(ex);
                                 }
 
                             }

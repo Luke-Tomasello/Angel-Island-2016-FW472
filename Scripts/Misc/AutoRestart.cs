@@ -58,6 +58,7 @@
  *		Commands [Restart and [RestartTime
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Engines.CronScheduler;
 using System;

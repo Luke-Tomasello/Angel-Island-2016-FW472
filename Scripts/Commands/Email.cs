@@ -45,6 +45,7 @@
  */
 
 using Server.Accounting;
+using Server.Diagnostics;
 using Server.Misc;
 using Server.SMTP;
 using System;

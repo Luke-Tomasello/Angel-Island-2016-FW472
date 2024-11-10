@@ -27,6 +27,7 @@
  *		While we are one facet, there is no need to display [Felucca]
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Multis;
 using Server.Prompts;

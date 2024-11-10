@@ -44,6 +44,7 @@
  *
  */
 
+using Server.Diagnostics;
 using Server.Mobiles;
 using Server.Multis;
 using System;
@@ -178,7 +179,7 @@ namespace Server.Misc
             }
             catch (Exception exception)
             {
-                Server.Commands.LogHelper.LogException(exception, "Exception with strandedness checks!");
+                LogHelper.LogException(exception, "Exception with strandedness checks!");
                 bLegal = false;
             }
 

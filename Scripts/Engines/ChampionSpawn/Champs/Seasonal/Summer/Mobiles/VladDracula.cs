@@ -47,6 +47,7 @@
  *		based on Scripts/Mobiles/Monsters/Humanoid/Melee/Vampire.cs
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Items;
 using Server.Spells.Fifth;

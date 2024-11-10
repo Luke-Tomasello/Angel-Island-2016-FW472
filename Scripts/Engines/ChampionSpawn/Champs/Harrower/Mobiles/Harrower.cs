@@ -79,6 +79,7 @@
  *		CreateWeapon()/CreateArmor() - called by GiveMagicItems to create random item to be awarded to player
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Items;
 using System;

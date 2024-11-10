@@ -272,7 +272,7 @@ namespace Server.Items
                     else
                     {   // not necessarily an exploit, but lets track it
                         if (m_Entries[index].Type == typeof(Tower))
-                            LogHelper.TrackIt(m_From, "Note: Tower preview.", true);
+                            RecordCheater.TrackIt(m_From, "Note: Tower preview.", true);
                         m_From.Target = new NewSurveyToolTarget(m_Entries, m_Entries[index]);
                     }
                 }

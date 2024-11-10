@@ -27,6 +27,7 @@
  *		Accounts will now use the hardware hash when the client fails to send a real hardware info packet
  */
 
+using Server.Diagnostics;
 using Server.Accounting;
 using Server.Commands;
 using Server.Network;

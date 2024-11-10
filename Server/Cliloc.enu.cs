@@ -29047,9 +29047,9 @@ namespace Server.Text
         private static Dictionary<int, string> m_map = new Dictionary<int, string>();
         public static Dictionary<int, string> Lookup { get { return m_map; } }
 
-        public static int LookupID (string text) 
-        { 
-            return m_map.FirstOrDefault(x => x.Value.StartsWith(text, StringComparison.OrdinalIgnoreCase)).Key; 
+        public static int LookupID(string text)
+        {
+            return m_map.FirstOrDefault(x => x.Value.StartsWith(text, StringComparison.OrdinalIgnoreCase)).Key;
         }
     }
 }

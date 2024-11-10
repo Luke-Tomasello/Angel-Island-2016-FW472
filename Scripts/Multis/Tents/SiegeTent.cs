@@ -113,7 +113,7 @@ namespace Server.Multis
             this.Secures.Add(info);
             m_TentPack.Movable = false;
             m_TentPack.Hue = m_RoofHue;
-            
+
             if (this.Owner != null)
                 Timer.DelayCall(TimeSpan.FromSeconds(1.5), new TimerStateCallback(WarnTick), new object[] { this.Owner, null });
         }

@@ -19,6 +19,7 @@
  *
  ***************************************************************************/
 
+using Server.Diagnostics;
 using Server.Items;
 
 namespace Server.Commands

@@ -33,6 +33,7 @@
  *      first time checkin
  */
 
+using Server.Diagnostics;
 using Server.Mobiles;
 using System;
 using System.Collections;

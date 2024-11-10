@@ -25,6 +25,7 @@
  *		Management console for Teleport Spell distance and delay
  */
 
+using System;
 
 namespace Server.Items
 {
@@ -36,7 +37,7 @@ namespace Server.Items
             : base(0x1F14)
         {
             Weight = 1.0;
-            Hue = 0x534;
+            Hue = Utility.RandomSpecialHue(GetType().FullName);
             Name = "Teleport Management Console";
         }
 
@@ -46,9 +47,38 @@ namespace Server.Items
         }
 
         public static double DefaultTeleDelay = 0.0;
+        public static bool DefaultTeleGlobalDelay = false;
         public static int DefaultTeleTiles = 12;
 
-        [CommandProperty(AccessLevel.Player)]
+        [CommandProperty(AccessLevel.Owner)]
+        public bool TeleRunning
+        {
+            get
+            {
+                return CoreAI.TeleRunningEnabled;
+            }
+            set
+            {
+                CoreAI.TeleRunningEnabled = value;
+                InvalidateProperties();
+            }
+        }
+
+        [CommandProperty(AccessLevel.Owner)]
+        public bool GlobalDelay
+        {
+            get
+            {
+                return CoreAI.TeleGlobalDelay;
+            }
+            set
+            {
+                CoreAI.TeleGlobalDelay = value;
+                InvalidateProperties();
+            }
+        }
+
+        [CommandProperty(AccessLevel.Owner)]
         public bool Reset
         {
             get
@@ -57,19 +87,15 @@ namespace Server.Items
             }
             set
             {
-                if (Core.RuleSets.TestCenterRules())
-                {
-                    CoreAI.TeleDelay = DefaultTeleDelay;
-                    CoreAI.TeleTiles = DefaultTeleTiles;
-                    Server.Spells.Third.TeleportSpell.SpiritCohesion = new Memory();
-                    InvalidateProperties();
-                }
-                else
-                    SendMessage("This can only be used on Test Center");
+                CoreAI.TeleDelay = DefaultTeleDelay;
+                CoreAI.TeleGlobalDelay = DefaultTeleGlobalDelay;
+                CoreAI.TeleTiles = DefaultTeleTiles;
+                Server.Spells.Third.TeleportSpell.SpiritCohesion = new Memory();
+                InvalidateProperties();
             }
         }
 
-        [CommandProperty(AccessLevel.Player)]
+        [CommandProperty(AccessLevel.Owner)]
         public double TeleDelay
         {
             get
@@ -78,13 +104,10 @@ namespace Server.Items
             }
             set
             {
-                if (Core.RuleSets.TestCenterRules())
-                    CoreAI.TeleDelay = TimeSpan.FromMilliseconds(value).TotalSeconds;
-                else
-                    SendMessage("This can only be used on Test Center");
+                CoreAI.TeleDelay = TimeSpan.FromMilliseconds(value).TotalSeconds;
             }
         }
-        [CommandProperty(AccessLevel.Player)]
+        [CommandProperty(AccessLevel.Owner)]
         public int TeleTiles
         {
             get
@@ -93,15 +116,13 @@ namespace Server.Items
             }
             set
             {
-                if (Core.RuleSets.TestCenterRules())
-                    CoreAI.TeleTiles = value;
-                else
-                    SendMessage("This can only be used on Test Center");
+                CoreAI.TeleTiles = value;
             }
         }
         public override void OnDoubleClick(Mobile from)
         {
-            from.SendGump(new Server.Gumps.PropertiesGump(from, this));
+            if (from.AccessLevel == AccessLevel.Owner)
+                from.SendGump(new Server.Gumps.PropertiesGump(from, this));
         }
 
         public override void Serialize(GenericWriter writer)

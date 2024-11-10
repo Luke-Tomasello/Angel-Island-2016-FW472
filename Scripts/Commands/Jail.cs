@@ -49,6 +49,7 @@
  *		First version. Jails a player and tags their account.
  */
 
+using Server.Diagnostics;
 using Server.Accounting;
 using Server.Items;
 using Server.Mobiles;

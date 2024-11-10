@@ -59,6 +59,7 @@
  *		Set ClassicMode = true to re-enable perma-grey.
  */
 
+using Server.Diagnostics;
 using Server.Items;
 using Server.Mobiles;
 using Server.Network;
@@ -125,7 +126,7 @@ namespace Server.SkillHandlers
                 }
                 catch (Exception ex)
                 {
-                    Server.Commands.LogHelper.LogException(ex);
+                    LogHelper.LogException(ex);
                 }
 
                 return true;
@@ -176,6 +177,10 @@ namespace Server.SkillHandlers
                 else if (!m_Thief.CanSee(toSteal))
                 {
                     m_Thief.SendLocalizedMessage(500237); // Target can not be seen.
+                }
+                else if (toSteal.GetItemBool(Item.ItemBoolTable.DeleteOnLift))
+                {   // special case for DeleteOnLift items
+                    m_Thief.SendLocalizedMessage(502710); // You can't steal that!
                 }
                 else if (toSteal.Parent == null || !toSteal.Movable || toSteal.LootType == LootType.Newbied || toSteal.CheckBlessed(root))
                 {

@@ -49,6 +49,7 @@
  */
 
 using Server.Commands;
+using Server.Diagnostics;
 using Server.SMTP;
 using System;
 using System.Collections;

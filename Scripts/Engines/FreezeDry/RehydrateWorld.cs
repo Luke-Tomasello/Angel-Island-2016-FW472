@@ -25,6 +25,7 @@
  *	Initial Version
  */
 
+using Server.Diagnostics;
 using Server.Items;
 using System;
 using System.Collections;

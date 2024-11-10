@@ -36,6 +36,7 @@
  *	5/5/04 Creation by smerX
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Gumps;
 using Server.Items;

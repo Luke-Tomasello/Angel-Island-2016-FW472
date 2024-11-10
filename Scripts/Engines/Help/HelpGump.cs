@@ -64,6 +64,7 @@
  *     to go to Haven,Trammel.
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Gumps;
 using Server.Menus.Questions;
@@ -432,7 +433,7 @@ namespace Server.Engines.Help
             {
                 if (i.Movable)
                 {
-                    LogHelper.Cheater(player, "HelpStuck Auto-Move exploit - Item in range", false);
+                    RecordCheater.Cheater(player, "HelpStuck Auto-Move exploit - Item in range", false);
                     //exit function!
                     player.SendMessage("Unable to move from this spot.  Please select another Help Stuck option.");
                     return false;
@@ -445,7 +446,7 @@ namespace Server.Engines.Help
             {
                 if (m != player)
                 {
-                    LogHelper.Cheater(player, "HelpStuck Auto-Move exploit - Mobile in range", true);
+                    RecordCheater.Cheater(player, "HelpStuck Auto-Move exploit - Mobile in range", true);
                     //exit function!
                     player.SendMessage("Unable to move from this spot.  Please select another Help Stuck option.");
                     return false;

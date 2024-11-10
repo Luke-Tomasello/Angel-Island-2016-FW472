@@ -72,8 +72,8 @@ namespace Server.Engines.ChampionSpawn
             Mini_Wrong,
             AI_Escape,
             AI_Guard,
-            Test,
-            Test2,
+            QuickClanOrcWar,
+            ClanOrcWar,
             Pirate,
             Bob,
             Vampire,
@@ -146,7 +146,7 @@ namespace Server.Engines.ChampionSpawn
 
         public void Serialize(GenericWriter writer)
         {
-            // serialise level data
+            // serialize level data
             writer.Write((int)2);               // version number
 
             // version 2
@@ -504,29 +504,28 @@ namespace Server.Engines.ChampionSpawn
 
                 #endregion
 
-                #region plamsa's test stuff!
-                case SpawnTypes.Test:
+                #region Custom Spawner
+                case SpawnTypes.QuickClanOrcWar:
                     {
-                        ///////// Test! /////////////////////////////////    kills, Mobs, Spawn, Range, Spawn Delay, Level Expire Delay, Monster Array
-                        ///////////////////////////////////////////////////  ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-                        for (int i = 0; i < 36; ++i)
-                            temp.Add(new ChampLevelData(10, 10, 5, 5, TimeSpan.FromSeconds(1), TimeSpan.FromMinutes(40), SpawnFlags.None, new string[] { "slime", "rat" }));
-
-                        //Champion!
-                        temp.Add(new ChampLevelData(1, 1, 1, 1, TimeSpan.Zero, TimeSpan.FromMinutes(40), SpawnFlags.None, new string[] { "Barracoon", "Semidar", "Rikktor", "Neira", "LordOaks", "Mephitis" }));
+                        temp.Add(new ChampLevelData(max_kills: 02, max_mobs: 02, max_spawn: 1, max_range: 2, spawn_delay: TimeSpan.Zero, expire_delay: TimeSpan.FromMinutes(60), flags: SpawnFlags.None, monsters: new string[] { "ClanOrc" }));
+                        temp.Add(new ChampLevelData(max_kills: 02, max_mobs: 02, max_spawn: 1, max_range: 2, spawn_delay: TimeSpan.Zero, expire_delay: TimeSpan.FromMinutes(60), flags: SpawnFlags.None, monsters: new string[] { "ClanOrc" }));
+                        temp.Add(new ChampLevelData(max_kills: 02, max_mobs: 02, max_spawn: 1, max_range: 2, spawn_delay: TimeSpan.Zero, expire_delay: TimeSpan.FromMinutes(60), flags: SpawnFlags.None, monsters: new string[] { "ClanOrc" }));
+                        temp.Add(new ChampLevelData(max_kills: 02, max_mobs: 02, max_spawn: 1, max_range: 2, spawn_delay: TimeSpan.Zero, expire_delay: TimeSpan.FromMinutes(60), flags: SpawnFlags.None, monsters: new string[] { "ClanOrc" }));
+                        temp.Add(new ChampLevelData(max_kills: 02, max_mobs: 02, max_spawn: 1, max_range: 2, spawn_delay: TimeSpan.Zero, expire_delay: TimeSpan.FromMinutes(60), flags: SpawnFlags.None, monsters: new string[] { "ClanOrc" }));
+                        // boss
+                        temp.Add(new ChampLevelData(max_kills: 1, max_mobs: 1, max_spawn: 1, max_range: 2, spawn_delay: TimeSpan.Zero, expire_delay: TimeSpan.FromMinutes(60), flags: SpawnFlags.None, monsters: new string[] { "ClanOrcBoss" }));
                         break;
                     }
-                case SpawnTypes.Test2:
-                    {
-                        ///////// Test! /////////////////////////////////    kills, Mobs, Spawn, Range, Spawn Delay, Level Expire Delay, Monster Array
-                        ///////////////////////////////////////////////////  --------------------------------------------------------------------------------------------------------------------------------------------------------------------
-                        temp.Add(new ChampLevelData(5, 3, 1, 1, TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(40), SpawnFlags.None, new string[] { "Dragon", "WhiteWyrm" }));
-                        temp.Add(new ChampLevelData(300, 150, 1, 15, TimeSpan.FromSeconds(1), TimeSpan.FromMinutes(40), SpawnFlags.None, new string[] { "GiantRat", "Slime" }));
-                        temp.Add(new ChampLevelData(100, 30, 5, 12, TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(40), SpawnFlags.None, new string[] { "Orc", "OrcishMage" }));
-                        temp.Add(new ChampLevelData(4, 3, 1, 5, TimeSpan.FromSeconds(12), TimeSpan.FromMinutes(40), SpawnFlags.None, new string[] { "GolemController" }));
-
-                        //Champion!
-                        temp.Add(new ChampLevelData(1, 1, 1, 1, TimeSpan.Zero, TimeSpan.FromMinutes(40), SpawnFlags.None, new string[] { "Barracoon", "Semidar", "Rikktor", "Neira", "LordOaks", "Mephitis" }));
+                case SpawnTypes.ClanOrcWar:
+                    {   // guardians
+                        temp.Add(new ChampLevelData(max_kills: 02, max_mobs: 10, max_spawn: 1, max_range: 8, spawn_delay: TimeSpan.Zero, expire_delay: TimeSpan.FromMinutes(60), flags: SpawnFlags.None, monsters: new string[] { "ClanOrc" }));
+                        // main levels
+                        temp.Add(new ChampLevelData(max_kills: 25, max_mobs: 30, max_spawn: 1, max_range: 8, spawn_delay: TimeSpan.Zero, expire_delay: TimeSpan.FromMinutes(60), flags: SpawnFlags.None, monsters: new string[] { "ClanOrc" }));
+                        temp.Add(new ChampLevelData(max_kills: 25, max_mobs: 30, max_spawn: 1, max_range: 8, spawn_delay: TimeSpan.Zero, expire_delay: TimeSpan.FromMinutes(60), flags: SpawnFlags.None, monsters: new string[] { "ClanOrc" }));
+                        temp.Add(new ChampLevelData(max_kills: 20, max_mobs: 25, max_spawn: 1, max_range: 8, spawn_delay: TimeSpan.Zero, expire_delay: TimeSpan.FromMinutes(60), flags: SpawnFlags.None, monsters: new string[] { "ClanOrc" }));
+                        temp.Add(new ChampLevelData(max_kills: 15, max_mobs: 15, max_spawn: 1, max_range: 8, spawn_delay: TimeSpan.Zero, expire_delay: TimeSpan.FromMinutes(60), flags: SpawnFlags.None, monsters: new string[] { "ClanOrc" }));
+                        // boss
+                        temp.Add(new ChampLevelData(max_kills: 1, max_mobs: 1, max_spawn: 1, max_range: 4, spawn_delay: TimeSpan.Zero, expire_delay: TimeSpan.FromMinutes(60), flags: SpawnFlags.None, monsters: new string[] { "ClanOrcBoss" }));
                         break;
                     }
             }

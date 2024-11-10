@@ -42,6 +42,7 @@
  *		this should help to find the cause. :-)
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Items;
 using System;

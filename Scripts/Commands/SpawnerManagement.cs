@@ -33,6 +33,7 @@
  *		An XML version is also far more flexible since it also allows human hand editing
  */
 
+using Server.Diagnostics;
 using Server.Mobiles;
 using System;
 using System.Collections;
@@ -152,7 +153,7 @@ namespace Server.Commands
 
                 // NavDest
                 xml.WriteStartElement("NavDest");
-                xml.WriteString(spawner.NavPoint.ToString());
+                xml.WriteString(spawner.NavDestination.ToString());
                 xml.WriteEndElement();
 
                 // MobDirection
@@ -307,8 +308,8 @@ namespace Server.Commands
                 string version = XmlUtility.GetText(xml["Version"], "0");
 
                 // "NavDest"
-                string navDest = XmlUtility.GetText(xml["NavDest"], "0");
-                spawner.NavPoint = (Server.Engines.NavDestinations)XmlUtility.GetInt32(navDest, 0);
+                //string navDest = XmlUtility.GetText(xml["NavDest"], "0");
+                //spawner.NavDestination = (Server.Engines.NavDestinations)XmlUtility.GetInt32(navDest, 0);
 
                 // "MobDirection"
                 string MobDirection = XmlUtility.GetText(xml["MobDirection"], "0");

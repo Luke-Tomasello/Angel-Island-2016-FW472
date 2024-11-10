@@ -41,6 +41,7 @@
  *		First time checkin
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Mobiles;
 using System;
@@ -79,8 +80,8 @@ namespace Server.Engines.OverlandSpawner
                 bc.Home = spawner.Location;
                 bc.Spawner = spawner;
 
-                //if we have a navdestination as soon as we spawn start on it
-                if (bc.NavDestination != NavDestinations.None)
+                //if we have a nav destination as soon as we spawn start on it
+                if (!string.IsNullOrEmpty(bc.NavDestination))
                     bc.AIObject.Think();
 
                 /////////////////////////////

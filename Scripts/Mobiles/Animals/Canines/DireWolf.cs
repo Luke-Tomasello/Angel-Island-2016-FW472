@@ -19,7 +19,7 @@
  *
  ***************************************************************************/
 
-/* ./Scripts/Mobiles/Animals/Canines/DireWolf.cs
+/* Scripts/Mobiles/Animals/Canines/DireWolf.cs
  *	ChangeLog :
  *  8/16/06, Rhiannon
  *		Changed speed settings to match SpeedInfo table.

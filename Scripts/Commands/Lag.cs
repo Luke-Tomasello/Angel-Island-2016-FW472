@@ -31,6 +31,7 @@
  * 	08/3/06, weaver
  *		Initial creation.
 */
+using Server.Diagnostics;
 using Server.Mobiles;
 using System;
 

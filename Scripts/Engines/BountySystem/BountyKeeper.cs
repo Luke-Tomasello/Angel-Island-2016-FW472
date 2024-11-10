@@ -64,6 +64,7 @@
  *		Initial Version
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Items;
 using Server.Mobiles;

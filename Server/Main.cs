@@ -26,6 +26,7 @@
  *	    2. Check for bad or missing Ports.json
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Misc;
 using Server.Network;
@@ -317,6 +318,11 @@ namespace Server
             public static bool AnyAIShardRules()
             {
                 return (AngelIslandRules() || SiegeRules() || MortalisRules() || RenaissanceRules());
+            }
+            public static bool AutoDispelChance()
+            {
+                // 7/22/2023, Adam: Incorporate the Auto Dispel chance Introduced in Samurai Empire.
+                return Core.RuleSets.AngelIslandRules() ? false : PublishInfo.PublishDate >= Core.EraREN ? Utility.Chance(0.1) : false;
             }
             #endregion Enabled Server Rules
 #else

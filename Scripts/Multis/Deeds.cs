@@ -669,7 +669,7 @@ namespace Server.Multis.Deeds
                 else
                 {
                     // not necessarily an exploit, but lets track it
-                    LogHelper.TrackIt(from, "Note: Tower placement attempt.", true);
+                    RecordCheater.TrackIt(from, "Note: Tower placement attempt.", true);
                 }
 
             base.OnDoubleClick(from);

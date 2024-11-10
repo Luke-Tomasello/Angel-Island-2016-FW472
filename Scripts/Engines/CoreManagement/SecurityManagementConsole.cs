@@ -249,6 +249,9 @@ namespace Server.Items
                         throw new Exception("Invalid Security Management Console save version.");
                     }
             }
+
+            if (version == 0)
+                Hue = Utility.RandomSpecialHue(GetType().FullName);
         }
 
         [Constructable]
@@ -256,7 +259,7 @@ namespace Server.Items
             : base(0x1F14)
         {
             Weight = 1.0;
-            Hue = 0x533;
+            Hue = Utility.RandomSpecialHue(GetType().FullName);
             Name = "Security Management Console";
         }
 

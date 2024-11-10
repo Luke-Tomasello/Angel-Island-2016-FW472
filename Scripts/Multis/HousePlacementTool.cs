@@ -31,6 +31,7 @@
  *      Custom house placement is currently contingent on being a DEBUG build.
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Gumps;
 using Server.Misc;

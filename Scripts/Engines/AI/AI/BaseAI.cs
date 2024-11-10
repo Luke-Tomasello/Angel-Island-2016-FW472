@@ -21,6 +21,10 @@
 
 /* Scripts/Engines/AI/AI/BaseAI.cs
  * CHANGELOG
+ *  10/7/2024, Adam
+ *      Add a AIConsole for setting UsePathTooComplex, and AllGuardBugFix
+ *      1. UsePathTooComplex code in AcquireFocusMob() to give up on this mobile if the path to reach it too complex
+ *      2. AllGuardBugFix fixes an age-old bug in the RunUO core. See comments for explanation
  *  9/13/2024, Adam (CheckFocusMobAcquired(), and RegisterFocusMobAcquired())
  *      These two functions register aggressive creatures attacking players in a guarded region.
  *      Please see notes in BaseGuard to see the circumstances under which a guard will respond (without having been called.)
@@ -281,6 +285,7 @@
  */
 
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.ContextMenus;
 using Server.Engines;
@@ -299,6 +304,8 @@ using Server.Targets;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using static Server.Utility;
 using MoveImpl = Server.Movement.MovementImpl;
 
 namespace Server.Mobiles
@@ -340,7 +347,8 @@ namespace Server.Mobiles
         Flee,
         Backoff,
         Interact,
-        Chase
+        Chase,
+        NavWalkback
     }
 
     public enum WeaponArmStatus
@@ -821,7 +829,12 @@ namespace Server.Mobiles
             get { return m_Mobile.GetFlag(CreatureFlags.UsesPotions); }
             set { m_Mobile.SetFlag(CreatureFlags.UsesPotions, value); }
         }
-
+        public bool CanRunAI
+        {
+            //get { return m_Mobile.GetCreatureBool(CreatureBoolTable.CanRunAI); }
+            //set { m_Mobile.SetCreatureBool(CreatureBoolTable.CanRunAI, value); }
+            get { return m_Mobile != null && m_Mobile.Body.IsHuman; }
+        }
         public bool DmgSlowsMovement
         {
             get { return m_Mobile.GetFlag(CreatureFlags.DamageSlows); }
@@ -2017,6 +2030,10 @@ namespace Server.Mobiles
                     m_Mobile.OnActionNavStar();
                     return DoActionNavStar();
 
+                case ActionType.NavWalkback:
+                    m_Mobile.OnActionNavWalkback();
+                    return DoActionNavWalkback();
+
                 case ActionType.Flee:
                     m_Mobile.OnActionFlee();
                     return DoActionFlee();
@@ -2100,12 +2117,36 @@ namespace Server.Mobiles
         {
             return true;
         }
+        private bool ValidNavDestination(Mobile m)
+        {
+            string nav = ((BaseCreature)m).NavDestination;
+            return !string.IsNullOrEmpty(nav) && NavigationBeacon.Registry.TryGetValue(nav, out List<NavigationBeacon> value);
+        }
+        private bool NavReachable(Mobile m)
+        {   // must be called with a NavDestination
+            System.Diagnostics.Debug.Assert(ValidNavDestination(m));
 
+            string navDestination = ((BaseCreature)m).NavDestination;
+
+            if (!NavigationBeacon.Registry.TryGetValue(navDestination, out List<NavigationBeacon> value))
+                throw new ApplicationException("You must call ValidNavDestination first");
+
+            foreach (var point in value)
+                // 38 is the AreaSize used in FastAStar
+                if (Utility.InRange(m.Location, point.Location, 38))
+                    return true;    // reachable
+
+            return false;           // unreachable
+        }
         public virtual bool DoActionWander()
         {
-
-            if (((BaseCreature)m_Mobile).NavDestination != NavDestinations.None)
+            if (ValidNavDestination(m_Mobile))
                 Action = ActionType.NavStar;
+
+            // May overwrite ActionType.NavStar, which is intended
+            // If unreachable NavDestination and we have a 'walkback' stack, try that
+            if (ValidNavDestination(m_Mobile) && !NavReachable(m_Mobile) && (m_Mobile as BaseCreature).NavWalkback.Count > 0)
+                Action = ActionType.NavWalkback;
 
             if (m_Mobile.CurrentWayPoint != null && m_Mobile.CurrentWayPoint.Deleted)
                 m_Mobile.CurrentWayPoint = null;
@@ -2199,17 +2240,17 @@ namespace Server.Mobiles
         {   // Many towns people have a RangePerception of 2ish for talking, but we can SEE about a screen away (13 tiles)
             LookAround(13);
         }
-        public void LookAround(int range)
+        public void LookAround(int range = 13)
         {
-            List<Mobile> list = new List<Mobile>();
-            IPooledEnumerable eable = m_Mobile.Map.GetMobilesInRange(m_Mobile.Location, 13);
+            List<Mobile> players = new List<Mobile>();
+            IPooledEnumerable eable = m_Mobile.Map.GetMobilesInRange(m_Mobile.Location, range);
             foreach (Mobile m in eable)
             {   // remember this mobile
                 if (m is PlayerMobile && m.Alive && m_Mobile.AccessLevel >= m.AccessLevel && m_Mobile.CanSee(m))
                 {
                     m_LongTermMemory.Remember(m, 35);   // we remember for 35 seconds because you can hold a spell hidden for 30
                     m_Mobile.DebugSay("I see {0}", m.Name);
-                    list.Add(m);
+                    players.Add(m);
                 }
             }
             eable.Free();
@@ -2218,9 +2259,9 @@ namespace Server.Mobiles
             // We think about it for a second, and decide to call guards on anyone that is deserving.
             //	this logic handles the case where a murderer 'just appears' in town without having moved - like if they
             //	they were hidden and someone revealed them.
-            foreach (Mobile t in list)
+            foreach (Mobile t in players)
             {
-                m_Mobile.OnSee(t);
+                m_Mobile.OnSeePlayer(t);
                 if (t.Region.IsGuarded && (t.Region as GuardedRegion).IsGuardCandidate(t))
                 {   // busted - call the guards
                     m_Mobile.DebugSay("I will call guards on {0}", t.Name);
@@ -2245,7 +2286,14 @@ namespace Server.Mobiles
 
             return true;
         }
-
+        public bool InGuardMode
+        {
+            get { return DateTime.UtcNow < m_NextStopGuard; }
+        }
+        public void StopGuardMode()
+        {
+            m_NextStopGuard = DateTime.UtcNow; 
+        }
         public virtual bool DoActionGuard()
         {
             if (DateTime.UtcNow < m_NextStopGuard)
@@ -2277,78 +2325,289 @@ namespace Server.Mobiles
 
             return true;
         }
-
+        #region NavStar
         public virtual bool DoActionNavStar()
         {
-            if (AcquireFocusMob(m_Mobile.RangePerception, m_Mobile.FightMode, false, false, true))
+            if (m_Mobile is BaseCreature bc)
             {
-                if (m_Mobile.Debug)
-                    m_Mobile.DebugSay("I am going to attack {0}", m_Mobile.FocusMob.Name);
-
-                m_Mobile.Combatant = m_Mobile.FocusMob;
-                Action = ActionType.Combat;
-
-
-            }
-
-            else if (((BaseCreature)m_Mobile).NavDestination == NavDestinations.None && ((BaseCreature)m_Mobile).NavPoint == Point3D.Zero)
-            {
-                Action = ActionType.Wander;
-            }
-
-            else if (((BaseCreature)m_Mobile).NavDestination != NavDestinations.None && ((BaseCreature)m_Mobile).NavPoint == Point3D.Zero)
-            {
-                ((BaseCreature)m_Mobile).DebugSay("NavStar: Mob requesting Beacon");
-                NavStar.AddRequest(m_Mobile, ((BaseCreature)m_Mobile).NavDestination);
-                NavStar.DoRequest();
-
-                if (!SectorPathAlgorithm.SameIsland(m_Mobile.Location, ((BaseCreature)m_Mobile).NavPoint))
+                bool haveDest = !string.IsNullOrEmpty(bc.NavDestination);
+                bool havePoint = bc.NavPoint != Point3D.Zero;
+                bool haveBeacon = bc.NavBeacon != null && !bc.NavBeacon.Deleted;
+                try
                 {
-                    ((BaseCreature)m_Mobile).DebugSay("Initial path check failed, no path found to destination, aborting");
-                    ((BaseCreature)m_Mobile).NavDestination = NavDestinations.None;
-                    ((BaseCreature)m_Mobile).NavPoint = Point3D.Zero;
-                    ((BaseCreature)m_Mobile).Beacon = null;
-                    Action = ActionType.Wander;
-                }
+                    if (AcquireFocusMob(bc.RangePerception, bc.FightMode, false, false, true))
+                    {   // top priority
+                        bc.DebugSay("I am going to attack {0}", bc.FocusMob.Name);
+                        bc.Combatant = bc.FocusMob;
+                        Action = ActionType.Combat;
+                    }
 
-            }
-            else if (((BaseCreature)m_Mobile).NavDestination != NavDestinations.None && ((BaseCreature)m_Mobile).NavPoint != Point3D.Zero)
-            {
+                    else if (!haveDest && !havePoint)
+                    {   // how did we get here?
+                        Action = ActionType.Wander;
+                    }
+                    else if (haveDest && havePoint && !haveBeacon)
+                    {   // beacon was deleted
+                        Action = ActionType.Wander;
+                    }
 
-                MoveToNavPoint(((BaseCreature)m_Mobile).NavPoint, this.CanRun);
+                    else if (!NavStar.AnyBeacons(bc, bc.NavDestination))
+                    {   // mobile may have a NavDestination, but there are no beacons
+                        Action = ActionType.Wander;
+                    }
 
-                if (m_Mobile.InRange(((BaseCreature)m_Mobile).NavPoint, 6))
-                {
+                    else if (haveDest && !havePoint)
+                    {   // just getting started
 
-                    if (((BaseCreature)m_Mobile).Beacon != null)
-                    {
+                        bc.DebugSay("NavStar: Initial beacon request");
+                        NavStar.CreateRequest(bc, bc.NavDestination);   // initialize stack of destinations
+                        NavigationBeacon current = NavStar.ProcessRequest(bc); // grab the first destination
 
-                        if (((BaseCreature)m_Mobile).Beacon.GetWeight((int)((BaseCreature)m_Mobile).NavDestination) != 0)
+                        // 3/28/2024, Adam: This SameIsland check fails frequently, even when the two points are clearly valid, maybe 10 tiles away.
+                        //  Internally, when getting the next WayPoint within the SectorPathAlgorithm, SameIsland is not failing, or very rarely.
+                        //  My hunch is that we are using SameIsland incorrectly. I.e., it doesn't mean what we think it means. Inconceivable!
+                        if (current == null /*|| !SectorPathAlgorithm.SameIsland(bc.Location, bc.NavPoint) */)
                         {
-                            ((BaseCreature)m_Mobile).DebugSay("NavStar: Mob getting new Beacon");
-                            ((BaseCreature)m_Mobile).NavPoint = Point3D.Zero;
-                            NavPath = null;
+                            if (current == null)
+                                bc.DebugSay("NavStar: Initial path check failed, no beacon, aborting");
+                            else
+                                bc.DebugSay("NavStar: Initial path check failed, no path found to destination, aborting");
 
-                        }
-                        else if (((BaseCreature)m_Mobile).Beacon.GetWeight((int)((BaseCreature)m_Mobile).NavDestination) == 0)
-                        {
-                            ((BaseCreature)m_Mobile).DebugSay("NavStar: Mob Arrived at Destination");
+                            bc.NavDestination = null;
+                            bc.NavPoint = Point3D.Zero;
+                            bc.NavBeacon = null;
 
-                            ((BaseCreature)m_Mobile).NavDestination = NavDestinations.None;
-                            ((BaseCreature)m_Mobile).NavPoint = Point3D.Zero;
-                            ((BaseCreature)m_Mobile).Beacon = null;
+                            NavStar.RemoveRequest(bc);    // probably isn't one
                             Action = ActionType.Wander;
                         }
+                        else
+                        {
+                            bc.DebugSay("NavStar: Initial beacon {0}:Ring{1}",
+                                bc.NavBeacon.Serial.ToString(),
+                                bc.NavBeacon.Ring);
+                        }
+
                     }
-                    else
-                        ((BaseCreature)m_Mobile).Beacon = null;
+
+                    else if (haveDest && havePoint)
+                    {   // we're walking baby!
+
+                        if (CheckNavStuck())
+                        {
+                            NavStar.UnStuck(bc);
+                            NavPath = null;
+                        }
+
+                        MoveToNavPoint(bc.NavPoint, this.CanRunAI);
+
+                        bool there = false;
+                        if (NavPath != null)
+                        {
+                            Point3D goal = NavPath.GetEndGoalLocation(0);
+                            if (NavPath.Check(bc.Location, goal, range: 2))
+                                there = true;
+                        }
+
+                        if (/*there ||*/ bc.InRange(bc.NavPoint, 6))
+                        {   // arrived at the beacon we were searching for
+
+                            bc.DebugSay("NavStar: Arrived at beacon {0}:Ring{1}",
+                                bc.NavBeacon.Serial.ToString(),
+                                bc.NavBeacon.Ring);
+
+                            NavigationBeacon previous = bc.NavBeacon;                 // for debug reporting purposes
+                            NavigationBeacon current = NavStar.ProcessRequest(bc); // where we go next
+
+                            if (current != null)
+                            {   // okay, got a new beacon, keep walking
+
+                                bc.DebugSay("NavStar: Got new Beacon {0}:Ring{1}",
+                                    bc.NavBeacon.Serial.ToString(),
+                                    bc.NavBeacon.Ring);
+
+                                // generate a new path
+                                NavPath = null;
+                            }
+                            else
+                            {   // no more beacons (our stack is empty.)
+
+                                bc.DebugSay("NavStar: Arrived at Destination {0}:Ring{1}",
+                                    previous.Serial.ToString(),
+                                    previous.Ring);
+
+                                // cleanup: clear our notion of a destination, Remove the navigation request record,
+                                //  wander, kill the NavPath, and make this our new home.
+                                bc.NavDestination = null;
+                                bc.NavPoint = Point3D.Zero;
+                                bc.NavBeacon = null;
+
+                                NavStar.RemoveRequest(bc);
+                                Action = ActionType.Wander;
+                                bc.Home = Location;
+                                NavPath = null;
+                            }
+                        }
+                    }
                 }
-
+                catch (Exception ex)
+                {
+                    LogHelper.LogException(ex);
+                }
             }
-
             return true;
         }
+        private Point3D RandomNextWalkback(BaseCreature bc)
+        {
+            List<Point3D> list = new List<Point3D>();
+            foreach (var point in bc.NavWalkback)
+                if (Utility.InRange(bc.Location, point, 38))
+                    list.Add(point);
 
+            list.OrderBy(x => bc.GetDistanceToSqrt(x));
+
+            while (bc.NavWalkback.Peek() != list[0])
+                bc.NavWalkback.Pop();
+
+            return bc.NavWalkback.Peek();
+        }
+        public virtual bool DoActionNavWalkback()
+        {
+            if (m_Mobile is BaseCreature bc)
+            {
+                bool havePoint = bc.NavWalkback.Count > 0 && Utility.InRange(bc.NavWalkback.Peek(), bc.Location, 30);
+                try
+                {
+                    if (AcquireFocusMob(bc.RangePerception, bc.FightMode, false, false, true))
+                    {   // top priority
+                        bc.DebugSay("I am going to attack {0}", bc.FocusMob.Name);
+                        bc.Combatant = bc.FocusMob;
+                        Action = ActionType.Combat;
+                    }
+
+                    else if (!havePoint)
+                    {   // how did we get here?
+                        Action = ActionType.Wander;
+                    }
+                    else if (ValidNavDestination(m_Mobile) && NavReachable(m_Mobile))
+                    {   // get back to NavStar as soon as possible
+                        bc.NavWalkback.Clear();
+                        bc.NavPoint = Point3D.Zero;
+                        bc.NavBeacon = null;
+                        NavStar.FlushContext(m_Mobile);
+                        Action = ActionType.NavStar;
+                    }
+                    else
+                    {
+                        bc.NavPoint = RandomNextWalkback(bc);
+                        //bc.NavPoint = bc.NavWalkback.Peek();
+                        
+
+
+                        MoveToNavPoint(bc.NavPoint, this.CanRunAI);
+
+                        bool there = false;
+                        if (NavPath != null)
+                        {
+                            Point3D goal = NavPath.GetEndGoalLocation(0);
+                            if (NavPath.Check(bc.Location, goal, range: 2))
+                                there = true;
+                        }
+
+                        if (/*there ||*/ bc.InRange(bc.NavPoint, 6))
+                        {   // arrived at the location we were searching for
+
+                            bc.DebugSay("NavStar: Arrived at walkback location {0}", bc.NavWalkback.Peek().ToString());
+
+                            Point3D previous = bc.NavWalkback.Pop();   // out with the old, in with the new
+
+                            if (bc.NavWalkback.Count > 0)
+                            {
+                                // okay, got a new beacon, keep walking
+                                //bc.NavPoint = bc.NavWalkback.Peek(); // where we go next
+                                bc.NavPoint = RandomNextWalkback(bc);
+
+                                bc.DebugSay("NavStar: Got new location {0}",
+                                    bc.NavWalkback.Peek().ToString());
+
+                                // generate a new path
+                                NavPath = null;
+                            }
+                            else
+                            {   // no more walkback locations (our stack is empty.)
+
+                                bc.DebugSay("NavStar: Arrived at Destination {0}",
+                                    previous.ToString());
+
+                                bc.NavPoint = Point3D.Zero;
+                                Action = ActionType.Wander;
+                                bc.Home = Location;
+                                NavPath = null;
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.LogException(ex);
+                }
+            }
+            return true;
+        }
+        public Point3D Location
+        {
+            get
+            {
+                return m_Mobile == null ? Point3D.Zero : m_Mobile.Location;
+            }
+            set
+            {
+                if (m_Mobile != null)
+                    m_Mobile.Location = value;
+            }
+        }
+        public class NavMemory
+        {
+            public byte stuck_counter = 0;
+            public Point3D last_location = Point3D.Zero;
+            public NavMemory(byte counter, Point3D location)
+            {
+                stuck_counter = counter;
+                last_location = location;
+            }
+        }
+        private byte stuck_counter = 0;                    // delete
+        private Point3D last_location = Point3D.Zero;      // delete
+        private static Memory StuckMemory = new Memory();
+        private bool CheckNavStuck()
+        {
+            // do we remember this pet?
+            Memory.ObjectMemory om = StuckMemory.Recall(m_Mobile as object);
+            if (om != null)
+            {   // yes, we do remember him
+                NavMemory nm = om.Context as NavMemory;
+
+                if (nm.stuck_counter == 0)
+                    nm.last_location = m_Mobile.Location;
+
+                if (m_Mobile.InRange(nm.last_location, 3))
+                    nm.stuck_counter++;
+                else
+                    nm.stuck_counter = 0;
+
+                if (nm.stuck_counter > 110)
+                {
+                    nm.last_location = Point3D.Zero;
+                    nm.stuck_counter = 0;
+                    return true;
+                }
+            }
+            else
+            {   // don't remember him. Remember him now
+                StuckMemory.Remember(m_Mobile, new NavMemory(counter: 1, m_Mobile.Location), seconds: 60);
+            }
+            return false;
+        }
+        #endregion NavStar
         public virtual bool DoActionFlee()
         {
             Mobile from = m_Mobile.FocusMob;
@@ -3278,31 +3537,25 @@ namespace Server.Mobiles
             return false;
         }
 
-        public virtual bool MoveToNavPoint(Point3D m, bool run)
+        public virtual bool MoveToNavPoint(Point3D px, bool run)
         {
-            if (m_Mobile.Deleted || m_Mobile.DisallowAllMoves || m == Point3D.Zero)
+            bool result = false;
+            if (m_Mobile.Deleted || m_Mobile.DisallowAllMoves || px == Point3D.Zero)
                 return false;
-
 
             if (NavPath != null)
             {
-
-                NavPath.Follow(run, 1);
-
+                result = NavPath.Follow(run, 1);
             }
-
             else
             {
-
-                NavPath = new PathFollower(m_Mobile, (IPoint3D)m);
+                NavPath = new PathFollower(m_Mobile, (IPoint3D)px);
                 NavPath.Mover = new MoveMethod(DoMoveImpl);
-                NavPath.Follow(run, 1);
-
+                result = NavPath.Follow(run, 1);
             }
 
-            return false;
+            return result;
         }
-
 
         public virtual void WalkRandom(int iChanceToNotMove, int iChanceToDir, int iSteps)
         {
@@ -4059,7 +4312,7 @@ namespace Server.Mobiles
                 }
             }
         }
-        
+
         // shortcut for guards protecting citizens in town
         public static Memory FocusMobAcquired = new Memory();
         private bool CheckFocusMobAcquired(Mobile source, Mobile target)
@@ -4093,16 +4346,16 @@ namespace Server.Mobiles
                     return false;
             }
 
-            return true; 
+            return true;
         }
-        
+
         private void RegisterFocusMobAcquired(Mobile source, Mobile target)
-        { 
+        {
             if (FocusMobAcquired.Recall(source) == false)
             {   // don't know about this creature, remember him
                 FocusMobAcquired.Remember(source, target, seconds: 5);
             }
-            return ; 
+            return;
         }
 
         /* ** total rewrite of AcquireFocusMob() **
@@ -4120,6 +4373,10 @@ namespace Server.Mobiles
 		 */
         public bool AcquireFocusMob(int iRange, FightMode acqType, bool bPlayerOnly, bool bFacFriend, bool bFacFoe)
         {
+            // if we cannot be damaged, we should not even be looking for someone to attack
+            if (!m_Mobile.CanBeDamaged())
+                return false;
+
             // separate the flags from the target types
             FightMode acqFlags = (FightMode)((uint)acqType & 0xFFFF0000);
             acqType = (FightMode)((uint)acqType & 0x0000FFFF);
@@ -4203,15 +4460,65 @@ namespace Server.Mobiles
             }
             else if (m_Mobile.Controlled)
             {
-                if (m_Mobile.ControlTarget == null || m_Mobile.ControlTarget.Deleted || !m_Mobile.ControlTarget.Alive || m_Mobile.ControlTarget.IsDeadBondedPet || !m_Mobile.InRange(m_Mobile.ControlTarget, m_Mobile.RangePerception * 2))
+                if (AIConsole.AllGuardBugFix)
                 {
-                    m_Mobile.FocusMob = null;
-                    return false;
+                    // 8/9/21, Adam: allguardbug fix - i do believe
+                    //  Scenario: pets are in guard mode (control order Guard.) So, the m_Mobile.ControlTarget is rightly the tamer.
+                    //  If the tamer is then targeted by a monster, the old logic would incorrectly set the focus mob to ControlTarget (the tamer.)
+                    // Notes: ControlTarget gets set to an adversary when an "all kill" command is given, and the tamer targets a monster.
+                    //  Root of the problem: It was bad design for RunUO to overload the ControlTarget as both friend and foe... :/
+                    // 8/25/2023: Adam Expanded from simply looking at the first ControlMaster aggressor, to looking for the 
+                    //  first 'available' ControlMaster aggressor, then if not found, first available aggressor of mine.
+                    if (m_Mobile.ControlTarget == m_Mobile.ControlMaster && m_Mobile.ControlOrder == OrderType.Guard)
+                    {   // To mitigate this bug, we set the focusmob to be that thing that is attacking the tamer
+                        Mobile tempFocus = null;
+                        foreach (AggressorInfo aggressorInfo in m_Mobile.ControlMaster.Aggressors)
+                        {   // see if we have a viable target
+                            MobileInfo attackerinfo = GetMobileInfo(new MobileInfo(aggressorInfo.Attacker));
+                            if (!attackerinfo.available)
+                                continue;
+                            else
+                            {
+                                tempFocus = aggressorInfo.Attacker;
+                                break;
+                            }
+                        }
+
+                        // okay, nobody is attacking my master, see if someone is attacking me!
+                        if (tempFocus == null)
+                            foreach (AggressorInfo aggressorInfo in m_Mobile.Aggressors)
+                            {   // see if we have a viable target
+                                MobileInfo attackerinfo = GetMobileInfo(new MobileInfo(aggressorInfo.Attacker));
+                                if (!attackerinfo.available)
+                                    continue;
+                                else
+                                {
+                                    tempFocus = aggressorInfo.Attacker;
+                                    break;
+                                }
+                            }
+
+                        m_Mobile.FocusMob = tempFocus;
+                    }
+                    else
+                        m_Mobile.FocusMob = m_Mobile.ControlTarget;
+
+                    return (m_Mobile.FocusMob != null);
                 }
                 else
-                {
-                    m_Mobile.FocusMob = m_Mobile.ControlTarget;
-                    return (m_Mobile.FocusMob != null);
+                {   // old RunUO code that seems to have the AllGuardBug (pet attacks owner)
+                    if (m_Mobile.ControlTarget == null || m_Mobile.ControlTarget.Deleted ||
+                    !m_Mobile.ControlTarget.Alive || m_Mobile.ControlTarget.IsDeadBondedPet ||
+                    !m_Mobile.InRange(m_Mobile.ControlTarget, m_Mobile.RangePerception * 2))
+                    {
+                        m_Mobile.FocusMob = null;
+                        return false;
+                    }
+                    else
+                    {
+                        m_Mobile.FocusMob = m_Mobile.ControlTarget;
+                        return (m_Mobile.FocusMob != null);
+                    }
                 }
             }
 
@@ -4241,7 +4548,7 @@ namespace Server.Mobiles
                 ArrayList list = new ArrayList();
                 foreach (Mobile m in eable)
                 {
-                    if (m != null)
+                    if (m != null && m != m_Mobile && m.CanBeDamaged())
                         list.Add(m);
                 }
                 eable.Free();
@@ -4292,9 +4599,12 @@ namespace Server.Mobiles
                     if (!m.Alive || m.IsDeadBondedPet)
                         continue;
 
+                    // 10/13/2024, Adam: If you don't want to be attacked, make yourself blessed.
+                    //  If you don't want to be harmed, set blockdamage true.
+                    //  Attacking staff makes testing so much easier.
                     // Staff members cannot be targeted.
-                    if (m.AccessLevel > AccessLevel.Player)
-                        continue;
+                    //if (m.AccessLevel > AccessLevel.Player)
+                    //continue;
 
                     // Does it have to be a player?
                     if (bPlayerOnly && !m.Player)
@@ -4381,9 +4691,10 @@ namespace Server.Mobiles
                     if (bFacFoe && !bFacFriend && !m_Mobile.CanBeHarmful(m, false))
                         continue;
 
+                    // 9/25/2024, Adam: This doesn't look right. We already checked IOB alignment in IsFriend and IsEmemy
                     // faction friends are cool
-                    if (IOBSystem.IsFriend(m_Mobile, m) == true && m_Mobile.IsTeamOpposition(m) == false)
-                        continue;
+                    //if (IOBSystem.IsFriend(m_Mobile, m) == true && m_Mobile.IsTeamOpposition(m) == false)
+                    //    continue;
 
                     //Pix: this is the case where a non-IOBAligned mob is trying to target a IOBAligned mob AND the IOBAligned mob is an IOBFollower
                     if (m is BaseCreature && IOBSystem.IsIOBAligned(m) && !IOBSystem.IsIOBAligned(m_Mobile) && (m as BaseCreature).IOBFollower == true)
@@ -4393,11 +4704,16 @@ namespace Server.Mobiles
                     if (m_Mobile.InLOS(m) == false)
                         continue;
 
+                    //Adam: check to see of the path to the mobile is too complex. If so, ignore the mobile
+                    if (AIConsole.UsePathTooComplex)
+                        if (m_Mobile.PathTooComplex(target: m))
+                            continue;
+
                     // gotcha ya little bastard!
                     newFocusMob = m;
 
                     // exit as soon as we have a target. 
-                    // this is both optimum and needed as we sorted our list in order of Prefeered Targets
+                    // this is both optimum and needed as we sorted our list in order of Preferred Targets
                     if (newFocusMob != null)
                         break;
                 }
@@ -4415,9 +4731,14 @@ namespace Server.Mobiles
             return (m_Mobile.FocusMob != null);
         }
 
+        public MobileInfo GetMobileInfo(MobileInfo info)
+        {
+            return Utility.GetMobileInfo(m_Mobile, m_Path, info);
+        }
+        
         public virtual void Deactivate()
         {
-            if (m_Mobile.PlayerRangeSensitive && m_Mobile.NavDestination == NavDestinations.None)
+            if (m_Mobile.PlayerRangeSensitive && string.IsNullOrEmpty(m_Mobile.NavDestination))
             {
                 m_Timer.Stop();
             }
@@ -4481,7 +4802,7 @@ namespace Server.Mobiles
 
                     return;
                 }
-                else if ((m_Owner.m_Mobile.PlayerRangeSensitive && m_Owner.m_Mobile.NavDestination == NavDestinations.None))//have to check this in the timer....
+                else if ((m_Owner.m_Mobile.PlayerRangeSensitive && string.IsNullOrEmpty(m_Owner.m_Mobile.NavDestination)))//have to check this in the timer....
                 {
                     Sector sect = m_Owner.m_Mobile.Map.GetSector(m_Owner.m_Mobile);
                     if (!sect.Active)

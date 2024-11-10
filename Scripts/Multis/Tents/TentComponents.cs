@@ -79,6 +79,7 @@
  *		Initial creation. Graphically based on Dupre's tent scripts.
  */
 
+using Server.Diagnostics;
 using Server.Accounting;
 using Server.Commands;
 using Server.Engines.PartySystem;

@@ -31,6 +31,7 @@
  *		Initial Version.
  */
 
+using Server.Diagnostics;
 using Server.Accounting;
 using Server.BountySystem;
 using Server.Commands;

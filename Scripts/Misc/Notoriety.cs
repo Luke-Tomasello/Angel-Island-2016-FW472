@@ -64,6 +64,8 @@
  *		Merged in 1.0RC0 code.
  */
 
+using Server.Engines.ClanSystem;
+using Server.Engines.IOBSystem;
 using Server.Engines.PartySystem;
 using Server.Factions;
 using Server.Guilds;
@@ -498,7 +500,7 @@ namespace Server.Misc
 			*/
             #endregion
 
-            // it's a pet
+            #region Unusual Pets
             if (source.Player && !target.Player && source is PlayerMobile && target is BaseCreature)
             {
                 BaseCreature bc = (BaseCreature)target;
@@ -536,7 +538,45 @@ namespace Server.Misc
 
             if (target.Criminal)
                 return Notoriety.Criminal;
+            #endregion Unusual Pets
 
+            #region Clan status hueing
+            int srcClanAlignment = ClanSystem.GetClanAlignment(source);
+            int trgClanAlignment = ClanSystem.GetClanAlignment(target);
+            //Adam: ClanAlignment.Healer not yet implemented
+            if (srcClanAlignment != (int)ClanAlignment.None && trgClanAlignment != (int)ClanAlignment.None && srcClanAlignment != (int)ClanAlignment.Healer)
+            {
+                //If they're different alignments OR target is OutCast, then they're an enemy
+                if (trgClanAlignment == (int)ClanAlignment.Healer)
+                {   //Adam: ClanAlignment.Healer not yet implemented
+                    return Notoriety.CanBeAttacked;
+                }
+                else if (srcClanAlignment != trgClanAlignment || ClanSystem.IsClanEnemy(source, target))
+                {   // ClanEnemy is somewhat analogous to Outcast in the Kin system
+                    return Notoriety.Enemy;
+                }
+                //Adam: Since Notoriety is used for determining if an action is 'Criminal', this test ensures that when
+                //  opposing clans attack each other, the clan member that attacked first doesn't flag criminal to onlookers.
+                //  (Probably exploitable if we do points, or other rewards.)
+                //else if (ClanSystem.IsEnemy(source, target))
+                //{
+                //    return Notoriety.CanBeAttacked;
+                //}
+                //else
+                {
+                    if (source is PlayerMobile && target is BaseCreature)
+                    {
+                        return Notoriety.Ally;
+                    }
+                    else
+                    {
+                        return Notoriety.Ally;
+                    }
+                }
+            }
+            #endregion Clan status hueing
+
+            #region Guild
             Guild sourceGuild = GetGuildFor(source.Guild as Guild, source);
             Guild targetGuild = GetGuildFor(target.Guild as Guild, target);
 
@@ -547,6 +587,7 @@ namespace Server.Misc
                 else if (sourceGuild.IsEnemy(targetGuild))
                     return Notoriety.Enemy;
             }
+            #endregion Guild
 
             #region Fightbroker
             //If both are registered with the fightbroker, they can both attack each other
@@ -606,11 +647,9 @@ namespace Server.Misc
             //done with pets/fightbroker status
             #endregion
 
-            #region Kin
+            #region IOB Kin status hueing
             //Now handle IOB status hueing
-            if (CoreAI.IsDynamicFeatureSet(CoreAI.FeatureBits.IOBShardWide)
-                || (Server.Engines.IOBSystem.IOBRegions.IsInIOBRegion(source)
-                     && Server.Engines.IOBSystem.IOBRegions.IsInIOBRegion(target)))
+            if (CoreAI.IsDynamicFeatureSet(CoreAI.FeatureBits.IOBShardWide) || (IOBRegions.IsInIOBRegion(source) && IOBRegions.IsInIOBRegion(target)))
             {
                 IOBAlignment srcIOBAlignment = IOBAlignment.None;
                 IOBAlignment trgIOBAlignment = IOBAlignment.None;
@@ -619,11 +658,8 @@ namespace Server.Misc
                 if (target is BaseCreature) { trgIOBAlignment = ((BaseCreature)target).IOBAlignment; }
                 else if (target is PlayerMobile) { trgIOBAlignment = ((PlayerMobile)target).IOBAlignment; }
 
-                if (srcIOBAlignment != IOBAlignment.None &&
-                    trgIOBAlignment != IOBAlignment.None &&
-                    srcIOBAlignment != IOBAlignment.Healer
-                    )
-                {
+                if (srcIOBAlignment != IOBAlignment.None && trgIOBAlignment != IOBAlignment.None && srcIOBAlignment != IOBAlignment.Healer)
+                {   
                     //If they're different alignments OR target is OutCast, then they're an enemy
                     //Pix 12/3/07: added healer target
                     //Pix: 12/4/07 - now kin-healers flag canbeattacked to kin instead of enemy
@@ -631,12 +667,18 @@ namespace Server.Misc
                     {
                         return Notoriety.CanBeAttacked;
                     }
-                    else if (srcIOBAlignment != trgIOBAlignment ||
-                        trgIOBAlignment == IOBAlignment.OutCast)
+                    else if (srcIOBAlignment != trgIOBAlignment || trgIOBAlignment == IOBAlignment.OutCast)
                     {
                         return Notoriety.Enemy;
                     }
-                    else
+                    //Adam: Since Notoriety is used for determining if an action is 'Criminal', this test ensures that when
+                    //  opposing clans attack each other, the clan member that attacked first doesn't flag criminal to onlookers.
+                    //  (Probably exploitable if we do points, or other rewards.)
+                    //else if (IOBSystem.IsEnemy(source, target))
+                    //{
+                    //    return Notoriety.CanBeAttacked;
+                    //}
+                    //else
                     {
                         if (source is PlayerMobile && target is BaseCreature)
                         {
@@ -650,6 +692,13 @@ namespace Server.Misc
                         }
                     }
                 }
+                //Adam: since RunUO assumes Human Bodies are innocent (below,) we need to explicitly handle it here
+                //  This is the case when a player clicks on a clan aligned creature (in a human body)
+                //else if (srcIOBAlignment == IOBAlignment.None && trgIOBAlignment != IOBAlignment.None)
+                //    if (ClanSystem.IsClanAligned(target))
+                //    {
+                //        return Notoriety.CanBeAttacked;
+                //    }
 
                 //if we're looking at ourselves, and we're a KinHealer, show ourself as enemy
                 if (source == target && srcIOBAlignment == IOBAlignment.Healer)
@@ -667,7 +716,7 @@ namespace Server.Misc
                     return Notoriety.CanBeAttacked;
                 }
             }
-            #endregion
+            #endregion IOB Kin status hueing
 
             Faction srcFaction = Faction.Find(source, true, true);
             Faction trgFaction = Faction.Find(target, true, true);
@@ -704,8 +753,10 @@ namespace Server.Misc
                 return Notoriety.CanBeAttacked;
 
             if (!(target is BaseCreature && ((BaseCreature)target).InitialInnocent))
-            {
-                if (!target.Body.IsHuman && !target.Body.IsGhost && !IsPet(target as BaseCreature) && !TransformationSpellHelper.UnderTransformation(target) /*&& !AnimalForm.UnderTransformation(target) Ninja stuff*/)
+            {   //Adam: Added IsClanAlignedNPC since we have Clan Aligned NPCs with human bodies
+                if ((!target.Body.IsHuman || ClanSystem.IsClanAlignedNPC(target)) && 
+                    !target.Body.IsGhost && !IsPet(target as BaseCreature) && 
+                    !TransformationSpellHelper.UnderTransformation(target) /*&& !AnimalForm.UnderTransformation(target) Ninja stuff*/)
                     return Notoriety.CanBeAttacked;
             }
 

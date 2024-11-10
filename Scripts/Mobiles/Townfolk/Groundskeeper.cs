@@ -47,6 +47,7 @@
  *		created by Adam
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Items;
 using System;
@@ -539,7 +540,7 @@ namespace Server.Mobiles
             // try 5 times at the same Z - starting close and moving outward
             for (int ir = 0; ir < 5; ir++)
             {
-                location = Spawner.GetSpawnPosition(ix.Map, ix.Location, ir, true, o);
+                location = Spawner.GetSpawnPosition(ix.Map, ix.Location, ir, o, Spawner.SpawnerFlags.ForceZ);
                 if (location != ix.Location)
                     return location;
             }
@@ -547,7 +548,7 @@ namespace Server.Mobiles
             // try 5 times at any Z - starting close and moving outward
             for (int ir = 0; ir < 5; ir++)
             {
-                location = Spawner.GetSpawnPosition(ix.Map, ix.Location, ir, false, o);
+                location = Spawner.GetSpawnPosition(ix.Map, ix.Location, ir, o);
                 if (location != ix.Location)
                     return location;
             }

@@ -2031,7 +2031,7 @@ namespace Server.Items
             }
 
             to.Send(new ContainerDisplay(this));
-
+            
             if (to.NetState != null && to.NetState.IsPost6017)
             {
                 to.Send(new ContainerContent6017(to, this));

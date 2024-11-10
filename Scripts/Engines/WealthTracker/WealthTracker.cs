@@ -34,6 +34,7 @@
  *		- add tables
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Network;
 using System;

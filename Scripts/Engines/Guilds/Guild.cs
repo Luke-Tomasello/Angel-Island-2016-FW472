@@ -67,6 +67,7 @@
  *		Added new GuildMessage function which takes a string.
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Items;
 using Server.Network;
@@ -572,7 +573,7 @@ namespace Server.Guilds
             }
             catch (Exception e)
             {
-                Server.Commands.LogHelper.LogException(e);
+                LogHelper.LogException(e);
             }
         }
 
@@ -611,7 +612,7 @@ namespace Server.Guilds
             }
             catch (Exception e)
             {
-                Server.Commands.LogHelper.LogException(e);
+                LogHelper.LogException(e);
             }
 
             return count;

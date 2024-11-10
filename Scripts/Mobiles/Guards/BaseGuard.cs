@@ -21,6 +21,8 @@
 
 /* Mobiles/Guards/BaseGuard.cs
  * CHANGELOG:
+ *  9/18/2024, Adam: Up the chance for the guard to drop his hally to 80%. 
+ *      Killing guards is just too much fun
  *  9/13/2024, Adam (auto ignition)
  *      In order to stop griefers from dragging dangerous creatures into a guard zone
  *          and allowing it to kill all the macroers, we auto-ignite guards.
@@ -77,6 +79,7 @@
  *		Guards now accept heads for the collection of bounties.
  */
 
+using Server.Diagnostics;
 using Server.BountySystem;
 using Server.Commands;
 using Server.Items;
@@ -288,11 +291,21 @@ namespace Server.Mobiles
             if (Core.RuleSets.AngelIslandRules() || Core.RuleSets.RenaissanceRules())
             {
                 // 1% chance to drop hally since we really want players farming vampires for slayers
-                if (Utility.RandomChance(1))
+                //if (Utility.RandomChance(1))
+                // 9/18/2024, Adam: Up the chance to 80%. Killing guards is just too much fun
+                if (Utility.Chance(0.80))
                 {
                     Item hally = this.FindItemOnLayer(Layer.TwoHanded);
                     if (hally != null)
                         hally.Movable = true;
+
+                    // We will keep out eye on SlayerWeapon.log and decrease this drop if it exceeds the vampire drops
+                    if (hally != null)
+                    {
+                        LogHelper Logger = new LogHelper("SlayerWeapon.log", false, true);
+                        Logger.Log(LogType.Item, hally);
+                        Logger.Finish();
+                    }
                 }
             }
             else
@@ -391,7 +404,7 @@ namespace Server.Mobiles
                     if (!m.Player && this.CanSee(m))
                         list.Add(m);
                 eable.Free();
-                
+
                 foreach (Mobile m in list)
                     if (BaseAI.FocusMobAcquired.Recall(m) != false)
                         if (this.Region is GuardedRegion && (this.Region as GuardedRegion).IsGuarded)

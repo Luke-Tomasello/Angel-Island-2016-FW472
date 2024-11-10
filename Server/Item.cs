@@ -21,6 +21,8 @@
 
 /* Server\Item.cs
  * ChangeLog:
+ *  9/20/2024, Adam (OnSingleClick/GetMissingName)
+ *      Hack. The ItemData does not have a legitimate name. So we do the best we can with the type name
  *  9/16/2024, Adam (OnSingleClick)
  *      More robust OnSingleClick processing
  *  9/3/2024, Adam (SendMessageTo)
@@ -28,6 +30,7 @@
  *      BaseHouse uses this for "(secured)" messages etc.
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Items;
 using Server.Network;
@@ -569,6 +572,16 @@ namespace Server
 
     public class Item : IPoint3D, IEntity, IHued
     {
+        public string SafeName
+        {
+            get
+            {
+                if (m_Name != null)
+                    return m_Name;
+
+                return DefaultName != null ? DefaultName : this.GetType().Name;
+            }
+        }
         #region Logging
         public void LogChange(Mobile m, string prop, string from, string to)
         {
@@ -659,7 +672,7 @@ namespace Server
         private BounceInfo m_Bounce;
 
         private ItemDelta m_DeltaFlags;
-        private ImplFlag m_Flags;
+        private ItemBoolTable m_BoolTable;
 
         #region Packet caches
         private Packet m_WorldPacket;
@@ -764,15 +777,15 @@ namespace Server
         [CommandProperty(AccessLevel.GameMaster)]
         public bool Audited
         {
-            get { return GetFlag(ImplFlag.Audited); }
-            set { SetFlag(ImplFlag.Audited, value); InvalidateProperties(); }
+            get { return GetItemBool(ItemBoolTable.Audited); }
+            set { SetItemBool(ItemBoolTable.Audited, value); InvalidateProperties(); }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public bool ToDelete
         {
-            get { return GetFlag(ImplFlag.ToDelete); }
-            set { SetFlag(ImplFlag.ToDelete, value); InvalidateProperties(); }
+            get { return GetItemBool(ItemBoolTable.ToDelete); }
+            set { SetItemBool(ItemBoolTable.ToDelete, value); InvalidateProperties(); }
         }
 
         private int m_TempFlags, m_SavedFlags;
@@ -787,19 +800,6 @@ namespace Server
         {
             get { return m_SavedFlags; }
             set { m_SavedFlags = value; }
-        }
-
-        [CommandProperty(AccessLevel.Administrator)]
-        public bool Debug
-        {
-            get
-            {
-                return GetFlag(ImplFlag.Debug);
-            }
-            set
-            {
-                SetFlag(ImplFlag.Debug, value);
-            }
         }
 
         [CommandProperty(AccessLevel.Administrator)]
@@ -832,7 +832,7 @@ namespace Server
         }
 
         [Flags]
-        private enum ImplFlag
+        public enum ItemBoolTable
         {
             None = 0x00000000,
             Visible = 0x00000001,
@@ -852,19 +852,21 @@ namespace Server
             VileBlade = 0x00004000,         // Adam: Ethics system
             HolyBlade = 0x00008000,         // Adam: Ethics system
             StoreBought = 0x00010000,       // Adam: purchased from an NPC (used in smelting)
+            IsRunning =   0x00020000,       // All apps can now use this book for your 'Running State'
+            DeleteOnLift = 0x00040000,      // for instance: Used for deleting items lifted from a corpse (cannot be stolen.)
         }
 
-        private void SetFlag(ImplFlag flag, bool value)
+        public void SetItemBool(ItemBoolTable flag, bool value)
         {
             if (value)
-                m_Flags |= flag;
+                m_BoolTable |= flag;
             else
-                m_Flags &= ~flag;
+                m_BoolTable &= ~flag;
         }
 
-        private bool GetFlag(ImplFlag flag)
+        public bool GetItemBool(ItemBoolTable flag)
         {
-            return ((m_Flags & flag) != 0);
+            return ((m_BoolTable & flag) != 0);
         }
 
         public BounceInfo GetBounce()
@@ -899,6 +901,31 @@ namespace Server
                     if (!parent.Deleted)
                         parent.OnItemBounceCleared(this);
                 }
+            }
+        }
+
+        public virtual bool IsRunning
+        {
+            get
+            {
+                return GetItemBool(ItemBoolTable.IsRunning);
+            }
+            set
+            {
+                SetItemBool(ItemBoolTable.IsRunning, value);
+            }
+        }
+
+        [CommandProperty(AccessLevel.Seer)]
+        public virtual bool Debug
+        {
+            get
+            {
+                return GetItemBool(ItemBoolTable.Debug);
+            }
+            set
+            {
+                SetItemBool(ItemBoolTable.Debug, value);
             }
         }
 
@@ -1102,7 +1129,155 @@ namespace Server
             else if (m_Parent is Mobile)
                 ((Mobile)m_Parent).GetChildNameProperties(list, item);
         }
+#if true
+        public void Bounce(Mobile from)
+        {
+            LogHelper logger = null;
+            try
+            {
+                if (m_Parent is Item)
+                    ((Item)m_Parent).RemoveItem(this);
+                else if (m_Parent is Mobile)
+                    ((Mobile)m_Parent).RemoveItem(this);
 
+                m_Parent = null;
+
+                if (m_Bounce != null)
+                {
+                    object parent = m_Bounce.m_Parent;
+
+                    if (parent is Item && !((Item)parent).Deleted)
+                    {
+                        Item p = (Item)parent;
+                        object root = p.RootParent;
+
+                        //Pixie: 01/05/2006
+                        // Added bounceLocation check so that if the location of the parent or
+                        // rootparent is out of range of the mobile, then we drop to mobile's feet instead.
+                        Point3D bounceLocation = p.Location;
+                        if (root != null)
+                        {
+                            if (root is Mobile)
+                            {
+                                bounceLocation = ((Mobile)root).Location;
+                            }
+                            else if (root is Item)
+                            {
+                                bounceLocation = ((Item)root).Location;
+                            }
+                        }
+
+                        bool bounceLocationInRange = Utility.InRange(from.Location, bounceLocation, 3);
+
+                        // 7/19/21, Adam: unwound this madness into intelligible rules, and added rule 3
+                        /* if(bounceLocationInRange
+                            && p.IsAccessibleTo(from)
+                            && (!(root is Mobile) || ((Mobile)root).CheckNonlocalDrop(from, this, p))
+                            // note to taran kain: probably should remove secure restriction here in the future!
+                            && (!(p is Container) || (!((Container)p).IsSecure || (((Container)p).IsSecure && ((Container)p).CheckHold(from, this, false)))))*/
+
+                        bool rule1 = bounceLocationInRange && p.IsAccessibleTo(from) && (!(root is Mobile) || ((Mobile)root).CheckNonlocalDrop(from, this, p));
+                        bool rule2 = (!(p is Container) || (!((Container)p).IsSecure || (((Container)p).IsSecure && ((Container)p).CheckHold(from, this, false))));
+                        bool rule3 = (!(p is Container) || (p as Container).Items.Count < (p as Container).MaxItems);                   // overloading items
+                        bool rule4 = (!(p is Container) || !(root is Mobile) || ((root is Mobile) && !IsOverloaded(root as Mobile)));  // overloading weight
+
+
+                        if (rule3 == false)
+                        {   // log the possible exploit
+                            if (logger == null)
+                                logger = new LogHelper("BounceRecorder.log", false);
+                            string text = string.Format("backpack item count:{0}, backpack maxitems:{1}", (p as Container).Items.Count, (p as Container).MaxItems);
+                            Console.WriteLine("{0} " + text, (root as Mobile)/*can be null*/);
+                            logger.Log(LogType.Mobile, (root as Mobile), text);
+                        }
+
+                        if (rule4 == false)
+                        {   // log the possible exploit
+                            if (logger == null)
+                                logger = new LogHelper("BounceRecorder.log", false);
+                            string text = string.Format("Player weight:{0}, Player max weight:{1}", GetWeight(root as Mobile), GetMaxWeight(root as Mobile));
+                            Console.WriteLine("{0} " + text, (root as Mobile)/*can be null*/);
+                            logger.Log(LogType.Mobile, (root as Mobile), text);
+                        }
+
+                        /*if (p is Container)
+                            if ((p as Container).Items.Count < (p as Container).MaxItems)
+                            {
+                                Console.WriteLine("backpack item count:{0}, backpack maxitems:{1}", (p as Container).Items.Count , (p as Container).MaxItems);
+                                rule3 = true;
+                            }
+                            else
+                                rule3 = false;*/
+
+                        if (rule1 && rule2 && rule3 && rule4)
+                        {
+                            Location = m_Bounce.m_Location;
+                            p.AddItem(this);
+                        }
+                        else
+                        {
+                            MoveToWorld(from.Location, from.Map);
+                            OnBouncedToWorld();
+                        }
+                    }
+                    else if (parent is Mobile && !((Mobile)parent).Deleted)
+                    {
+                        if (!((Mobile)parent).EquipItem(this))
+                        {
+                            MoveToWorld(m_Bounce.m_WorldLoc, m_Bounce.m_Map);
+                            OnBouncedToWorld();
+                        }
+                    }
+                    else
+                    {
+                        MoveToWorld(m_Bounce.m_WorldLoc, m_Bounce.m_Map);
+                        OnBouncedToWorld();
+                    }
+                }
+                else
+                {
+                    MoveToWorld(from.Location, from.Map);
+                    OnBouncedToWorld();
+                }
+
+                ClearBounce();
+            }
+            catch (Exception ex)
+            {
+                LogHelper.LogException(ex);
+            }
+            finally
+            {
+                if (logger != null)
+                    logger.Finish();
+            }
+        }
+
+        public virtual void OnBouncedToWorld()
+        {
+            if (Map != null && Parent == null)
+                Map.FixColumn(X, Y);
+        }
+
+        public static bool IsOverloaded(Mobile m)
+        {
+            if (!m.Player || !m.Alive || m.AccessLevel >= AccessLevel.GameMaster)
+                return false;
+
+            return ((Mobile.BodyWeight + m.TotalWeight) > (GetMaxWeight(m) + OverloadAllowance));
+        }
+
+        public const int OverloadAllowance = 4; // We can be four stones overweight without getting fatigued
+
+        public static int GetWeight(Mobile m)
+        {
+            return (Mobile.BodyWeight + m.TotalWeight);
+        }
+        public static int GetMaxWeight(Mobile m)
+        {
+            return 40 + (int)(3.5 * m.Str);
+        }
+#else
         public void Bounce(Mobile from)
         {
             if (m_Parent is Item)
@@ -1171,7 +1346,7 @@ namespace Server
 
             ClearBounce();
         }
-
+#endif
         /// <summary>
         /// Overridable. Method checked to see if this item may be equiped while casting a spell. By default, this returns false. It is overriden on spellbook and spell channeling weapons or shields.
         /// </summary>
@@ -1466,7 +1641,12 @@ namespace Server
         /// <summary>
         /// Has the item been deleted?
         /// </summary>
-        public bool Deleted { get { return GetFlag(ImplFlag.Deleted); } }
+        [CommandProperty(AccessLevel.Owner)]
+        public bool Deleted
+        {
+            get { return GetItemBool(ItemBoolTable.Deleted); }
+            set { if (value == true) this.Delete(); InvalidateProperties(); }
+        }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public LootType LootType
@@ -1626,8 +1806,8 @@ namespace Server
         [CommandProperty(AccessLevel.GameMaster)]
         public bool Stackable
         {
-            get { return GetFlag(ImplFlag.Stackable); }
-            set { SetFlag(ImplFlag.Stackable, value); }
+            get { return GetItemBool(ItemBoolTable.Stackable); }
+            set { SetItemBool(ItemBoolTable.Stackable, value); }
         }
 
         public Packet RemovePacket
@@ -1747,12 +1927,12 @@ namespace Server
         [CommandProperty(AccessLevel.GameMaster)]
         public bool Visible
         {
-            get { return GetFlag(ImplFlag.Visible); }
+            get { return GetItemBool(ItemBoolTable.Visible); }
             set
             {
-                if (GetFlag(ImplFlag.Visible) != value)
+                if (GetItemBool(ItemBoolTable.Visible) != value)
                 {
-                    SetFlag(ImplFlag.Visible, value);
+                    SetItemBool(ItemBoolTable.Visible, value);
                     Packet.Release(ref m_WorldPacket);
 
                     if (m_Map != null)
@@ -1786,12 +1966,12 @@ namespace Server
         [CommandProperty(AccessLevel.GameMaster)]
         public bool Movable
         {
-            get { return GetFlag(ImplFlag.Movable); }
+            get { return GetItemBool(ItemBoolTable.Movable); }
             set
             {
-                if (GetFlag(ImplFlag.Movable) != value)
+                if (GetItemBool(ItemBoolTable.Movable) != value)
                 {
-                    SetFlag(ImplFlag.Movable, value);
+                    SetItemBool(ItemBoolTable.Movable, value);
                     Packet.Release(ref m_WorldPacket);
                     Delta(ItemDelta.Update);
                 }
@@ -2002,9 +2182,9 @@ namespace Server
             }
 
             // see if anything here is set
-            ImplFlag implFlags = (m_Flags & (ImplFlag.Visible | ImplFlag.Movable | ImplFlag.Stackable | ImplFlag.PlayerCrafted | ImplFlag.IsIntMapStorage | ImplFlag.FreezeDried | ImplFlag.Debug | ImplFlag.IsTemplate | ImplFlag.ToDelete | ImplFlag.PlayerQuest | ImplFlag.HideAttributes | ImplFlag.Audited | ImplFlag.VileBlade | ImplFlag.HolyBlade | ImplFlag.StoreBought));
+            ItemBoolTable implFlags = (m_BoolTable & (ItemBoolTable.Visible | ItemBoolTable.Movable | ItemBoolTable.Stackable | ItemBoolTable.PlayerCrafted | ItemBoolTable.IsIntMapStorage | ItemBoolTable.FreezeDried | ItemBoolTable.Debug | ItemBoolTable.IsTemplate | ItemBoolTable.ToDelete | ItemBoolTable.PlayerQuest | ItemBoolTable.HideAttributes | ItemBoolTable.Audited | ItemBoolTable.VileBlade | ItemBoolTable.HolyBlade | ItemBoolTable.StoreBought));
 
-            if (implFlags != (ImplFlag.Visible | ImplFlag.Movable))
+            if (implFlags != (ItemBoolTable.Visible | ItemBoolTable.Movable))
                 flags |= SaveFlag.ImplFlags;
 
             if (IsFreezeDried)
@@ -2323,26 +2503,26 @@ namespace Server
                             m_Map = Map.Internal;
 
                         if (GetSaveFlag(flags, SaveFlag.Visible))
-                            SetFlag(ImplFlag.Visible, reader.ReadBool());
+                            SetItemBool(ItemBoolTable.Visible, reader.ReadBool());
                         else
-                            SetFlag(ImplFlag.Visible, true);
+                            SetItemBool(ItemBoolTable.Visible, true);
 
                         if (GetSaveFlag(flags, SaveFlag.Movable))
-                            SetFlag(ImplFlag.Movable, reader.ReadBool());
+                            SetItemBool(ItemBoolTable.Movable, reader.ReadBool());
                         else
-                            SetFlag(ImplFlag.Movable, true);
+                            SetItemBool(ItemBoolTable.Movable, true);
 
                         if (GetSaveFlag(flags, SaveFlag.Stackable))
-                            SetFlag(ImplFlag.Stackable, reader.ReadBool());
+                            SetItemBool(ItemBoolTable.Stackable, reader.ReadBool());
 
                         if (GetSaveFlag(flags, SaveFlag.ImplFlags))
                         {
-                            m_Flags = (ImplFlag)reader.ReadEncodedInt();
+                            m_BoolTable = (ItemBoolTable)reader.ReadEncodedInt();
                         }
 
                         // don't confuse ImplFlag.FreezeDried with SaveFlag.FreezeDried
                         // we check different flags because of a version quirk - ask Taran
-                        if (GetFlag(ImplFlag.FreezeDried))
+                        if (GetItemBool(ItemBoolTable.FreezeDried))
                         {
                             TotalWeight = reader.ReadInt32();
                             TotalItems = reader.ReadInt32();
@@ -2449,17 +2629,17 @@ namespace Server
                             m_Map = Map.Internal;
 
                         if (GetSaveFlag(flags, SaveFlag.Visible))
-                            SetFlag(ImplFlag.Visible, reader.ReadBool());
+                            SetItemBool(ItemBoolTable.Visible, reader.ReadBool());
                         else
-                            SetFlag(ImplFlag.Visible, true);
+                            SetItemBool(ItemBoolTable.Visible, true);
 
                         if (GetSaveFlag(flags, SaveFlag.Movable))
-                            SetFlag(ImplFlag.Movable, reader.ReadBool());
+                            SetItemBool(ItemBoolTable.Movable, reader.ReadBool());
                         else
-                            SetFlag(ImplFlag.Movable, true);
+                            SetItemBool(ItemBoolTable.Movable, true);
 
                         if (GetSaveFlag(flags, SaveFlag.Stackable))
-                            SetFlag(ImplFlag.Stackable, reader.ReadBool());
+                            SetItemBool(ItemBoolTable.Stackable, reader.ReadBool());
 
                         if (m_Map != null && m_Parent == null)
                             m_Map.OnEnter(this);
@@ -2536,8 +2716,8 @@ namespace Server
                         }
 
                         m_Map = reader.ReadMap();
-                        SetFlag(ImplFlag.Visible, reader.ReadBool());
-                        SetFlag(ImplFlag.Movable, reader.ReadBool());
+                        SetItemBool(ItemBoolTable.Visible, reader.ReadBool());
+                        SetItemBool(ItemBoolTable.Movable, reader.ReadBool());
 
                         if (version <= 3)
                             /*m_Deleted =*/
@@ -2654,7 +2834,7 @@ namespace Server
         {
             get
             {
-                return GetFlag(ImplFlag.FreezeDried);
+                return GetItemBool(ItemBoolTable.FreezeDried);
             }
         }
 
@@ -2752,7 +2932,7 @@ namespace Server
 
         public virtual void UpdateTotals()
         {
-            if (GetFlag(ImplFlag.FreezeDried))
+            if (GetItemBool(ItemBoolTable.FreezeDried))
                 return;
 
             m_LastAccessed = DateTime.UtcNow;
@@ -3081,9 +3261,9 @@ namespace Server
 
             m_DeltaFlags |= flags;
 
-            if (!GetFlag(ImplFlag.InQueue))
+            if (!GetItemBool(ItemBoolTable.InQueue))
             {
-                SetFlag(ImplFlag.InQueue, true);
+                SetItemBool(ItemBoolTable.InQueue, true);
 
                 m_DeltaQueue.Add(this);
             }
@@ -3095,9 +3275,9 @@ namespace Server
         {
             m_DeltaFlags &= ~flags;
 
-            if (GetFlag(ImplFlag.InQueue) && m_DeltaFlags == ItemDelta.None)
+            if (GetItemBool(ItemBoolTable.InQueue) && m_DeltaFlags == ItemDelta.None)
             {
-                SetFlag(ImplFlag.InQueue, false);
+                SetItemBool(ItemBoolTable.InQueue, false);
 
                 m_DeltaQueue.Remove(this);
             }
@@ -3107,7 +3287,7 @@ namespace Server
         {
             ItemDelta flags = m_DeltaFlags;
 
-            SetFlag(ImplFlag.InQueue, false);
+            SetItemBool(ItemBoolTable.InQueue, false);
             m_DeltaFlags = ItemDelta.None;
 
             Map map = m_Map;
@@ -3392,7 +3572,7 @@ namespace Server
 
             SendRemovePacket();
 
-            SetFlag(ImplFlag.Deleted, true);
+            SetItemBool(ItemBoolTable.Deleted, true);
 
             if (Parent is Mobile)
                 ((Mobile)Parent).RemoveItem(this);
@@ -3547,7 +3727,10 @@ namespace Server
 
             return item;
         }
-
+        public TimeSpan Age
+        {
+            get { return DateTime.UtcNow - this.Created; }
+        }
         public virtual bool OnDragLift(Mobile from)
         {
             return true;
@@ -4572,7 +4755,7 @@ namespace Server
         {
             Article article;
             string baseName = GetBaseOldName(out article);
-
+            baseName = GetMissingName(baseName, ref article).ToLower();
             string prefix = GetOldPrefix(ref article);
             string suffix = GetOldSuffix();
 
@@ -4618,6 +4801,22 @@ namespace Server
             return GetBaseOldName(out article);
         }
 
+        // 9/20/2024, Adam: Hack. The ItemData does not have a legitimate name. So we do the best we can with the type name
+        public string GetMissingName(string baseName, ref Article article)
+        {
+            if (baseName == "MissingName")
+            {
+                string itemName = this.GetType().Name;
+                itemName = Utility.SplitCamelCase(itemName);
+                if (Utility.StartsWithVowel(itemName))
+                    article = Article.An;
+                else
+                    article = Article.A;
+
+                baseName = itemName;
+            }
+            return baseName;
+        }
         /// <summary>
         /// Old name without any prefixes/suffixes.
         /// </summary>
@@ -4859,56 +5058,56 @@ namespace Server
         [CommandProperty(AccessLevel.Counselor, AccessLevel.GameMaster)]
         public bool StoreBought
         {
-            get { return GetFlag(ImplFlag.StoreBought); }
-            set { SetFlag(ImplFlag.StoreBought, value); InvalidateProperties(); }
+            get { return GetItemBool(ItemBoolTable.StoreBought); }
+            set { SetItemBool(ItemBoolTable.StoreBought, value); InvalidateProperties(); }
         }
 
         [CommandProperty(AccessLevel.Counselor, AccessLevel.GameMaster)]
         public bool PlayerCrafted
         {
-            get { return GetFlag(ImplFlag.PlayerCrafted); }
-            set { SetFlag(ImplFlag.PlayerCrafted, value); InvalidateProperties(); }
+            get { return GetItemBool(ItemBoolTable.PlayerCrafted); }
+            set { SetItemBool(ItemBoolTable.PlayerCrafted, value); InvalidateProperties(); }
         }
 
         public bool SpawnerTempItem
         {
-            get { return GetFlag(ImplFlag.IsTemplate); }
-            set { SetFlag(ImplFlag.IsTemplate, value); InvalidateProperties(); }
+            get { return GetItemBool(ItemBoolTable.IsTemplate); }
+            set { SetItemBool(ItemBoolTable.IsTemplate, value); InvalidateProperties(); }
         }
 
         [CommandProperty(AccessLevel.Counselor, AccessLevel.GameMaster)]
         public bool IsIntMapStorage
         {
-            get { return GetFlag(ImplFlag.IsIntMapStorage); }
-            set { SetFlag(ImplFlag.IsIntMapStorage, value); }
+            get { return GetItemBool(ItemBoolTable.IsIntMapStorage); }
+            set { SetItemBool(ItemBoolTable.IsIntMapStorage, value); }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public bool PlayerQuest
         {
-            get { return GetFlag(ImplFlag.PlayerQuest); }
-            set { SetFlag(ImplFlag.PlayerQuest, value); }
+            get { return GetItemBool(ItemBoolTable.PlayerQuest); }
+            set { SetItemBool(ItemBoolTable.PlayerQuest, value); }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public bool HideAttributes
         {
-            get { return GetFlag(ImplFlag.HideAttributes); }
-            set { SetFlag(ImplFlag.HideAttributes, value); }
+            get { return GetItemBool(ItemBoolTable.HideAttributes); }
+            set { SetItemBool(ItemBoolTable.HideAttributes, value); }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public bool VileBlade
         {
-            get { return GetFlag(ImplFlag.VileBlade); }
-            set { SetFlag(ImplFlag.VileBlade, value); }
+            get { return GetItemBool(ItemBoolTable.VileBlade); }
+            set { SetItemBool(ItemBoolTable.VileBlade, value); }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public bool HolyBlade
         {
-            get { return GetFlag(ImplFlag.HolyBlade); }
-            set { SetFlag(ImplFlag.HolyBlade, value); }
+            get { return GetItemBool(ItemBoolTable.HolyBlade); }
+            set { SetItemBool(ItemBoolTable.HolyBlade, value); }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
@@ -5126,7 +5325,7 @@ namespace Server
                 return false;
             }
 
-            if (GetFlag(ImplFlag.FreezeDried))
+            if (GetItemBool(ItemBoolTable.FreezeDried))
             {
                 Console.WriteLine("Warning: Tried to freeze dry an already-frozen item: {0}", this);
                 Console.WriteLine(new System.Diagnostics.StackTrace());
@@ -5184,7 +5383,7 @@ namespace Server
             m_SerializedContentsIdx = idxms.ToArray();
             m_SerializedContentsBin = binms.ToArray();
 
-            SetFlag(ImplFlag.FreezeDried, true);
+            SetItemBool(ItemBoolTable.FreezeDried, true);
             TotalWeight = totalweight;
             TotalItems = totalitems;
             TotalGold = totalgold;
@@ -5241,7 +5440,7 @@ namespace Server
                 return false;
             }
 
-            if (!GetFlag(ImplFlag.FreezeDried))
+            if (!GetItemBool(ItemBoolTable.FreezeDried))
             {
                 Console.WriteLine("Warning: Tried to rehydrate a non-freezedried item: {0}", this);
                 Console.WriteLine(new System.Diagnostics.StackTrace());
@@ -5265,7 +5464,7 @@ namespace Server
             GenericReader bin = new BinaryFileReader(new BinaryReader(new MemoryStream(m_SerializedContentsBin)));
             GenericReader idx = new BinaryFileReader(new BinaryReader(new MemoryStream(m_SerializedContentsIdx)));
 
-            SetFlag(ImplFlag.FreezeDried, false); // set it here, no fatal errors from here on out and AddItem checks it
+            SetItemBool(ItemBoolTable.FreezeDried, false); // set it here, no fatal errors from here on out and AddItem checks it
             TotalItems = 0;
             TotalWeight = 0;
             TotalGold = 0;
@@ -5464,7 +5663,7 @@ namespace Server
         public void CheckRehydrate()
         {
             m_LastAccessed = DateTime.UtcNow;
-            if (GetFlag(ImplFlag.FreezeDried))
+            if (GetItemBool(ItemBoolTable.FreezeDried))
                 Rehydrate();
         }
 

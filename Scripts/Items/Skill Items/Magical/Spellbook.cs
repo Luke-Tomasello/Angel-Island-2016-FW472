@@ -30,6 +30,7 @@
  *		Drop items to the ground to avoid using the spell book as a bounce-back source.
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Engines.Craft;
 using Server.Network;

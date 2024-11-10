@@ -33,6 +33,7 @@
  *		Added header and copyright
  */
 
+using Server.Diagnostics;
 using System;
 
 namespace Server.Commands

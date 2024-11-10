@@ -53,6 +53,7 @@
  *		New coordinate based escortable - First time check-in
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Items;
 using Server.Misc;

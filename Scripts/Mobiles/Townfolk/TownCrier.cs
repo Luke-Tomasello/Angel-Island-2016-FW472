@@ -56,6 +56,7 @@
  *		Merged in 1.0RC0 code.
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Engines;
 using Server.Gumps;

@@ -75,6 +75,7 @@
  *		Commented out "bool gainedPath = false;"
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.ContextMenus;
 using Server.Items;

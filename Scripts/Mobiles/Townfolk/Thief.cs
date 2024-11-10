@@ -30,6 +30,7 @@
  *
  */
 
+using Server.Diagnostics;
 using Server.BountySystem;
 using Server.Commands;
 using Server.Items;

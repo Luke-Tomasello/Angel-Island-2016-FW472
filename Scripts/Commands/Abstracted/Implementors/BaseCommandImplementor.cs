@@ -28,6 +28,7 @@
  *		Merged in 1.0RC0 code.
  */
 
+using Server.Diagnostics;
 using System;
 using System.Collections;
 using System.Text;

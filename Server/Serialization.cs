@@ -762,7 +762,7 @@ namespace Server
             long now = DateTime.UtcNow.Ticks;
 
             if (WouldOverflowDateTime(ticks, now))
-                return DateTime.MaxValue; 
+                return DateTime.MaxValue;
             else if (ticks > 0 && (ticks + now) < 0)
                 return DateTime.MaxValue;
             else if (ticks < 0 && (ticks + now) < 0)

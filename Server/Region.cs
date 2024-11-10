@@ -21,6 +21,10 @@
 
 /* Server/Region.cs
  * CHANGELOG:
+ *  9/20/2024, Adam (MatchingRegions)
+ *      MatchingRegions verifies all regions match between the player and the NPC (banker for instance.)
+ *      A good example is standing in Wind Park, and yelling over the cave wall there to town to bank.
+ *          this.Say("I will not do business with an exploiter!");
  *  9/10/2024, Adam
  *      Add FindByName()
  *	2/21/11, Adam
@@ -62,6 +66,7 @@ using Server.Targeting;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 
 namespace Server
@@ -1944,7 +1949,20 @@ Console.WriteLine("done");
 
             return hpregion;
         }
+        public static bool MatchingRegions(Mobile m1, Mobile m2)
+        {   // all regions much match
+            List<int> ids1 = new List<int>();
+            foreach (Region rx in Region.FindAll(m1.Location, m1.Map))
+                if (rx != null)
+                    ids1.Add(rx.UId);
 
+            List<int> ids2 = new List<int>();
+            foreach (Region rx in Region.FindAll(m2.Location, m2.Map))
+                if (rx != null)
+                    ids2.Add(rx.UId);
+
+            return ids1.Except(ids2).ToList().Count == 0;
+        }
         public static ArrayList FindAll(Point3D p, Map map)
         {
             ArrayList all = new ArrayList();

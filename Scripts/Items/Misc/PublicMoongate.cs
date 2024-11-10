@@ -178,7 +178,7 @@ namespace Server.Items
 
                 // if you were only hidden by a moongate, you cannot stealth
                 if (wasHidden == false)
-                    from.SetFlag(Mobile.MobileFlags.LegitHide, false);  
+                    from.SetFlag(Mobile.MobileFlags.LegitHide, false);
 
                 from.MoveToWorld(m_entry.Location, m_list.Map);
                 Effects.PlaySound(m_entry.Location, m_list.Map, 0x1FE);

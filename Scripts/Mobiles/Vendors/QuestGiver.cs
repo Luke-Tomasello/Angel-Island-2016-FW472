@@ -326,7 +326,7 @@ namespace Server.Mobiles
         }
 
         private Memory m_PlayerMemory = new Memory();       // memory used to remember is a saw a player in the area
-        public override void OnSee(Mobile m)
+        public override void OnSeePlayer(Mobile m)
         {
             // yeah
             if (m is PlayerMobile == false)

@@ -26,6 +26,7 @@
  *		Added in ability to display SQL statements when debugging
  */
 #if false
+using Server.Diagnostics;
 using System;
 using Server;
 

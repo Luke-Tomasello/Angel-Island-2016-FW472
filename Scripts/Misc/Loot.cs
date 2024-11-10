@@ -21,6 +21,11 @@
 
 /* Scripts/Misc/Loot.cs
  * ChangeLog
+ *  9/20/2024, Adam (RandomWeapon et al.)
+ *      The family of RandomWeapon generation does not include ranged weapons. We therefore include them here:
+ *      From: return Construct(m_WeaponTypes)
+ *      To: return Construct(m_RangedWeaponTypes, m_WeaponTypes)
+ *      Note: A quick scan shows only the UnknownRogueSkeleton dropping ranged weapons.
  *	3/2/11, Adam
  *		Turn on LibraryBookTypes
  *	5/18/10, Adam
@@ -509,11 +514,11 @@ namespace Server
 
         public static BaseWeapon RandomRangedWeapon(bool inTokuno)
         {
-            /*if (Core.RuleSets.SERules() && inTokuno)
-				return Construct(m_SERangedWeaponTypes, m_AosRangedWeaponTypes, m_RangedWeaponTypes) as BaseWeapon;
+            if (Core.RuleSets.SERules() && inTokuno)
+                return Construct(m_SERangedWeaponTypes, m_AosRangedWeaponTypes, m_RangedWeaponTypes) as BaseWeapon;
 
-			if (Core.RuleSets.AOSRules())
-				return Construct(m_AosRangedWeaponTypes, m_RangedWeaponTypes) as BaseWeapon;*/
+            if (Core.RuleSets.AOSRules())
+                return Construct(m_AosRangedWeaponTypes, m_RangedWeaponTypes) as BaseWeapon;
 
             return Construct(m_RangedWeaponTypes) as BaseWeapon;
         }
@@ -523,7 +528,7 @@ namespace Server
             if (Core.RuleSets.AOSRules())
                 return Construct(m_AosWeaponTypes, m_WeaponTypes) as BaseWeapon;
 
-            return Construct(m_WeaponTypes) as BaseWeapon;
+            return Construct(m_RangedWeaponTypes/*Adam: See Change Log*/, m_WeaponTypes) as BaseWeapon;
         }
 
         public static Item RandomWeaponOrJewelry()
@@ -531,7 +536,7 @@ namespace Server
             if (Core.RuleSets.AOSRules())
                 return Construct(m_AosWeaponTypes, m_WeaponTypes, m_JewelryTypes);
 
-            return Construct(m_WeaponTypes, m_JewelryTypes);
+            return Construct(m_RangedWeaponTypes/*Adam: See Change Log*/, m_WeaponTypes, m_JewelryTypes);
         }
 
         public static BaseJewel RandomJewelry()
@@ -564,7 +569,7 @@ namespace Server
             if (Core.RuleSets.AOSRules())
                 return Construct(m_AosWeaponTypes, m_WeaponTypes, m_ArmorTypes, m_ShieldTypes);
 
-            return Construct(m_WeaponTypes, m_ArmorTypes, m_ShieldTypes);
+            return Construct(m_RangedWeaponTypes/*Adam: See Change Log*/, m_WeaponTypes, m_ArmorTypes, m_ShieldTypes);
         }
 
         public static Item RandomArmorOrWeapon()
@@ -572,7 +577,7 @@ namespace Server
             if (Core.RuleSets.AOSRules())
                 return Construct(m_AosWeaponTypes, m_WeaponTypes, m_ArmorTypes);
 
-            return Construct(m_WeaponTypes, m_ArmorTypes);
+            return Construct(m_RangedWeaponTypes/*Adam: See Change Log*/, m_WeaponTypes, m_ArmorTypes);
         }
 
         public static Item RandomArmorOrShieldOrWeaponOrJewelry()
@@ -580,7 +585,7 @@ namespace Server
             if (Core.RuleSets.AOSRules())
                 return Construct(m_AosWeaponTypes, m_WeaponTypes, m_ArmorTypes, m_ShieldTypes, m_JewelryTypes);
 
-            return Construct(m_WeaponTypes, m_ArmorTypes, m_ShieldTypes, m_JewelryTypes);
+            return Construct(m_RangedWeaponTypes/*Adam: See Change Log*/, m_WeaponTypes, m_ArmorTypes, m_ShieldTypes, m_JewelryTypes);
         }
 
         public static Item RandomClothingOrJewelry()

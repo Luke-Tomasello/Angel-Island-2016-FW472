@@ -76,6 +76,7 @@
  *		I'm using the system from my shareware product WinCron.
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Prompts;
 using System;

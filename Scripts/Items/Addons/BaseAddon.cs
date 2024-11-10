@@ -21,6 +21,9 @@
 
 /* Scripts/Items/Addons/BaseAddon.cs
  * ChangeLog
+ *  10/10/2024, Adam (redeeding)
+ *      In attempt to keep addon value high, AI doesn't allow redeeding of addons.
+ *      However, in this patch, we allow the addon to be redeeded for the first 30 minutes after placement
  *  3/7/07, Adam
  *      Make OnChop() virtual 
  *  9/03/06 Taran Kain
@@ -43,6 +46,7 @@
 //comented out line 77-103 added lines 73-76 for addon deletetion instead of redeeding
 
 using Server.Multis;
+using System;
 using System.Collections;
 
 namespace Server.Items
@@ -90,42 +94,50 @@ namespace Server.Items
             BaseHouse house = BaseHouse.FindHouseAt(this);
 
             if (house != null && house.IsOwner(from) && house.Addons.Contains(this))
-            {
+            {   // chopping withing the first 30 minutes will allow the addon to be redeeded.
+                if (Age > TimeSpan.FromMinutes(30))
+                {
+                    Effects.PlaySound(GetWorldLocation(), Map, 0x3B3);
+                    from.SendLocalizedMessage(500461); // You destroy the item.
 
-                Effects.PlaySound(GetWorldLocation(), Map, 0x3B3);
-                from.SendLocalizedMessage(500461); // You destroy the item.
+                    Delete();
 
-                Delete();
+                    house.Addons.Remove(this);
+                }
+                else
+                {   // redeed
 
-                house.Addons.Remove(this);
+                    Effects.PlaySound(GetWorldLocation(), Map, 0x3B3);
+                    from.SendMessage("You redeed the item.");
+
+                    int hue = 0;
+
+                    if (RetainDeedHue)
+                    {
+                        for (int i = 0; hue == 0 && i < m_Components.Count; ++i)
+                        {
+                            AddonComponent c = (AddonComponent)m_Components[i];
+
+                            if (c.Hue != 0)
+                                hue = c.Hue;
+                        }
+                    }
+
+                    Delete();
+
+                    house.Addons.Remove(this);
+
+                    BaseAddonDeed deed = Deed;
+
+                    if (deed != null)
+                    {
+                        if (RetainDeedHue)
+                            deed.Hue = hue;
+
+                        from.AddToBackpack(deed);
+                    }
+                }
             }
-            //	int hue = 0;
-
-            //	if ( RetainDeedHue )
-            //	{
-            //		for ( int i = 0; hue == 0 && i < m_Components.Count; ++i )
-            //		{
-            //			AddonComponent c = (AddonComponent)m_Components[i];
-
-            //			if ( c.Hue != 0 )
-            //				hue = c.Hue;
-            //		}
-            //	}
-
-            //	Delete();
-
-            //	house.Addons.Remove( this );
-
-            //	BaseAddonDeed deed = Deed;
-
-            //	if ( deed != null )
-            //	{
-            //		if ( RetainDeedHue )
-            //			deed.Hue = hue;
-
-            //		from.AddToBackpack( deed );
-            //	}
-            //	}
         }
 
         public virtual BaseAddonDeed Deed { get { return null; } }

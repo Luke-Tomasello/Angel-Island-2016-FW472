@@ -41,6 +41,7 @@
  */
 
 using Server.Accounting;
+using Server.Diagnostics;
 using Server.Gumps;
 using Server.Items;
 using Server.Mobiles;
@@ -690,7 +691,7 @@ namespace Server.Commands
                 string val = null;
                 for (int ix = 1; ix < e.Length; ix++)
                     val += e.GetString(ix) + " ";
-                val.TrimEnd();
+                val = val.TrimEnd();
 
                 int p1 = val.IndexOf('%', 0);
                 if (p1 >= 0)

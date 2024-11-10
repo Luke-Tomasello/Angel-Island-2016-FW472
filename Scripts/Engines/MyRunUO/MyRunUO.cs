@@ -29,6 +29,7 @@
  */
 
 #if false
+using Server.Diagnostics;
 using System;
 using Server;
 

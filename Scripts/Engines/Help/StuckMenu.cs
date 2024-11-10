@@ -62,6 +62,7 @@
  *		Merged in 1.0RC0 code.
  */
 
+using Server.Diagnostics;
 using Server.Gumps;
 using Server.Mobiles;
 using Server.Network;
@@ -433,7 +434,7 @@ namespace Server.Menus.Questions
                                     }
                                     catch (Exception checkexception)
                                     {
-                                        Server.Commands.LogHelper.LogException(checkexception);
+                                        LogHelper.LogException(checkexception);
                                     }
 
                                 }

@@ -41,6 +41,7 @@
  *		Find Mobile by Type (currently hacked to find PlayerBarkeeper only)
  */
 
+using Server.Diagnostics;
 using Server.Mobiles;
 using System;
 using System.Collections;

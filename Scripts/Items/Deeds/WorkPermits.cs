@@ -25,6 +25,7 @@
  *      first time checkin
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Multis;
 using Server.Targeting;

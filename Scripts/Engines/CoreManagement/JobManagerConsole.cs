@@ -36,7 +36,7 @@ namespace Server.Items
         {
             Name = "JobManager Console";
             Weight = 1.0;
-            Hue = 0x47E;
+            Hue = Utility.RandomSpecialHue(GetType().FullName);
         }
 
         public JobManagerConsole(Serial s)
@@ -225,6 +225,9 @@ namespace Server.Items
                         break;
                     }
             }
+
+            if (version == 1)
+                Hue = Utility.RandomSpecialHue(GetType().FullName);
         }
 
     }

@@ -49,6 +49,7 @@
  *      Initial creation
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Items;
 using Server.Targeting;
@@ -117,7 +118,7 @@ namespace Server.Multis.StaticHousing
             }
             catch (Exception e)
             {
-                Server.Commands.LogHelper.LogException(e, "Botched Static Housing xml.");
+                LogHelper.LogException(e, "Botched Static Housing xml.");
             }
         }
 
@@ -717,7 +718,7 @@ namespace Server.Multis.StaticHousing
             }
             catch (Exception e)
             {
-                Server.Commands.LogHelper.LogException(e, "Botched Static Housing xml.");
+                LogHelper.LogException(e, "Botched Static Housing xml.");
             }
 
         }
@@ -837,14 +838,14 @@ namespace Server.Multis.StaticHousing
                         }
                         catch (Exception e)
                         {
-                            Server.Commands.LogHelper.LogException(e, "Possible bad element in static house xml: element[id].");
+                            LogHelper.LogException(e, "Possible bad element in static house xml: element[id].");
                         }
                     }
                 }
             }
             catch (Exception e)
             {
-                Server.Commands.LogHelper.LogException(e, "Botched Static Housing xml.");
+                LogHelper.LogException(e, "Botched Static Housing xml.");
             }
 
             return returnList;

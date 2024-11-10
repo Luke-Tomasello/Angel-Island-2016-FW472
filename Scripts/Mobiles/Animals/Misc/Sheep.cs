@@ -20,6 +20,8 @@
  ***************************************************************************/
 
 /* ChangeLog:
+ *	10/4/2004, Adam
+ *		Implemented RTT for AFK resource gathering thwarting.
  *  8/16/06, Rhiannon
  *		Changed speed settings to match SpeedInfo table.
  *	7/26/05, erlein
@@ -48,8 +50,8 @@ namespace Server.Mobiles
         }
 
         public void Carve(Mobile from, Item item)
-        {
-            if (DateTime.UtcNow < m_NextWoolTime)
+        {   // if they fail the RTT (or haven't answered yet,) then they will get the message below
+            if (DateTime.UtcNow < m_NextWoolTime || (from is PlayerMobile pm && !pm.RTT("AFK sheep sheering check.")))
             {
                 // This sheep is not yet ready to be shorn.
                 PrivateOverheadMessage(MessageType.Regular, 0x3B2, 500449, from.NetState);

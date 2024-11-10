@@ -37,6 +37,7 @@
  *		Cleaned up Test Center message that get written to the console
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Gumps;
 using Server.Network;

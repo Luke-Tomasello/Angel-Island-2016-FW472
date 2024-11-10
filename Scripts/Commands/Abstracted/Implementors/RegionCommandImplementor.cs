@@ -26,6 +26,7 @@
  */
 
 
+using Server.Diagnostics;
 using System;
 using System.Collections;
 

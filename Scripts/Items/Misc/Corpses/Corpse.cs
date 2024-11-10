@@ -21,6 +21,9 @@
 
 /* Scripts/Items/Misc/Corpses/Corpse.cs
  * ChangeLog
+ *  9/20/2024, Adam,
+ *      Replace various elemental corpse graphics with that of a slime.
+ *      elemental graphics seem to be bugged (verified in RunUO) such that the click range for the corpse is much larger than the actual corpse.
  *	3/6/0, Adam,
  *		Add a notion of FriendlyFire so that we can track when a player was killed by a shared account
  *		(so we can deny a bounty)
@@ -52,6 +55,7 @@
  *		It's still criminal to loot a corpse, just not bones.
  */
 
+using Server.Diagnostics;
 using Server.ContextMenus;
 using Server.Engines.PartySystem;
 using Server.Engines.Quests;
@@ -359,17 +363,77 @@ namespace Server.Items
         {
             get { return new Rectangle2D(20, 85, 104, 111); }
         }
+        private static Body GetCorpseBody(Mobile owner)
+        {
+            int body = owner.BodyValue;
+            switch (body)
+            {
+                case 0x10:  /*water elemental*/
+                case 0x9E:  /*acid/toxic elemental*/
+                case 0xF:   /*fire elemental*/
+                case 13:    /*an air elemental*/
+                case 159:   /*a blood elemental*/
+                case 131:   /*an efreet*/
+                case 162:   /*a poison elemental*/
+                case 163:   /*a snow elemental*/
+                    return new Body(0x33);  // slime - these guys have a messed up corpse.. the click rect is like 4 square tiles
 
+                default:
+                    return owner.Body;      // standard corpse mechanism
+            }
+        }
+        private static int GetCorpseHue(Mobile owner)
+        {
+            switch (owner.BodyValue)
+            {
+                case 0x10:  /*water elemental*/
+                    {
+                        return Utility.RandomSpecialHue(Utility.ColorSelect.Blue, owner.GetType().Name);
+                    }
+                case 0x9E:  /*acid/toxic elemental*/
+                    {
+                        return Utility.RandomSpecialHue(Utility.ColorSelect.Green, owner.GetType().Name);
+                    }
+                case 0xF:   /*fire elemental*/
+                    {
+                        return Utility.RandomSpecialHue(Utility.ColorSelect.Gold, owner.GetType().Name);
+                    }
+                case 13:    /*an air elemental*/
+                    {
+                        return Utility.RandomSpecialHue(Utility.ColorSelect.ShadowIron, owner.GetType().Name);
+                    }
+                case 159:   /*a blood elemental*/
+                    {
+                        return Utility.RandomSpecialHue(Utility.ColorSelect.Red, owner.GetType().Name);
+                    }
+                case 131:   /*an efreet*/
+                    {
+                        return Utility.RandomSpecialHue(Utility.ColorSelect.Red, owner.GetType().Name);
+                    }
+                case 162:   /*a poison elemental*/
+                    {
+                        return Utility.RandomSpecialHue(Utility.ColorSelect.Green, owner.GetType().Name);
+                    }
+                case 163:   /*a snow elemental*/
+                    {
+                        return 0x47E;           // true white;
+                    }
+
+                default:
+                    return owner.Hue;
+            }
+        }
         public Corpse(Mobile owner, ArrayList equipItems)
             : base(0x2006)
         {
-            // To supress console warnings, stackable must be true
-            Stackable = true;
-            Amount = owner.Body; // protocol defines that for itemid 0x2006, amount=body
+            // special corpses are some of the elementals, like water elemental. The client believes the corpse is much bigger than it is.
+            //  So we replace the elemental corpse with a slime corps and hue it accordingly
+            Stackable = true;               // To suppress console warnings, stackable must be true
+            Amount = GetCorpseBody(owner);  // protocol defines that for itemid 0x2006, amount=body
             Stackable = false;
 
             Movable = false;
-            Hue = owner.Hue;
+            Hue = GetCorpseHue(owner);
             Direction = owner.Direction;
             Name = owner.Name;
 
@@ -661,7 +725,7 @@ namespace Server.Items
             }
             catch (Exception e)
             {
-                Server.Commands.LogHelper.LogException(e);
+                LogHelper.LogException(e);
             }
         }
 
@@ -718,7 +782,7 @@ namespace Server.Items
             }
             catch (Exception ex)
             {
-                Server.Commands.LogHelper.LogException(ex);
+                LogHelper.LogException(ex);
             }
 
             return true;

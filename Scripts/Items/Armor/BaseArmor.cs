@@ -21,6 +21,9 @@
 
 /* Scripts/Items/Armor/BaseArmor.cs
  * ChangeLog
+ *  9/20/2024, Adam (LogInvalidAttribute)
+ *      We now trap, log, and convert invalid object attributes (creating super weapons and armor.)
+ *      Not only do we convert the value to something reasonable, but we also log where it came from (so we can fix it.)
  *  9/16/2024, Adam (OnSingleClick)
  *      More robust OnSingleClick processing
  *	6/12/10, Adam
@@ -94,6 +97,7 @@
  *	23,march,04 uploaded
  */
 
+using Server.Diagnostics;
 using Server.Engines.Craft;
 using Server.Factions;
 using Server.Mobiles;
@@ -348,19 +352,33 @@ namespace Server.Items
         public ArmorQuality Quality
         {
             get { return m_Quality; }
-            set { UnscaleDurability(); m_Quality = value; Invalidate(); InvalidateProperties(); ScaleDurability(); }
+            set
+            {   // handle the bad value
+                if (Enum.IsDefined(typeof(ArmorQuality), value) == false)
+                {
+                    LogHelper.LogInvalidAttribute(string.Format("Setting ArmorQuality to {0}", value.ToString()));
+                    value = (ArmorQuality)Utility.RandomMinMaxScaled(0, 3);
+                }
+
+                UnscaleDurability(); m_Quality = value; Invalidate(); InvalidateProperties(); ScaleDurability();
+            }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public ArmorDurabilityLevel Durability
         {
             get { return m_Durability; }
-            set { UnscaleDurability(); m_Durability = value; ScaleDurability(); InvalidateProperties(); }
-        }
+            set
+            {
+                // handle the bad value
+                if (Enum.IsDefined(typeof(ArmorDurabilityLevel), value) == false)
+                {
+                    LogHelper.LogInvalidAttribute(string.Format("Setting ArmorDurabilityLevel to {0}", value.ToString()));
+                    value = (ArmorDurabilityLevel)Utility.RandomMinMaxScaled(0, 3);
+                }
 
-        public virtual int ArtifactRarity
-        {
-            get { return 0; }
+                UnscaleDurability(); m_Durability = value; ScaleDurability(); InvalidateProperties();
+            }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
@@ -372,6 +390,13 @@ namespace Server.Items
             }
             set
             {
+                // handle the bad value
+                if (Enum.IsDefined(typeof(ArmorProtectionLevel), value) == false)
+                {
+                    LogHelper.LogInvalidAttribute(string.Format("Setting ArmorProtectionLevel to {0}", value.ToString()));
+                    value = (ArmorProtectionLevel)Utility.RandomMinMaxScaled(0, 3);
+                }
+
                 if (m_Protection != value)
                 {
                     m_Protection = value;
@@ -382,28 +407,32 @@ namespace Server.Items
                 }
             }
         }
+        public virtual int ArtifactRarity
+        {
+            get { return 0; }
+        }
         /*
-				[CommandProperty( AccessLevel.GameMaster )]
-				public AosAttributes Attributes
-				{
-					get{ return m_AosAttributes; }
-					set{}
-				}
+                [CommandProperty( AccessLevel.GameMaster )]
+                public AosAttributes Attributes
+                {
+                    get{ return m_AosAttributes; }
+                    set{}
+                }
 
-				[CommandProperty( AccessLevel.GameMaster )]
-				public AosArmorAttributes ArmorAttributes
-				{
-					get{ return m_AosArmorAttributes; }
-					set{}
-				}
+                [CommandProperty( AccessLevel.GameMaster )]
+                public AosArmorAttributes ArmorAttributes
+                {
+                    get{ return m_AosArmorAttributes; }
+                    set{}
+                }
 
-				[CommandProperty( AccessLevel.GameMaster )]
-				public AosSkillBonuses SkillBonuses
-				{
-					get{ return m_AosSkillBonuses; }
-					set{}
-				}
-		*/
+                [CommandProperty( AccessLevel.GameMaster )]
+                public AosSkillBonuses SkillBonuses
+                {
+                    get{ return m_AosSkillBonuses; }
+                    set{}
+                }
+        */
         public int ComputeStatReq(StatType type)
         {
             int v;
@@ -420,7 +449,7 @@ namespace Server.Items
 
         public double ComputeStatBonus(StatType type, Mobile wearer)
         {
-            // BE CAREFUL. Do NOT make bonuses interdependant on each other!!! Doing so will cause an infinite recursion loop in StatChange event.
+            // BE CAREFUL. Do NOT make bonuses interdependent on each other!!! Doing so will cause an infinite recursion loop in StatChange event.
             // ie when calculating DexBonus, you can use Str or Int but using Dex will cause a loop.
             // using Str in calc'ing DexBonus and ALSO using Dex in calc'ing StrBonus will also cause a loop.
             if (type == StatType.Str)
@@ -1231,6 +1260,12 @@ namespace Server.Items
 
             if (Parent is Mobile)
                 ((Mobile)Parent).CheckStatTimers();
+
+            // patch the bad values
+            //  The properties themselves will correct erroneous values.
+            Quality = m_Quality;
+            Durability = m_Durability;
+            ProtectionLevel = m_Protection;
         }
 
         public virtual CraftResource DefaultResource { get { return CraftResource.Iron; } }

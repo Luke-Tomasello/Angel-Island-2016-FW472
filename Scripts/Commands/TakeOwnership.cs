@@ -27,6 +27,7 @@
  *      Could be extended to take ownership of a boat as well.
  */
 
+using Server.Diagnostics;
 using Server.Multis;
 using Server.Targeting;
 using System;

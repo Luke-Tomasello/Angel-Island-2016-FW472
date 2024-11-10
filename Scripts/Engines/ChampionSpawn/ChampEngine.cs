@@ -21,6 +21,14 @@
 
 /* Scripts/Engines/ChampionSpawn/ChampEngine.cs
  * ChangeLog:
+ *	10/22/2024, Adam
+ *	    Various external interfaces to support a mobile (Clanmaster) carrying one of these things around.
+ *	        These changes give the Clanmaster a 'command interface' into the champ engine.
+ *	    Free Monster management:
+ *	        Put these free monsters in the free monsters list since our warring system wishes to keep them in play
+ *	    AbandonedMonsters:
+ *	        Rather than the 'let them go' model for most champs, our warring system wants to clean up these monsters
+ *	        on a warring engine reset
  *	8/12/10, Adam
  *		Replace GetSpawnLocation() implementation with a shared version if Spawner.cs
  *	6/23/10, Adam
@@ -72,12 +80,15 @@
  *		Initial creation
  * 
  **/
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Gumps;
 using Server.Items;
 using Server.Mobiles;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Server.Engines.ChampionSpawn
 {
@@ -87,24 +98,25 @@ namespace Server.Engines.ChampionSpawn
         // Members
         #region members
 
-        private ChampSliceTimer m_Slice;                                // Slice timer  
+        private ChampSliceTimer m_Slice;                            // Slice timer  
         private ChampRestartTimer m_Restart;                        // Restart timer	
-        private DateTime m_End;                                                 // Holds next respawn time
-        protected ChampLevelData.SpawnTypes m_Type;         // Which spawn type this is ( cold blood etc )
-        protected ArrayList m_Monsters;                                 // Mobile container
+        private DateTime m_End;                                     // Holds next respawn time
+        protected ChampLevelData.SpawnTypes m_Type;                 // Which spawn type this is ( cold blood etc )
+        protected ArrayList m_Monsters;                             // Mobile container
         protected ArrayList m_FreeMonsters;                         // Mobile container for old spawn
-        protected int m_LevelCounter;                                       // Current level
-        protected DateTime m_ExpireTime;                                // Level down datetime
+        protected int m_LevelCounter;                               // Current level
+        protected DateTime m_ExpireTime;                            // Level down datetime
         protected DateTime m_SpawnTime;                             // Respawn datetime
         protected TimeSpan m_RestartDelay;                          // Restart delay
-        protected bool m_bGraphics;                                         // Altar & Skulls on/off
-        protected bool m_bRestart;                                          // Restart timer on/off
-        protected bool m_bActive;                                               // Champ running..?
+        protected bool m_bGraphics;                                 // Altar & Skulls on/off
+        protected bool m_bRestart;                                  // Restart timer on/off
+        protected bool m_bActive;                                   // Champ running..?
         protected ChampGraphics m_Graphics;                         // Graphics object
-        protected int m_Kills;                                                  // Kill counter
-        protected NavDestinations m_NavDest;                        // Allow mobs to navigate!		
-        protected double m_LevelScale;                                  // Virtually scales the maxmobs and maxrange
-        public ArrayList SpawnLevels;                                       // Contains all the level data objects
+        protected int m_KillsThisLevel;                             // Kill counter
+        protected int m_TotalKills;                                 // total kills
+        protected string m_NavDest;                                 // Allow mobs to navigate!		
+        protected double m_LevelScale;                              // Virtually scales the maxmobs and maxrange
+        public ArrayList SpawnLevels;                               // Contains all the level data objects
 
         public enum LevelErrors
         {
@@ -164,6 +176,29 @@ namespace Server.Engines.ChampionSpawn
     }
 		*/
 
+        private string m_ClanAlignment;
+        [CommandProperty(AccessLevel.GameMaster)]
+        public string ClanAlignment
+        {
+            get { return m_ClanAlignment; }
+            set { m_ClanAlignment = value; }
+        }
+        private Backpack m_Equipment;                               // used to dress/equip the mobile
+        [CommandProperty(AccessLevel.GameMaster)]
+        public Backpack Equipment
+        {
+            get { return m_Equipment; }
+            set 
+            {
+                if (m_Equipment != null)
+                    m_Equipment.Delete();
+
+                m_Equipment = value;
+
+                if (m_Equipment != null)
+                    m_Equipment.MoveItemToIntStorage();
+            }
+        }
         [CommandProperty(AccessLevel.GameMaster)]
         public ChampLevelData.SpawnTypes SpawnType                  // SpawnType.  Changing this will also restart the champ if active.
         {
@@ -215,19 +250,30 @@ namespace Server.Engines.ChampionSpawn
 
                 // set active bool and call overridable activate code
                 m_bActive = value;
+                // register the activation / deactivation
+                if (m_bActive == true)
+                    EventSink.InvokeChampInfoEvent(new ChampInfoEventArgs(this, ChampInfoEventArgs.ChampInfo.Activated));
+                else
+                    EventSink.InvokeChampInfoEvent(new ChampInfoEventArgs(this, ChampInfoEventArgs.ChampInfo.Deactivated));
                 Activate();
             }
         }
-
         [CommandProperty(AccessLevel.GameMaster)]
         public bool RestartTimer
         {
             get { return m_bRestart; }
-            set { m_bRestart = value; }
+            set 
+            { 
+                m_bRestart = value;
+                if (value == true)
+                    InitRestartTimer(m_RestartDelay);
+                else
+                    KillRestartTimer();
+            }
         }
 
         //pla 12/28/06:
-        //virtualised for ChampAngelIsland
+        //virtualized for ChampAngelIsland
         [CommandProperty(AccessLevel.GameMaster)]
         public virtual TimeSpan RestartDelay
         {
@@ -235,12 +281,13 @@ namespace Server.Engines.ChampionSpawn
             set
             {
                 m_RestartDelay = value;
-                if (m_Restart != null)
-                    if (m_Restart.Running)
-                        DoTimer(value);
+                if (m_bRestart)
+                    // start the timer
+                    InitRestartTimer(value);
             }
         }
-
+        public virtual bool WipeOnLevelUp { get { return true; } set { ; } }
+        public virtual bool WipeOnLevelDown { get { return true; } set { ; } }
         [CommandProperty(AccessLevel.GameMaster)]
         public int Level
         {
@@ -250,26 +297,45 @@ namespace Server.Engines.ChampionSpawn
                 if (value < SpawnLevels.Count)
                 {
                     // set new level....
-                    // wipe monsters first !
-                    WipeMonsters();
-                    m_Kills = 0;
+                    
+                    // Should we wipe monsters first !?
+                    bool wipeMonsters = true;
+                    // some spawners don't want to wipe on a level up
+                    if (value > m_LevelCounter && !WipeOnLevelUp)
+                        wipeMonsters = false;   // don't wipe on level up
+                    else if (value < m_LevelCounter && !WipeOnLevelDown)
+                        wipeMonsters = false;   // don't wipe on level down
+
+                    if (wipeMonsters)
+                        WipeMonsters();
+                    else
+                        //Adam, 10/22/2024: Put these free monsters in the free monsters list since our warring system
+                        //  wishes to keep them in play
+                        MoveMonstersToFree(); 
+
+                    m_KillsThisLevel = 0;
                     m_LevelCounter = value;
                     // reset level down time
                     m_ExpireTime = DateTime.UtcNow + Lvl_ExpireDelay;
                 }
             }
         }
-
+        public DateTime ExpireTime { get { return m_ExpireTime; } set { m_ExpireTime = value; } }
         [CommandProperty(AccessLevel.GameMaster)]
         public int Kills
         {
             // squirrels
-            get { return m_Kills; }
+            get { return m_KillsThisLevel; }
             set
             {
                 if (value <= Lvl_MaxKills && value >= 0)
-                    m_Kills = value;
+                    m_KillsThisLevel = value;
             }
+        }
+        public int TotalKills
+        {
+            get { return m_TotalKills; }
+            set { m_TotalKills = value; }
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
@@ -285,7 +351,7 @@ namespace Server.Engines.ChampionSpawn
             set
             {
                 if (m_bActive)
-                    DoTimer(value);
+                    InitRestartTimer(value);
             }
         }
 
@@ -386,7 +452,7 @@ namespace Server.Engines.ChampionSpawn
             set { ((ChampLevelData)SpawnLevels[m_LevelCounter]).m_ExpireDelay = value; }
         }
         [CommandProperty(AccessLevel.GameMaster)]
-        public string Lvl_Monsters      // Monster array!  have this as a comma seperated list
+        public string Lvl_Monsters      // Monster array!  have this as a comma separated list
         {
             get
             {
@@ -394,7 +460,7 @@ namespace Server.Engines.ChampionSpawn
                 foreach (string s in ((ChampLevelData)SpawnLevels[m_LevelCounter]).Monsters)
                     temp = temp + s + ",";
 
-                temp = temp.Substring(0, temp.Length - 1);
+                temp = temp.Substring(0, temp.Length > 0 ? temp.Length - 1 : 0);
                 return temp;
             }
             set
@@ -408,11 +474,11 @@ namespace Server.Engines.ChampionSpawn
 
         }
 
-        // non command props		
-        public NavDestinations NavPoint
+        [CommandProperty(AccessLevel.Seer)]
+        public string NavDestination
         {
             get { return m_NavDest; }
-            set { m_NavDest = value; }
+            set {m_NavDest = value; }
         }
 
         // 
@@ -461,7 +527,21 @@ namespace Server.Engines.ChampionSpawn
         {
             base.Serialize(writer);
 
-            writer.Write((int)3);           // version
+            int version = 7;
+            writer.Write(version);           // version
+
+            // version 7
+            writer.WriteMobileList(m_AbandonedMonsters);
+
+            // version 6
+            writer.Write(m_TotalKills);
+
+            // version 5
+            writer.Write(m_ClanAlignment);
+            writer.Write(m_Equipment);
+
+            // version 4
+            writer.Write(m_NavDest);
 
             // version 3
             writer.Write((double)m_LevelScale);  // errors for this level
@@ -482,10 +562,11 @@ namespace Server.Engines.ChampionSpawn
             writer.WriteMobileList(m_Monsters);
             writer.WriteMobileList(m_FreeMonsters);
             writer.Write((int)m_LevelCounter);
-            writer.Write((int)m_Kills);
+            writer.Write((int)m_KillsThisLevel);
             writer.Write((DateTime)m_ExpireTime);
-            //  nav dest
-            writer.Write((int)m_NavDest);
+            
+            //  nav dest oblolete in version 4
+            //writer.Write((int)m_NavDest);
 
             // the bools
             writer.Write((bool)m_bActive);
@@ -529,6 +610,27 @@ namespace Server.Engines.ChampionSpawn
 
             switch (version)
             {
+                case 7:
+                    {
+                        m_AbandonedMonsters = reader.ReadMobileList();
+                        goto case 6;
+                    }
+                case 6:
+                    {
+                        m_TotalKills = reader.ReadInt();
+                        goto case 5;
+                    }
+                case 5:
+                    {
+                        m_ClanAlignment = reader.ReadString();
+                        m_Equipment = (Backpack)reader.ReadItem();
+                        goto case 4;
+                    }
+                case 4:
+                    {
+                        m_NavDest = reader.ReadString();
+                        goto case 3;
+                    }
                 case 3:
                     {
                         m_LevelScale = reader.ReadDouble();
@@ -560,9 +662,11 @@ namespace Server.Engines.ChampionSpawn
                         m_Monsters = reader.ReadMobileList();
                         m_FreeMonsters = reader.ReadMobileList();
                         m_LevelCounter = reader.ReadInt();
-                        m_Kills = reader.ReadInt();
+                        m_KillsThisLevel = reader.ReadInt();
                         m_ExpireTime = reader.ReadDateTime();
-                        m_NavDest = (NavDestinations)reader.ReadInt();
+
+                        if (version < 4)
+                            /*m_NavDest = (NavDestinations)*/reader.ReadInt();
 
                         // the bools
                         m_bActive = reader.ReadBool();
@@ -582,9 +686,9 @@ namespace Server.Engines.ChampionSpawn
                             //pla: 13/01/07
                             //changed so we don't lose time on restart
                             if (ts == TimeSpan.Zero)
-                                DoTimer(m_RestartDelay);
+                                InitRestartTimer(m_RestartDelay);
                             else
-                                DoTimer(ts);
+                                InitRestartTimer(ts);
                         }
                         else if (m_bActive)
                         {
@@ -608,9 +712,10 @@ namespace Server.Engines.ChampionSpawn
         protected virtual void StartSpawn()
         {
             m_bActive = true;
-            m_Kills = 0;
+            m_KillsThisLevel = 0;
             m_LevelCounter = 0;
-            WipeMonsters();
+            m_TotalKills = 0;
+            WipeMonsters(include_abandoned: true);
             StartSlice();
         }
 
@@ -621,11 +726,7 @@ namespace Server.Engines.ChampionSpawn
                 return;
 
             // if there's a restart timer on, kill it.
-            if (m_Restart != null)
-            {
-                m_Restart.Stop();
-                m_Restart = null;
-            }
+            KillRestartTimer();
 
             if (m_Slice != null)
                 m_Slice.Stop();
@@ -692,7 +793,8 @@ namespace Server.Engines.ChampionSpawn
                     if (((Mobile)m_Monsters[i]).Deleted)
                     {
                         // increase kills !
-                        ++m_Kills;
+                        m_TotalKills += 1;
+                        m_KillsThisLevel += 1;
                         //add to clear list!
                         ClearList.Add(m_Monsters[i]);
                     }
@@ -713,7 +815,7 @@ namespace Server.Engines.ChampionSpawn
                     m_FreeMonsters.Remove(ClearList[i]);
 
                 //calculate percentage killed against max for this level
-                double n = m_Kills / (double)Lvl_MaxKills;
+                double n = m_KillsThisLevel / (double)Lvl_MaxKills;
                 int percentage = (int)(n * 100);
 
                 // level up if > 90%
@@ -743,12 +845,146 @@ namespace Server.Engines.ChampionSpawn
         public bool ClearMonsters
         {
             get { return false; }
-            set { if (value) WipeMonsters(); }
+            set { if (value) WipeMonsters(include_abandoned: true); }
         }
-
-        public void WipeMonsters()
+        #region External Interface
+        [CommandProperty(AccessLevel.GameMaster)]
+        public bool ClearAbandonedMonsters
         {
-            // Delete all mosters, clear arraylists..
+            get { return false; }
+            set { if (value) WipeAbandonedMonsters(); }
+        }
+        private void WipeAbandonedMonsters()
+        {
+            foreach (object o in m_AbandonedMonsters)
+                if (o is Mobile m && m.Deleted == false)
+                    m.Delete();
+
+            m_AbandonedMonsters.Clear();
+        }
+        public void RefreshLevelExpiry()
+        {
+            m_ExpireTime = DateTime.UtcNow + Lvl_ExpireDelay;
+        }
+        [CommandProperty(AccessLevel.GameMaster)]
+        public bool ReloadTables
+        {
+            get { return false; }
+            set 
+            {
+                if (value == true)
+                {
+                    SpawnLevels = ChampLevelData.CreateSpawn(m_Type);
+                    m_ExpireTime = DateTime.UtcNow + Lvl_ExpireDelay;
+                }
+            
+            }
+        }
+        Spawner.SpawnerFlags m_SpawnerFlags = Spawner.SpawnerFlags.None;
+        public Spawner.SpawnerFlags SpawnerFlags
+        {
+            get { return m_SpawnerFlags; }
+            set { m_SpawnerFlags = value; }
+        }
+        public ArrayList AllMonsters
+        {
+            get
+            {
+                ArrayList bigList = new ArrayList();
+                if (m_Monsters != null)
+                    foreach (object o in m_Monsters)
+                        if (o is Mobile m && !m.Deleted)
+                            bigList.Add(m);
+
+                if (m_FreeMonsters != null)
+                    foreach (object o in m_FreeMonsters)
+                        if (o is Mobile m && !m.Deleted)
+                            bigList.Add(m);
+
+                if (m_AbandonedMonsters != null)
+                    foreach (object o in m_AbandonedMonsters)
+                        if (o is Mobile m && !m.Deleted)
+                            bigList.Add(m);
+
+                return bigList;
+            }
+        }
+        public ArrayList Monsters { get { return m_Monsters; } }                             
+        public ArrayList FreeMonsters { get { return m_FreeMonsters; } }
+        public ArrayList AbandonedMonsters { get { return m_AbandonedMonsters; } }
+        public int ReassignNavigation(string newNavDest, bool homeRange, bool force = false)
+        {
+            ArrayList bigList = AllMonsters;
+            int count = 0;
+            if (bigList.Count > 0)
+            {
+                foreach (Mobile m in bigList)
+                    if (m is BaseCreature bc)
+                        // homerange is how far from the spawner to look to nab mobiles to reassign
+                        if (homeRange == false || Utility.InRange(bc.Location, this.GetWorldLocation(), Lvl_MaxRange + bc.RangeHome))
+                            if (string.IsNullOrEmpty(bc.NavDestination) || force)
+                            {   // force:false Only assign those not already assigned a destination (probably defending the fort.)
+                                // force:true Everyone is reassigned
+                                bc.NavDestination = newNavDest;
+                                Utility.DelayStartAI(bc);
+                                count++;
+                            }
+
+            }
+            return count;
+        }
+        public int ClearNavigation()
+        {
+            ArrayList bigList = AllMonsters;
+            int count = 0;
+            if (bigList.Count > 0)
+            {
+
+                foreach (Mobile m in bigList)
+                    if (m is BaseCreature bc)
+                    {
+                        bc.NavDestination = null;
+                        Utility.DelayStartAI(bc);
+                        count++;
+                    }
+            }
+            return count;
+        }
+        public int BringHome(Mobile target)
+        {
+            ArrayList bigList = AllMonsters;
+
+            int count = 0;
+            if (bigList.Count > 0)
+            {
+                foreach (Mobile m in bigList)
+                    if (m is BaseCreature bc)
+                    {
+                        bc.NavDestination = null;
+                        bc.MoveToWorld(Utility.NearMobileLocation(target, homeRange: 10), target.Map);
+                        Utility.DelayStartAI(bc);
+                        count++;
+                    }
+            }
+            return count;
+        }
+        #endregion External Interface
+        public void MoveMonstersToFree()
+        {
+            if (m_FreeMonsters == null)
+                m_FreeMonsters = new ArrayList();
+
+            if (m_Monsters != null)
+            {
+                foreach (Mobile m in m_Monsters)
+                    m_FreeMonsters.Add(m);
+
+                m_Monsters.Clear();
+            }
+        }
+        public void WipeMonsters(bool include_abandoned = false)
+        {
+            // Delete all monsters, clear arraylists..
             if (m_Monsters != null)
             {
                 foreach (Mobile m in m_Monsters)
@@ -764,6 +1000,15 @@ namespace Server.Engines.ChampionSpawn
 
                 m_FreeMonsters.Clear();
             }
+
+            if (include_abandoned)
+                if (m_AbandonedMonsters != null)
+                {
+                    foreach (Mobile m in m_AbandonedMonsters)
+                        m.Delete();
+
+                    m_AbandonedMonsters.Clear();
+                }
         }
 
         protected bool CompareLevel(int offset)
@@ -771,6 +1016,17 @@ namespace Server.Engines.ChampionSpawn
 
             try //just in case!
             {
+
+                List<string> list1 = new List<string>(((ChampLevelData)SpawnLevels[m_LevelCounter]).Monsters);
+                List<string> list2 = new List<string>(((ChampLevelData)SpawnLevels[m_LevelCounter + offset]).Monsters);
+
+                bool areEqual = !list1.Except(list2, StringComparer.OrdinalIgnoreCase).Any()
+                        && !list2.Except(list1, StringComparer.OrdinalIgnoreCase).Any();
+                
+                //return true if the strings match
+                return areEqual;
+                #region old code
+#if false
                 // create compare strings
                 string current = "";
                 foreach (string s in ((ChampLevelData)SpawnLevels[m_LevelCounter]).Monsters)
@@ -785,17 +1041,19 @@ namespace Server.Engines.ChampionSpawn
                     return true;
                 else
                     return false;
+#endif
+                #endregion old code
             }
             catch
             {
                 return false;  // must have been out of range
             }
         }
-
+        private ArrayList m_AbandonedMonsters = new ArrayList();
         protected virtual void AdvanceLevel()
         {
             //reset kills etc and level up
-            m_Kills = 0;
+            m_KillsThisLevel = 0;
             if (!IsFinalLevel)
             {
                 // Check if the next level is the same as the current level's monster array				
@@ -803,6 +1061,9 @@ namespace Server.Engines.ChampionSpawn
                 {
                     // anything left in the mob list gets moved into the free list
                     //first we let anything in the free list go
+                    //Adam, 10/22/2024: Put these 'let go' monsters in a list that can be freed by an external source
+                    //  Our warring system for instance does not want a slow accumulation of these now 'let go' monsters.
+                    m_AbandonedMonsters.AddRange(m_FreeMonsters);
                     m_FreeMonsters.Clear();
                     // shift all mobs into the free list
                     foreach (Mobile m in m_Monsters)
@@ -816,17 +1077,35 @@ namespace Server.Engines.ChampionSpawn
                     m_Monsters.Clear();
 
                 }
+                
                 ++m_LevelCounter;
+
+                // notify interested parties
+                EventSink.InvokeChampInfoEvent(new ChampInfoEventArgs(this, ChampInfoEventArgs.ChampInfo.LevelUp));
+
                 //reset expire time
                 m_ExpireTime = DateTime.UtcNow + Lvl_ExpireDelay;
                 m_SpawnTime = DateTime.UtcNow;
             }
             else
             {
-                //Last level (champ) is over
+                /*
+                 * Last level (champ) is over
+                 */
+                
                 StopSlice();
                 m_LevelCounter = 0;
                 m_bActive = false;
+
+                // register the deactivation
+                EventSink.InvokeChampInfoEvent(new ChampInfoEventArgs(this, ChampInfoEventArgs.ChampInfo.Deactivated));
+
+
+                // must come after Active change
+                EventSink.InvokeChampInfoEvent(new ChampInfoEventArgs(this, ChampInfoEventArgs.ChampInfo.ChampComplete));
+
+                // after the Invoke so they can know their score
+                TotalKills = 0;
 
                 // update altar
                 if (m_bGraphics)
@@ -837,9 +1116,8 @@ namespace Server.Engines.ChampionSpawn
                 {
                     //pla: 13/01/07.
                     //changed to use DoTimer
-                    DoTimer(m_RestartDelay);
+                    InitRestartTimer(m_RestartDelay);
                 }
-
             }
         }
 
@@ -935,20 +1213,27 @@ namespace Server.Engines.ChampionSpawn
 
         protected virtual void Expire()
         {
+            ChampInfoEventArgs.ChampInfo flags = ChampInfoEventArgs.ChampInfo.LevelDown;
             // Level down time - you just can't get the players these days !
             if (m_LevelCounter < SpawnLevels.Count)
-            {
+            {   
                 double f = ((double)Kills) / ((double)Lvl_MaxKills);
                 if (f * 100 < 20)
                 {
                     // They didn't even get 20% !!, go back a level.....
-                    if (Level > 0)
+                    if (Level > 0)  // this test here protects level 1 from despawning if nothing is killed
                     {
                         // if previous level is the same as the current, just decrease level counter
                         if (CompareLevel(-1) == true)
+                        {
                             --m_LevelCounter;
+                            flags |= ChampInfoEventArgs.ChampInfo.LevelCounter;
+                        }
                         else    //otherwise wipe mobs when leveling down
+                        {
                             --Level;
+                            flags |= ChampInfoEventArgs.ChampInfo.Level;
+                        }
                     }
                     Kills = 0;
                     InvalidateProperties();
@@ -958,6 +1243,7 @@ namespace Server.Engines.ChampionSpawn
                     Kills = 0;
                 }
                 m_ExpireTime = DateTime.UtcNow + Lvl_ExpireDelay;
+                EventSink.InvokeChampInfoEvent(new ChampInfoEventArgs(this, flags));
             }
         }
 
@@ -966,15 +1252,17 @@ namespace Server.Engines.ChampionSpawn
             BaseCreature bc = m as BaseCreature;
             if (bc != null)
             {
-                bc.Tamable = false;
-                bc.Home = m_NavDest != NavDestinations.None ? new Point3D() : Location;
-                bc.RangeHome = Lvl_MaxRange;
-                bc.NavDestination = m_NavDest;
+                bc.Tamable = false;                     // never tamable
+                bc.Home = !string.IsNullOrEmpty(m_NavDest) ? new Point3D() : GetWorldLocation();
+                bc.RangeHome = Lvl_MaxRange;            // home range
+                bc.NavDestination = m_NavDest;          // do we have a navigation destination?
+                bc.ClanAlignment = m_ClanAlignment;     // are we aligned?
+                bc.Engine = this;                       // give the creature a reference to this champ engine
+                Utility.EquipMobile(bc, m_Equipment);   // lets play dress up!
 
-                //if we have a navdestination as soon as we spawn start on it
-                if (bc.NavDestination != NavDestinations.None)
-                    bc.AIObject.Think();
-
+                //if we have a nav destination as soon as we spawn start on it
+                if (!string.IsNullOrEmpty(bc.NavDestination) || !bc.PlayerRangeSensitive)
+                    Utility.DelayStartAI(bc);
             }
         }
 
@@ -984,20 +1272,26 @@ namespace Server.Engines.ChampionSpawn
         /// stops and restarts the restart timer with a new delay
         /// </summary>
         /// <param name="delay"></param>
-        public void DoTimer(TimeSpan delay)
+        public void InitRestartTimer(TimeSpan delay)
         {
             if (m_bActive)  //cant have a restart if the champ is on
                 return;
 
             m_End = DateTime.UtcNow + delay;
 
-            if (m_Restart != null)
-                m_Restart.Stop();
+            KillRestartTimer();
 
             m_Restart = new ChampRestartTimer(this, delay);
             m_Restart.Start();
         }
-
+        private void KillRestartTimer()
+        {
+            if (m_Restart != null)
+            {
+                m_Restart.Stop();
+                m_Restart = null;
+            }
+        }
         protected Mobile Factory(Type type)
         {
             Mobile mx = null;
@@ -1055,90 +1349,16 @@ namespace Server.Engines.ChampionSpawn
                 return null;
             }
         }
-
         protected virtual Point3D GetSpawnLocation(Mobile m)
         {
-            Spawner.SpawnFlags sflags = (((ChampLevelData)SpawnLevels[m_LevelCounter]).m_Flags & SpawnFlags.SpawnFar) > 0 ? Spawner.SpawnFlags.SpawnFar : Spawner.SpawnFlags.None;
-            return Spawner.GetSpawnPosition(Map, Location, Lvl_MaxRange, false, true, sflags, m);
-            /*
-			//Map map = Map;
+            Spawner.SpawnerFlags sflags = (((ChampLevelData)SpawnLevels[m_LevelCounter]).m_Flags & SpawnFlags.SpawnFar) > 0 ? Spawner.SpawnerFlags.SpawnFar : Spawner.SpawnerFlags.None;
+            sflags |= Spawner.SpawnerFlags.AvoidPlayers;
+            
+            // these flags are set from an external source and not defined within the ChampLevelData (hardcoded.)
+            if (m_SpawnerFlags != Spawner.SpawnerFlags.None)
+                sflags = m_SpawnerFlags;
 
-			CanFitFlags flags = CanFitFlags.requireSurface;
-			if (m != null && m.CanSwim == true) flags |= CanFitFlags.canSwim;
-			if (m != null && m.CantWalk == true) flags |= CanFitFlags.cantWalk;
-
-			if (Map == null)
-				return Location;
-
-			// Try 10 times to find a spawnable location not near a player.
-			for (int i = 0; i < 10; i++)
-			{
-				int x;
-				int y;
-				if ((((ChampLevelData)SpawnLevels[m_LevelCounter]).m_Flags & SpawnFlags.SpawnFar) != 0)
-				{
-					x = (int)((double)Location.X + Spawner.RandomFar() * (double)Lvl_MaxRange);
-					y = (int)((double)Location.Y + Spawner.RandomFar() * (double)Lvl_MaxRange);
-				}
-				else
-				{
-					x = Location.X + (Utility.Random((Lvl_MaxRange * 2) + 1) - Lvl_MaxRange);
-					y = Location.Y + (Utility.Random((Lvl_MaxRange * 2) + 1) - Lvl_MaxRange);
-				}
-				int z = Map.GetAverageZ(x, y);
-
-				if (Map.CanSpawnMobile(new Point2D(x, y), this.Z, flags) && !NearPlayer(new Point3D(x, y, this.Z)))
-					return new Point3D(x, y, this.Z);
-				if (Map.CanSpawnMobile(new Point2D(x, y), z, flags) && !NearPlayer(new Point3D(x, y, z)))
-					return new Point3D(x, y, z);
-			}
-
-			// Try 10 more times to find a any spawnable location.
-			for (int i = 0; i < 10; i++)
-			{
-				int x;
-				int y;
-				if ((((ChampLevelData)SpawnLevels[m_LevelCounter]).m_Flags & SpawnFlags.SpawnFar) != 0)
-				{
-					x = (int)((double)Location.X + Spawner.RandomFar() * (double)Lvl_MaxRange);
-					y = (int)((double)Location.Y + Spawner.RandomFar() * (double)Lvl_MaxRange);
-				}
-				else
-				{
-					x = Location.X + (Utility.Random((Lvl_MaxRange * 2) + 1) - Lvl_MaxRange);
-					y = Location.Y + (Utility.Random((Lvl_MaxRange * 2) + 1) - Lvl_MaxRange);
-				}
-				int z = Map.GetAverageZ(x, y);
-
-				if (Map.CanSpawnMobile(new Point2D(x, y), this.Z, flags))
-					return new Point3D(x, y, this.Z);
-				if (Map.CanSpawnMobile(new Point2D(x, y), z, flags))
-					return new Point3D(x, y, z);
-
-			}
-
-			// Experimental, property-based, error reporting.
-			//  cannot find a valid location to spawn this creature
-			Lvl_LevelError = LevelErrors.No_Location;
-
-			return Location;
-			 */
-        }
-
-        protected bool NearPlayer(Point3D px)
-        {
-            IPooledEnumerable eable = Map.GetMobilesInRange(px, 15);
-            foreach (Mobile m in eable)
-            {
-                if (m is PlayerMobile && m.AccessLevel <= AccessLevel.Player)
-                {
-                    eable.Free();
-                    return true;
-                }
-            }
-            eable.Free();
-
-            return false;
+            return Spawner.GetSpawnPosition(Map, GetWorldLocation(), Lvl_MaxRange, m, sflags);
         }
 
         // public overrides from Item
@@ -1170,7 +1390,9 @@ namespace Server.Engines.ChampionSpawn
         {
             // cleanup			
             Graphics = false;
-            WipeMonsters();
+            WipeMonsters(include_abandoned: true);
+            if (Equipment != null)
+                Equipment.Delete();
             base.OnAfterDelete();
         }
 
@@ -1180,7 +1402,7 @@ namespace Server.Engines.ChampionSpawn
             if (from.AccessLevel >= AccessLevel.GameMaster)
             {
                 if (m_bActive)
-                    LabelTo(from, "{0} (Active; Level: {1} / {2}; Kills: {3}/{4})", m_Type, Level, SpawnLevels.Count - 1, m_Kills, Lvl_MaxKills);
+                    LabelTo(from, "{0} (Active; Level: {1} / {2}; Kills: {3}/{4})", m_Type, Level, SpawnLevels.Count - 1, m_KillsThisLevel, Lvl_MaxKills);
                 else
                 {
                     LabelTo(from, "{0} (Inactive; Levels : {1}) ", m_Type, SpawnLevels.Count - 1);
@@ -1210,6 +1432,7 @@ namespace Server.Engines.ChampionSpawn
                 : base(delay)
             {
                 m_Spawn = spawn;
+                m_Spawn.TotalKills = 0;
                 Priority = TimerPriority.FiveSeconds;
             }
 

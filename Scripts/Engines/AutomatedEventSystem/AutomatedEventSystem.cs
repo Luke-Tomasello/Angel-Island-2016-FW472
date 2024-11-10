@@ -107,6 +107,7 @@
  *		Initial Version.
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Engines;
 using Server.Engines.ChampionSpawn;
@@ -687,8 +688,8 @@ namespace Server
                         m_ChampionSpawn = cs;
 
                         // basic setup
-                        m_ChampionSpawn.NavPoint = NavDestinations.Britan;  // Britan invasion
-                        m_ChampionSpawn.PickChamp();                                        // pick a new random champ type
+                        m_ChampionSpawn.NavDestination = "Britain";         // Britain invasion
+                        m_ChampionSpawn.PickChamp();                        // pick a new random champ type
 
                         // old stuff!
                         //m_ChampionSpawn.SpawnRange = 30;					// spawn range from spawner						

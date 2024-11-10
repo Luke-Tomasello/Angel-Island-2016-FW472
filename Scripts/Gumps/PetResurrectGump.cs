@@ -22,6 +22,9 @@
 /*
  * Scripts/Gumps/PetRessurectGump.cs
  * CHANGE LOG
+ *  9/17/21 - Yoar
+ *	    Added SuffersSkillLoss, CheckApplySkillLoss methods to deal with
+ *	    pet skill loss in other situations.
  *	10/7/04 - Pixie
  *		Added warning message to pet owner for when the pet will take
  *		skill loss on resurrection.
@@ -46,11 +49,7 @@ namespace Server.Gumps
         {
             from.CloseGump(typeof(PetResurrectGump));
 
-            bool bStatLoss = false;
-            if (pet.BondedDeadPetStatLossTime > DateTime.UtcNow)
-            {
-                bStatLoss = true;
-            }
+            bool bStatLoss = SuffersSkillLoss(pet);
 
             m_Pet = pet;
 
@@ -66,13 +65,10 @@ namespace Server.Gumps
             AddItem(218, 95, 0xCB0);
 
             AddHtmlLocalized(30, 30, 150, 75, 1049665, false, false); // <div align=center>Wilt thou sanctify the resurrection of:</div>
-            AddHtml(30, 70, 150, 25, String.Format("<div align=CENTER>{0}</div>", pet.Name), true, false);
+            AddHtml(30, 70, 150, 25, string.Format("<div align=CENTER>{0}</div>", pet.Name), true, false);
 
             if (bStatLoss)
-            {
-                string statlossmessage = "Your pet lacks the ability to return to the living at this time without suffering skill loss.";
-                AddHtml(30, 105, 150, 105, String.Format("<div align=CENTER>{0}</div>", statlossmessage), true, false);
-            }
+                AddHtml(30, 105, 150, 105, string.Format("<div align=CENTER>{0}</div>", SkillLossWarning), true, false);
 
             AddButton(40, bStatLoss ? 215 : 105, 0x81A, 0x81B, 0x1, GumpButtonType.Reply, 0); // Okay
             AddButton(110, bStatLoss ? 215 : 105, 0x819, 0x818, 0x2, GumpButtonType.Reply, 0); // Cancel
@@ -97,24 +93,35 @@ namespace Server.Gumps
                 m_Pet.FixedEffect(0x376A, 10, 16);
                 m_Pet.ResurrectPet();
 
-                //				double decreaseAmount;
-
-                //				if( from == m_Pet.ControlMaster )
-                //					decreaseAmount = 0.1;
-                //				else
-                //					decreaseAmount = 0.2;
-
-                //				for ( int i = 0; i < m_Pet.Skills.Length; ++i )	//Decrease all skills on pet.
-                //					m_Pet.Skills[i].Base -= decreaseAmount;
-
-                if (m_Pet.BondedDeadPetStatLossTime > DateTime.UtcNow)
-                {
-                    // Reduce all skills on pet by 10%
-                    for (int i = 0; i < m_Pet.Skills.Length; ++i)
-                        m_Pet.Skills[i].Base -= (m_Pet.Skills[i].Base * .1);
-                }
+                CheckApplySkillLoss(m_Pet);
             }
+        }
 
+        public static double SkillLossPerc = 0.1; // reduce all skills on the pet by 10%
+        public static string SkillLossWarning = "Your pet lacks the ability to return to the living without suffering skill loss at this time.";
+
+        public static bool SuffersSkillLoss(BaseCreature pet)
+        {
+            return pet.BondedDeadPetStatLossTime > DateTime.UtcNow;
+        }
+
+        public static void CheckApplySkillLoss(BaseCreature pet)
+        {
+            //double decreaseAmount;
+
+            //if (from == m_Pet.ControlMaster)
+            //    decreaseAmount = 0.1;
+            //else
+            //    decreaseAmount = 0.2;
+
+            //for (int i = 0; i < m_Pet.Skills.Length; ++i)   //Decrease all skills on pet.
+            //    m_Pet.Skills[i].Base -= decreaseAmount;
+
+            if (SuffersSkillLoss(pet))
+            {
+                for (int i = 0; i < pet.Skills.Length; i++)
+                    pet.Skills[i].Base -= (pet.Skills[i].Base * SkillLossPerc);
+            }
         }
     }
 }

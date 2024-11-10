@@ -21,6 +21,9 @@
 
 /* Scripts/Multis/BaseHouse.cs
  * ChangeLog
+ *  9/20/2024, Adam (AddEastDoor)
+ *      Add DoorFacing facing as a default parm to 
+ *      We use this in the construction of towers so that the doors have the correct facing.
  *  9/3/21, Adam
  *      Added "(locked down)" and "(secured)" labels.
  *  8/26/2024, Adam (TentBackpack)
@@ -256,6 +259,7 @@
 using Server.Accounting;
 using Server.Commands;
 using Server.ContextMenus;
+using Server.Diagnostics;
 using Server.Gumps;
 using Server.Items;
 using Server.Misc;
@@ -1746,9 +1750,9 @@ namespace Server.Multis
             return AddEastDoor(true, x, y, z);
         }
 
-        public BaseDoor AddEastDoor(bool wood, int x, int y, int z)
+        public BaseDoor AddEastDoor(bool wood, int x, int y, int z, DoorFacing facing = DoorFacing.SouthCW)
         {
-            BaseDoor door = MakeDoor(wood, DoorFacing.SouthCW);
+            BaseDoor door = MakeDoor(wood, facing);
 
             AddDoor(door, x, y, z);
 

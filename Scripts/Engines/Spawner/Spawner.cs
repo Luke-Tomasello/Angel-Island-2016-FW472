@@ -21,6 +21,14 @@
 
 /* Scripts/Engines/Spawner/Spawner.cs
  * Changelog:
+ *  9/24/2024, Adam
+ *      fold SpawnFlags and SpawnerFlags into a single enum.
+ *      Extend SpawnerFlags to support ClearPath (mobile/item must have a clear path back to the spawner.)
+ *  9/19/2024, Adam
+ *      1. Add the notion of a Competition Spawner. 
+ *          When this is set, creatures on the spawner will fight eachother without having to set the Team.
+ *          (Setting the team would have them fight anything, not on the same team.)
+ *      2. Add Team and Tamable properties.
  *	3/6/16, Adam
  *		1. Comment out the *display* of the OurWorldSize stuff... not sure why it's here and atleast makes the display ugly
  *		We will look into this later and try and track down the reasoning.
@@ -90,7 +98,7 @@
  *		Added templated ability to spawners, full range of props setting for spawner entry.
  *		Set via TemplateMobile -> view props, or TemplateItem -> view props, packed out old data.
  *  06/27/06, Kit
- *		Added new property MobVendorInvunerable, for setting invunerability on vendors.
+ *		Added new property MobVendorInvulnerable, for setting invunerability on vendors.
  *	6/6/06, Adam
  *		Rename Nav --> m_NavDest to follow normal member naming conventions.
  *	1/9/06, Adam
@@ -146,6 +154,7 @@
  *		Merged in 1.0RC0 code.
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Engines;
 using Server.Items;
@@ -155,16 +164,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Linq;
 
 namespace Server.Mobiles
 {
     public class Spawner : Item
     {
-        public enum BOOL
+        public enum BOOL : byte
         {
-            bDefault = -1,
+            bDefault = 0,
             bTrue = 1,
-            bFalse = 0
+            bFalse = 2
         };
 
         private int m_Team;
@@ -182,13 +192,65 @@ namespace Server.Mobiles
         private bool m_DynamicCopy;
         private WayPoint m_WayPoint;
         private Direction m_MobDirection;
-        private NavDestinations m_NavDest;
+        private string m_NavDest;
         private BOOL m_MobVendorInvul = BOOL.bDefault;
         private Mobile m_TemplateMobile;
         private Item m_TemplateItem;
         private Item m_LootPack;
         private CoreAI.WorldSize m_OurWorldSize = CoreAI.WorldSize.Small | CoreAI.WorldSize.Medium | CoreAI.WorldSize.Large | CoreAI.WorldSize.Full;
 
+        #region SpawnerFlags
+        [Flags]
+        public enum SpawnerFlags : int
+        {
+            None = 0,
+            BlockDamage     = 0x01,
+            Competition     = 0x02,
+            ClearPath       = 0x04,
+            SpawnFar        = 0x08,
+            AvoidPlayers    = 0x10,
+            ForceZ          = 0x20,
+        }
+        SpawnerFlags m_SpawnerFlags;
+        public void SetFlag(SpawnerFlags flag, bool value)
+        {
+            if (value)
+                m_SpawnerFlags |= flag;
+            else
+                m_SpawnerFlags &= ~flag;
+        }
+        public bool GetFlag(SpawnerFlags flag)
+        {
+            return ((m_SpawnerFlags & flag) != 0);
+        }
+        public static void SetFlag(SpawnerFlags flags, SpawnerFlags flag, bool value)
+        {
+            if (value)
+                flags |= flag;
+            else
+                flags &= ~flag;
+        }
+        public static bool GetFlag(SpawnerFlags flags, SpawnerFlags flag)
+        {
+            return ((flags & flag) != 0);
+        }
+        [CommandProperty(AccessLevel.GameMaster, AccessLevel.Owner)]
+        public bool BlockDamage { get { return GetFlag(SpawnerFlags.BlockDamage); } set { SetFlag(SpawnerFlags.BlockDamage, value); } }
+        [CommandProperty(AccessLevel.GameMaster, AccessLevel.Owner)]
+        public bool Competition { get { return GetFlag(SpawnerFlags.Competition); } set { SetFlag(SpawnerFlags.Competition, value); } }
+        [CommandProperty(AccessLevel.GameMaster, AccessLevel.Owner)]
+        public bool ClearPath { get { return GetFlag(SpawnerFlags.ClearPath); } set { SetFlag(SpawnerFlags.ClearPath, value); } }
+        [CommandProperty(AccessLevel.GameMaster, AccessLevel.Owner)]
+        public bool SpawnFar { get { return GetFlag(SpawnerFlags.SpawnFar); } set { SetFlag(SpawnerFlags.SpawnFar, value); } }
+        [CommandProperty(AccessLevel.GameMaster, AccessLevel.Owner)]
+        public bool AvoidPlayers { get { return GetFlag(SpawnerFlags.AvoidPlayers); } set { SetFlag(SpawnerFlags.AvoidPlayers, value); } }
+        [CommandProperty(AccessLevel.GameMaster, AccessLevel.Owner)]
+        public bool ForceZ { get { return GetFlag(SpawnerFlags.ForceZ); } set { SetFlag(SpawnerFlags.ForceZ, value); } }
+        #endregion SpawnerFlags
+
+        private BOOL m_Tamable = BOOL.bDefault;
+        [CommandProperty(AccessLevel.GameMaster, AccessLevel.Owner)]
+        public BOOL Tamable { get { return m_Tamable; } set { m_Tamable = value; } }
 
         #region Publish 4 Siege (!Core.RuleSets.AngelIslandRules() && !Core.UOAR && !Core.RuleSets.MortalisRules() && PublishInfo.Publish >= 4)
         /*
@@ -344,6 +406,29 @@ namespace Server.Mobiles
         }
         #endregion
 
+        private string m_ClanAlignment;
+        [CommandProperty(AccessLevel.GameMaster)]
+        public string ClanAlignment
+        {
+            get { return m_ClanAlignment; }
+            set { m_ClanAlignment = value; }
+        }
+        private Backpack m_Equipment;                               // used to dress/equip the mobile
+        [CommandProperty(AccessLevel.GameMaster)]
+        public Backpack Equipment
+        {
+            get { return m_Equipment; }
+            set 
+            { 
+                if (m_Equipment != null)
+                    m_Equipment.Delete();
+                
+                m_Equipment = value;
+
+                if (m_Equipment != null)
+                    m_Equipment.MoveItemToIntStorage();
+            }
+        }
         [CommandProperty(AccessLevel.Seer)]
         public CoreAI.WorldSize OurWorldSize
         {
@@ -357,7 +442,7 @@ namespace Server.Mobiles
 
         // Adam: can be used for rares manufacture - must be seer level minimum
         [CommandProperty(AccessLevel.Seer)]
-        public BOOL MobVendorInvunerable
+        public BOOL MobVendorInvulnerable
         {
             get { return m_MobVendorInvul; }
 
@@ -413,7 +498,15 @@ namespace Server.Mobiles
                 InvalidateProperties();
             }
         }
-
+        public bool Spawns(Type type)
+        {
+            List<Type> list = ObjectTypes;
+            return list.Contains(type);
+        }
+        public bool Spawns(string name)
+        {
+            return Spawns(SpawnerType.GetType(name));
+        }
         public ArrayList Objects
         {
             get { return m_Objects; }
@@ -449,7 +542,7 @@ namespace Server.Mobiles
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public NavDestinations NavPoint
+        public virtual string NavDestination
         {
             get
             {
@@ -458,9 +551,15 @@ namespace Server.Mobiles
             set
             {
                 m_NavDest = value;
+                UpdateMobileNav(value);
             }
         }
-
+        private void UpdateMobileNav(string value)
+        {
+            foreach (object o in Objects)
+                if (o is BaseCreature bc)
+                    bc.NavDestination = value;
+        }
         [CommandProperty(AccessLevel.GameMaster)]
         public Direction MobileDirection
         {
@@ -728,7 +827,7 @@ namespace Server.Mobiles
         public void Defrag()
         {
             bool removed = false;
-
+            // defrag
             for (int i = 0; i < m_Objects.Count; ++i)
             {
                 object o = m_Objects[i];
@@ -778,7 +877,32 @@ namespace Server.Mobiles
             if (removed)
                 InvalidateProperties();
         }
+        private void CheckCompetition(BaseCreature bc)
+        {
+            if (bc == null)
+                return;
 
+            // Competition Spawner - we fight amongst ourselves.
+            if (Competition && m_Objects.Count > 0)
+            {   // get all mobiles into one list
+                List<object> list = new List<object>(m_Objects.Cast<object>().ToList());
+                List<BaseCreature> creature_list = list.Where(x => x is BaseCreature && !(x as BaseCreature).Deleted).Cast<BaseCreature>().ToList();
+
+                if (list.Count > 1)
+                {   // assign constant focus
+                    Utility.Shuffle(creature_list);
+                    bc.ConstantFocus = FindCompetitor(creature_list, bc);
+                    Console.WriteLine("{0} => {1}", bc, bc.ConstantFocus);
+                }
+            }
+        }
+        private static BaseCreature FindCompetitor(List<BaseCreature> creature_list, BaseCreature me)
+        {
+            foreach (BaseCreature bc in creature_list)
+                if (bc != me)
+                    return bc;
+            return null;
+        }
         // make virtual so we can get the tick in our derived class EventTimer
         public virtual void OnTick()
         {
@@ -961,7 +1085,7 @@ namespace Server.Mobiles
 
         protected virtual void OnAfterMobileSpawn(Mobile m)
         {
-
+            m.OnAfterSpawn();
         }
 
         // create the template mob/item for the first item only
@@ -1013,9 +1137,10 @@ namespace Server.Mobiles
                         m_Objects.Add(m);
                         InvalidateProperties();
 
-                        Point3D loc = (m is BaseVendor ? this.Location : GetSpawnPosition(o));
+                        Point3D loc = (m is BaseVendor ? this.Location : GetSpawnPosition(o, m_SpawnerFlags));
                         OnAfterMobileSpawn(m);   //plasma: new "event" allows you to make changes to the mob after spawn
                         m.MoveToWorld(loc, map);
+                        CheckCompetition(m as BaseCreature);
 
                     }
                     else if (o is Item)
@@ -1023,7 +1148,7 @@ namespace Server.Mobiles
                         Item item = (Item)o;
                         m_Objects.Add(item);
                         InvalidateProperties();
-                        item.MoveToWorld(GetSpawnPosition(o), map);
+                        item.MoveToWorld(GetSpawnPosition(o, m_SpawnerFlags), map);
 
                         // Adam: Warn if we're spawning stuff in a house.
                         //	This is a problem becuse the item will be orphaned by the spawer
@@ -1109,17 +1234,25 @@ namespace Server.Mobiles
 
                                 c.NavDestination = m_NavDest;
 
-                                if (m_Team > 0)
-                                    c.Team = m_Team;
+                                c.Team = this.Team;
 
                                 c.Home = this.Location;
 
                                 //Pix: give the spawned creature a ref to this spawner
                                 c.Spawner = this;
 
-                                //if we have a navdestination as soon as we spawn start on it
-                                if (c.NavDestination != NavDestinations.None)
-                                    c.AIObject.Think();
+                                if (this.Tamable != BOOL.bDefault)
+                                    c.Tamable = this.Tamable == BOOL.bTrue ? true : false;
+
+                                c.BlockDamage = this.BlockDamage;
+
+                                c.ClanAlignment = this.ClanAlignment;
+
+                                Utility.EquipMobile(c, m_Equipment);
+
+                                //if we have a nav destination as soon as we spawn start on it
+                                if (!string.IsNullOrEmpty(c.NavDestination) || !c.PlayerRangeSensitive)
+                                    Utility.DelayStartAI(c);
 
                                 /////////////////////////////
                                 // customize the mob spawned
@@ -1128,11 +1261,11 @@ namespace Server.Mobiles
                                     if (m_MobVendorInvul != BOOL.bDefault)
                                     {
                                         ((BaseVendor)c).IsInvulnerable = m_MobVendorInvul == BOOL.bTrue ? true : false;
-                                        c.NameHue = -1; //reset hue back to useing notority
+                                        c.NameHue = -1; //reset hue back to using notoriety
                                     }
                                 }
 
-                                // it it's not a template mob, it may be a paragon!
+                                // if it's not a template mob, it may be a paragon!
                                 if (m_TemplateEnabled == false)
                                     if (Utility.RandomChance(10) && HighPowerTameNearby())
                                         c.MakeParagon();
@@ -1194,42 +1327,23 @@ namespace Server.Mobiles
 
             return false;
         }
-
-        /*public Point3D GetSpawnPosition(object o)
-		{
-			CanFitFlags flags = CanFitFlags.requireSurface;
-			if (o is Mobile)
-			{
-				Mobile m = o as Mobile;
-				if (m != null && m.CanSwim == true) flags |= CanFitFlags.canSwim;
-				if (m != null && m.CantWalk == true) flags |= CanFitFlags.cantWalk;
-			}
-
-			if (Map == null)
-				return Location;
-
-			// Try 10 times to find a Spawnable location.
-			for (int i = 0; i < 10; i++)
-			{
-				int x = Location.X + (Utility.Random((m_HomeRange * 2) + 1) - m_HomeRange);
-				int y = Location.Y + (Utility.Random((m_HomeRange * 2) + 1) - m_HomeRange);
-				int z = Map.GetAverageZ(x, y);
-
-				if (Map.CanSpawnMobile(new Point2D(x, y), this.Z, flags))
-					return new Point3D(x, y, this.Z);
-				if (Map.CanSpawnMobile(new Point2D(x, y), z, flags))
-					return new Point3D(x, y, z);
-			}
-
-			return this.Location;
-		}*/
-
-        public Point3D GetSpawnPosition(object o)
+      
+        public Point3D GetSpawnPosition(object o, SpawnerFlags spawnerFlags = SpawnerFlags.None)
         {
-            return GetSpawnPosition(Map, Location, m_HomeRange, false, o);
+            return GetSpawnPosition(Map, Location, m_HomeRange, o, spawnerFlags);
         }
 
-        public static Point3D GetSpawnPosition(Map map, Point3D location, int homeRange, bool forceZ, object o)
+        public static Point3D GetSpawnPosition(Map map, Point3D location, int homeRange, object o, SpawnerFlags spawnerFlags = SpawnerFlags.None)
+        {
+            List<Point3D> list = GetAllSpawnableLocations(map, location, homeRange, o, sflags: spawnerFlags);
+            return list[0];
+        }
+        public static Point3D GetSpawnPosition(Map map, Point3D location, int homeRange, Mobile m, SpawnerFlags sflags)
+        {
+            List<Point3D> list = GetAllSpawnableLocations(map, location, homeRange, m, sflags);
+            return list[0];
+        }
+        public static List<Point3D> GetAllSpawnableLocations(Map map, Point3D location, int homeRange, object o, SpawnerFlags sflags)
         {
             CanFitFlags flags = CanFitFlags.requireSurface;
             if (o is Mobile)
@@ -1239,48 +1353,21 @@ namespace Server.Mobiles
                 if (m != null && m.CantWalk == true) flags |= CanFitFlags.cantWalk;
             }
 
-            if (map == null)
-                return location;
+            List<Point3D> list = new List<Point3D>();
 
-            // Try 10 times to find a Spawnable location.
-            for (int i = 0; i < 10; i++)
+            if (map == null)
             {
-                int x = location.X + (Utility.Random((homeRange * 2) + 1) - homeRange);
-                int y = location.Y + (Utility.Random((homeRange * 2) + 1) - homeRange);
-                int z = map.GetAverageZ(x, y);
-
-                if (map.CanSpawnMobile(new Point2D(x, y), location.Z, flags))
-                    return new Point3D(x, y, location.Z);
-                if (forceZ == false)
-                    if (map.CanSpawnMobile(new Point2D(x, y), z, flags))
-                        return new Point3D(x, y, z);
+                list.Add(location);
+                return list;
             }
-
-            return location;
-        }
-
-        public enum SpawnFlags
-        {
-            None,
-            SpawnFar
-        }
-
-        public static Point3D GetSpawnPosition(Map map, Point3D location, int homeRange, bool forceZ, bool avoidPlayers, SpawnFlags sflags, Mobile m)
-        {
-            CanFitFlags flags = CanFitFlags.requireSurface;
-            if (m != null && m.CanSwim == true) flags |= CanFitFlags.canSwim;
-            if (m != null && m.CantWalk == true) flags |= CanFitFlags.cantWalk;
-
-            if (map == null)
-                return location;
-
+            
             // Try 10 times to find a spawnable location not near a player.
-            if (avoidPlayers)
+            if (GetFlag(sflags, SpawnerFlags.AvoidPlayers))
                 for (int i = 0; i < 10; i++)
                 {
                     int x;
                     int y;
-                    if ((sflags & SpawnFlags.SpawnFar) != 0)
+                    if (GetFlag(sflags, SpawnerFlags.SpawnFar))
                     {
                         x = (int)((double)location.X + Spawner.RandomFar() * (double)homeRange);
                         y = (int)((double)location.Y + Spawner.RandomFar() * (double)homeRange);
@@ -1293,18 +1380,27 @@ namespace Server.Mobiles
                     int z = map.GetAverageZ(x, y);
 
                     if (map.CanSpawnMobile(new Point2D(x, y), location.Z, flags) && !NearPlayer(map, new Point3D(x, y, location.Z)))
-                        return new Point3D(x, y, location.Z);
-                    if (forceZ == false)
+                        list.Add(new Point3D(x, y, location.Z));
+                    if (GetFlag(sflags, SpawnerFlags.ForceZ) == false)
                         if (map.CanSpawnMobile(new Point2D(x, y), z, flags) && !NearPlayer(map, new Point3D(x, y, z)))
-                            return new Point3D(x, y, z);
+                            list.Add(new Point3D(x, y, z));
                 }
+
+            // exit here if we got something
+            if (list.Count > 0)
+            {
+                list = FilterList(map, location, list, sflags, o);
+                if (list.Count > 0)
+                    return list;
+                // else, we keep trying
+            }
 
             // Try 10 more times to find a any spawnable location.
             for (int i = 0; i < 10; i++)
             {
                 int x;
                 int y;
-                if ((sflags & SpawnFlags.SpawnFar) != 0)
+                if (GetFlag(sflags, SpawnerFlags.SpawnFar))
                 {
                     x = (int)((double)location.X + Spawner.RandomFar() * (double)homeRange);
                     y = (int)((double)location.Y + Spawner.RandomFar() * (double)homeRange);
@@ -1317,22 +1413,49 @@ namespace Server.Mobiles
                 int z = map.GetAverageZ(x, y);
 
                 if (map.CanSpawnMobile(new Point2D(x, y), location.Z, flags))
-                    return new Point3D(x, y, location.Z);
-                if (forceZ == false)
+                    list.Add(new Point3D(x, y, location.Z));
+                if (GetFlag(sflags, SpawnerFlags.ForceZ) == false)
                     if (map.CanSpawnMobile(new Point2D(x, y), z, flags))
-                        return new Point3D(x, y, z);
+                        list.Add(new Point3D(x, y, z));
 
             }
 
-            return location;
-        }
+            list = FilterList(map, location, list, sflags, o);
 
+            // default location
+            if (list.Count == 0)
+                list.Add(location);
+
+            return list;
+        }
+        private static List<Point3D> FilterList(Map map, Point3D location, List<Point3D> old_list, SpawnerFlags sflags, object o)
+        {
+            if (GetFlag(sflags, SpawnerFlags.ClearPath) == false)
+                return old_list;
+
+            bool canSwim = false;
+            bool cantWalk = false;
+            if (o is Mobile)
+            {
+                Mobile m = o as Mobile;
+                canSwim = (m != null && m.CanSwim == true);
+                cantWalk = (m != null && m.CantWalk == true);
+            }
+            int steps = 0;
+            List<Point3D> new_list = new List<Point3D>();
+            foreach (Point3D p in old_list)
+                if (Utility.ClearPath(map, location, p, ref steps, canSwim, cantWalk))
+                    new_list.Add(p);
+                else
+                    continue; //debug
+            return new_list;
+        }
         public static bool NearPlayer(Map map, Point3D px)
         {
             IPooledEnumerable eable = map.GetMobilesInRange(px, 15);
             foreach (Mobile m in eable)
             {
-                if (m is PlayerMobile && m.AccessLevel <= AccessLevel.Player)
+                if (m.Player /*&& m.AccessLevel <= AccessLevel.Player*/)
                 {
                     eable.Free();
                     return true;
@@ -1528,6 +1651,9 @@ namespace Server.Mobiles
             if (TemplateItem != null && TemplateItem.Deleted == false)
                 TemplateItem.Delete();
 
+            if (Equipment != null && Equipment.Deleted == false)
+                Equipment.Delete();
+
             // Remove Creatures
             RemoveObjects();
             if (m_Timer != null)
@@ -1542,7 +1668,20 @@ namespace Server.Mobiles
         {
             base.Serialize(writer);
 
-            writer.Write((int)12); // version
+            int version = 15;
+            writer.Write(version); // version
+
+            // version 15
+            writer.Write(m_ClanAlignment);
+            writer.Write(m_Equipment);
+
+            // version 14
+            writer.Write(m_NavDest);
+
+            // version 13
+            writer.Write((int)m_SpawnerFlags);
+            writer.Write((char)m_Tamable);
+            writer.Write((char)m_MobVendorInvul);
 
             //v12
             writer.Write((int)m_OurWorldSize);
@@ -1557,7 +1696,8 @@ namespace Server.Mobiles
 
             writer.Write((bool)m_TemplateEnabled);
 
-            writer.Write((int)m_MobVendorInvul); // 8
+            // obsolete in version 13
+            //writer.Write((int)m_MobVendorInvul); // 8
 
             writer.Write(false);
             writer.Write(0);
@@ -1569,7 +1709,8 @@ namespace Server.Mobiles
             writer.Write(0);
             writer.Write("0");
             writer.Write(0);
-            writer.Write((int)m_NavDest);
+            // obsolete in version 14
+            //writer.Write((int)m_NavDest);
             writer.Write((int)m_MobDirection);
             writer.Write(false);                // obsolete: m_FreezeDecay
             writer.Write(m_WayPoint);
@@ -1614,6 +1755,24 @@ namespace Server.Mobiles
 
             switch (version)
             {
+                case 15:
+                    {
+                        m_ClanAlignment = reader.ReadString();
+                        m_Equipment = (Backpack)reader.ReadItem();
+                        goto case 14;
+                    }
+                case 14:
+                    {
+                        m_NavDest = reader.ReadString();
+                        goto case 13;
+                    }
+                case 13:
+                    {
+                        m_SpawnerFlags = (SpawnerFlags)reader.ReadInt();
+                        m_Tamable = (BOOL)reader.ReadByte();
+                        m_MobVendorInvul = (BOOL)reader.ReadByte();
+                        goto case 12;
+                    }
                 case 12:
                     {
                         m_OurWorldSize = (CoreAI.WorldSize)reader.ReadInt();
@@ -1639,8 +1798,16 @@ namespace Server.Mobiles
                     }
                 case 8:
                     {
-
-                        m_MobVendorInvul = (BOOL)reader.ReadInt();
+                        if (version < 13)
+                        {
+                            int temp = reader.ReadInt();
+                            if (temp == -1)
+                                m_MobVendorInvul = BOOL.bDefault;
+                            else if (temp == 0)
+                                m_MobVendorInvul = BOOL.bTrue;
+                            else
+                                m_MobVendorInvul |= BOOL.bFalse;
+                        }
                         goto case 7;
                     }
                 case 7:
@@ -1665,7 +1832,8 @@ namespace Server.Mobiles
                     }
                 case 5:
                     {
-                        m_NavDest = (NavDestinations)reader.ReadInt();
+                        if (version < 14)
+                            /*m_NavDest = (NavDestinations)*/reader.ReadInt();
                         goto case 4;
                     }
                 case 4:

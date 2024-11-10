@@ -19,7 +19,14 @@
  *
  ***************************************************************************/
 
+/* Scripts\Items\Resources\Tailor\Cotton.cs
+ * ChangeLog
+ *	10/4/2004, Adam
+ *		Implemented RTT for AFK resource gathering thwarting.
+ */
+using Server.Mobiles;
 using Server.Targeting;
+using System;
 
 namespace Server.Items
 {
@@ -44,7 +51,15 @@ namespace Server.Items
             : base(serial)
         {
         }
+        public override bool OnDragLift(Mobile from)
+        {   // new cotton the ground
+            if (from is PlayerMobile pm && Age < TimeSpan.FromMinutes(5) && Parent == null && !pm.RTT("AFK cotton picking check."))
+            {
+                return false;
+            }
 
+            return true;
+        }
         public override void Serialize(GenericWriter writer)
         {
             base.Serialize(writer);

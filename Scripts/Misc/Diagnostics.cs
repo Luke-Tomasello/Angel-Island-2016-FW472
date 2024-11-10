@@ -28,6 +28,7 @@
  *      First time checkin
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using System;
 

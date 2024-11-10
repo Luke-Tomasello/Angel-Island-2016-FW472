@@ -45,6 +45,7 @@
  *		Added TC checks to ensure none of this shit runs on Prod.
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using System;
 using System.Collections;

@@ -35,6 +35,7 @@
  */
 
 
+using Server.Diagnostics;
 using Server.Engines;
 using Server.Gumps;
 using System;

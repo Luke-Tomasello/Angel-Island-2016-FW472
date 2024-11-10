@@ -27,6 +27,7 @@
  *	    BlockDamage is now persistent to staff, cleared on deserialization for all else
  */
 
+using Server.Diagnostics;
 using Server.Accounting;
 using Server.Commands;
 using Server.ContextMenus;
@@ -494,6 +495,21 @@ namespace Server
     /// </summary>
     public class Mobile : IEntity, IPoint3D, IHued
     {
+        public virtual bool PathTooComplex(Mobile target)
+        {   // return if the path from source to target is too complex
+            Mobile source = this;
+            return false;
+        }
+
+        #region Safe Name
+        public string SafeName
+        {
+            get
+            {
+                return Name != null ? Name : GetType().Name;
+            }
+        }
+        #endregion Safe Name
         #region CompareTo(...)
         public int CompareTo(IEntity other)
         {
@@ -728,6 +744,23 @@ namespace Server
             return true;
         }
 
+        private string m_ClanAlignment;
+        public virtual string ClanAlignment
+        {
+            get { return m_ClanAlignment; }
+            set 
+            {
+                if (ClanRegistry.ContainsKey(this))
+                    ClanRegistry.Remove(this);
+
+                if (value != null)
+                    ClanRegistry.Add(this, Utility.StringToInt(value));
+
+                m_ClanAlignment = value; 
+            }
+        }
+        
+        public static Dictionary <Mobile, int> ClanRegistry = new Dictionary<Mobile, int>();
         [CommandProperty(AccessLevel.GameMaster)]
         public bool StaffOwned
         {
@@ -820,7 +853,7 @@ namespace Server
 			set{ m_DefaultStamRate = value; }
 		}*/
 
-public static RegenRateHandler ManaRegenRateHandler
+        public static RegenRateHandler ManaRegenRateHandler
         {
             get { return m_ManaRegenRate; }
             set { m_ManaRegenRate = value; }
@@ -2452,10 +2485,10 @@ public static RegenRateHandler ManaRegenRateHandler
             {
                 if (DateTime.UtcNow > m_Mobile.m_NextCombatTime)
                 {
-                    Mobile combatant = m_Mobile.Combatant;
+                    Utility.MobileInfo combatantInfo = Utility.GetMobileInfo(m_Mobile, null, new Utility.MobileInfo(m_Mobile.Combatant));
 
                     // If no combatant, wrong map, one of us is a ghost, or cannot see, or deleted, then stop combat
-                    if (combatant == null || combatant.m_Deleted || m_Mobile.m_Deleted || combatant.m_Map != m_Mobile.m_Map || !combatant.Alive || !m_Mobile.Alive || !m_Mobile.CanSee(combatant) || combatant.IsDeadBondedPet || m_Mobile.IsDeadBondedPet)
+                    if (m_Mobile.Dead || m_Mobile.Deleted || m_Mobile.IsDeadBondedPet || combatantInfo.unavailable)
                     {
                         m_Mobile.Combatant = null;
                         return;
@@ -2463,13 +2496,17 @@ public static RegenRateHandler ManaRegenRateHandler
 
                     IWeapon weapon = m_Mobile.Weapon;
 
-                    if (!m_Mobile.InRange(combatant, weapon.MaxRange))
+                    if (!m_Mobile.InRange(combatantInfo.target, weapon.MaxRange))
                         return;
 
-                    if (m_Mobile.InLOS(combatant))
+                    if (m_Mobile.InLOS(combatantInfo.target))
                     {
                         m_Mobile.RevealingAction();
-                        m_Mobile.m_NextCombatTime = DateTime.UtcNow + weapon.OnSwing(m_Mobile, combatant);
+                        m_Mobile.m_NextCombatTime = DateTime.UtcNow + weapon.OnSwing(m_Mobile, combatantInfo.target);
+
+                        // Special: Adam Ant defends himself against all comers
+                        if (combatantInfo.target.Player && combatantInfo.target.AccessLevel == AccessLevel.Owner && combatantInfo.target.Hidden == false)
+                            combatantInfo.target.Combatant = m_Mobile;
                     }
                 }
             }
@@ -2669,7 +2706,7 @@ public static RegenRateHandler ManaRegenRateHandler
         }
 
         // called from BaseAI when an NPC 'sees' a living player
-        public virtual void OnSee(Mobile m)
+        public virtual void OnSeePlayer(Mobile m)
         {
         }
 
@@ -3984,7 +4021,7 @@ public static RegenRateHandler ManaRegenRateHandler
         public virtual void OnDelete()
         {
         }
-
+        public virtual bool Dead { get { return !Alive; } }
         /// <summary>
         /// Overridable. Returns true if the player is alive, false if otherwise. By default, this is computed by: <c>!Deleted &amp;&amp; (!Player || !Body.IsGhost)</c>
         /// </summary>
@@ -4332,6 +4369,9 @@ public static RegenRateHandler ManaRegenRateHandler
         /// <returns>True to continue with death, false to override it.</returns>
         public virtual bool OnBeforeDeath()
         {
+            if (ClanRegistry.ContainsKey(this))
+                ClanRegistry.Remove(this);
+
             return true;
         }
 
@@ -4563,7 +4603,7 @@ public static RegenRateHandler ManaRegenRateHandler
         {
             rejected = true;
             reject = LRReason.Inspecific;
-
+            
             if (item == null)
                 return;
 
@@ -5136,7 +5176,11 @@ public static RegenRateHandler ManaRegenRateHandler
 
                 Packet regp = null;
                 Packet mutp = null;
-
+                string last_heard = string.Empty;
+                string player_text = text;
+                // optional language translation (Orcish to English and English to Orcish)
+                //  here the speaker defines what everyone hears (players only)
+                player_text = DoXlatKinSpeech(from: this, to: this, text);
                 for (int i = 0; i < hears.Count; ++i)
                 {
                     Mobile heard = (Mobile)hears[i];
@@ -5149,10 +5193,22 @@ public static RegenRateHandler ManaRegenRateHandler
 
                         if (ns != null)
                         {
+                            string result = player_text;
+                            // optional language translation (Orcish to English and English to Orcish)
+                            if (heard != this)
+                                result = DoXlatKinSpeech(from: this, to: ns.Mobile, player_text);
+
+                            if (regp != null && last_heard != result)
+                            {   // if the text is changing because a player has language translation turned on, we need a new packet.
+                                Packet.Release(regp);
+                                regp = null;
+                            }
                             if (regp == null)
-                                regp = Packet.Acquire(new UnicodeMessage(m_Serial, Body, type, hue, 3, m_Language, Name, text));
+                                regp = Packet.Acquire(new UnicodeMessage(m_Serial, Body, type, hue, 3, m_Language, Name, result));
 
                             ns.Send(regp);
+
+                            last_heard = result;
                         }
                     }
                     else
@@ -5199,7 +5255,10 @@ public static RegenRateHandler ManaRegenRateHandler
                 }
             }
         }
-
+        public virtual string DoXlatKinSpeech(Mobile from, Mobile to, string text)
+        {
+            return text;
+        }
         private static VisibleDamageType m_VisibleDamageType;
 
         public static VisibleDamageType VisibleDamageType
@@ -5456,7 +5515,7 @@ public static RegenRateHandler ManaRegenRateHandler
 
         public virtual bool CanBeDamaged()
         {
-            return !m_Blessed;
+            return !m_Blessed && !IsInvulnerable; 
         }
 
         // turn this off in props to block mobile damage
@@ -5702,6 +5761,7 @@ public static RegenRateHandler ManaRegenRateHandler
             StableBackFees = 0x02,
             CriminalTimer = 0x04,
             ExpirationFlags = 0x08,
+            ClanAlignment = 0x10,
         }
 
         private SaveFlags m_SaveFlags = SaveFlags.None;
@@ -5734,6 +5794,7 @@ public static RegenRateHandler ManaRegenRateHandler
             SetFlag(SaveFlags.StableBackFees, m_StableBackFees != 0 ? true : false);
             SetFlag(SaveFlags.CriminalTimer, m_Criminal);
             SetFlag(SaveFlags.ExpirationFlags, GetStateCount > 0);
+            SetFlag(SaveFlags.ClanAlignment, !string.IsNullOrEmpty(m_ClanAlignment));
             writer.Write((int)m_SaveFlags);
             return m_SaveFlags;
         }
@@ -5748,6 +5809,12 @@ public static RegenRateHandler ManaRegenRateHandler
 
             switch (version)
             {
+                case 36:
+                    {
+                        if (GetFlag(SaveFlags.ClanAlignment) == true)
+                            ClanAlignment = reader.ReadString();
+                        goto case 35;
+                    }
                 case 35:
                     {
                         if (GetFlag(SaveFlags.ExpirationFlags) == true)
@@ -6182,8 +6249,11 @@ public static RegenRateHandler ManaRegenRateHandler
 
         public virtual void Serialize(GenericWriter writer)
         {
-            writer.Write((int)35);                  // version
+            writer.Write((int)36);                  // version
             m_SaveFlags = WriteSaveFlags(writer);   // always follows version
+
+            if (GetFlag(SaveFlags.ClanAlignment) == true)
+                writer.Write(m_ClanAlignment);
 
             // Adam: v35: those states that don't require a timer (timer saver)
             if (GetFlag(SaveFlags.ExpirationFlags) == true)
@@ -6612,7 +6682,7 @@ public static RegenRateHandler ManaRegenRateHandler
             AddItem(item);
         }
 
-        public void AddItem(Item item)
+        public virtual void AddItem(Item item)
         {
             if (item == null || item.Deleted)
                 return;
@@ -6900,7 +6970,8 @@ public static RegenRateHandler ManaRegenRateHandler
 
         public void SayTo(Mobile to, bool ascii, string text)
         {
-            PrivateOverheadMessage(MessageType.Regular, m_SpeechHue, ascii, text, to.NetState);
+            if (to != null && to.NetState != null)
+                PrivateOverheadMessage(MessageType.Regular, m_SpeechHue, ascii, text, to.NetState);
         }
 
         public void SayTo(Mobile to, string text)
@@ -7508,7 +7579,15 @@ public static RegenRateHandler ManaRegenRateHandler
                 }
             }
         }
-
+        public void SetMapOnly(Map map)
+        {
+            m_Map = map;
+            
+        }
+        public void SetLocationOnly(Point3D p)
+        {
+            m_Location.X = p.X; m_Location.Y = p.Y; m_Location.Z = p.Z;    // we do not want usual region/map processing
+        }
         public void ForceRegionReEnter(bool Exit)
         {//forces to find the region again and enter it
             if (m_Deleted)

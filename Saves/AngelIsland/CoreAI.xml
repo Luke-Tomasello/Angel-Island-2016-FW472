@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <CoreAI>
+	<TeleRunningEnabled>1</TeleRunningEnabled>
+	<TeleGlobalDelay>0</TeleGlobalDelay>
+	<TeleDelay>5</TeleDelay>
+	<TeleTiles>8</TeleTiles>
 	<StingerMinHP>100</StingerMinHP>
 	<StingerMaxHP>200</StingerMaxHP>
 	<StingerMinDamage>8</StingerMinDamage>
@@ -48,6 +52,8 @@
 	<TreasureMapDrop>0.01</TreasureMapDrop>
 	<TempDouble>0</TempDouble>
 	<TempInt>0</TempInt>
+	<SystemAccount>-1</SystemAccount>
+	<AdminAccount>-1</AdminAccount>
 	<ExplPotSensitivity>10</ExplPotSensitivity>
 	<ExplPotChance>0.001</ExplPotChance>
 	<OfflineShortsHours>24</OfflineShortsHours>
@@ -65,6 +71,7 @@
 	<ConfusionBaseDelay>10</ConfusionBaseDelay>
 	<WorldSaveFrequency>60</WorldSaveFrequency>
 	<DebugItemDecayOutput>0</DebugItemDecayOutput>
+	<TentAnnexation>1</TentAnnexation>
 	<TCAcctCleanupDays>30</TCAcctCleanupDays>
 	<StandingDelay>0.5</StandingDelay>
 	<PlayAccessLevel>100</PlayAccessLevel>

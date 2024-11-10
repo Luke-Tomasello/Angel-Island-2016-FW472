@@ -72,6 +72,7 @@
 	it was more about provoke than peace
  */
 
+using Server.Diagnostics;
 using Server.Engines.Craft;
 using Server.Mobiles;
 using Server.Network;
@@ -548,7 +549,7 @@ namespace Server.Items
             }
             catch (Exception ex)
             {
-                Server.Commands.LogHelper.LogException(ex);
+                LogHelper.LogException(ex);
             }
         }
 

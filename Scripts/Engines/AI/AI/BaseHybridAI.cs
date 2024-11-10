@@ -77,6 +77,7 @@
  *		any other golemcontrollers around if fighting, as well as use potions and trap pouchs
  */
 
+using Server.Diagnostics;
 using Server.Commands;
 using Server.Items;
 using Server.SkillHandlers;

@@ -343,7 +343,7 @@ namespace Server.Gumps
         private string GetSizeString()
         {
             StringBuilder sizeSB = new StringBuilder();
-            sizeSB.Append("Size: "); 
+            sizeSB.Append("Size: ");
             sizeSB.Append(TownshipStone.GetTownshipSizeDesc(m_Stone.ActivityLevel));
 
             /*			int diff = (int)m_Stone.ActivityLevel - (int)m_Stone.LastActivityLevel;

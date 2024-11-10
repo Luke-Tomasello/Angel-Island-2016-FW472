@@ -27,6 +27,7 @@
  *		The region is attained by either targeting a HouseSign or TownshipStone. We can add other targets later.
  */
 
+using Server.Diagnostics;
 using Server.Items;
 using Server.Multis;
 using Server.Targeting;

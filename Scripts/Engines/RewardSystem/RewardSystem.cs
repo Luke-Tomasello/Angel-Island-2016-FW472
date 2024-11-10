@@ -38,6 +38,7 @@
  *		Fixed a potential crash bug in WriteXml if the Rewards.xml file doesn't exist.
  */
 
+using Server.Diagnostics;
 using Server.Accounting;
 using Server.Commands;
 using Server.Items;

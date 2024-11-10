@@ -51,6 +51,7 @@
  */
 
 #if THIS_IS_NOT_USED
+using Server.Diagnostics;
 using System;
 using Server;
 
